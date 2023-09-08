@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"outDir": "./build/",
+		"strictNullChecks": true,
+		"noImplicitAny": true,
+		"lib": ["esnext", "dom"],
+		"module": "ES6",
+		"target": "ES6",
+		"jsx": "react",
+		"allowJs": false,
+		"moduleResolution": "node",
+		"noEmitOnError": true,
+		"types": ["chrome"]
+	}
+}

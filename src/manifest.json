@@ -1,0 +1,55 @@
+{
+  "manifest_version": 3,
+  "name": "Toppings",
+  "short_name": "Toppings",
+  "version": "1.0.0",
+  "description": "Toppings adds an extra layer of flavor for a more efficient and convenient web.",
+  "homepage_url": "https://www.grabtoppings.xyz",
+  "author": "Enrich Platforms",
+  "icons": {
+    "16": "/assets/icons/icon16.png",
+    "32": "/assets/icons/icon32.png",
+    "48": "/assets/icons/icon48.png",
+    "128": "/assets/icons/icon128.png"
+  },
+  "commands": {
+    "open_preferences": {
+      "description": "Open Preferences",
+      "suggested_key": {
+        "default": "Alt+T",
+        "mac": "MacCtrl+T",
+        "windows": "Alt+T"
+      }
+    }
+  },
+  "host_permissions": ["<all_urls>"],
+  "permissions": ["webNavigation", "storage"],
+  "options_ui": {
+    "open_in_tab": true,
+    "page": "/pages/options/options.html"
+  },
+  "background": {
+    "service_worker": "/background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "match_about_blank": true,
+      "all_frames": true,
+      "run_at": "document_start",
+      "css": ["styles.css"],
+      "js": ["content.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "pages/popup/popup.html",
+    "default_title": "Toppings: Preferences",
+    "default_icon": "assets/icons/icon128.png"
+  },
+  "web_accessible_resources": [
+    {
+      "matches":  ["<all_urls>"],
+      "resources": ["assets/icons/icon128.png", "styles.css", "pages/options/assets/icons8-settings-64.png"]
+    }
+  ]
+}
