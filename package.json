@@ -18,10 +18,10 @@
   },
   "homepage": "https://github.com/enrich-platforms/toppings#readme",
   "devDependencies": {
-    "@types/chrome": "^0.0.245",
     "@types/node": "^20.5.9",
     "@typescript-eslint/eslint-plugin": "^6.6.0",
     "@typescript-eslint/parser": "^6.6.0",
+    "chrome-types": "^0.1.231",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.8.1",
@@ -36,5 +36,8 @@
     "typescript": "^5.2.2",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "blendora": "^2.0.0"
   }
 }

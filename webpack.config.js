@@ -6,11 +6,9 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = {
   entry: {
-    background: './src/ts/background.ts',
-    content: [
-      './src/ts/index.ts'
-    ],
-    styles: ['./src/css/vendor.css', './src/css/youtube.css'] // Add an entry point for CSS
+    background: './src/scripts/background.ts',
+    content: ['./src/scripts/core.ts', './src/scripts/index.ts'],
+    styles: ['./src/css/vendor.css', './src/css/youtube.css']
   },
   output: {
     filename: '[name].js',
@@ -50,7 +48,7 @@ module.exports = {
         compiler.hooks.afterEmit.tap('CleanUpStylesJs', () => {
           const stylesJsPath = path.resolve(__dirname, 'build', 'styles.js')
           const fs = require('fs')
-          if (fs.existsSync(stylesJsPath) !== false) {
+          if (fs.existsSync(stylesJsPath)) {
             fs.unlinkSync(stylesJsPath)
           }
         })

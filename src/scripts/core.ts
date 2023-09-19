@@ -1,4 +1,4 @@
-import { togglePictureInPictureMode } from 'easyfront'
+import { togglePictureInPictureMode } from 'blendora'
 
 document.addEventListener('keyup', (event) => {
   const targetElement = event.target as Element

@@ -15,7 +15,7 @@ const fetchToppingsAPI = async (request: FetchToppingsAPIRequest): Promise<objec
   if (request.appName === 'youtube') {
     if (request.body.routeType === 'playlist') {
       endpoint = 'playlists'
-
+      contentId = request.body.contentId
       if (request.body.contentId === undefined) {
         contentId = new URLSearchParams(window.location.search).get('list')
       }

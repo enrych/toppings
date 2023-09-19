@@ -27,7 +27,7 @@ let toggleOn: boolean
  * Set the uninstallation URL for the extension.
  * This URL will be redirected to when users uninstall the extension.
  */
-chrome.runtime.setUninstallURL(uninstallUrl)
+void chrome.runtime.setUninstallURL(uninstallUrl)
 
 /**
  * Set up the extension when installed or updated.
