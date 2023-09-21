@@ -99,8 +99,6 @@ const toggleEnabledUI = (enabled) => {
 			32: `/assets/icons/${prefix}icon32.png`,
 			48: `/assets/icons/${prefix}icon48.png`,
 			128: `/assets/icons/${prefix}icon128.png`,
-			256: `/assets/icons/${prefix}icon256.png`,
-			512: `/assets/icons/${prefix}icon512.png`,
 		},
 	});
 };
