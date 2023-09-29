@@ -55,25 +55,33 @@ git checkout -b feature/my-new-feature
 
 4. **Make Changes**: Make your changes in the new branch. Be sure to follow the project's coding standards and guidelines.
 
-5. **Commit Changes**: Commit your changes with a clear and concise commit message.
+5. **Build and Test the Extension**: To build and test the extension with your changes, use the following script:
+
+```bash
+npm run build:dev
+```
+
+6. **Load the Extension**: In your Chrome browser, enable developer mode in the extensions settings and load the built extension from the "build" folder.
+
+7. **Commit Changes**: Commit your changes with a clear and concise commit message.
 
 ```bash
 git commit -m "Add a new feature"
 ```
 
-6. **Push Changes**: Push your changes to your forked repository.
+8. **Push Changes**: Push your changes to your forked repository.
 
 ```bash
 git push origin feature/my-new-feature
 ```
 
-7. **Create a Pull Request (PR)**: Open a PR from your forked repository to the original repository. Provide a clear description of your changes in the PR.
+9. **Create a Pull Request (PR)**: Open a PR from your forked repository to the original repository. Provide a clear description of your changes in the PR.
 
-8. **Code Review**: Participate in the code review process. Address any feedback or comments.
+10. **Code Review**: Participate in the code review process. Address any feedback or comments.
 
-9. **Merge**: Once your PR is approved, it will be merged into the main project.
+11. **Merge**: Once your PR is approved, it will be merged into the main project.
 
-10. **Celebrate**: Your contribution is now part of the project! 🎉
+12. **Celebrate**: Your contribution is now part of the project! 🎉
 
 ## Code of Conduct
 
