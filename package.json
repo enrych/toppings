@@ -7,7 +7,9 @@
     "build:dev": "webpack --watch --config webpack.config.dev.js",
     "build:prod": "webpack --mode production --config webpack.config.js",
     "build:release": "npm run build:prod && node scripts/release.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint . --ext .ts --config .eslintrc.json --fix",
+    "type-check": "tsc --noEmit",
+    "test": "npm run lint && npm run type-check"
   },
   "repository": {
     "type": "git",
