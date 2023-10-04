@@ -62,7 +62,7 @@ let doubleTapSeekTimeout: number
 const onWatchPage = async (contentID: string): Promise<void> => {
   try {
     player = player ?? await loadPlayer(contentID)
-    player.setPlaybackSpeed(parseFloat(defaultSpeed))
+    setWatchDefaults()
 
     doubleTapSeekElement = doubleTapSeekElement ?? document.querySelector('.ytp-doubletap-ui-legacy') as HTMLElement
 
@@ -72,6 +72,32 @@ const onWatchPage = async (contentID: string): Promise<void> => {
     playerSettingsButton.addEventListener('click', onSettingsMenu, { once: true })
   } catch (error) {
     console.error('Failed to successfully load WatchPage:', error)
+  }
+}
+
+const setWatchDefaults = (): void => {
+  currentSpeed = Number(defaultSpeed).toFixed(2)
+  player.setPlaybackSpeed(parseFloat(defaultSpeed))
+
+  const labels = document.querySelectorAll('.ytp-menuitem-label')
+  if (labels.length === 0) {
+    return
+  }
+  let playbackSpeedLabel
+  for (const label of labels) {
+    if (label.textContent === 'Playback speed') {
+      playbackSpeedLabel = label as HTMLElement
+      break
+    }
+  }
+
+  if (playbackSpeedLabel !== undefined) {
+    const playerPlaybackButton = playbackSpeedLabel.parentNode as HTMLElement
+
+    playerPlaybackButton.children[2].textContent =
+    currentSpeed === '1' || currentSpeed === '1.00'
+      ? 'Normal'
+      : `${Number(currentSpeed)}`
   }
 }
 
@@ -343,7 +369,6 @@ const changePlaybackSpeed = (speed: number): void => {
 
   player.setPlaybackSpeed(speed)
   currentSpeed = speed.toFixed(2)
-  console.log(currentSpeed)
 
   if (document.getElementsByClassName('tp-speeditem')[0] !== null) {
     if (customPrecisionSpeedList.includes(currentSpeed)) {
