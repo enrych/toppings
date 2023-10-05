@@ -1,17 +1,11 @@
+import loadElement from '../../../lib/loadElement'
 import addMetadataToppings from './addMetadataToppings'
 
-const onPlaylistPage = (contentId: string): void => {
-  const checkActionBarInterval = setInterval(() => {
-    if (document.querySelector('.metadata-action-bar') !== null) {
-      void addMetadataToppings(contentId)
-      clearInterval(checkActionBarInterval)
-      clearTimeout(checkActionBarTimeout)
-    }
-  }, 500)
-
-  const checkActionBarTimeout = setTimeout(() => {
-    clearInterval(checkActionBarInterval)
-  }, 10000)
+const onPlaylistPage = async (contentId: string): Promise<void> => {
+  const metadataActionBar = await loadElement('.metadata-action-bar', 10000, 500)
+  if (metadataActionBar !== null) {
+    await addMetadataToppings(contentId)
+  }
 }
 
 export default onPlaylistPage
