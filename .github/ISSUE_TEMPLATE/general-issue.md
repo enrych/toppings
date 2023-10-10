@@ -8,6 +8,9 @@ assignees: ''
 
 ---
 
+## Duplicates
+- [ ] I have searched the existing issues
+
 ## Issue Type
 - [ ] Bug Report
 - [ ] Feature Request
