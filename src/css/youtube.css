@@ -6,17 +6,17 @@
 
 #metadata-toppings {
 	height: fit-content;
-	border: 1px solid #ddd;
-	border-radius: 16px;
+	/* border: 1px solid #ddd; */
+	border-radius: 8px;
 	/* background-color: transparent; */
-	background: rgba(255, 255, 255, 0.4);
+	background: rgba(101, 101, 101, 0.4);
   	backdrop-filter: saturate(180%) blur(10px);
-	  -webkit-backdrop-filter: blur(11.3px);
+	-webkit-backdrop-filter: blur(11.3px);
 	font-family: 'Roboto', sans-serif;
 	padding: 12px 15px;
 	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); 
 }
-
+  
 div#toppings-header {
 	margin-bottom: 6px;
 	width: 100%;
@@ -35,7 +35,7 @@ img#toppings-icon {
 h2#toppings-heading {
 	font-size: 1.6rem;
 	font-weight: 800;
-	color: #0c0c0c;
+	color: #ffffff;
 	margin-left: 10px;
 }
 
@@ -47,7 +47,7 @@ div#playlist-runtime-section {
 	padding-left: 10px;
 	font-size: 12px;
 	font-weight: 400;
-	color: #343434; 
+	color: #b9b8b8; 
 }
 
 /* On hover effects for better user feedback */
