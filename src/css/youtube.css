@@ -6,9 +6,7 @@
 
 #metadata-toppings {
 	height: fit-content;
-	/* border: 1px solid #ddd; */
 	border-radius: 8px;
-	/* background-color: transparent; */
 	background: rgba(101, 101, 101, 0.4);
   	backdrop-filter: saturate(180%) blur(10px);
 	-webkit-backdrop-filter: blur(11.3px);
