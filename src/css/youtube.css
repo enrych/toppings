@@ -1,31 +1,40 @@
-#metadata-toppings {
-	height: fit-content;
-	border: 1px solid #ddd;
-	border-radius: 8px;
-	font-size: 12px;
-	line-height: 1.5;
-	padding: 10px;
+/* General styling */
+* {
+	box-sizing: border-box;
+	transition: all 0.3s ease;
 }
 
+#metadata-toppings {
+	height: fit-content;
+	border-radius: 8px;
+	background: rgba(101, 101, 101, 0.4);
+  	backdrop-filter: saturate(180%) blur(10px);
+	-webkit-backdrop-filter: blur(11.3px);
+	font-family: 'Roboto', sans-serif;
+	padding: 12px 15px;
+	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); 
+}
+  
 div#toppings-header {
-	margin-bottom: 4px;
+	margin-bottom: 6px;
 	width: 100%;
 	display: flex;
-	flex-direction: row;
-	justify-content: start;
 	align-items: center;
 }
 
 div#toppings-header * {
-	margin: 0px 4px;
+	margin: 0px 6px;
 }
 
 img#toppings-icon {
-	width: 20px;
+	width: 24px;
 }
 
 h2#toppings-heading {
-	font-size: 1.4rem;
+	font-size: 1.6rem;
+	font-weight: 800;
+	color: #ffffff;
+	margin-left: 10px;
 }
 
 div#playlist-runtime-section {
@@ -33,4 +42,15 @@ div#playlist-runtime-section {
 	flex-direction: column;
 	justify-content: space-evenly;
 	align-items: start;
+	padding-left: 10px;
+	font-size: 12px;
+	font-weight: 400;
+	color: #b9b8b8; 
 }
+
+/* On hover effects for better user feedback */
+#metadata-toppings:hover {
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+
