@@ -15,7 +15,7 @@ const onYouTubeLoaded = async (youtubeAppInfo: YouTubeAppInfo): Promise<void> =>
   if (routeType === 'watch' && watchEnabled) {
     await onWatchPage(contentId)
   } else if (routeType === 'playlist' && playlistEnabled) {
-    onPlaylistPage(contentId)
+    await onPlaylistPage(contentId)
   }
 }
 
