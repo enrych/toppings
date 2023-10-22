@@ -15,7 +15,7 @@ const loadElement = async (
   return await new Promise<HTMLElement>((resolve, reject) => {
     const checkInterval = setInterval(() => {
       const element = document.querySelector(selector) as HTMLElement
-      if (element !== undefined) {
+      if (element !== undefined && element !== null) {
         clearInterval(checkInterval)
         clearTimeout(checkTimeout)
         resolve(element)
