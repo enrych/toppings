@@ -5,8 +5,8 @@
   "private": "true",
   "scripts": {
     "build:dev": "webpack --watch --config webpack.config.dev.js",
-    "build:prod": "webpack --mode production --config webpack.config.js",
-    "build:release": "npm run build:prod && node scripts/release.js",
+    "build:prod": "webpack --watch",
+    "build:release": "webpack && node scripts/release.js",
     "lint": "eslint . --ext .ts --config .eslintrc.json --fix",
     "type-check": "tsc --noEmit",
     "test": "npm run lint && npm run type-check"
@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/enrich-platforms/toppings#readme",
   "devDependencies": {
-    "@types/node": "^20.5.9",
+    "@types/node": "^20.8.9",
     "@typescript-eslint/eslint-plugin": "^6.6.0",
     "@typescript-eslint/parser": "^6.6.0",
     "archiver": "^6.0.1",

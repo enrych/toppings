@@ -40,3 +40,5 @@ export interface FetchToppingsAPIRequest {
     queryParams?: Record<string, string | null>
   }
 }
+
+export type Nullable<T> = T | null
