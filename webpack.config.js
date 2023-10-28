@@ -5,6 +5,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 module.exports = {
+  mode: 'production',
   entry: {
     background: './src/scripts/background.ts',
     content: ['./src/scripts/core.ts', './src/scripts/index.ts'],

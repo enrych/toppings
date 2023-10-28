@@ -1,3 +1,5 @@
+import { type Nullable } from '../interfaces'
+
 /**
  * Asynchronously loads an element with the specified selector within a timeout.
  *
@@ -5,17 +7,17 @@
  * @param {number} timeout - The maximum time (in milliseconds) to wait for the element to appear.
  * @param {number} interval - The polling interval (in milliseconds) to check for the element.
  * @returns {Promise<HTMLElement>} - A promise that resolves to the loaded element.
- * @throws {Error} - Throws an error if the element is not found within the specified timeout.
+ * @throws {Error} - Throws an error if the element is not found within the specified timeout (in development mode).
  */
 const loadElement = async (
   selector: string,
   timeout: number,
   interval: number
-): Promise<HTMLElement> => {
-  return await new Promise<HTMLElement>((resolve, reject) => {
+): Promise<Nullable<HTMLElement>> => {
+  return await new Promise<Nullable<HTMLElement>>((resolve, reject) => {
     const checkInterval = setInterval(() => {
       const element = document.querySelector(selector) as HTMLElement
-      if (element !== undefined && element !== null) {
+      if (element !== null) {
         clearInterval(checkInterval)
         clearTimeout(checkTimeout)
         resolve(element)
@@ -24,7 +26,11 @@ const loadElement = async (
 
     const checkTimeout = setTimeout(() => {
       clearInterval(checkInterval)
-      reject(new Error(`Element with selector '${selector}' not found within ${timeout}ms.`))
+      if (process.env.NODE_ENV === 'development') {
+        const errorMessage = `Element with selector '${selector}' not found within ${timeout}ms.`
+        console.warn(errorMessage)
+      }
+      resolve(null)
     }, timeout)
   })
 }
