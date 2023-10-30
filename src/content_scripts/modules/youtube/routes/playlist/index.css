@@ -1,10 +1,5 @@
-/* General styling */
-* {
-	box-sizing: border-box;
-	transition: all 0.3s ease;
-}
-
 #toppings__metadata-toppings {
+	box-sizing: border-box;
 	height: fit-content;
 	border-radius: 8px;
 	background: rgba(101, 101, 101, 0.4);
@@ -13,6 +8,7 @@
 	font-family: 'Roboto', sans-serif;
 	padding: 12px 15px;
 	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+	transition: all 0.3s ease;
 }
 
 div#toppings__toppings-header {
