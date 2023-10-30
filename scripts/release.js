@@ -1,6 +1,7 @@
 const fs = require('fs-extra');
 const archiver = require('archiver');
 const path = require('path');
+const chalk = require('chalk');
 
 const buildDir = 'build';
 const outputZip = 'bundled.zip';
@@ -10,7 +11,23 @@ const archive = archiver('zip', { zlib: { level: 9 } });
 const output = fs.createWriteStream(outputZip);
 
 output.on('close', () => {
-	console.log(`${outputZip} created successfully.`);
+	console.clear();
+	const manifest = require('../src/manifest.json');
+	const extensionVersion = manifest.version;
+
+	const message = `
+  ┏---------------------------------┓
+  |                                 |
+  |      Build Version: ${extensionVersion}       |
+  |                                 |
+  ┗---------------------------------┛
+
+  Toppings has been successfully bundled and is ready for a new release.
+  You can now upload the '${outputZip}' file to the Chrome Web Store.
+  `;
+
+	console.log(chalk.blue(message));
+	process.exit(0);
 });
 
 archive.on('warning', (err) => {
