@@ -1,6 +1,6 @@
 import { YTPlayer, createMenuItem } from 'blendora'
-import loadElement from '../../../lib/loadElement'
-import { type Nullable } from '../../../interfaces'
+import loadElement from '../../../../utils/loadElement'
+import { type Nullable } from '../../../../../common/interfaces'
 
 let toggleSpeedShortcut: string
 let seekBackwardShortcut: string

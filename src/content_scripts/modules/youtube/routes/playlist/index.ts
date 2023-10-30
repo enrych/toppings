@@ -1,5 +1,6 @@
-import loadElement from '../../../lib/loadElement'
+import loadElement from '../../../../utils/loadElement'
 import addMetadataToppings from './addMetadataToppings'
+import './index.css'
 
 const onPlaylistPage = async (contentId: string): Promise<void> => {
   const metadataActionBar = await loadElement('.metadata-action-bar', 10000, 500)

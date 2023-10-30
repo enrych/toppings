@@ -1,7 +1,6 @@
-import { type FetchToppingsAPIRequest } from '../interfaces'
+import { type FetchToppingsAPIRequest } from '../common/interfaces'
 
-// The base URI of Toppings API
-const baseURI = 'https://toppings.pythonanywhere.com/v1'
+const BASE_URI = 'https://toppings.pythonanywhere.com/v1'
 
 /**
  * Fetches data from the Toppings API based on the provided request.
@@ -22,7 +21,7 @@ const fetchToppingsAPI = async (request: FetchToppingsAPIRequest): Promise<objec
     }
   }
 
-  const apiUrl = `${baseURI}/${endpoint}/${contentId}`
+  const apiUrl = `${BASE_URI}/${endpoint}/${contentId}`
 
   const httpResponse = await fetch(apiUrl, {
     method: 'GET',

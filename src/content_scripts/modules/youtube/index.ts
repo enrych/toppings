@@ -1,6 +1,6 @@
-import { type YouTubeAppInfo } from '../interfaces'
-import onWatchPage from './routeType/watch/main'
-import onPlaylistPage from './routeType/playlist/main'
+import { type YouTubeAppInfo } from '../../../common/interfaces'
+import onWatchPage from './routes/watch'
+import onPlaylistPage from './routes/playlist'
 
 let playlistEnabled: boolean
 let watchEnabled: boolean

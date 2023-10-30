@@ -1,5 +1,5 @@
-import onYouTubeLoaded from './youtube/main'
-import { type YouTubeAppInfo, type WebAppInfo } from './interfaces'
+import onYouTubeLoaded from './modules/youtube'
+import { type YouTubeAppInfo, type WebAppInfo } from '../common/interfaces'
 
 const youtubeEnabled: boolean = true
 let checkAppLoaded: string = ''
