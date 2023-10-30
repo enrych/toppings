@@ -1,6 +1,6 @@
-import fetchToppingsAPI from '../../../lib/fetchToppingsAPI'
+import fetchToppingsAPI from '../../utils/fetchToppingsAPI'
 import { createMetadataSection, createSectionItem } from 'blendora'
-import { formatRuntime } from '../../../lib/utility'
+import { formatRuntime } from '../../../../utils/formatRuntime'
 
 interface PlaylistInfo {
   data: {
@@ -19,7 +19,7 @@ interface PlaylistInfo {
 
 const addMetadataToppings = async (playlistID: string): Promise<void> => {
   const metadataActionBar = document.querySelector('.metadata-action-bar') as HTMLDivElement
-  let MetadataToppings = document.querySelector('#metadata-toppings') as HTMLDivElement
+  let MetadataToppings = document.querySelector('#toppings__metadata-toppings') as HTMLDivElement
   if (MetadataToppings === null) {
     if (playlistID === 'WL' || playlistID === 'LL') {
       return
@@ -27,17 +27,17 @@ const addMetadataToppings = async (playlistID: string): Promise<void> => {
     MetadataToppings = document.createElement('div')
     MetadataToppings.className =
         'metadata-text-wrapper style-scope ytd-playlist-header-renderer'
-    MetadataToppings.id = 'metadata-toppings'
+    MetadataToppings.id = 'toppings__metadata-toppings'
 
     const ToppingsHeader = document.createElement('div')
-    ToppingsHeader.id = 'toppings-header'
+    ToppingsHeader.id = 'toppings__toppings-header'
 
     const ToppingsIcon = document.createElement('img')
     ToppingsIcon.src = chrome.runtime.getURL('assets/icons/icon128.png')
-    ToppingsIcon.id = 'toppings-icon'
+    ToppingsIcon.id = 'toppings__toppings-icon'
 
     const ToppingsHeading = document.createElement('h2')
-    ToppingsHeading.id = 'toppings-heading'
+    ToppingsHeading.id = 'toppings__toppings-heading'
     ToppingsHeading.textContent = 'Toppings'
 
     ToppingsHeader.append(ToppingsIcon, ToppingsHeading)
@@ -61,8 +61,8 @@ const addMetadataToppings = async (playlistID: string): Promise<void> => {
           contentId: playlistID
         }
       }).then((response: PlaylistInfo) => {
-        const averageRuntimeValueElement = document.getElementById('average-runtime')?.querySelector('.item-value') as HTMLSpanElement
-        const totalRuntimeValueElement = document.getElementById('total-runtime')?.querySelector('.item-value') as HTMLSpanElement
+        const averageRuntimeValueElement = document.getElementById('toppings__average-runtime')?.querySelector('.toppings__item-value') as HTMLSpanElement
+        const totalRuntimeValueElement = document.getElementById('toppings__total-runtime')?.querySelector('.toppings__item-value') as HTMLSpanElement
         if (averageRuntimeValueElement !== null && totalRuntimeValueElement !== null) {
           averageRuntimeValueElement.textContent = response.data.avg_runtime
           totalRuntimeValueElement.textContent = formatRuntime(response.data.total_runtime)
@@ -83,34 +83,34 @@ const addRuntimeSection = async (playlistID: string): Promise<HTMLElement> => {
 
   // Average Runtime
   const AverageRuntimeLabel = document.createElement('span')
-  AverageRuntimeLabel.setAttribute('class', 'average-runtime item-label')
+  AverageRuntimeLabel.setAttribute('class', 'toppings__average-runtime toppings__item-label')
   AverageRuntimeLabel.appendChild(document.createTextNode('Average Runtime: '))
 
   const AverageRuntimeValue = document.createElement('span')
-  AverageRuntimeValue.setAttribute('class', 'average-runtime item-value')
+  AverageRuntimeValue.setAttribute('class', 'toppings__average-runtime toppings__item-value')
   AverageRuntimeValue.textContent = response.data.avg_runtime
 
   const AverageRuntime = createSectionItem({
-    id: 'average-runtime',
+    id: 'toppings__average-runtime',
     children: [AverageRuntimeLabel, AverageRuntimeValue]
   })
 
   // Total Runtime
   const TotalRuntimeLabel = document.createElement('span')
-  TotalRuntimeLabel.setAttribute('class', 'total-runtime item-label')
+  TotalRuntimeLabel.setAttribute('class', 'toppings__total-runtime toppings__item-label')
   TotalRuntimeLabel.appendChild(document.createTextNode('Total Runtime: '))
 
   const TotalRuntimeValue = document.createElement('span')
-  TotalRuntimeValue.setAttribute('class', 'total-runtime item-value')
+  TotalRuntimeValue.setAttribute('class', 'toppings__total-runtime toppings__item-value')
   TotalRuntimeValue.textContent = formatRuntime(response.data.total_runtime)
 
   const TotalRuntime = createSectionItem({
-    id: 'total-runtime',
+    id: 'toppings__total-runtime',
     children: [TotalRuntimeLabel, TotalRuntimeValue]
   })
 
   const PlaylistRuntimeSection = createMetadataSection({
-    sectionId: 'playlist-runtime-section',
+    sectionId: 'toppings__playlist-runtime-section',
     items: [AverageRuntime, TotalRuntime]
   })
 

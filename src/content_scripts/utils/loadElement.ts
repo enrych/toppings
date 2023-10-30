@@ -1,4 +1,4 @@
-import { type Nullable } from '../interfaces'
+import { type Nullable } from '../../common/interfaces'
 
 /**
  * Asynchronously loads an element with the specified selector within a timeout.

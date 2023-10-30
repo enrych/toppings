@@ -20,7 +20,7 @@ const renderHome = () => {
 	document.querySelector('li#home').className = 'active';
 
 	const icon = document.createElement('img');
-	icon.setAttribute('src', chrome.runtime.getURL('pages/popup/assets/homepage.jpg'));
+	icon.setAttribute('src', chrome.runtime.getURL('popup/assets/homepage.jpg'));
 	icon.setAttribute('class', 'icon');
 	icon.setAttribute('draggable', 'false');
 
@@ -55,7 +55,7 @@ const renderNotifications = () => {
 	const icon = document.createElement('img');
 	icon.setAttribute(
 		'src',
-		chrome.runtime.getURL('pages/popup/assets/all-caught-up.webp')
+		chrome.runtime.getURL('popup/assets/all-caught-up.webp')
 	);
 	icon.setAttribute('class', 'icon');
 	icon.setAttribute('draggable', 'false');
@@ -77,7 +77,7 @@ const renderNotifications = () => {
 
 const renderSettings = () => {
 	content.style.background = 'unset';
-	window.open(chrome.runtime.getURL('pages/options/options.html'));
+	window.open(chrome.runtime.getURL('options/options.html'));
 };
 
 const renderHelp = () => {

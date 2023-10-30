@@ -7,9 +7,11 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 module.exports = {
   mode: 'production',
   entry: {
-    background: './src/scripts/background.ts',
-    content: ['./src/scripts/core.ts', './src/scripts/index.ts'],
-    styles: ['./src/css/vendor.css', './src/css/youtube.css']
+    background: './src/background/index.ts',
+    content: [
+      './src/content_scripts/core/index.ts',
+      './src/content_scripts/index.ts'
+    ]
   },
   output: {
     filename: '[name].js',
@@ -36,24 +38,13 @@ module.exports = {
     new CopyWebpackPlugin({
       patterns: [
         { from: 'src/assets', to: 'assets' },
-        { from: 'src/pages', to: 'pages' },
+        { from: 'src/options', to: 'options' },
+        { from: 'src/popup', to: 'popup' },
         'src/manifest.json'
       ]
     }),
     new MiniCssExtractPlugin({
-      filename: 'styles.css'
-    }),
-    // Custom clean-webpack-plugin to remove the styles.js file
-    {
-      apply: (compiler) => {
-        compiler.hooks.afterEmit.tap('CleanUpStylesJs', () => {
-          const stylesJsPath = path.resolve(__dirname, 'build', 'styles.js')
-          const fs = require('fs')
-          if (fs.existsSync(stylesJsPath)) {
-            fs.unlinkSync(stylesJsPath)
-          }
-        })
-      }
-    }
+      filename: 'css/styles.css'
+    })
   ]
 }
