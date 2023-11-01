@@ -1,4 +1,4 @@
-import { type WebAppInfo, type YouTubeAppInfo } from '../common/interfaces'
+import { type WebAppInfo, type YouTubeAppInfo, type UdemyAppInfo } from '../common/interfaces'
 
 /**
  * Retrieves information about the web application based on the provided URL.
@@ -43,6 +43,23 @@ export const getWebAppInfo = (url: string): WebAppInfo => {
           queryParams: {
             v: videoID
           }
+        }
+      }
+      return webAppInfo
+    }
+  } else if (url.includes('www.udemy.com/')) {
+    const webAppRegex = /https:\/\/www\.udemy\.com\/course\/([a-zA-Z0-9-]+)\/learn\/lecture\/(\d+)/
+    const match = webAppRegex.exec(url)
+    if (match !== null) {
+      const courseName = match[1]
+      const lectureId = match[2]
+      const webAppInfo: UdemyAppInfo = {
+        status: 'supported',
+        appName: 'udemy',
+        details: {
+          routeType: 'learn',
+          courseName,
+          lectureId
         }
       }
       return webAppInfo

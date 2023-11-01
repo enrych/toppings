@@ -19,4 +19,12 @@ export interface YouTubeAppInfo extends WebAppInfo {
   }
 }
 
+export interface UdemyAppInfo extends WebAppInfo {
+  details: {
+    routeType: string
+    courseName?: string
+    lectureId?: string
+  }
+}
+
 export type Nullable<T> = T | null
