@@ -34,8 +34,8 @@ const onLearnPage = async (udemyAppInfo: UdemyAppInfo): Promise<void> => {
   const { lectureId, courseName } = (udemyAppInfo as LearnPageInfo).details
   player = await loadPlayer({ lectureId, courseName })
   if (player !== null) {
-    currentSpeed = player.videoElement.playbackRate.toFixed(2)
     playerPlaybackButton = await loadPlaybackBtn()
+    currentSpeed = player.videoElement.playbackRate.toFixed(2)
     document.addEventListener('keydown', useShortcuts)
     if (playerPlaybackButton !== null) {
       playerPlaybackButton.removeEventListener('click', onPlaybackSpeedMenu)
@@ -56,7 +56,7 @@ const loadPlayer = async (lectureInfo: LectureInfo): Promise<Nullable<UdemyPlaye
 const loadPlaybackBtn = async (): Promise<Nullable<HTMLElement>> => {
   const playerPlaybackButton = await loadElement('[aria-label="Playback rate"]', 10000, 500)
   if (playerPlaybackButton !== null) {
-    playerPlaybackButton.children[0].textContent = `${Number(currentSpeed)}x`
+    playerPlaybackButton.children[0].textContent = `${(player as UdemyPlayer).videoElement.playbackRate}x`
   }
   return playerPlaybackButton
 }
@@ -75,7 +75,7 @@ const onPlaybackSpeedMenu = (): void => {
       customSpeedButton.style.display = ''
       const customSpeedLabelElement = customSpeedButton.querySelector('span.ud-text-bold')
       if (customSpeedLabelElement !== null) {
-        customSpeedLabelElement.textContent = `Custom(${Number(customSpeed)}x)`
+        customSpeedLabelElement.textContent = `Custom(${Number(currentSpeed)}x)`
       }
       customSpeedButton.children[0].setAttribute('aria-checked', 'true')
     }
@@ -92,7 +92,7 @@ const onPlaybackSpeedMenu = (): void => {
       customSpeedButton.style.display = ''
       const customSpeedLabelElement = customSpeedButton.querySelector('span.ud-text-bold')
       if (customSpeedLabelElement !== null) {
-        customSpeedLabelElement.textContent = `Custom(${Number(customSpeed)}x)`
+        customSpeedLabelElement.textContent = `Custom(${Number(currentSpeed)}x)`
       }
       customSpeedButton.children[0].setAttribute('aria-checked', 'true')
     }
