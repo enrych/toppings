@@ -6,7 +6,9 @@ const UNINSTALL_URL: string = 'https://grabtoppings.xyz/#/farewell'
 
 let toggleOn: boolean // Represents the current toggle state of the Toppings extension.
 
-void chrome.runtime.setUninstallURL(UNINSTALL_URL) // This URL will be redirected to when users uninstall the extension.
+if (process.env.NODE_ENV === 'production') {
+  void chrome.runtime.setUninstallURL(UNINSTALL_URL) // This URL will be redirected to when users uninstall the extension.
+}
 chrome.runtime.onInstalled.addListener(onInstallToppings) // Set up the extension when installed or updated.
 
 /**
