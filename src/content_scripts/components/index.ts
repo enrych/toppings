@@ -1,1 +1,3 @@
-export * from './PlaybackControl'
+import PlaybackControl from './PlaybackControl'
+
+export { PlaybackControl }
