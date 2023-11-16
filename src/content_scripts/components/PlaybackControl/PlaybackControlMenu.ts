@@ -4,6 +4,7 @@ import styles from './PlaybackControlMenuCSS'
 const PlaybackControlMenu = (videoPlayer: HTMLVideoElement, playbackRates: string[]): HTMLDivElement => {
   const PlaybackControlMenu = document.createElement('div')
   PlaybackControlMenu.className = 'toppings__playback-control-menu'
+  PlaybackControlMenu.classList.add('hidden')
   PlaybackControlMenu.appendChild(styles)
 
   const PlaybackPanel = document.createElement('div')
@@ -14,10 +15,8 @@ const PlaybackControlMenu = (videoPlayer: HTMLVideoElement, playbackRates: strin
   PlaybackPanelMenu.className = 'toppings__playback-panel-menu'
   PlaybackPanelMenu.role = 'menu'
   PlaybackPanel.appendChild(PlaybackPanelMenu)
-  PlaybackPanelMenu.append(...PlaybackMenuItems(videoPlayer, playbackRates))
 
-  const currentRateItem = PlaybackPanelMenu.querySelector(`.toppings__playback-menu-button[data-rate='${videoPlayer.playbackRate}']`) ?? (document.querySelector('.toppings__playback-menu-button[data-rate=custom]') as HTMLElement)
-  currentRateItem.ariaChecked = 'true'
+  PlaybackPanelMenu.append(...PlaybackMenuItems(videoPlayer, playbackRates))
 
   return PlaybackControlMenu
 }

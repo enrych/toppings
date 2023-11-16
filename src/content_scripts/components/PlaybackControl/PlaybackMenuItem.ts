@@ -5,7 +5,7 @@ interface PlaybackMenuItemConfig {
   hasAriaChecked: string
   label: string
   onClick: (event: Event) => void
-  options?: (target: HTMLLIElement) => void
+  options?: (playbackMenuItem: HTMLLIElement) => void
 }
 
 const PlaybackMenuItem = (config: PlaybackMenuItemConfig): HTMLLIElement => {

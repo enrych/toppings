@@ -1,29 +1,34 @@
 const styles = document.createElement('style')
 const css = `
   .toppings__playback-control-menu {
-    display: none;
+    display: initial;
     position: relative;
-    bottom: 335px;
-    left: 0px;
-    opacity: 0;
-    z-index: 9999;
-    animation: toppings__playback-control-menu-pop-in 100ms cubic-bezier(.2, 0, .38, .9) forwards;
   }
   
   .toppings__playback-panel {
+    position: absolute;
+    bottom: 64px;
+    right: 100%;
+    opacity: 0;
     background: #2d2f31;
     border: 1px solid #d1d7dc;
     border-radius: 8px;
     border-color: #3e4143;
     min-height: 250px;
-    overflow-y: auto;
+    z-index: 9999;
     box-shadow: 0 2px 4px rgba(0, 0, 0, .08), 0 4px 12px rgba(0, 0, 0, .08);
+    animation: toppings__playback-control-menu-pop-in 100ms cubic-bezier(.2, 0, .38, .9) forwards;
   }
   
   .toppings__playback-panel-menu {
     list-style: none;
-    padding: 0.8rem 0;
+    padding: 12px 0;
     margin: 0;
+    overflow-y: auto;
+  }
+
+  .hidden {
+    display: none;
   }
 
 

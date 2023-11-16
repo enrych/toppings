@@ -1,19 +1,20 @@
 import PlaybackMenuItem from './PlaybackMenuItem'
 
 const PlaybackMenuItems = (videoPlayer: HTMLVideoElement, playbackRates: string[]): HTMLElement[] => {
-  const CustomRateButton = PlaybackMenuItem({
-    dataRate: 'custom',
+  const CustomRateItem = PlaybackMenuItem({
+    dataRate: 'NaN',
     hasAriaChecked: 'false',
     label: 'Custom(NaN)',
-    onClick: () => {
-      changePlaybackRate(videoPlayer, 1)
+    onClick: (event) => {
+      changePlaybackRate(videoPlayer, Number(((event.currentTarget as HTMLElement).firstElementChild as HTMLElement).getAttribute('data-rate') as string))
     },
-    options: (customRateButton: HTMLElement) => {
-      customRateButton.style.display = 'none'
+    options: (customRateItem: HTMLElement) => {
+      customRateItem.classList.add('hidden')
+      customRateItem.setAttribute('data-custom', 'true')
     }
   })
 
-  const playbackRateItems = [CustomRateButton, ...playbackRates
+  const playbackRateItems = [CustomRateItem, ...playbackRates
     .sort((a, b) => Number(a) - Number(b))
     .map((playbackRate) => {
       return PlaybackMenuItem({
@@ -29,14 +30,19 @@ const PlaybackMenuItems = (videoPlayer: HTMLVideoElement, playbackRates: string[
   return playbackRateItems
 }
 
-const changePlaybackRate = (videoPlayer: HTMLVideoElement, playbackRate: number): void => {
-  const prevRateItem = document.querySelector('.toppings__playback-menu-button[aria-checked=true]') as HTMLElement
-  prevRateItem.ariaChecked = 'false'
+export const changePlaybackRate = (videoPlayer: HTMLVideoElement, playbackRate: number): void => {
+  const prevRateButton = document.querySelector('.toppings__playback-menu-button[aria-checked=true]') as HTMLElement
+  prevRateButton.ariaChecked = 'false'
 
   videoPlayer.playbackRate = playbackRate
 
-  const nextRateItem = document.querySelector(`.toppings__playback-menu-button[data-rate='${playbackRate}']`) ?? (document.querySelector('.toppings__playback-menu-item [data-rate=custom]') as HTMLElement)
-  nextRateItem.ariaChecked = 'true'
+  const nextRateButton = document.querySelector(`.toppings__playback-menu-button[data-rate='${playbackRate.toFixed(2)}']`) ?? (document.querySelector('.toppings__playback-menu-item[data-custom="true"]') as HTMLElement).firstElementChild as HTMLElement
+  if ((nextRateButton.parentElement as HTMLElement).getAttribute('data-custom') === 'true') {
+    (nextRateButton.querySelector('.toppings__playback-menu-content-value') as HTMLElement).textContent = `Custom(${playbackRate}x)`
+    nextRateButton.setAttribute('data-rate', playbackRate.toFixed(2));
+    (nextRateButton.parentElement as HTMLElement).classList.remove('hidden')
+  }
+  nextRateButton.ariaChecked = 'true'
 }
 
 export default PlaybackMenuItems
