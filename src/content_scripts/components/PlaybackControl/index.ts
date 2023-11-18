@@ -2,66 +2,41 @@ import PlaybackControlButton from './PlaybackControlButton'
 import PlaybackControlMenu from './PlaybackControlMenu'
 import { changePlaybackRate } from './PlaybackMenuItems'
 
-type Shortcuts = Record<string, { key: string, value: string }>
 type PlaybackRates = string[]
-
-interface ShortcutsEnabled {
-  enableShortcuts: true
-  shortcuts: Shortcuts
+type Shortcuts = Record<string, { key: string, value: string }>
+interface PlaybackControlOptions {
+  playbackRates?: PlaybackRates
+  enableShortcuts?: boolean
+  shortcuts?: Shortcuts
 }
-
-interface ShortcutsDisabled {
-  enableShortcuts: false
-}
-
-interface DefaultOptions extends ShortcutsEnabled {}
-
-type PlaybackControlOptions = DefaultOptions | ShortcutsDisabled
 
 class PlaybackControl {
-  private static readonly DEFAULT_PLAYBACK_RATES: PlaybackRates = [
-    '0.25',
-    '0.50',
-    '0.75',
-    '1.00',
-    '1.25',
-    '1.50',
-    '1.75',
-    '2.00'
-  ]
-
+  private static readonly DEFAULT_PLAYBACK_RATES: PlaybackRates = ['0.25', '0.50', '0.75', '1.00', '1.25', '1.50', '1.75', '2.00']
+  private static readonly DEFAULT_ENABLE_SHORTCUTS: true
   private static readonly DEFAULT_SHORTCUTS: Shortcuts = {
-    toggleSpeed: {
-      key: 'X',
-      value: '1.5'
-    },
-    seekBackward: {
-      key: 'A',
-      value: '15'
-    },
-    seekForward: {
-      key: 'D',
-      value: '15'
-    },
-    decreaseSpeed: {
-      key: 'S',
-      value: '0.25'
-    },
-    increaseSpeed: {
-      key: 'W',
-      value: '0.25'
-    }
+    toggleSpeed: { key: 'X', value: '1.5' },
+    seekBackward: { key: 'A', value: '15' },
+    seekForward: { key: 'D', value: '15' },
+    decreaseSpeed: { key: 'S', value: '0.25' },
+    increaseSpeed: { key: 'W', value: '0.25' }
   }
 
-  PlaybackControlButton: HTMLButtonElement
-  PlaybackControlMenu: HTMLDivElement
+  private static readonly DEFAULT_OPTIONS = {
+    playbackRates: PlaybackControl.DEFAULT_PLAYBACK_RATES,
+    enableShortcuts: PlaybackControl.DEFAULT_ENABLE_SHORTCUTS,
+    shortcuts: PlaybackControl.DEFAULT_SHORTCUTS
+  }
 
-  private readonly videoPlayer: HTMLVideoElement
+  public PlaybackControlButton: HTMLButtonElement
+  public PlaybackControlMenu: HTMLDivElement
 
-  constructor (videoPlayer?: HTMLVideoElement, playbackRates: PlaybackRates = PlaybackControl.DEFAULT_PLAYBACK_RATES, options: PlaybackControlOptions = { enableShortcuts: true, shortcuts: PlaybackControl.DEFAULT_SHORTCUTS }) {
-    this.videoPlayer = videoPlayer ?? document.querySelector('video') as HTMLVideoElement
+  constructor (private readonly videoPlayer: HTMLVideoElement, options: PlaybackControlOptions) {
+    options.playbackRates ??= PlaybackControl.DEFAULT_OPTIONS.playbackRates
+    options.enableShortcuts ??= PlaybackControl.DEFAULT_OPTIONS.enableShortcuts
+    options.shortcuts ??= PlaybackControl.DEFAULT_OPTIONS.shortcuts
+
     this.PlaybackControlButton = PlaybackControlButton()
-    this.PlaybackControlMenu = PlaybackControlMenu(this.videoPlayer, playbackRates)
+    this.PlaybackControlMenu = PlaybackControlMenu(this.videoPlayer, options.playbackRates)
     this._connectedCallback()
     if (options.enableShortcuts) {
       this._enableShortcuts(options.shortcuts)
