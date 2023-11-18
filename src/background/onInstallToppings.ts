@@ -2,8 +2,9 @@ const INSTALL_URL: string = 'https://www.grabtoppings.xyz/#/greetings'
 
 const onInstallToppings = ({ reason }: { reason: chrome.runtime.OnInstalledReason }): void => {
   if (reason === 'install' || reason === 'update') {
-    // Open the install URL in a new tab
-    void chrome.tabs.create({ url: INSTALL_URL })
+    if (process.env.NODE_ENV === 'production') {
+      void chrome.tabs.create({ url: INSTALL_URL }) // This URL will be redirected to when extension is installed.
+    }
     // Define initial user preferences
     const initialPreferences = {
       // General
