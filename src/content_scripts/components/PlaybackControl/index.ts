@@ -12,7 +12,7 @@ interface PlaybackControlOptions {
 
 class PlaybackControl {
   private static readonly DEFAULT_PLAYBACK_RATES: PlaybackRates = ['0.25', '0.50', '0.75', '1.00', '1.25', '1.50', '1.75', '2.00']
-  private static readonly DEFAULT_ENABLE_SHORTCUTS: true
+  private static readonly DEFAULT_ENABLE_SHORTCUTS = true
   private static readonly DEFAULT_SHORTCUTS: Shortcuts = {
     toggleSpeed: { key: 'X', value: '1.5' },
     seekBackward: { key: 'A', value: '15' },
@@ -21,19 +21,13 @@ class PlaybackControl {
     increaseSpeed: { key: 'W', value: '0.25' }
   }
 
-  private static readonly DEFAULT_OPTIONS = {
-    playbackRates: PlaybackControl.DEFAULT_PLAYBACK_RATES,
-    enableShortcuts: PlaybackControl.DEFAULT_ENABLE_SHORTCUTS,
-    shortcuts: PlaybackControl.DEFAULT_SHORTCUTS
-  }
-
   public PlaybackControlButton: HTMLButtonElement
   public PlaybackControlMenu: HTMLDivElement
 
-  constructor (private readonly videoPlayer: HTMLVideoElement, options: PlaybackControlOptions) {
-    options.playbackRates ??= PlaybackControl.DEFAULT_OPTIONS.playbackRates
-    options.enableShortcuts ??= PlaybackControl.DEFAULT_OPTIONS.enableShortcuts
-    options.shortcuts ??= PlaybackControl.DEFAULT_OPTIONS.shortcuts
+  constructor (private readonly videoPlayer: HTMLVideoElement, options: PlaybackControlOptions = {}) {
+    options.playbackRates ??= PlaybackControl.DEFAULT_PLAYBACK_RATES
+    options.enableShortcuts ??= PlaybackControl.DEFAULT_ENABLE_SHORTCUTS
+    options.shortcuts ??= PlaybackControl.DEFAULT_SHORTCUTS
 
     this.PlaybackControlButton = PlaybackControlButton()
     this.PlaybackControlMenu = PlaybackControlMenu(this.videoPlayer, options.playbackRates)
