@@ -4,7 +4,7 @@
   "description": "Toppings adds an extra layer of flavor for a more efficient and convenient web.",
   "private": "true",
   "scripts": {
-    "build:dev": "webpack --watch --config webpack.config.dev.js",
+    "dev": "webpack --watch --config webpack.config.dev.js",
     "build:prod": "webpack",
     "build:release": "npm run build:prod && node scripts/release.js",
     "lint": "eslint . --ext .ts --config .eslintrc.json --fix",
@@ -36,6 +36,8 @@
     "eslint-plugin-n": "^16.0.2",
     "eslint-plugin-promise": "^6.1.1",
     "glob": "^10.3.4",
+    "html-loader": "^4.2.0",
+    "html-webpack-plugin": "^5.5.3",
     "mini-css-extract-plugin": "^2.7.6",
     "ts-loader": "^9.4.4",
     "typescript": "^5.2.2",

@@ -1,4 +1,5 @@
-/src/options
 /src/popup
 /scripts/
 /build/
+webpack.config.dev.js
+webpack.config.js

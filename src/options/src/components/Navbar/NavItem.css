@@ -1,0 +1,28 @@
+.navbar__list-item {
+	margin: 16px 0px;
+	width: 100%;
+	list-style: none;
+}
+
+.navbar__list-button {
+	padding: 4px 12px;
+	height: 42px;
+	width: 100%;
+	outline: none;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	transition-duration: 0.25s;
+	background-color: var(--navbar-primary);
+	color: var(--text-primary);
+}
+
+.navbar__button-content {
+	text-align: left;
+}
+
+.navbar__list-button:hover {
+	background-color: var(--navbar-primary-hover);
+}
+
+/* navbar__list-item  navbar__list-button  navbar__button-content  navbar__item-content */
