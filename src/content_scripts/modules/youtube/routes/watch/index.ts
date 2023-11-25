@@ -393,5 +393,4 @@ const changePlaybackSpeed = (speed: number): void => {
     }
   }
 }
-
 export default onWatchPage
