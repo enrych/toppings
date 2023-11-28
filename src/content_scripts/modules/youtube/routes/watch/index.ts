@@ -1,6 +1,7 @@
 import { YTPlayer, createMenuItem } from 'blendora'
 import loadElement from '../../../../utils/loadElement'
 import { type Nullable } from '../../../../../common/interfaces'
+import addPlaylistRuntime from './addPlaylistRuntime'
 
 let toggleSpeedShortcut: string
 let seekBackwardShortcut: string
@@ -15,6 +16,7 @@ let seekForward: number
 let seekBackward: number
 let increaseSpeed: string
 let decreaseSpeed: string
+let isPlaylist: boolean
 
 chrome.storage.sync.get(
   [
@@ -73,6 +75,14 @@ const onWatchPage = async (contentID: string): Promise<void> => {
       playerSettingsButton.removeEventListener('click', onSettingsMenu)
       playerSettingsButton.addEventListener('click', onSettingsMenu, { once: true })
     }
+    if (isPlaylist) {
+      const metadataActionBar = await loadElement('.metadata-action-bar', 10000, 500)
+  if (metadataActionBar !== null) {
+    await addPlaylistRuntime(contentID)
+  }
+      
+    }
+
   }
 }
 
