@@ -1,0 +1,50 @@
+#toppings__metadata-toppings {
+	box-sizing: border-box;
+	height: fit-content;
+	border-radius: 8px;
+	background: rgba(101, 101, 101, 0.4);
+	backdrop-filter: saturate(180%) blur(10px);
+	-webkit-backdrop-filter: blur(11.3px);
+	font-family: 'Roboto', sans-serif;
+	padding: 12px 15px;
+	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+	transition: all 0.3s ease;
+}
+
+div#toppings__toppings-header {
+	margin-bottom: 6px;
+	width: 100%;
+	display: flex;
+	align-items: center;
+}
+
+div#toppings__toppings-header * {
+	margin: 0px 6px;
+}
+
+img#toppings__toppings-icon {
+	width: 24px;
+}
+
+h2#toppings__toppings-heading {
+	font-size: 1.6rem;
+	font-weight: 800;
+	color: #ffffff;
+	margin-left: 10px;
+}
+
+div#toppings__playlist-runtime-section {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+	align-items: start;
+	padding-left: 10px;
+	font-size: 12px;
+	font-weight: 400;
+	color: #b9b8b8;
+}
+
+/* On hover effects for better user feedback */
+#toppings__metadata-toppings:hover {
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
