@@ -1,21 +1,7 @@
-import fetchToppingsAPI from '../../utils/fetchToppingsAPI'
-import { createMetadataSection, createSectionItem } from 'blendora'
+import { createMetadataSection, createSectionItem } from '../../common/dom'
+import fetchYouTubeToppings from '../../utils/fetchYouTubeToppings'
 import { formatRuntime } from '../../../../utils/formatRuntime'
-
-interface PlaylistInfo {
-  data: {
-    avg_runtime: string
-    num_videos: string
-    playlist_id: string
-    total_runtime: {
-      days: number
-      seconds: number
-    }
-  }
-  description: string
-  message: string
-  status: number
-}
+import { type YouTubePlaylistMetadata } from '../../common/interfaces'
 
 const addMetadataToppings = async (playlistID: string): Promise<void> => {
   const metadataActionBar = document.querySelector('.metadata-action-bar') as HTMLDivElement
@@ -54,13 +40,13 @@ const addMetadataToppings = async (playlistID: string): Promise<void> => {
     if (playlistID === 'WL' || playlistID === 'LL') {
       MetadataToppings.remove()
     } else {
-      await fetchToppingsAPI({
+      await fetchYouTubeToppings({
         appName: 'youtube',
         body: {
           routeType: 'playlist',
           contentId: playlistID
         }
-      }).then((response: PlaylistInfo) => {
+      }).then((response: YouTubePlaylistMetadata) => {
         const averageRuntimeValueElement = document.getElementById('toppings__average-runtime')?.querySelector('.toppings__item-value') as HTMLSpanElement
         const totalRuntimeValueElement = document.getElementById('toppings__total-runtime')?.querySelector('.toppings__item-value') as HTMLSpanElement
         if (averageRuntimeValueElement !== null && totalRuntimeValueElement !== null) {
@@ -73,13 +59,13 @@ const addMetadataToppings = async (playlistID: string): Promise<void> => {
 }
 
 const addRuntimeSection = async (playlistID: string): Promise<HTMLElement> => {
-  const response: PlaylistInfo = await fetchToppingsAPI({
+  const response: YouTubePlaylistMetadata = await fetchYouTubeToppings({
     appName: 'youtube',
     body: {
       routeType: 'playlist',
       contentId: playlistID
     }
-  }) as PlaylistInfo
+  }) as YouTubePlaylistMetadata
 
   // Average Runtime
   const AverageRuntimeLabel = document.createElement('span')
