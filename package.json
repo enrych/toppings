@@ -1,6 +1,6 @@
 {
   "name": "toppings",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Toppings adds an extra layer of flavor for a more efficient and convenient web.",
   "private": "true",
   "scripts": {
