@@ -5,5 +5,5 @@ import './index.css'
 
 const root = document.getElementById('root') as HTMLDivElement
 
-root.render(App)
+root.attach(App)
 console.log(ForgeDOM.parserCount)

@@ -23,7 +23,7 @@ class ForgeDOM {
   }
 }
 
-HTMLElement.prototype.render = function <T extends HTMLElement>(Child: Component<T>, props?: Props): T {
+HTMLElement.prototype.attach = function <T extends HTMLElement>(Child: Component<T>, props?: Props): T {
   if (props !== undefined) {
     this.appendChild(new Child(props).render())
   } else {

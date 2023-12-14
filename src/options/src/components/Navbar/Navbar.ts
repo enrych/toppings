@@ -12,7 +12,7 @@ class Navbar {
     this.navbar = ForgeDOM.importNode<HTMLDivElement>(template)
     const navbarList = this.navbar.querySelector('.navbar__list') as HTMLUListElement
     this.menuItems.forEach((item) => {
-      navbarList.render(NavItem, { title: item })
+      navbarList.attach(NavItem, { title: item })
     })
   }
 

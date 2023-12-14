@@ -14,7 +14,7 @@ class App {
   render (): HTMLElement {
     switch (this.currentPage) {
       case 'general':
-        this.App.render(Navbar)
+        this.App.attach(Navbar)
         return this.App
       default:
         return this.App

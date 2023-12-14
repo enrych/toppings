@@ -7,7 +7,7 @@ declare global {
 }
 
 interface ExtendedHTMLElement<T extends HTMLElement = HTMLElement> {
-  render: (child: Component<T>, props?: Props) => T
+  attach: (child: Component<T>, props?: Props) => T
 }
 
 export {}
