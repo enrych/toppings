@@ -1,4 +1,4 @@
-import { togglePictureInPictureMode } from 'blendora'
+import togglePictureInPictureMode from './pictureInPicture'
 
 const onShortcutKeyUp = (event: KeyboardEvent): void => {
   if (isElement(event.target)) {

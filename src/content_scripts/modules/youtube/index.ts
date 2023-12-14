@@ -1,22 +1,27 @@
 import { type YouTubeAppInfo } from '../../../common/interfaces'
-import onWatchPage from './routes/watch'
-import onPlaylistPage from './routes/playlist'
+import addWatchToppings from './routes/watch'
+import addPlaylistToppings from './routes/playlist'
 
-let playlistEnabled: boolean
-let watchEnabled: boolean
+let isPlaylistEnabled: boolean
+let isWatchEnabled: boolean
 
 chrome.storage.sync.get(['playlistEnabled', 'watchEnabled'], (storage) => {
-  playlistEnabled = storage.playlistEnabled
-  watchEnabled = storage.watchEnabled
+  isPlaylistEnabled = storage.playlistEnabled
+  isWatchEnabled = storage.watchEnabled
 })
 
-const onYouTubeLoaded = async (youtubeAppInfo: YouTubeAppInfo): Promise<void> => {
-  const { routeType, contentId } = youtubeAppInfo.details
-  if (routeType === 'watch' && watchEnabled) {
-    await onWatchPage(contentId)
-  } else if (routeType === 'playlist' && playlistEnabled) {
-    await onPlaylistPage(contentId)
+const addYouTubeToppings = async (context: YouTubeAppInfo): Promise<void> => {
+  const { routeType, contentId } = context.details
+  switch (routeType) {
+    case 'watch':
+      isWatchEnabled && await addWatchToppings(contentId)
+      break
+    case 'playlist':
+      isPlaylistEnabled && await addPlaylistToppings(contentId)
+      break
+    default:
+      break
   }
 }
 
-export default onYouTubeLoaded
+export default addYouTubeToppings
