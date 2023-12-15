@@ -1,2 +1,6 @@
-export const MAX_PLAYBACK_RATE = 16.0
-export const MIN_PLAYBACK_RATE = 0.0625
+const GLOBAL_CONTEXT = Object.freeze({
+  MAX_PLAYBACK_RATE: 16.0,
+  MIN_PLAYBACK_RATE: 0.0625
+})
+
+export default GLOBAL_CONTEXT

@@ -19,12 +19,11 @@ export interface YouTubeAppInfo extends WebAppInfo {
   }
 }
 
-export interface UdemyAppInfo extends WebAppInfo {
-  details: {
+export interface UdemyContext extends WebAppInfo {
+  body: {
     routeType: string
-    courseName?: string
-    lectureId?: string
   }
+}
 export interface ToppingsRequest {
   appName: string
   body?: Record<string, any>

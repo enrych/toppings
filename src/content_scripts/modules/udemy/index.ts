@@ -1,17 +1,18 @@
-import { type UdemyAppInfo } from '../../../common/interfaces'
-import onLearnPage from './routes/learn'
+import { type UdemyContext } from '../../../common/interfaces'
+import addLearnToppings from './routes/learn'
 
-const learnEnabled: boolean = true
+const isLearnEnabled: boolean = true
 
-// chrome.storage.sync.get(['learnEnabled'], (storage) => {
-//   learnEnabled = storage.learnEnabled
+// chrome.storage.sync.get(['isLearnEnabled'], (storage) => {
+//   isLearnEnabled = storage.isLearnEnabled
 // })
 
-const onUdemyLoaded = async (udemyAppInfo: UdemyAppInfo): Promise<void> => {
-  const { routeType } = udemyAppInfo.details
-  if (routeType === 'learn' && learnEnabled) {
-    await onLearnPage(udemyAppInfo)
+const addUdemyToppings = async (context: UdemyContext): Promise<void> => {
+  const { routeType } = context.body
+  switch (routeType) {
+    case 'learn':
+      isLearnEnabled && await addLearnToppings(context)
   }
 }
 
-export default onUdemyLoaded
+export default addUdemyToppings

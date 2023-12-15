@@ -1,20 +1,12 @@
-import { type UdemyAppInfo } from '../../../../../common/interfaces'
-import { type VideoPlayer } from '../../../../common/interfaces'
+import { type UdemyContext } from '../../../../../common/interfaces'
 
-export interface LearnPageInfo extends UdemyAppInfo {
-  details: {
-    routeType: string
-    courseName: string
-    lectureId: string
-  }
-}
-
-export interface LectureInfo {
-  lectureId: string
+export interface LectureData {
+  lectureID: string
   courseName: string
 }
 
-export interface UdemyPlayer extends VideoPlayer {
-  lectureId: string
-  courseName: string
+export interface LearnPageContext extends UdemyContext {
+  body: UdemyContext['body'] & LectureData
 }
+
+export type UdemyPlayer = { videoElement: HTMLVideoElement } & LectureData

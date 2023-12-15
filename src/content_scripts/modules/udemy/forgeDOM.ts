@@ -10,9 +10,9 @@ export interface CustomMenuButton {
   options?: (target: HTMLLIElement) => void
 }
 
-export const createMenuButton = (customMenuButton: CustomMenuButton): HTMLLIElement => {
-  const MenuButtonExists = document.querySelector(`${customMenuButton.buttonClass !== undefined ? `.${customMenuButton.buttonClass} ` : ''}button[data-${customMenuButton.dataName}='${customMenuButton.dataValue}']`) as HTMLButtonElement
-  if (MenuButtonExists === null) {
+const createMenuButton = (customMenuButton: CustomMenuButton): HTMLLIElement => {
+  const MenuButton = document.querySelector(`${customMenuButton.buttonClass !== undefined ? `.${customMenuButton.buttonClass} ` : ''}button[data-${customMenuButton.dataName}='${customMenuButton.dataValue}']`) as HTMLButtonElement
+  if (MenuButton === null) {
     const MenuListItem = document.createElement('li')
     MenuListItem.setAttribute('role', 'none')
     if (customMenuButton.buttonClass !== undefined) {
@@ -50,6 +50,8 @@ export const createMenuButton = (customMenuButton: CustomMenuButton): HTMLLIElem
 
     return MenuListItem
   } else {
-    return MenuButtonExists.parentElement as HTMLLIElement
+    return MenuButton.parentElement as HTMLLIElement
   }
 }
+
+export default { createMenuButton }
