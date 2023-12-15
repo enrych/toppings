@@ -25,6 +25,9 @@ export interface UdemyAppInfo extends WebAppInfo {
     courseName?: string
     lectureId?: string
   }
+export interface ToppingsRequest {
+  appName: string
+  body?: Record<string, any>
 }
 
 export type Nullable<T> = T | null

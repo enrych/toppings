@@ -1,6 +1,6 @@
 {
   "name": "toppings",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Toppings adds an extra layer of flavor for a more efficient and convenient web.",
   "private": "true",
   "scripts": {
@@ -41,8 +41,5 @@
     "typescript": "^5.2.2",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4"
-  },
-  "dependencies": {
-    "blendora": "^2.0.0"
   }
 }
