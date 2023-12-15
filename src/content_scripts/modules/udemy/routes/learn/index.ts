@@ -2,7 +2,7 @@ import GLOBAL_CONTEXT from '../../../../common/global'
 import loadElement from '../../../../utils/loadElement'
 import ForgeDOM from '../../forgeDOM'
 import { type UdemyContext, type Nullable } from '../../../../../common/interfaces'
-import { type UdemyPlayer, type LearnPageContext, type LectureData } from './interfaces'
+import { type UdemyPlayer, type LectureData } from './interfaces'
 
 const toggleSpeedShortcut: string = 'X'
 const seekBackwardShortcut: string = 'A'
@@ -30,7 +30,7 @@ let customSpeed: string
 let customSpeedButton: HTMLLIElement
 
 const addLearnToppings = async (context: UdemyContext): Promise<void> => {
-  const { lectureID, courseName } = (context as LearnPageContext).body
+  const { lectureID, courseName } = context.body
   player = await loadPlayer({ lectureID, courseName })
   if (player !== null) {
     playerPlaybackButton = await loadPlaybackBtn()

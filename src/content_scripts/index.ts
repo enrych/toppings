@@ -1,6 +1,6 @@
 import onYouTubeLoaded from './modules/youtube'
-import { type YouTubeAppInfo, type WebAppInfo, type UdemyAppInfo } from '../common/interfaces'
-import onUdemyLoaded from './modules/udemy'
+import { type YouTubeAppInfo, type WebAppInfo, type UdemyContext } from '../common/interfaces'
+import addUdemyToppings from './modules/udemy'
 
 const youtubeEnabled: boolean = true
 let checkAppLoaded: string = ''
@@ -13,8 +13,8 @@ const runApp = (webAppInfo: WebAppInfo): undefined => {
       const youtubeAppInfo = webAppInfo as YouTubeAppInfo
       void onYouTubeLoaded(youtubeAppInfo)
     } else if (appName === 'udemy') {
-      const udemyAppInfo = webAppInfo as UdemyAppInfo
-      void onUdemyLoaded(udemyAppInfo)
+      const udemyContext = webAppInfo as UdemyContext
+      void addUdemyToppings(udemyContext)
     }
   }
 }
