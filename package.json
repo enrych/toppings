@@ -7,9 +7,10 @@
     "build:dev": "webpack --watch --config webpack.config.dev.js",
     "build:prod": "webpack",
     "build:release": "npm run build:prod && node scripts/release.js",
-    "lint": "eslint . --ext .ts --config .eslintrc.json --fix",
+    "lint": "eslint . --ext .ts --fix",
     "type-check": "tsc --noEmit",
-    "test:lint": "npm run lint && npm run type-check",
+    "test:static": "eslint . --ext .ts && npm run type-check",
+    "test:coverage": "cross-env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' nyc --reporter=html mocha 'test/unit/**/*.{js,ts}'",
     "test:unit": "cross-env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha 'test/unit/**/*.{js,ts}'"
   },
   "repository": {
