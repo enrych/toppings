@@ -10,6 +10,6 @@
 		"allowJs": false,
 		"moduleResolution": "node",
 		"noEmitOnError": true,
-		"types": ["chrome-types", "node"]
+		"types": ["chrome-types", "node", "mocha", "chai"]
 	}
 }
