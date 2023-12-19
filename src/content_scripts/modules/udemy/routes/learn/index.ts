@@ -34,7 +34,6 @@ const addLearnToppings = async (context: UdemyContext): Promise<void> => {
   const { lectureID, courseName } = context.body
   player = await loadPlayer({ lectureID, courseName })
   if (player !== null) {
-    setDefaults()
     playerPlaybackButton = await loadPlaybackBtn()
     document.addEventListener('keydown', useShortcuts)
     if (playerPlaybackButton !== null) {
@@ -56,6 +55,11 @@ const setDefaults = (): void => {
 const loadPlayer = async (lectureData: LectureData): Promise<Nullable<UdemyPlayer>> => {
   const playerVideoElement = await loadElement('video', 10000, 500) as Nullable<HTMLVideoElement>
   if (playerVideoElement !== null) {
+    playerVideoElement.addEventListener('play', function (event) {
+      console.log('setDefaults')
+      event.stopImmediatePropagation();
+      setDefaults();
+    })
     const udemyPlayer: UdemyPlayer = {
       videoElement: playerVideoElement,
 
