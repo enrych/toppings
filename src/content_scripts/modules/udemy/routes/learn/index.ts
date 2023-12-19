@@ -18,6 +18,7 @@ const customSpeedList: string[] = [
   '1.75',
   '2.00'
 ]
+const defaultSpeed: string = '2'
 const toggleSpeed: string = '1.5'
 const seekForward: string = '15'
 const seekBackward: string = '15'
@@ -33,6 +34,7 @@ const addLearnToppings = async (context: UdemyContext): Promise<void> => {
   const { lectureID, courseName } = context.body
   player = await loadPlayer({ lectureID, courseName })
   if (player !== null) {
+    setDefaults()
     playerPlaybackButton = await loadPlaybackBtn()
     document.addEventListener('keydown', useShortcuts)
     if (playerPlaybackButton !== null) {
@@ -42,10 +44,43 @@ const addLearnToppings = async (context: UdemyContext): Promise<void> => {
   }
 }
 
+const setDefaults = (): void => {
+  const defaultInterval = setInterval(() => {
+    if (Number((player as UdemyPlayer).playbackRate) > 0 && !(player as UdemyPlayer).paused) {
+      changePlaybackSpeed(Number(defaultSpeed))
+      clearInterval(defaultInterval)
+    }
+  }, 100)
+}
+
 const loadPlayer = async (lectureData: LectureData): Promise<Nullable<UdemyPlayer>> => {
   const playerVideoElement = await loadElement('video', 10000, 500) as Nullable<HTMLVideoElement>
   if (playerVideoElement !== null) {
-    const udemyPlayer = { videoElement: playerVideoElement, ...lectureData }
+    const udemyPlayer: UdemyPlayer = {
+      videoElement: playerVideoElement,
+
+      get playbackRate () {
+        return this.videoElement.playbackRate.toFixed(2)
+      },
+
+      set playbackRate (rate: string | number) {
+        this.videoElement.playbackRate = Number(rate)
+      },
+
+      get currentTime () {
+        return this.videoElement.currentTime
+      },
+
+      set currentTime (time: number) {
+        this.videoElement.currentTime = time
+      },
+
+      get paused () {
+        return this.videoElement.paused
+      },
+
+      ...lectureData
+    }
     return udemyPlayer
   }
   return null
@@ -54,7 +89,7 @@ const loadPlayer = async (lectureData: LectureData): Promise<Nullable<UdemyPlaye
 const loadPlaybackBtn = async (): Promise<Nullable<HTMLElement>> => {
   const playerPlaybackButton = await loadElement('[aria-label="Playback rate"]', 10000, 500)
   if (playerPlaybackButton !== null) {
-    playerPlaybackButton.children[0].textContent = `${(player as UdemyPlayer).videoElement.playbackRate}x`
+    playerPlaybackButton.children[0].textContent = `${Number((player as UdemyPlayer).playbackRate)}x`
   }
   return playerPlaybackButton
 }
@@ -64,27 +99,27 @@ const onPlaybackSpeedMenu = (): void => {
   const toppingsSpeedButtons = document.getElementsByClassName('toppings__speed-buttons')
   if (toppingsSpeedButtons[0] === undefined) {
     playbackRateMenu.replaceChildren(...getToppingsSpeedButtons())
-    const currentSpeedButton = document.querySelector(`.toppings__speed-buttons button[data-speed='${(player as UdemyPlayer).videoElement.playbackRate.toFixed(2)}']`) as HTMLElement
+    const currentSpeedButton = document.querySelector(`.toppings__speed-buttons button[data-speed='${(player as UdemyPlayer).playbackRate}']`) as HTMLElement
     if (currentSpeedButton !== null) {
       currentSpeedButton.setAttribute('aria-checked', 'true')
     } else {
       customSpeedButton.style.display = ''
       const customSpeedLabelElement = customSpeedButton.querySelector('span.ud-text-bold')
       if (customSpeedLabelElement !== null) {
-        customSpeedLabelElement.textContent = `Custom(${Number((player as UdemyPlayer).videoElement.playbackRate.toFixed(2))}x)`
+        customSpeedLabelElement.textContent = `Custom(${Number((player as UdemyPlayer).playbackRate)}x)`
       }
       customSpeedButton.children[0].setAttribute('aria-checked', 'true')
     }
   } else {
     (document.querySelector('.toppings__speed-buttons [aria-checked="true"]') as HTMLElement).setAttribute('aria-checked', 'false')
-    const currentSpeedButton = document.querySelector(`.toppings__speed-buttons button[data-speed='${(player as UdemyPlayer).videoElement.playbackRate.toFixed(2)}']`) as HTMLElement
+    const currentSpeedButton = document.querySelector(`.toppings__speed-buttons button[data-speed='${(player as UdemyPlayer).playbackRate}']`) as HTMLElement
     if (currentSpeedButton !== null) {
       currentSpeedButton.setAttribute('aria-checked', 'true')
     } else {
       customSpeedButton.style.display = ''
       const customSpeedLabelElement = customSpeedButton.querySelector('span.ud-text-bold')
       if (customSpeedLabelElement !== null) {
-        customSpeedLabelElement.textContent = `Custom(${Number((player as UdemyPlayer).videoElement.playbackRate.toFixed(2))}x)`
+        customSpeedLabelElement.textContent = `Custom(${Number((player as UdemyPlayer).playbackRate)}x)`
       }
       customSpeedButton.children[0].setAttribute('aria-checked', 'true')
     }
@@ -133,25 +168,25 @@ const useShortcuts = (event: KeyboardEvent): void => {
     (event.target as HTMLElement).tagName !== 'TEXTAREA'
   ) {
     if (event.key === `${toggleSpeedShortcut.toLowerCase()}`) {
-      if ((player as UdemyPlayer).videoElement.playbackRate.toFixed(2) !== '1.00') {
+      if ((player as UdemyPlayer).playbackRate !== '1.00') {
         changePlaybackSpeed(1)
       } else {
         changePlaybackSpeed(Number(toggleSpeed))
       }
     } else if (event.key === `${seekBackwardShortcut.toLowerCase()}`) {
-      (player as UdemyPlayer).videoElement.currentTime -= +seekBackward
+      (player as UdemyPlayer).currentTime -= +seekBackward
       // onDoubleTapSeek('back', seekBackward)
     } else if (event.key === `${seekForwardShortcut.toLowerCase()}`) {
-      (player as UdemyPlayer).videoElement.currentTime += +seekForward
+      (player as UdemyPlayer).currentTime += +seekForward
       // onDoubleTapSeek('forward', seekForward)
     } else if (event.key === `${increaseSpeedShortcut.toLowerCase()}`) {
-      const increasedSpeed = Number((Number((+(player as UdemyPlayer).videoElement.playbackRate.toFixed(2)).toFixed(2)) + Number((+increaseSpeed).toFixed(2))).toFixed(2))
+      const increasedSpeed = Number((Number((+(player as UdemyPlayer).playbackRate).toFixed(2)) + Number((+increaseSpeed).toFixed(2))).toFixed(2))
       if (increasedSpeed > GLOBAL_CONTEXT.MAX_PLAYBACK_RATE) {
         return
       }
       changePlaybackSpeed(increasedSpeed)
     } else if (event.key === `${decreaseSpeedShortcut.toLowerCase()}`) {
-      const decreasedSpeed = Number((Number((+(player as UdemyPlayer).videoElement.playbackRate.toFixed(2)).toFixed(2)) - Number((+decreaseSpeed).toFixed(2))).toFixed(2))
+      const decreasedSpeed = Number((Number((+(player as UdemyPlayer).playbackRate).toFixed(2)) - Number((+decreaseSpeed).toFixed(2))).toFixed(2))
       if (decreasedSpeed < GLOBAL_CONTEXT.MIN_PLAYBACK_RATE) {
         return
       }
@@ -162,7 +197,7 @@ const useShortcuts = (event: KeyboardEvent): void => {
 
 const changePlaybackSpeed = (speed: number): void => {
   if (document.getElementsByClassName('toppings__speed-buttons')[0] !== undefined) {
-    const currentSpeedButton = document.querySelector(`.toppings__speed-buttons button[data-speed='${(player as UdemyPlayer).videoElement.playbackRate.toFixed(2)}']`) as HTMLElement
+    const currentSpeedButton = document.querySelector(`.toppings__speed-buttons button[data-speed='${(player as UdemyPlayer).playbackRate}']`) as HTMLElement
     if (currentSpeedButton !== null) {
       currentSpeedButton.setAttribute('aria-checked', 'false')
     } else {
@@ -170,10 +205,10 @@ const changePlaybackSpeed = (speed: number): void => {
     }
   }
 
-  (player as UdemyPlayer).videoElement.playbackRate = speed
+  (player as UdemyPlayer).playbackRate = speed
 
   if (document.getElementsByClassName('toppings__speed-buttons')[0] !== undefined) {
-    const currentSpeedButton = document.querySelector(`.toppings__speed-buttons button[data-speed='${(player as UdemyPlayer).videoElement.playbackRate.toFixed(2)}']`) as HTMLElement
+    const currentSpeedButton = document.querySelector(`.toppings__speed-buttons button[data-speed='${(player as UdemyPlayer).playbackRate}']`) as HTMLElement
     if (currentSpeedButton !== null) {
       currentSpeedButton.setAttribute('aria-checked', 'true')
     } else {
@@ -188,7 +223,7 @@ const changePlaybackSpeed = (speed: number): void => {
   }
 
   if (playerPlaybackButton !== null) {
-    playerPlaybackButton.children[0].textContent = `${Number((player as UdemyPlayer).videoElement.playbackRate.toFixed(2))}x`
+    playerPlaybackButton.children[0].textContent = `${Number((player as UdemyPlayer).playbackRate)}x`
   }
 }
 
