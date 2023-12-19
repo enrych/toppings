@@ -1,0 +1,38 @@
+name: Node.js CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      docker:
+        image: cimg/node:18.19
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Static Tests
+        run: npm run test:static
+
+      - name: Run Unit Tests
+        run: npm run test:unit
+
+      - name: Build for Production
+        run: npm run build:prod
