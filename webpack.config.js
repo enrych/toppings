@@ -1,11 +1,43 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
+const fs = require('fs');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const HTMLWebpackPlugin = require('html-webpack-plugin');
 
-const base = {
+const getDirectories = (source) =>
+	fs
+		.readdirSync(source, { withFileTypes: true })
+		.filter((dirent) => dirent.isDirectory())
+		.map((dirent) => dirent.name);
+
+const generateEntryPoints = () => {
+	const modulesPath = path.resolve(__dirname, 'src/content_scripts/modules');
+	const modulesDirectories = getDirectories(modulesPath);
+
+	const entryPoints = {};
+	modulesDirectories.forEach((dir) => {
+		entryPoints[dir] = path.resolve(modulesPath, dir, 'index.ts');
+	});
+
+	return entryPoints;
+};
+
+module.exports = {
 	mode: 'production',
+	entry: {
+		background: './src/background/index.ts',
+		content: [
+			'./src/content_scripts/core/index.ts',
+			'./src/content_scripts/index.ts',
+		],
+		...generateEntryPoints(),
+	},
+	output: {
+		filename: '[name].js',
+		path: path.resolve(__dirname, 'build'),
+	},
 	module: {
 		rules: [
 			{
@@ -14,47 +46,20 @@ const base = {
 				exclude: /node_modules/,
 			},
 			{
-				test: /\.html$/,
-				use: [
-					{
-						loader: 'html-loader',
-					},
-				],
-			},
-			{
 				test: /\.css$/,
 				use: [MiniCssExtractPlugin.loader, 'css-loader'],
-			},
-			{
-				test: /\.(png|jpe?g|gif|webp)$/i,
-				type: 'asset/resource',
 			},
 		],
 	},
 	resolve: {
-		extensions: ['.ts', '.js'],
+		extensions: ['.ts', '.tsx', '.js'],
 	},
-};
-
-const scriptsConfig = {
-	...base,
-	entry: {
-		background: './src/background/index.ts',
-		content: [
-			'./src/content_scripts/core/index.ts',
-			'./src/content_scripts/index.ts',
-		],
-	},
-	output: {
-		filename: '[name].js',
-		path: path.resolve(__dirname, 'build'),
-	},
-
 	plugins: [
 		new CleanWebpackPlugin(),
 		new CopyWebpackPlugin({
 			patterns: [
 				{ from: 'src/assets', to: 'assets' },
+				{ from: 'src/options', to: 'options' },
 				{ from: 'src/popup', to: 'popup' },
 				'src/manifest.json',
 			],
@@ -64,29 +69,3 @@ const scriptsConfig = {
 		}),
 	],
 };
-
-const optionsConfig = {
-	...base,
-	entry: { options: './src/options/src/index.ts' },
-	output: {
-		filename: '[name].js',
-		path: path.resolve(__dirname, 'build/options'),
-		assetModuleFilename: 'assets/[hash][ext][query]',
-	},
-	plugins: [
-		new HTMLWebpackPlugin({
-			template: 'src/options/index.html',
-			filename: 'options.html',
-			minify: {
-				removeComments: true,
-				collapseWhitespace: true,
-			},
-		}),
-		new MiniCssExtractPlugin({
-			filename: 'styles.css',
-		}),
-	],
-};
-
-module.exports = [scriptsConfig, optionsConfig];
-module.exports.parallelism = 1;

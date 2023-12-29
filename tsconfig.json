@@ -17,6 +17,6 @@
 		"noUnusedParameters": true,
 		"noImplicitReturns": true,
 		"forceConsistentCasingInFileNames": true,
-		"types": ["chrome-types", "node"]
+		"types": ["chrome-types", "node", "mocha", "chai"]
 	}
 }
