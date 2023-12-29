@@ -25,6 +25,7 @@ const seekBackward: string = '15'
 const increaseSpeed: string = '0.25'
 const decreaseSpeed: string = '0.25'
 
+let lastPlaybackRate: string
 let player: Nullable<UdemyPlayer>
 let playerPlaybackButton: Nullable<HTMLElement>
 let customSpeed: string
@@ -34,6 +35,7 @@ const addLearnToppings = async (context: UdemyContext): Promise<void> => {
   const { lectureID, courseName } = context.body
   player = await loadPlayer({ lectureID, courseName })
   if (player !== null) {
+    setDefaults()
     playerPlaybackButton = await loadPlaybackBtn()
     document.addEventListener('keydown', useShortcuts)
     if (playerPlaybackButton !== null) {
@@ -56,10 +58,14 @@ const loadPlayer = async (lectureData: LectureData): Promise<Nullable<UdemyPlaye
   const playerVideoElement = await loadElement('video', 10000, 500) as Nullable<HTMLVideoElement>
   if (playerVideoElement !== null) {
     playerVideoElement.addEventListener('play', function (event) {
-      console.log('setDefaults')
-      event.stopImmediatePropagation();
-      setDefaults();
+      if (lastPlaybackRate !== undefined) {
+        changePlaybackSpeed(Number(lastPlaybackRate))
+      }
     })
+    playerVideoElement.addEventListener('pause', function (event) {
+      lastPlaybackRate = playerVideoElement.playbackRate.toFixed(2)
+    })
+
     const udemyPlayer: UdemyPlayer = {
       videoElement: playerVideoElement,
 
@@ -210,6 +216,7 @@ const changePlaybackSpeed = (speed: number): void => {
   }
 
   (player as UdemyPlayer).playbackRate = speed
+  lastPlaybackRate = speed.toFixed(2)
 
   if (document.getElementsByClassName('toppings__speed-buttons')[0] !== undefined) {
     const currentSpeedButton = document.querySelector(`.toppings__speed-buttons button[data-speed='${(player as UdemyPlayer).playbackRate}']`) as HTMLElement
