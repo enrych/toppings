@@ -42,8 +42,6 @@
     "eslint-plugin-n": "^16.0.2",
     "eslint-plugin-promise": "^6.1.1",
     "glob": "^10.3.4",
-    "html-loader": "^4.2.0",
-    "html-webpack-plugin": "^5.5.3",
     "mini-css-extract-plugin": "^2.7.6",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
