@@ -134,7 +134,7 @@ const onSettingsMenu = (): void => {
 }
 
 const loadPlaybackSpeedBtn = async (): Promise<Nullable<HTMLElement>> => {
-  return await new Promise<Nullable<HTMLElement>>((resolve, reject) => {
+  return await new Promise<Nullable<HTMLElement>>((resolve, _reject) => {
     const checkInterval = setInterval(() => {
       const labels = document.querySelectorAll('.ytp-menuitem-label')
       if (labels.length === 0) {
@@ -210,7 +210,7 @@ const onPlaybackSpeedMenu = (): void => {
 }
 
 const loadPlaybackSpeedMenu = async (): Promise<Nullable<HTMLElement>> => {
-  return await new Promise<Nullable<HTMLElement>>((resolve, reject) => {
+  return await new Promise<Nullable<HTMLElement>>((resolve, _reject) => {
     const checkInterval = setInterval(() => {
       const firstMenuItemLabel = document.getElementsByClassName('ytp-menuitem-label')[0]
       const toppingsMenuItem = document.getElementsByClassName('tp-speeditem')[0]
@@ -241,7 +241,7 @@ const getPlaybackSpeedItems = (): HTMLElement[] => {
     hasAriaChecked: 'false',
     itemTabIndex: '0',
     itemLabel: `Custom(${Number(customSpeed)})`,
-    itemOnClick: (event) => {
+    itemOnClick: (_) => {
       changePlaybackSpeed(Number(customSpeed))
       const panelBackButton = document.getElementsByClassName('ytp-panel-back-button')[0] as HTMLElement
       panelBackButton.click()
@@ -262,7 +262,7 @@ const getPlaybackSpeedItems = (): HTMLElement[] => {
           hasAriaChecked: 'false',
           itemTabIndex: '0',
           itemLabel: `${Number(speed)}`,
-          itemOnClick: (event) => {
+          itemOnClick: (_) => {
             changePlaybackSpeed(Number(speed))
             const panelBackButton = document.getElementsByClassName('ytp-panel-back-button')[0] as HTMLElement
             panelBackButton.click()
@@ -276,7 +276,7 @@ const getPlaybackSpeedItems = (): HTMLElement[] => {
           hasAriaChecked: 'false',
           itemTabIndex: '0',
           itemLabel: 'Normal',
-          itemOnClick: (event) => {
+          itemOnClick: (_) => {
             changePlaybackSpeed(1)
             const panelBackButton = document.getElementsByClassName('ytp-panel-back-button')[0] as HTMLElement
             panelBackButton.click()

@@ -14,7 +14,7 @@ const loadElement = async (
   timeout: number,
   interval: number
 ): Promise<Nullable<HTMLElement>> => {
-  return await new Promise<Nullable<HTMLElement>>((resolve, reject) => {
+  return await new Promise<Nullable<HTMLElement>>((resolve, _reject) => {
     const checkInterval = setInterval(() => {
       const element = document.querySelector(selector) as HTMLElement
       if (element !== null) {
