@@ -1,5 +1,1 @@
-/src/popup
-/scripts/
-/build/
-webpack.config.dev.js
-webpack.config.js
+/**/*.js
