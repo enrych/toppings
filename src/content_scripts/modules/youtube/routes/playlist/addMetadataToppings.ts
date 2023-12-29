@@ -40,7 +40,7 @@ const addMetadataToppings = async (playlistID: string): Promise<void> => {
     if (playlistID === 'WL' || playlistID === 'LL') {
       MetadataToppings.remove()
     } else {
-      await fetchYouTubeToppings({
+      await fetchYouTubeToppings<YouTubePlaylistMetadata>({
         appName: 'youtube',
         body: {
           routeType: 'playlist',
@@ -65,7 +65,7 @@ const addRuntimeSection = async (playlistID: string): Promise<HTMLElement> => {
       routeType: 'playlist',
       contentId: playlistID
     }
-  }) as YouTubePlaylistMetadata
+  })
 
   // Average Runtime
   const AverageRuntimeLabel = document.createElement('span')
