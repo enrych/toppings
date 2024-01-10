@@ -1,0 +1,20 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+:root {
+    color-scheme: light dark;
+    background-color: #1a1a1a;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.dark-theme {
+    --sidebar-primary: #242424;
+    --sidebar-text-primary: #fff;
+    --sidebar-navbar-selected: rgba(255, 255, 255, 0.10);
+}
