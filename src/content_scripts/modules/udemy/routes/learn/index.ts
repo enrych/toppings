@@ -9,6 +9,7 @@ const seekBackwardShortcut: string = 'A'
 const seekForwardShortcut: string = 'D'
 const increaseSpeedShortcut: string = 'W'
 const decreaseSpeedShortcut: string = 'S'
+const toggleTheatreShortcut: string = 'T'
 const customSpeedList: string[] = [
   '0.50',
   '0.75',
@@ -18,7 +19,7 @@ const customSpeedList: string[] = [
   '1.75',
   '2.00'
 ]
-const defaultSpeed: string = '2'
+const defaultSpeed: string = '2.5'
 const toggleSpeed: string = '1.5'
 const seekForward: string = '15'
 const seekBackward: string = '15'
@@ -201,6 +202,12 @@ const useShortcuts = (event: KeyboardEvent): void => {
         return
       }
       changePlaybackSpeed(decreasedSpeed)
+    } else if (event.key === `${toggleTheatreShortcut.toLowerCase()}`) {
+      const toggleTheatreButton = document.querySelector('button[data-purpose="theatre-mode-toggle-button"]') as HTMLButtonElement
+      console.log(toggleTheatreButton)
+      if (toggleTheatreButton !== null) {
+        toggleTheatreButton.click()
+      }
     }
   }
 }
