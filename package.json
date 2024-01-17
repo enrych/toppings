@@ -1,15 +1,17 @@
 {
   "name": "toppings",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Toppings adds an extra layer of flavor for a more efficient and convenient web.",
   "private": "true",
   "scripts": {
     "build:dev": "webpack --watch --config webpack.config.dev.js",
     "build:prod": "webpack",
     "build:release": "npm run build:prod && node scripts/release.js",
-    "lint": "eslint . --ext .ts --config .eslintrc.json --fix",
+    "lint": "eslint . --ext .ts --fix",
     "type-check": "tsc --noEmit",
-    "test": "npm run lint && npm run type-check"
+    "test:static": "eslint . --ext .ts && npm run type-check",
+    "test:coverage": "cross-env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' nyc --reporter=html mocha 'test/unit/**/*.{js,ts}'",
+    "test:unit": "cross-env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha 'test/unit/**/*.{js,ts}'"
   },
   "repository": {
     "type": "git",
@@ -23,13 +25,17 @@
   "homepage": "https://github.com/enrich-platforms/toppings#readme",
   "devDependencies": {
     "@types/chrome": "^0.0.253",
+    "@types/chai": "^4.3.11",
+    "@types/mocha": "^10.0.6",
     "@types/node": "^20.8.9",
     "@typescript-eslint/eslint-plugin": "^6.6.0",
     "@typescript-eslint/parser": "^6.6.0",
     "archiver": "^6.0.1",
+    "chai": "^4.3.10",
     "chrome-types": "^0.1.231",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
+    "cross-env": "^7.0.3",
     "css-loader": "^6.8.1",
     "eslint": "^8.48.0",
     "eslint-config-standard-with-typescript": "^39.0.0",
@@ -38,12 +44,13 @@
     "eslint-plugin-promise": "^6.1.1",
     "glob": "^10.3.4",
     "mini-css-extract-plugin": "^2.7.6",
+    "mocha": "^10.2.0",
+    "nyc": "^15.1.0",
     "ts-loader": "^9.4.4",
+    "ts-mocha": "^10.0.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.2.2",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4"
-  },
-  "dependencies": {
-    "blendora": "^2.0.0"
   }
 }

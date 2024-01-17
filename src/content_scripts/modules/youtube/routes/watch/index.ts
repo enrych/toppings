@@ -1,4 +1,5 @@
-import { YTPlayer, createMenuItem } from 'blendora'
+import { createMenuItem } from '../../common/dom'
+import YTPlayer from '../../common/VideoPlayer'
 import loadElement from '../../../../utils/loadElement'
 import { type Nullable } from '../../../../../common/interfaces'
 import addPlaylistRuntime from './addPlaylistRuntime'
@@ -178,7 +179,8 @@ const onPlaybackSpeedMenu = (): void => {
       const menuPanelOptions = document.getElementsByClassName('ytp-panel-options')[0] as HTMLElement
       menuPanelOptions.style.display = 'none'
 
-      const panelMenu = document.getElementsByClassName('ytp-panel-menu')[0] as HTMLElement
+      const settingsMenu = document.getElementsByClassName('ytp-settings-menu')[0] as HTMLElement
+      const panelMenu = settingsMenu.getElementsByClassName('ytp-panel-menu')[0] as HTMLElement
       const toppingsSpeedItems = document.getElementsByClassName('tp-speeditem')
       if (toppingsSpeedItems[0] === undefined) {
         panelMenu.replaceChildren(...getPlaybackSpeedItems())

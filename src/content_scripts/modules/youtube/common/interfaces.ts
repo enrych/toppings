@@ -1,21 +1,70 @@
+import { type ToppingsRequest } from '../../../../common/interfaces'
+
 /**
- * Defines the structure of a request object for fetching data from the Toppings API.
+ * Defines the structure of a request object for fetching data from the Toppings YouTube API.
  *
- * @property {string} appName - The name of the web application for which data is being requested.
- * @property {Object} body - The request body containing optional parameters.
- * @property {string} body.routeType - The type of route being requested (e.g., 'playlist', 'watch', etc.).
- * @property {string} body.contentId - The content identifier associated with the requested data.
- * @property {Object} body.queryParams - Optional query parameters to be included in the request.
- *                                      These parameters can be used to refine the data being fetched.
- *                                      Each parameter is represented as a key-value pair, where the
- *                                      key is the parameter name and the value is the parameter value
- *                                      or null if no value is provided.
  */
-export interface FetchToppingsAPIRequest {
-  appName: string
+export interface YouTubeToppingsRequest extends ToppingsRequest {
   body: {
-    routeType?: string
+    routeType: string
     contentId?: string
     queryParams?: Record<string, string | null>
   }
+}
+
+export type YouTubeToppingsResponse = Record<string, any>
+
+export interface YouTubePlaylistMetadata extends YouTubeToppingsResponse {
+  data: {
+    avg_runtime: string
+    num_videos: string
+    playlist_id: string
+    total_runtime: {
+      days: number
+      seconds: number
+    }
+  }
+  description: string
+  message: string
+  status: number
+}
+
+export interface ToppingsPanelHeader {
+  panelId: string
+  panelClass?: string
+  btnLabel: string
+  btnOnClick: (event: Event) => void
+  panelTitle: string
+  panelOptions?: { optionsTitle: string, optionsOnClick: (event: Event) => void }
+  options?: (target: HTMLDivElement) => void
+}
+
+export interface ToppingsMenuItem {
+  itemId: string
+  itemClass?: string
+  hasAriaPopUp?: string
+  hasAriaChecked?: string
+  itemRole?: string
+  itemTabIndex?: string
+  itemIconPath?: string
+  itemLabel?: string
+  itemContent?: Node
+  itemOnClick: (event: Event) => void
+  options?: (target: HTMLDivElement) => void
+}
+
+export interface ToppingsMetadataSection {
+  sectionId: string
+  sectionClass?: string
+  headerIcon?: string
+  headerTitle?: string
+  items?: HTMLElement[]
+  options?: (target: HTMLDivElement) => void
+}
+
+export interface ToppingsSectionItem {
+  id: string
+  className?: string
+  children: HTMLElement[]
+  options?: (target: HTMLDivElement) => void
 }
