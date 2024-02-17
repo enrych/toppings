@@ -1,4 +1,1 @@
-/src/options
-/src/popup
-/scripts/
-/build/
+/**/*.js

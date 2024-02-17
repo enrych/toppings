@@ -10,6 +10,12 @@
 		"allowJs": false,
 		"moduleResolution": "node",
 		"noEmitOnError": true,
+		"strict": true,
+		"removeComments": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": true,
+		"forceConsistentCasingInFileNames": true,
 		"types": ["chrome-types", "node", "mocha", "chai"]
 	}
 }

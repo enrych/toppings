@@ -63,7 +63,7 @@ const requestPictureInPictureMode = async (video: HTMLVideoElement): Promise<voi
 
   video.addEventListener(
     'leavepictureinpicture',
-    (event) => {
+    (_) => {
       video.removeAttribute('data-pip')
     },
     { once: true }

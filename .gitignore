@@ -133,3 +133,5 @@ dist
 .pnp.*
 
 bundled.zip
+
+**/.DS_Store
