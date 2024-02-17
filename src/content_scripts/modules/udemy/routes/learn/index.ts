@@ -19,7 +19,7 @@ const customSpeedList: string[] = [
   '1.75',
   '2.00'
 ]
-const defaultSpeed: string = '2.5'
+const defaultSpeed: string = '1'
 const toggleSpeed: string = '1.5'
 const seekForward: string = '15'
 const seekBackward: string = '15'
