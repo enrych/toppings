@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Toppings",
   "short_name": "Toppings",
-  "version": "1.0.6",
+  "version": "2.0.0",
   "description": "Toppings adds an extra layer of flavor for a more efficient and convenient web.",
   "homepage_url": "https://www.grabtoppings.xyz",
   "author": "Enrich Platforms",
@@ -48,7 +48,7 @@
   "web_accessible_resources": [
     {
       "matches":  ["<all_urls>"],
-      "resources": ["assets/icons/icon128.png", "css/styles.css" ,"options/assets/icons8-settings-64.png"]
+      "resources": ["modules/*.js", "assets/icons/icon128.png", "css/styles.css" ,"options/assets/icons8-settings-64.png"]
     }
   ]
 }

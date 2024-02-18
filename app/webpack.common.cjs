@@ -75,7 +75,11 @@ module.exports = {
 
   resolve: {
     extensions: ['.ts', '.js', '.svelte']
-  }
+  },
+
+  experiments: {
+    outputModule: true,
+  },
 }
 
 function getModules() {
@@ -86,7 +90,10 @@ function getModules() {
   modulesDirectories.forEach(dir => {
     entryPoints[dir] = {
       import: path.resolve(modulesPath, dir, 'index.ts'),
-      filename: './modules/[name].js'
+      filename: './modules/[name].js',
+      library: {
+        type: 'module'
+      }
     }
   });
 
