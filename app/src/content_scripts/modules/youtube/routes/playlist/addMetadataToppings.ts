@@ -40,7 +40,7 @@ const addMetadataToppings = async (playlistID: string): Promise<void> => {
     if (playlistID === 'WL' || playlistID === 'LL') {
       MetadataToppings.remove()
     } else {
-      await fetchYouTubeToppings({
+      await fetchYouTubeToppings<YouTubePlaylistMetadata>({
         appName: 'youtube',
         body: {
           routeType: 'playlist',
@@ -50,7 +50,7 @@ const addMetadataToppings = async (playlistID: string): Promise<void> => {
         const averageRuntimeValueElement = document.getElementById('toppings__average-runtime')?.querySelector('.toppings__item-value') as HTMLSpanElement
         const totalRuntimeValueElement = document.getElementById('toppings__total-runtime')?.querySelector('.toppings__item-value') as HTMLSpanElement
         if (averageRuntimeValueElement !== null && totalRuntimeValueElement !== null) {
-          averageRuntimeValueElement.textContent = response.data.avg_runtime
+          averageRuntimeValueElement.textContent = formatRuntime(response.data.avg_runtime)
           totalRuntimeValueElement.textContent = formatRuntime(response.data.total_runtime)
         }
       })
@@ -74,7 +74,7 @@ const addRuntimeSection = async (playlistID: string): Promise<HTMLElement> => {
 
   const AverageRuntimeValue = document.createElement('span')
   AverageRuntimeValue.setAttribute('class', 'toppings__average-runtime toppings__item-value')
-  AverageRuntimeValue.textContent = response.data.avg_runtime
+  AverageRuntimeValue.textContent = formatRuntime(response.data.avg_runtime)
 
   const AverageRuntime = createSectionItem({
     id: 'toppings__average-runtime',

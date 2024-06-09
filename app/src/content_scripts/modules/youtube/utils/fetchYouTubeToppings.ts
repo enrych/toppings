@@ -7,11 +7,11 @@ import { type YouTubeToppingsRequest, type YouTubeToppingsResponse } from '../co
  * @param {YouTubeToppingsRequest} request - The request object for the data to fetch.
  * @returns {Promise<YouTubeToppingsResponse>} - A Promise that resolves to the fetched data.
  */
-const fetchYouTubeToppings = async (request: YouTubeToppingsRequest): Promise<YouTubeToppingsResponse> => {
+const fetchYouTubeToppings = async <T extends YouTubeToppingsResponse>(request: YouTubeToppingsRequest): Promise<T> => {
   let endpoint, contentId
 
   if (request.body.routeType === 'playlist') {
-    endpoint = 'playlists'
+    endpoint = 'youtube/playlist'
     contentId = request.body.contentId
   }
 
