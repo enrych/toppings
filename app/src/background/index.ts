@@ -51,4 +51,3 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
  * Listens for keyboard shortcuts defined in the manifest and triggers
  * corresponding actions.
  */
-
