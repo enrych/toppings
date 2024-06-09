@@ -1,51 +1,61 @@
-const fs = require('fs-extra');
-const archiver = require('archiver');
-const path = require('path');
-const chalk = require('chalk');
+const fs = require("fs-extra");
+const archiver = require("archiver");
+const path = require("path");
+const chalk = require("chalk");
 
-const buildDir = 'build';
-const outputZip = 'bundled.zip';
+const APP_ROOT_DIR = path.join(__dirname, "..");
+const DIST_DIR = path.join(APP_ROOT_DIR, "dist");
+const MANIFEST_FILE = path.join(DIST_DIR, "manifest.json");
 
-const archive = archiver('zip', { zlib: { level: 9 } });
+async function createArchive() {
+  try {
+    const manifestData = await fs.readFile(MANIFEST_FILE, "utf8");
+    const manifest = JSON.parse(manifestData);
+    const RELEASE_VERSION = manifest.version;
+    const RELEASE_FILENAME = `toppings_v${RELEASE_VERSION}.zip`;
 
-const output = fs.createWriteStream(outputZip);
+    const writeStream = fs.createWriteStream(RELEASE_FILENAME);
+    const archive = archiver("zip", { zlib: { level: 9 } });
+    archive.pipe(writeStream);
 
-output.on('close', () => {
-	console.clear();
-	const manifest = require('../src/manifest.json');
-	const extensionVersion = manifest.version;
+    writeStream.on("close", async () => {
+      console.clear();
+      const message = `
+      ┏---------------------------------┓
+      |                |
+      |   Release Version: ${RELEASE_VERSION}        |
+      |                |
+      ┗---------------------------------┛
 
-	const message = `
-  ┏---------------------------------┓
-  |                                 |
-  |      Build Version: ${extensionVersion}       |
-  |                                 |
-  ┗---------------------------------┛
+      Congratulations! Toppings has been successfully bundled and prepare for a new release.
+      You can now upload the '${RELEASE_FILENAME}' file to the Chrome Web Store and GitHub releases.
+      `;
 
-  Toppings has been successfully bundled and is ready for a new release.
-  You can now upload the '${outputZip}' file to the Chrome Web Store.
-  `;
+      console.log(chalk.blue(message));
+      await fs.rm(DIST_DIR, { recursive: true });
+      process.exit(0);
+    });
 
-	console.log(chalk.blue(message));
-	process.exit(0);
-});
+    archive.on("warning", (err) => {
+      if (err.code === "ENOENT") {
+        console.warn(err);
+      } else {
+        throw err;
+      }
+    });
 
-archive.on('warning', (err) => {
-	if (err.code === 'ENOENT') {
-		console.warn(err);
-	} else {
-		throw err;
-	}
-});
+    archive.on("error", (err) => {
+      throw err;
+    });
 
-archive.on('error', (err) => {
-	throw err;
-});
+    // Add directory to archive
+    await archive.directory(DIST_DIR, false);
 
-archive.pipe(output);
+    // Finalize archive and remove build folder
+    await archive.finalize();
+  } catch (err) {
+    console.error("Error creating archive:", err);
+  }
+}
 
-archive.directory(buildDir, false);
-
-archive.finalize().then(() => {
-	fs.remove(path.join(__dirname, '..', 'build'));
-});
+createArchive();
