@@ -52,9 +52,3 @@ chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
  * corresponding actions.
  */
 
-// In this case, it opens the extension's preferences page.
-chrome.commands.onCommand.addListener((command) => {
-  if (command === 'open_preferences') {
-    void chrome.tabs.create({ url: 'pages/options/options.html' })
-  }
-})

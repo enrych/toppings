@@ -12,16 +12,6 @@
     "48": "/assets/icons/icon48.png",
     "128": "/assets/icons/icon128.png"
   },
-  "commands": {
-    "open_preferences": {
-      "description": "Open Preferences",
-      "suggested_key": {
-        "default": "Alt+T",
-        "mac": "MacCtrl+T",
-        "windows": "Alt+T"
-      }
-    }
-  },
   "host_permissions": ["<all_urls>"],
   "permissions": ["webNavigation", "storage"],
   "options_ui": {
