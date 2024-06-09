@@ -1,15 +1,15 @@
 {
 	"compilerOptions": {
-		"outDir": "./build/",
-		"strictNullChecks": true,
-		"noImplicitAny": true,
+		"jsx": "react-jsx",
+		"outDir": "./dist/",
+		"strict": true,
 		"lib": ["esnext", "dom", "dom.iterable"],
 		"module": "ES2020",
 		"target": "ES6",
-		"jsx": "react",
-		"allowJs": false,
+		"allowJs": true,
 		"moduleResolution": "node",
 		"noEmitOnError": true,
-		"types": ["chrome-types", "node", "mocha", "chai"]
+		"types": ["chrome-types", "node", "mocha", "chai"],
+		"allowSyntheticDefaultImports": true
 	}
 }
