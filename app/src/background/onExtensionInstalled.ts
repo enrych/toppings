@@ -1,14 +1,13 @@
-const INSTALL_URL: string = 'https://www.grabtoppings.xyz/#/greetings'
+const INSTALL_URL: string = 'https://enrych.github.io/toppings-web/#/greetings'
 
-const onInstallToppings = ({ reason }: { reason: chrome.runtime.OnInstalledReason }): void => {
+const onExtensionInstalled = ({ reason }: { reason: chrome.runtime.OnInstalledReason }): void => {
   if (reason === 'install' || reason === 'update') {
     if (process.env.NODE_ENV === 'production') {
       void chrome.tabs.create({ url: INSTALL_URL }) // This URL will be redirected to when extension is installed.
     }
-    // Define initial user preferences
     const initialPreferences = {
       // General
-      toggleOn: true,
+      isExtensionActive: true,
       // Shortcuts
       toggleSpeedShortcut: 'X',
       seekBackwardShortcut: 'A',
@@ -39,9 +38,8 @@ const onInstallToppings = ({ reason }: { reason: chrome.runtime.OnInstalledReaso
       playlistEnabled: true
     }
 
-    // Save the initial preferences to Chrome storage
     void chrome.storage.sync.set(initialPreferences)
   }
 }
 
-export default onInstallToppings
+export default onExtensionInstalled

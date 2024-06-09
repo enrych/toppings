@@ -1,4 +1,4 @@
-import { type UdemyContext } from '../../../../../common/interfaces'
+import { type UdemyContext } from '../../../../../background/webAppContextParsers'
 
 export interface LectureData {
   lectureID: string
@@ -6,7 +6,7 @@ export interface LectureData {
 }
 
 export interface LearnPageContext extends UdemyContext {
-  body: UdemyContext['body'] & LectureData
+  contextData: UdemyContext['contextData'] & LectureData
 }
 
 export type UdemyPlayer = { videoElement: HTMLVideoElement, playbackRate: string | number, currentTime: number, paused: boolean } & LectureData

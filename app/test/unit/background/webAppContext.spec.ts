@@ -1,7 +1,7 @@
 import { expect } from 'chai'
-import { getWebAppInfo } from '../../../src/background/webAppInfo'
+import { getWebAppContext } from '../../../src/background/webAppContext'
 
-describe('getWebAppInfo', () => {
+describe('getWebAppContext', () => {
   it('should return correct info for a supported YouTube playlist URL', () => {
     const testCase1 = 'https://www.youtube.com/playlist?list=PL1234567890'
     const expectedResult1 = {
@@ -15,7 +15,7 @@ describe('getWebAppInfo', () => {
         }
       }
     }
-    expect(getWebAppInfo(testCase1)).to.deep.equal(expectedResult1)
+    expect(getWebAppContext(testCase1)).to.deep.equal(expectedResult1)
   })
 
   it('should return correct info for a supported YouTube video URL', () => {
@@ -31,12 +31,12 @@ describe('getWebAppInfo', () => {
         }
       }
     }
-    expect(getWebAppInfo(testCase2)).to.deep.equal(expectedResult2)
+    expect(getWebAppContext(testCase2)).to.deep.equal(expectedResult2)
   })
 
   it('should return unsupported for an unsupported URL', () => {
     const testCase3 = 'https://example.com'
     const expectedResult3 = { status: 'unsupported' }
-    expect(getWebAppInfo(testCase3)).to.deep.equal(expectedResult3)
+    expect(getWebAppContext(testCase3)).to.deep.equal(expectedResult3)
   })
 })

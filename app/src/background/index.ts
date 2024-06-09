@@ -1,53 +1,42 @@
-import { type WebAppInfo } from '../common/interfaces'
-import onInstallToppings from './onInstallToppings'
-import { getWebAppInfo, sendWebAppInfoToTab } from './webAppInfo'
+import { type WebAppContext, getWebAppContext, sendWebAppContextToTab } from './webAppContext'
+import onExtensionInstalled from './onExtensionInstalled'
 
-const UNINSTALL_URL: string = 'https://grabtoppings.xyz/#/farewell'
+const UNINSTALL_URL: string = 'https://enrych.github.io/toppings-web/#/farewell'
 
-let toggleOn: boolean // Represents the current toggle state of the Toppings extension.
+let isExtensionActive: boolean
+
+chrome.runtime.onInstalled.addListener(onExtensionInstalled)
 
 if (process.env.NODE_ENV === 'production') {
-  void chrome.runtime.setUninstallURL(UNINSTALL_URL) // This URL will be redirected to when users uninstall the extension.
+  void chrome.runtime.setUninstallURL(UNINSTALL_URL)
 }
-chrome.runtime.onInstalled.addListener(onInstallToppings) // Set up the extension when installed or updated.
 
-/**
- * Listens for changes in storage and updates the extension state accordingly.
- * This function executes when storage data changes.
- */
 chrome.storage.onChanged.addListener((changes, namespace) => {
   if (namespace === 'sync') {
-    if (changes?.toggleOn != null) {
-      toggleOn = changes.toggleOn.newValue
+    if (changes?.isExtensionActive != null) {
+      isExtensionActive = changes.isExtensionActive.newValue
     }
   }
 })
 
-// Set up webNavigation listeners to send WebAppInfo to content scripts when page loading completes or history state updates.
-
 chrome.webNavigation.onCompleted.addListener((details) => {
   const tabId = details.tabId
-  const webAppInfo: WebAppInfo = getWebAppInfo(details.url)
+  const webAppContext: WebAppContext = getWebAppContext(details.url)
 
-  chrome.storage.sync.get('toggleOn', (storage) => {
-    toggleOn = storage.toggleOn
-    if (webAppInfo.status === 'unsupported' || !toggleOn) return
-    sendWebAppInfoToTab(tabId, webAppInfo)
+  chrome.storage.sync.get('isExtensionActive', (storage) => {
+    isExtensionActive = storage.isExtensionActive
+    if (!webAppContext.isSupported || !isExtensionActive) return
+    sendWebAppContextToTab(tabId, webAppContext)
   })
 })
 
 chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
   const tabId = details.tabId
-  const webAppInfo: WebAppInfo = getWebAppInfo(details.url)
+  const webAppContext: WebAppContext = getWebAppContext(details.url)
 
-  chrome.storage.sync.get('toggleOn', (storage) => {
-    toggleOn = storage.toggleOn
-    if (webAppInfo.status === 'unsupported' || !toggleOn) return
-    sendWebAppInfoToTab(tabId, webAppInfo)
+  chrome.storage.sync.get('isExtensionActive', (storage) => {
+    isExtensionActive = storage.isExtensionActive
+    if (!webAppContext.isSupported || !isExtensionActive) return
+    sendWebAppContextToTab(tabId, webAppContext)
   })
 })
-
-/**
- * Listens for keyboard shortcuts defined in the manifest and triggers
- * corresponding actions.
- */

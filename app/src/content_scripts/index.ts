@@ -1,22 +1,25 @@
-import { type YouTubeAppInfo, type WebAppInfo, type UdemyContext } from '../common/interfaces'
+import { type WebAppContext } from '../background/webAppContext'
+import { type YouTubeContext, type UdemyContext } from '../background/webAppContextParsers'
 
 const youtubeEnabled: boolean = true
 
-async function runApp(webAppInfo: WebAppInfo): Promise<undefined> {
-  const { appName } = webAppInfo
+async function runApp (webAppContext: WebAppContext): Promise<undefined> {
+  const { appName } = webAppContext
 
   switch (appName) {
-    case 'youtube':
-      const youtubeAppInfo = webAppInfo as YouTubeAppInfo
+    case 'youtube': {
+      const youtubeContext = webAppContext as YouTubeContext
       const { default: onYouTubeLoaded } = await import(/* webpackIgnore: true */ chrome.runtime.getURL('modules/youtube.js'))
-      void onYouTubeLoaded(youtubeAppInfo)
+      void onYouTubeLoaded(youtubeContext)
       break
-    case 'udemy':
-      const udemyContext = webAppInfo as UdemyContext
+    }
+    case 'udemy': {
+      const udemyContext = webAppContext as UdemyContext
       const { default: onUdemyLoaded } = await import(/* webpackIgnore: true */ chrome.runtime.getURL('modules/udemy.js'))
       void onUdemyLoaded(udemyContext)
       break
+    }
   }
 }
 
-chrome.runtime.onMessage.addListener((webAppInfo: WebAppInfo): undefined => {void runApp(webAppInfo)})
+chrome.runtime.onMessage.addListener((webAppContext: WebAppContext): undefined => { void runApp(webAppContext) })

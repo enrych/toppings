@@ -1,4 +1,4 @@
-import { type UdemyContext } from '../../../common/interfaces'
+import { type UdemyContext } from '../../../background/webAppContextParsers'
 import addLearnToppings from './routes/learn'
 import { type LearnPageContext } from './routes/learn/interfaces'
 
@@ -9,8 +9,9 @@ const isLearnEnabled: boolean = true
 // })
 
 const addUdemyToppings = async (context: UdemyContext): Promise<void> => {
-  const { routeType } = context.body
-  switch (routeType) {
+  const { route } = context.contextData.webAppURL
+  const activeRoute = route[0]
+  switch (activeRoute) {
     case 'learn':
       isLearnEnabled && await addLearnToppings(context as LearnPageContext)
   }
