@@ -1,63 +1,74 @@
 {
-    "name": "toppings",
-    "version": "2.0.0",
-    "description": "Toppings adds an extra layer of flavor for a more efficient and convenient web.",
-    "private": "true",
-    "scripts": {
-        "dev": "webpack --watch --config webpack.dev.cjs",
-        "build": "webpack --config webpack.prod.cjs",
-        "release": "npm run build:prod && node scripts/release.js",
-        "lint": "eslint . --ext .ts --fix",
-        "type-check": "tsc --noEmit",
-        "test:static": "eslint . --ext .ts && npm run type-check",
-        "test:coverage": "cross-env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' nyc --reporter=html mocha 'test/unit/**/*.{js,ts}'",
-        "test:unit": "cross-env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha 'test/unit/**/*.{js,ts}'"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/enrich-platforms/toppings.git"
-    },
-    "author": "DV @darhkvoyd",
-    "license": "GPL-3.0",
-    "bugs": {
-        "url": "https://github.com/enrich-platforms/toppings/issues"
-    },
-    "homepage": "https://github.com/enrich-platforms/toppings#readme",
-    "devDependencies": {
-        "@types/bun": "^1.0.5",
-        "@types/chai": "^4.3.11",
-        "@types/mocha": "^10.0.6",
-        "@types/node": "^20.8.9",
-        "@typescript-eslint/eslint-plugin": "^6.6.0",
-        "@typescript-eslint/parser": "^6.6.0",
-        "archiver": "^6.0.1",
-        "chai": "^4.3.10",
-        "chrome-types": "^0.1.231",
-        "clean-webpack-plugin": "^4.0.0",
-        "copy-webpack-plugin": "^11.0.0",
-        "cross-env": "^7.0.3",
-        "css-loader": "^6.8.1",
-        "eslint": "^8.48.0",
-        "eslint-config-standard-with-typescript": "^39.0.0",
-        "eslint-plugin-import": "^2.28.1",
-        "eslint-plugin-n": "^16.0.2",
-        "eslint-plugin-promise": "^6.1.1",
-        "glob": "^10.3.4",
-        "html-webpack-plugin": "^5.6.0",
-        "mini-css-extract-plugin": "^2.7.6",
-        "mocha": "^10.2.0",
-        "nyc": "^15.1.0",
-        "svelte": "^4.2.11",
-        "svelte-loader": "^3.1.9",
-        "svelte-preprocess": "^5.1.3",
-        "ts-loader": "^9.4.4",
-        "ts-mocha": "^10.0.0",
-        "ts-node": "^10.9.2",
-        "webpack": "^5.88.2",
-        "webpack-cli": "^5.1.4",
-        "webpack-merge": "^5.10.0"
-    },
-    "peerDependencies": {
-        "typescript": "^5.2.2"
-    }
+  "name": "toppings",
+  "version": "2.0.0",
+  "description": "Your web, your way.",
+  "private": "true",
+  "scripts": {
+    "dev": "webpack --watch --config webpack.dev.cjs",
+    "build": "webpack --config webpack.prod.cjs",
+    "release": "npm run build && node scripts/release.js",
+    "lint": "eslint . --ext .ts --fix",
+    "type-check": "tsc --noEmit",
+    "test:static": "eslint . --ext .ts && npm run type-check",
+    "test:coverage": "cross-env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' nyc --reporter=html mocha 'test/unit/**/*.{js,ts}'",
+    "test:unit": "cross-env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\" }' mocha 'test/unit/**/*.{js,ts}'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/enrych/toppings.git"
+  },
+  "author": "Enrych",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/enrych/toppings/issues"
+  },
+  "homepage": "https://github.com/enrych/toppings#readme",
+  "devDependencies": {
+    "@babel/core": "^7.24.4",
+    "@babel/preset-env": "^7.24.4",
+    "@babel/preset-react": "^7.24.1",
+    "@types/bun": "^1.0.5",
+    "@types/chai": "^4.3.11",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.8.9",
+    "@types/react-dom": "^18.2.24",
+    "@typescript-eslint/eslint-plugin": "^6.6.0",
+    "@typescript-eslint/parser": "^6.6.0",
+    "archiver": "^6.0.1",
+    "babel-loader": "^9.1.3",
+    "chai": "^4.3.10",
+    "chrome-types": "^0.1.231",
+    "clean-webpack-plugin": "^4.0.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "cross-env": "^7.0.3",
+    "css-loader": "^7.0.0",
+    "eslint": "^8.48.0",
+    "eslint-config-standard-with-typescript": "^39.0.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-n": "^16.0.2",
+    "eslint-plugin-promise": "^6.1.1",
+    "fs-extra": "^11.2.0",
+    "html-webpack-plugin": "^5.6.0",
+    "mini-css-extract-plugin": "^2.7.6",
+    "mocha": "^10.2.0",
+    "nyc": "^15.1.0",
+    "style-loader": "^3.3.4",
+    "ts-loader": "^9.4.4",
+    "ts-mocha": "^10.0.0",
+    "ts-node": "^10.9.2",
+    "webpack": "^5.91.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-merge": "^5.10.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "presets": [
+    "@babel/preset-env",
+    "@babel/preset-react"
+  ]
 }
