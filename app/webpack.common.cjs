@@ -64,7 +64,7 @@ module.exports = {
       ]
     }),
     new MiniCssExtractPlugin({
-      filename: 'css/styles.css'
+      filename: 'css/[name].css'
     }),
     new HtmlWebpackPlugin({
       template: './src/popup/index.html', // Path to your Svelte template
