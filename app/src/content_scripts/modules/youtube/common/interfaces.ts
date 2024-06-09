@@ -15,18 +15,15 @@ export interface YouTubeToppingsRequest extends ToppingsRequest {
 export type YouTubeToppingsResponse = Record<string, any>
 
 export interface YouTubePlaylistMetadata extends YouTubeToppingsResponse {
+  ok: boolean,
+  status: number
+  error_message: string
   data: {
-    avg_runtime: string
+    avg_runtime: number
     num_videos: string
     playlist_id: string
-    total_runtime: {
-      days: number
-      seconds: number
-    }
+    total_runtime: number
   }
-  description: string
-  message: string
-  status: number
 }
 
 export interface ToppingsPanelHeader {
