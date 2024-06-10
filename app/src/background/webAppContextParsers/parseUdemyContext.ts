@@ -1,7 +1,7 @@
 import { type WebAppURL } from '../webAppURL'
-import { type WebAppContext } from '../webAppContext'
+import { type SupportedWebAppContext } from '../webAppContext'
 
-export interface UdemyContext extends WebAppContext {
+export interface UdemyContext extends SupportedWebAppContext {
 }
 
 export default function parseUdemyContext (webAppURL: WebAppURL): UdemyContext {

@@ -1,14 +1,24 @@
 import { type WebAppURL, parseWebAppURL } from './webAppURL'
 import webAppContextParser from './webAppContextParsers'
 
-export interface WebAppContext {
-  appName: string | null
-  isSupported: boolean
+export interface UnSupportedWebAppContext {
+  appName: null
+  isSupported: false
+  contextData: {
+    webAppURL: WebAppURL
+  }
+}
+
+export interface SupportedWebAppContext {
+  appName: string
+  isSupported: true
   contextData: {
     webAppURL: WebAppURL
     [key: string]: any
   }
 }
+
+export type WebAppContext = UnSupportedWebAppContext | SupportedWebAppContext
 
 export const getWebAppContext = (href: string): WebAppContext => {
   const webAppURL = parseWebAppURL(href)

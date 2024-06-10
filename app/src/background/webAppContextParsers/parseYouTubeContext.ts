@@ -1,7 +1,7 @@
 import { type WebAppURL } from '../webAppURL'
-import { type WebAppContext } from '../webAppContext'
+import { type SupportedWebAppContext } from '../webAppContext'
 
-export interface YouTubeContext extends WebAppContext {
+export interface YouTubeContext extends SupportedWebAppContext {
   contextData: {
     webAppURL: WebAppURL
     contentId?: string
