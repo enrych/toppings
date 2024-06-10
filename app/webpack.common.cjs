@@ -1,39 +1,57 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require("path");
 const fs = require("fs");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
+  target: 'web',
   entry: {
     background: "./src/background/index.ts",
     content: [
       "./src/content_scripts/index.ts",
       "./src/content_scripts/core/index.ts",
     ],
+    popup: {
+      filename: "./popup/index.js",
+      import: "./src/popup/src/main.tsx",
+    },
+    options: {
+      filename: "./options/index.js",
+      import: "./src/options/src/main.tsx",
+    },
     ...getModules(),
   },
 
   output: {
     filename: "[name].js",
     path: path.resolve(__dirname, "dist"),
+    clean: {
+      dry: true
+    },
   },
 
   module: {
     rules: [
       {
-        test: /\.ts?$/,
-        use: "ts-loader",
-        exclude: /node_modules/,
-      },
-
-      {
         test: /\.css$/,
         use: [MiniCssExtractPlugin.loader, "css-loader"],
       },
+
+      {
+        test: /\.(ts|tsx)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: [
+              '@babel/preset-env',
+              ['@babel/preset-react', { 'runtime': 'automatic' }],
+              '@babel/preset-typescript'
+            ]
+          }
+        }
+      }
     ],
   },
 
@@ -42,8 +60,8 @@ module.exports = {
     new CopyWebpackPlugin({
       patterns: [
         { from: "src/assets", to: "assets" },
-        { from: "src/options", to: "options" },
-        { from: "src/popup", to: "popup" },
+        { from: "src/options/index.html", to: "options" },
+        { from: "src/popup/index.html", to: "popup" },
         "src/manifest.json",
       ],
     }),
@@ -53,7 +71,7 @@ module.exports = {
   ],
 
   resolve: {
-    extensions: [".ts", ".js", ".svelte"],
+    extensions: [".ts", ".js", ".tsx"],
   },
 
   experiments: {

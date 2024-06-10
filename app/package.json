@@ -27,10 +27,12 @@
     "@babel/core": "^7.24.4",
     "@babel/preset-env": "^7.24.4",
     "@babel/preset-react": "^7.24.1",
+    "@babel/preset-typescript": "^7.24.7",
     "@types/bun": "^1.0.5",
     "@types/chai": "^4.3.11",
     "@types/mocha": "^10.0.6",
     "@types/node": "^20.8.9",
+    "@types/react": "^18.3.3",
     "@types/react-dom": "^18.2.24",
     "@typescript-eslint/eslint-plugin": "^6.6.0",
     "@typescript-eslint/parser": "^6.6.0",
@@ -64,8 +66,8 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "presets": [
     "@babel/preset-env",

@@ -16,7 +16,7 @@
   "permissions": ["webNavigation", "storage"],
   "options_ui": {
     "open_in_tab": true,
-    "page": "/options/options.html"
+    "page": "/options/index.html"
   },
   "background": {
     "service_worker": "/background.js"
@@ -31,7 +31,7 @@
     }
   ],
   "action": {
-    "default_popup": "popup/popup.html",
+    "default_popup": "./popup/index.html",
     "default_title": "Toppings: Preferences",
     "default_icon": "assets/icons/icon128.png"
   },
@@ -44,6 +44,5 @@
         "assets/icons/icon128.png",
         "options/assets/icons8-settings-64.png"
       ]
-    }
-  ]
+    } ]
 }
