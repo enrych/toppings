@@ -19,6 +19,12 @@ export interface YouTubeAppInfo extends WebAppInfo {
   }
 }
 
+export interface UdemyContext extends WebAppInfo {
+  body: {
+    routeType: string
+    [key: string]: any
+  }
+}
 export interface ToppingsRequest {
   appName: string
   body?: Record<string, any>
