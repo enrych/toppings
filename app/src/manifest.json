@@ -39,7 +39,7 @@
     {
       "matches": ["<all_urls>"],
       "resources": [
-        "modules/*.js",
+        "workers/*.js",
         "css/*.css",
         "assets/icons/icon128.png",
         "options/assets/*.png"

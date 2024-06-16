@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 function App() {
   const version = chrome.runtime.getManifest().version;
   const [preferences, setPreferences] = useState({
-    isExtensionActive: true,
+    isExtensionEnabled: true,
     toggleSpeedShortcut: "X",
     seekBackwardShortcut: "A",
     seekForwardShortcut: "D",
@@ -35,7 +35,7 @@ function App() {
 
   const handleRestoreDefaults = () => {
     setPreferences({
-      isExtensionActive: true,
+      isExtensionEnabled: true,
       toggleSpeedShortcut: "X",
       seekBackwardShortcut: "A",
       seekForwardShortcut: "D",
@@ -61,8 +61,8 @@ function App() {
           <Preference
             label="Toggle On/Off"
             type="switch"
-            id="isExtensionActive"
-            value={preferences.isExtensionActive}
+            id="isExtensionEnabled"
+            value={preferences.isExtensionEnabled}
           />
         </Category>
         <Category title="Shortcuts">

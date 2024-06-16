@@ -20,7 +20,7 @@ module.exports = {
       filename: "./options/index.js",
       import: "./src/options/src/index.tsx",
     },
-    ...getModules(),
+    ...getWorkers(),
   },
 
   output: {
@@ -96,15 +96,15 @@ module.exports = {
   },
 };
 
-function getModules() {
-  const modulesPath = path.resolve(__dirname, "src/content_scripts/modules");
-  const modulesDirectories = getDirectories(modulesPath);
+function getWorkers() {
+  const workersPath = path.resolve(__dirname, "src/content_scripts/workers");
+  const workers = getDirectories(workersPath);
   const entryPoints = {};
 
-  modulesDirectories.forEach((dir) => {
+  workers.forEach((dir) => {
     entryPoints[dir] = {
-      import: path.resolve(modulesPath, dir, "index.ts"),
-      filename: "./modules/[name].js",
+      import: path.resolve(workersPath, dir, "index.ts"),
+      filename: "./workers/[name].js",
       library: {
         type: "module",
       },

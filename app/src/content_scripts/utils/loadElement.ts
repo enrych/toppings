@@ -1,4 +1,4 @@
-import { type Nullable } from '../../common/interfaces'
+import { type Nullable } from "../../types";
 
 /**
  * Asynchronously loads an element with the specified selector within a timeout.
@@ -12,27 +12,27 @@ import { type Nullable } from '../../common/interfaces'
 const loadElement = async (
   selector: string,
   timeout: number,
-  interval: number
+  interval: number,
 ): Promise<Nullable<HTMLElement>> => {
   return await new Promise<Nullable<HTMLElement>>((resolve, reject) => {
     const checkInterval = setInterval(() => {
-      const element = document.querySelector(selector) as HTMLElement
+      const element = document.querySelector(selector) as HTMLElement;
       if (element !== null) {
-        clearInterval(checkInterval)
-        clearTimeout(checkTimeout)
-        resolve(element)
+        clearInterval(checkInterval);
+        clearTimeout(checkTimeout);
+        resolve(element);
       }
-    }, interval)
+    }, interval);
 
     const checkTimeout = setTimeout(() => {
-      clearInterval(checkInterval)
-      if (process.env.NODE_ENV === 'development') {
-        const errorMessage = `Element with selector '${selector}' not found within ${timeout}ms.`
-        console.warn(errorMessage)
+      clearInterval(checkInterval);
+      if (process.env.NODE_ENV === "development") {
+        const errorMessage = `Element with selector '${selector}' not found within ${timeout}ms.`;
+        console.warn(errorMessage);
       }
-      resolve(null)
-    }, timeout)
-  })
-}
+      resolve(null);
+    }, timeout);
+  });
+};
 
-export default loadElement
+export default loadElement;
