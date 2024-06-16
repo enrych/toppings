@@ -1,10 +1,10 @@
-import './App.css'
+import "./App.css";
 
 const App = () => {
   return (
-    <main>
-      <h1>Options Page</h1>
-    </main>
-  )
-}
-export default App
+    <div>
+      <h1 className="text-primary text-4xl font-bold">Options Page</h1>
+    </div>
+  );
+};
+export default App;

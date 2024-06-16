@@ -5,7 +5,7 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 module.exports = {
-  target: 'web',
+  target: "web",
   entry: {
     background: "./src/background/index.ts",
     content: [
@@ -27,31 +27,42 @@ module.exports = {
     filename: "[name].js",
     path: path.resolve(__dirname, "dist"),
     clean: {
-      dry: true
+      dry: true,
     },
   },
 
   module: {
     rules: [
       {
-        test: /\.css$/,
+        test: /\.css$/i,
+        include: [
+          path.resolve(__dirname, "src/options"),
+          path.resolve(__dirname, "src/popup"),
+        ],
+        use: ["style-loader", "css-loader", "postcss-loader"],
+      },
+      {
+        test: /\.css$/i,
+        exclude: [
+          path.resolve(__dirname, "src/options"),
+          path.resolve(__dirname, "src/popup"),
+        ],
         use: [MiniCssExtractPlugin.loader, "css-loader"],
       },
-
       {
         test: /\.(ts|tsx)$/,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader',
+          loader: "babel-loader",
           options: {
             presets: [
-              '@babel/preset-env',
-              ['@babel/preset-react', { 'runtime': 'automatic' }],
-              '@babel/preset-typescript'
-            ]
-          }
-        }
-      }
+              "@babel/preset-env",
+              ["@babel/preset-react", { runtime: "automatic" }],
+              "@babel/preset-typescript",
+            ],
+          },
+        },
+      },
     ],
   },
 
