@@ -29,6 +29,8 @@ module.exports = {
     clean: {
       dry: true,
     },
+    publicPath: "../",
+    assetModuleFilename: "assets/images/[hash][ext][query]",
   },
 
   module: {
@@ -62,6 +64,10 @@ module.exports = {
             ],
           },
         },
+      },
+      {
+        test: /\.png/,
+        type: "asset/resource",
       },
     ],
   },
