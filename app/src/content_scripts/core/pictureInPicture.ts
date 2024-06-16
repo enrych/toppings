@@ -31,9 +31,7 @@ const getPrimaryVideo = (): HTMLVideoElement | undefined => {
     .filter((video) => video.readyState !== 0)
     .filter((video) => !video.disablePictureInPicture)
     .sort((a, b) => {
-      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       const aRect = a.getClientRects()[0] || { width: 0, height: 0 }
-      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       const bRect = b.getClientRects()[0] || { width: 0, height: 0 }
       return bRect.width * bRect.height - aRect.width * aRect.height
     })
