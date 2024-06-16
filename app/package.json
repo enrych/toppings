@@ -5,6 +5,7 @@
   "private": "true",
   "scripts": {
     "dev": "webpack --watch --config webpack.dev.cjs",
+    "prod": "webpack --watch --config webpack.prod.cjs",
     "build": "webpack --config webpack.prod.cjs",
     "release": "npm run build && node scripts/release.js",
     "lint": "eslint . --ext .ts --fix",
