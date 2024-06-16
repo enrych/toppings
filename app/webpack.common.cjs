@@ -18,7 +18,7 @@ module.exports = {
     },
     options: {
       filename: "./options/index.js",
-      import: "./src/options/src/main.tsx",
+      import: "./src/options/src/index.tsx",
     },
     ...getModules(),
   },
