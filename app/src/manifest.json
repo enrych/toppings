@@ -42,7 +42,8 @@
         "modules/*.js",
         "css/*.css",
         "assets/icons/icon128.png",
-        "options/assets/icons8-settings-64.png"
+        "options/assets/*.png"
       ]
-    } ]
+    }
+  ]
 }
