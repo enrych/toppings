@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: bun:latest # Use the bun image
+      - image: oven/bun:latest # Use the bun image
 
     steps:
       - checkout
