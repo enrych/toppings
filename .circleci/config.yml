@@ -5,12 +5,10 @@ jobs:
     docker:
       - image: oven/bun:latest # Use the bun image
 
+    working_directory: ~/app # Set the working directory for all steps
+
     steps:
       - checkout
-      - run:
-          name: Navigate to project directory
-          command: cd app # Change directory to the app folder
-
       - run:
           name: Install Dependencies
           command: bun install # Use bun install
