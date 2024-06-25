@@ -3,21 +3,29 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: cimg/node:18.19
+      - image: bun:latest # Use the bun image
+
     steps:
       - checkout
       - run:
+          name: Navigate to project directory
+          command: cd app # Change directory to the app folder
+
+      - run:
           name: Install Dependencies
-          command: npm install
+          command: bun install # Use bun install
+
       - run:
           name: Run Static Tests
-          command: npm run test:static
+          command: bun run test:static # Run test script with bun
+
       - run:
           name: Run Unit Tests
-          command: npm run test:unit
+          command: bun run test:unit # Run test script with bun
+
       - run:
           name: Build for Production
-          command: npm run build:prod
+          command: bun run build:prod # Run build script with bun
 
 workflows:
   version: 2
