@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: cimg/node:18.19
+      - image: cimg/node:20
 
     steps:
       - checkout
@@ -23,7 +23,7 @@ jobs:
 
       - run:
           name: Build for Production
-          command: cd app && bun run build:prod
+          command: cd app && bun run build
 
 workflows:
   version: 2

@@ -19,8 +19,6 @@ describe("getWebAppContext", () => {
         contentId: "PL1234567890",
       },
     };
-    console.log(getWebAppContext(testCase1));
-    console.log(expectedResult1);
     expect(getWebAppContext(testCase1)).to.deep.equal(expectedResult1);
   });
 
