@@ -3,6 +3,7 @@ logs
 
 # nyc test coverage
 .nyc_output
+coverage
 
 # Dependency directories
 node_modules/

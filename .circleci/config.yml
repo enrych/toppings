@@ -3,27 +3,27 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: oven/bun:latest # Use the bun image
-
-    working_directory: ~/app # Set the working directory for all steps
+      - image: cimg/node:18.19
 
     steps:
       - checkout
       - run:
-          name: Install Dependencies
-          command: bun install # Use bun install
-
+          name: Install Bun
+          command: |
+            curl -fsSL https://bun.sh/install | bash
+            echo 'export BUN_INSTALL="$HOME/.bun"' >> $BASH_ENV
+            echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> $BASH_ENV
       - run:
-          name: Run Static Tests
-          command: bun run test:static # Run test script with bun
+          name: Install Dependencies
+          command: cd app && bun install
 
       - run:
           name: Run Unit Tests
-          command: bun run test:unit # Run test script with bun
+          command: cd app && bun run test:unit
 
       - run:
           name: Build for Production
-          command: bun run build:prod # Run build script with bun
+          command: cd app && bun run build:prod
 
 workflows:
   version: 2

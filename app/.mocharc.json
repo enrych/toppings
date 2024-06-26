@@ -1,8 +1,7 @@
 {
-    "extension": ["ts"],
-    "ignore": ["**/build/**","**/node_modules/**"],
-    "require": [
-      "ts-node/register"
-    ],
-    "recursive": true
+  "extension": ["ts"],
+  "ignore": ["**/dist/**", "**/node_modules/**"],
+  "require": ["tsx"],
+  "recursive": true
 }
+
