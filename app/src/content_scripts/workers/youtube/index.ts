@@ -1,27 +1,32 @@
-import { type YouTubeContext } from '../../../background/webAppContextParsers'
-import addWatchToppings from './routes/watch'
-import addPlaylistToppings from './routes/playlist'
+import runWatchWorker from "./routes/watch";
+import runPlaylistWorker from "./routes/playlist";
+import { type YouTubeContext } from "../../../background/webAppContextParsers";
+import { type YouTubeWorkerConfig } from "./config";
+import {
+  YouTubePlaylistContext,
+  YouTubeWatchContext,
+} from "../../../background/webAppContextParsers/parseYouTubeContext";
 
-let isPlaylistEnabled: boolean
-let isWatchEnabled: boolean
+const runYouTubeWorker = async (context: YouTubeContext): Promise<void> => {
+  const { activeRoute } = context.contextData;
+  const workerConfig = context.workerConfig as YouTubeWorkerConfig;
 
-const addYouTubeToppings = async (context: YouTubeContext): Promise<void> => {
-  chrome.storage.sync.get(['playlistEnabled', 'watchEnabled'], async (storage) => {
-    isPlaylistEnabled = storage.playlistEnabled
-    isWatchEnabled = storage.watchEnabled
-
-    const { webAppURL: { route }, contentId } = context.contextData
-    switch (route[0]) {
-      case 'watch':
-        isWatchEnabled && await addWatchToppings(contentId as string)
-        break
-      case 'playlist':
-        isPlaylistEnabled && await addPlaylistToppings(contentId as string)
-        break
-      default:
-        break
+  switch (activeRoute) {
+    case "watch": {
+      const isWatchWorkerEnabled = workerConfig.routes.watch.isEnabled;
+      isWatchWorkerEnabled &&
+        (await runWatchWorker(context as YouTubeWatchContext));
+      break;
     }
-  })
-}
+    case "playlist": {
+      const isPlaylistWorkerEnabled = workerConfig.routes.playlist.isEnabled;
+      isPlaylistWorkerEnabled &&
+        (await runPlaylistWorker(context as YouTubePlaylistContext));
+      break;
+    }
+    default:
+      break;
+  }
+};
 
-export default addYouTubeToppings
+export default runYouTubeWorker;

@@ -1,20 +1,22 @@
-import { type UdemyContext } from '../../../background/webAppContextParsers'
-import addLearnToppings from './routes/learn'
-import { type LearnPageContext } from './routes/learn/interfaces'
+import { type UdemyContext } from "../../../background/webAppContextParsers";
+import { type UdemyLearnContext } from "../../../background/webAppContextParsers/parseUdemyContext";
+import { type UdemyWorkerConfig } from "./config";
+import runLearnWorker from "./routes/learn";
 
-const isLearnEnabled: boolean = true
+const runUdemyWorker = async (context: UdemyContext): Promise<void> => {
+  const { activeRoute } = context.contextData;
+  const workerConfig = context.workerConfig as UdemyWorkerConfig;
 
-// chrome.storage.sync.get(['isLearnEnabled'], (storage) => {
-//   isLearnEnabled = storage.isLearnEnabled
-// })
-
-const addUdemyToppings = async (context: UdemyContext): Promise<void> => {
-  const { route } = context.contextData.webAppURL
-  const activeRoute = route[0]
   switch (activeRoute) {
-    case 'learn':
-      isLearnEnabled && await addLearnToppings(context as LearnPageContext)
+    case "learn": {
+      const isLearnWorkerEnabled = workerConfig.routes.learn.isEnabled;
+      isLearnWorkerEnabled &&
+        (await runLearnWorker(context as UdemyLearnContext));
+      break;
+    }
+    default:
+      break;
   }
-}
+};
 
-export default addUdemyToppings
+export default runUdemyWorker;

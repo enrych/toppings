@@ -2,13 +2,14 @@ import { createMenuItem } from "../../common/dom";
 import YTPlayer from "../../common/VideoPlayer";
 import loadElement from "../../../../utils/loadElement";
 import { type Nullable } from "../../../../../types";
+import { type YouTubeWatchContext } from "../../../../../background/webAppContextParsers/parseYouTubeContext";
+import { YouTubeWorkerConfig } from "../../config";
 
 let toggleSpeedShortcut: string;
 let seekBackwardShortcut: string;
 let seekForwardShortcut: string;
 let increaseSpeedShortcut: string;
 let decreaseSpeedShortcut: string;
-let customSpeedList: string[];
 let customPrecisionSpeedList: string[];
 let toggleSpeed: string;
 let defaultSpeed: string;
@@ -16,41 +17,6 @@ let seekForward: number;
 let seekBackward: number;
 let increaseSpeed: string;
 let decreaseSpeed: string;
-
-chrome.storage.sync.get(
-  [
-    "toggleSpeedShortcut",
-    "seekBackwardShortcut",
-    "seekForwardShortcut",
-    "increaseSpeedShortcut",
-    "decreaseSpeedShortcut",
-    "customSpeedList",
-    "toggleSpeed",
-    "defaultSpeed",
-    "seekForward",
-    "seekBackward",
-    "increaseSpeed",
-    "decreaseSpeed",
-  ],
-  (storage) => {
-    toggleSpeedShortcut = storage.toggleSpeedShortcut;
-    seekBackwardShortcut = storage.seekBackwardShortcut;
-    seekForwardShortcut = storage.seekForwardShortcut;
-    increaseSpeedShortcut = storage.increaseSpeedShortcut;
-    decreaseSpeedShortcut = storage.decreaseSpeedShortcut;
-    customSpeedList = storage.customSpeedList;
-    customPrecisionSpeedList = customSpeedList.map((speed) =>
-      (+speed).toFixed(2),
-    );
-    toggleSpeed = Number(storage.toggleSpeed).toFixed(2);
-    defaultSpeed = Number(storage.defaultSpeed).toFixed(2);
-    seekForward = storage.seekForward;
-    seekBackward = storage.seekBackward;
-    increaseSpeed = Number(storage.increaseSpeed).toFixed(2);
-    decreaseSpeed = Number(storage.decreaseSpeed).toFixed(2);
-    currentSpeed = Number(defaultSpeed).toFixed(2);
-  },
-);
 
 let currentSpeed: string;
 let doubleTapSeekElement: Nullable<HTMLElement>;
@@ -61,8 +27,24 @@ let customSpeed: string;
 let customSpeedButton: HTMLElement;
 let doubleTapSeekTimeout: ReturnType<typeof setTimeout>;
 
-const onWatchPage = async (contentID: string): Promise<void> => {
-  player = await loadPlayer(contentID);
+const runWatchWorker = async (context: YouTubeWatchContext): Promise<void> => {
+  const { videoID } = context.contextData.payload;
+  const { isEnabled, keybindings, preferences } = (
+    context.workerConfig as YouTubeWorkerConfig
+  ).routes.watch;
+  toggleSpeedShortcut = keybindings.toggleSpeedShortcut;
+  seekBackwardShortcut = keybindings.seekBackwardShortcut;
+  seekForwardShortcut = keybindings.seekForwardShortcut;
+  increaseSpeedShortcut = keybindings.increaseSpeedShortcut;
+  decreaseSpeedShortcut = keybindings.decreaseSpeedShortcut;
+  customPrecisionSpeedList = preferences.customSpeedList;
+  toggleSpeed = preferences.toggleSpeed;
+  defaultSpeed = preferences.defaultSpeed;
+  seekForward = preferences.seekForward;
+  seekBackward = preferences.seekBackward;
+  increaseSpeed = preferences.increaseSpeed;
+  decreaseSpeed = preferences.decreaseSpeed;
+  player = await loadPlayer(videoID);
   if (player !== null) {
     setWatchDefaults();
 
@@ -105,7 +87,7 @@ const setWatchDefaults = (): void => {
   }
 };
 
-const loadPlayer = async (contentID: string): Promise<Nullable<YTPlayer>> => {
+const loadPlayer = async (videoID: string): Promise<Nullable<YTPlayer>> => {
   const playerVideoElement = (await loadElement(
     "video",
     10000,
@@ -113,7 +95,7 @@ const loadPlayer = async (contentID: string): Promise<Nullable<YTPlayer>> => {
   )) as Nullable<HTMLVideoElement>;
   if (playerVideoElement !== null) {
     const loadedPlayer = new YTPlayer(playerVideoElement, {
-      videoID: contentID,
+      videoID: videoID,
     });
     return loadedPlayer;
   }
@@ -461,4 +443,4 @@ const changePlaybackSpeed = (speed: number): void => {
   }
 };
 
-export default onWatchPage;
+export default runWatchWorker;

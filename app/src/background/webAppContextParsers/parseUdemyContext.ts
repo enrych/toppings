@@ -1,33 +1,62 @@
-import { type WebAppURL } from '../webAppURL'
-import { type SupportedWebAppContext } from '../webAppContext'
+import { type SupportedWebAppContext } from "../webAppContext";
+import getWorkerConfig from "../getWorkerConfig";
+import { UdemyWorkerConfig } from "../../content_scripts/workers/udemy/config";
 
-export interface UdemyContext extends SupportedWebAppContext {
+export interface UdemyLearnContext extends SupportedWebAppContext {
+  contextData: {
+    webAppURL: URL;
+    activeRoute: "learn";
+    payload: UdemyLecture;
+  };
 }
 
-export default function parseUdemyContext (webAppURL: WebAppURL): UdemyContext {
-  const regex = /https:\/\/www\.udemy\.com\/course\/([a-zA-Z0-9-]+)\/learn\/lecture\/(\d+)/
-  const match = regex.exec(webAppURL.href)
+export interface UdemyLecture {
+  lectureID: string;
+  courseName: string;
+}
+
+export type UdemyContext = UdemyLearnContext | SupportedWebAppContext;
+
+export default async function parseUdemyContext(
+  webAppURL: URL,
+): Promise<UdemyContext> {
+  const udemyWorkerConfig = (await getWorkerConfig(
+    "udemy",
+  )) as UdemyWorkerConfig;
+
+  if (!udemyWorkerConfig) {
+    throw new Error("Udemy worker configuration not found.");
+  }
+
+  const lectureRouteRegex =
+    /https:\/\/www\.udemy\.com\/course\/([a-zA-Z0-9-]+)\/learn\/lecture\/(\d+)/;
+  const match = lectureRouteRegex.exec(webAppURL.href);
 
   if (match !== null) {
-    const courseName = match[1]
-    const lectureID = match[2]
+    const lectureID = match[2];
+    const courseName = match[1];
     const context: UdemyContext = {
-      appName: 'udemy',
       isSupported: true,
+      appName: "udemy",
+      workerConfig: udemyWorkerConfig,
       contextData: {
         webAppURL,
-        courseName,
-        lectureID
-      }
-    }
-    return context
+        activeRoute: "learn",
+        payload: {
+          lectureID,
+          courseName,
+        },
+      },
+    };
+    return context;
   }
 
   return {
-    appName: 'udemy',
     isSupported: true,
+    appName: "udemy",
+    workerConfig: udemyWorkerConfig,
     contextData: {
-      webAppURL
-    }
-  }
+      webAppURL,
+    },
+  };
 }

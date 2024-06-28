@@ -1,31 +1,27 @@
 import GLOBAL_CONTEXT from "../../../../../store";
 import loadElement from "../../../../utils/loadElement";
 import ForgeDOM from "../../forgeDOM";
-import { type UdemyContext } from "../../../../../background/webAppContextParsers";
 import { type Nullable } from "../../../../../types";
-import { type UdemyPlayer, type LectureData } from "./interfaces";
+import { type UdemyPlayer } from "./interfaces";
+import {
+  type UdemyLearnContext,
+  type UdemyLecture,
+} from "../../../../../background/webAppContextParsers/parseUdemyContext";
+import { type UdemyWorkerConfig } from "../../config";
 
-const toggleSpeedShortcut: string = "X";
-const seekBackwardShortcut: string = "A";
-const seekForwardShortcut: string = "D";
-const increaseSpeedShortcut: string = "W";
-const decreaseSpeedShortcut: string = "S";
-const toggleTheatreShortcut: string = "T";
-const customSpeedList: string[] = [
-  "0.50",
-  "0.75",
-  "1.00",
-  "1.25",
-  "1.50",
-  "1.75",
-  "2.00",
-];
-const defaultSpeed: string = "1";
-const toggleSpeed: string = "1.5";
-const seekForward: string = "15";
-const seekBackward: string = "15";
-const increaseSpeed: string = "0.25";
-const decreaseSpeed: string = "0.25";
+let toggleSpeedShortcut: string;
+let seekBackwardShortcut: string;
+let seekForwardShortcut: string;
+let increaseSpeedShortcut: string;
+let decreaseSpeedShortcut: string;
+let toggleTheatreShortcut: string;
+let customSpeedList: string[];
+let toggleSpeed: string;
+let defaultSpeed: string;
+let seekForward: number;
+let seekBackward: number;
+let increaseSpeed: string;
+let decreaseSpeed: string;
 
 let lastPlaybackRate: string;
 let player: Nullable<UdemyPlayer>;
@@ -33,8 +29,24 @@ let playerPlaybackButton: Nullable<HTMLElement>;
 let customSpeed: string;
 let customSpeedButton: HTMLLIElement;
 
-const addLearnToppings = async (context: UdemyContext): Promise<void> => {
-  const { lectureID, courseName } = context.contextData;
+const addLearnToppings = async (context: UdemyLearnContext): Promise<void> => {
+  const { lectureID, courseName } = context.contextData.payload;
+  const { isEnabled, keybindings, preferences } = (
+    context.workerConfig as UdemyWorkerConfig
+  ).routes.learn;
+  toggleSpeedShortcut = keybindings.toggleSpeedShortcut;
+  seekBackwardShortcut = keybindings.seekBackwardShortcut;
+  seekForwardShortcut = keybindings.seekForwardShortcut;
+  increaseSpeedShortcut = keybindings.increaseSpeedShortcut;
+  decreaseSpeedShortcut = keybindings.decreaseSpeedShortcut;
+  toggleTheatreShortcut = keybindings.toggleTheatreShortcut;
+  customSpeedList = preferences.customSpeedList;
+  toggleSpeed = preferences.toggleSpeed;
+  defaultSpeed = preferences.defaultSpeed;
+  seekForward = preferences.seekForward;
+  seekBackward = preferences.seekBackward;
+  increaseSpeed = preferences.increaseSpeed;
+  decreaseSpeed = preferences.decreaseSpeed;
   player = await loadPlayer({ lectureID, courseName });
   if (player !== null) {
     setDefaults();
@@ -60,7 +72,7 @@ const setDefaults = (): void => {
 };
 
 const loadPlayer = async (
-  lectureData: LectureData,
+  lectureData: UdemyLecture,
 ): Promise<Nullable<UdemyPlayer>> => {
   const playerVideoElement = (await loadElement(
     "video",
@@ -248,7 +260,6 @@ const useShortcuts = (event: KeyboardEvent): void => {
       const toggleTheatreButton = document.querySelector(
         'button[data-purpose="theatre-mode-toggle-button"]',
       ) as HTMLButtonElement;
-      console.log(toggleTheatreButton);
       if (toggleTheatreButton !== null) {
         toggleTheatreButton.click();
       }

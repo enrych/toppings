@@ -1,37 +1,21 @@
+import youtubeConfig from "../content_scripts/workers/youtube/config";
+import udemyConfig from "../content_scripts/workers/udemy/config";
+
 export const DEFAULT_CONFIG = {
-  // General
-  isExtensionEnabled: true,
-  // Shortcuts
-  toggleSpeedShortcut: "X",
-  seekBackwardShortcut: "A",
-  seekForwardShortcut: "D",
-  increaseSpeedShortcut: "W",
-  decreaseSpeedShortcut: "S",
-  // Watch Toppings
-  watchEnabled: true,
-  customSpeedList: [
-    "0.25",
-    "0.5",
-    "0.75",
-    "1",
-    "1.25",
-    "1.5",
-    "1.75",
-    "2",
-    "2.25",
-    "2.5",
-  ],
-  toggleSpeed: "1.5",
-  defaultSpeed: "1",
-  seekForward: "15",
-  seekBackward: "15",
-  increaseSpeed: "0.25",
-  decreaseSpeed: "0.25",
-  // Playlist Toppings
-  playlistEnabled: true,
+  globalSettings: {
+    isExtensionEnabled: true,
+  },
+  workers: {
+    youtube: {
+      ...youtubeConfig,
+    },
+    udemy: {
+      ...udemyConfig,
+    },
+  },
 };
 
-export type Preferences = typeof DEFAULT_CONFIG;
+export type Config = typeof DEFAULT_CONFIG;
 
 const GLOBAL_CONTEXT = Object.freeze({
   MAX_PLAYBACK_RATE: 16.0,

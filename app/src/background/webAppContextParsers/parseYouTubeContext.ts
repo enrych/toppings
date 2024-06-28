@@ -1,53 +1,93 @@
-import { type WebAppURL } from '../webAppURL'
-import { type SupportedWebAppContext } from '../webAppContext'
+import { type SupportedWebAppContext } from "../webAppContext";
+import getWorkerConfig from "../getWorkerConfig";
+import { YouTubeWorkerConfig } from "../../content_scripts/workers/youtube/config";
 
-export interface YouTubeContext extends SupportedWebAppContext {
+export interface YouTubeWatchContext extends SupportedWebAppContext {
   contextData: {
-    webAppURL: WebAppURL
-    contentId?: string
-    [key: string]: any
-  }
+    webAppURL: URL;
+    activeRoute: "watch";
+    payload: YouTubeVideo;
+  };
 }
 
-export default function parseYoutubeContext (webAppURL: WebAppURL): YouTubeContext {
-  const activeRoute = webAppURL.route[0]
-  switch (activeRoute) {
-    case 'playlist': {
-      const playlistID = webAppURL.searchParams.get('list')
+export interface YouTubeVideo {
+  videoID: string;
+}
+
+export interface YouTubePlaylistContext extends SupportedWebAppContext {
+  contextData: {
+    webAppURL: URL;
+    activeRoute: "playlist";
+    payload: YouTubePlaylist;
+  };
+}
+
+export interface YouTubePlaylist {
+  playlistID: string;
+}
+
+export type YouTubeContext =
+  | YouTubeWatchContext
+  | YouTubePlaylistContext
+  | SupportedWebAppContext;
+
+export default async function parseYoutubeContext(
+  webAppURL: URL,
+): Promise<YouTubeContext> {
+  const youtubeWorkerConfig = (await getWorkerConfig(
+    "youtube",
+  )) as YouTubeWorkerConfig;
+
+  if (!youtubeWorkerConfig) {
+    throw new Error("YouTube worker configuration not found.");
+  }
+
+  switch (webAppURL.pathname) {
+    case "/playlist": {
+      const playlistID = webAppURL.searchParams.get("list");
       if (playlistID != null) {
         return {
-          appName: 'youtube',
           isSupported: true,
+          appName: "youtube",
+          workerConfig: youtubeWorkerConfig,
           contextData: {
             webAppURL,
-            contentId: playlistID
-          }
-        }
+            activeRoute: "playlist",
+            payload: {
+              playlistID,
+            },
+          },
+        };
       }
-      break
+      break;
     }
 
-    case 'watch': {
-      const videoID = webAppURL.searchParams.get('v')
+    case "/watch": {
+      const videoID = webAppURL.searchParams.get("v");
       if (videoID != null) {
         return {
-          appName: 'youtube',
           isSupported: true,
+          appName: "youtube",
+          workerConfig: youtubeWorkerConfig,
           contextData: {
             webAppURL,
-            contentId: videoID
-          }
-        }
+            activeRoute: "watch",
+            payload: {
+              videoID,
+            },
+          },
+        };
       }
-      break
+      break;
     }
   }
 
   return {
-    appName: 'youtube',
     isSupported: true,
+    appName: "youtube",
+    workerConfig: youtubeWorkerConfig,
     contextData: {
-      webAppURL
-    }
-  }
+      webAppURL,
+    },
+  };
 }

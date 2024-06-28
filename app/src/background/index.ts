@@ -1,47 +1,54 @@
 import {
-	type WebAppContext,
-	getWebAppContext,
-	dispatchWebAppContext,
-} from './webAppContext';
-import onExtensionInstalled from './onExtensionInstalled';
+  type WebAppContext,
+  getWebAppContext,
+  dispatchWebAppContext,
+} from "./webAppContext";
+import { DEFAULT_CONFIG, type Config } from "../store";
 
-const UNINSTALL_URL: string =
-	'https://enrych.github.io/toppings-web/#/farewell';
+const INSTALL_URL = "https://enrych.github.io/toppings-web/#/greetings";
+const UNINSTALL_URL = "https://enrych.github.io/toppings-web/#/farewell";
+
+chrome.runtime.onInstalled.addListener(
+  ({ reason }: { reason: chrome.runtime.OnInstalledReason }): void => {
+    if (reason === "install" || reason === "update") {
+      if (process.env.NODE_ENV === "production") {
+        void chrome.tabs.create({ url: INSTALL_URL });
+      }
+      if (process.env.NODE_ENV === "production") {
+        void chrome.runtime.setUninstallURL(UNINSTALL_URL);
+      }
+
+      void chrome.storage.sync.set(DEFAULT_CONFIG);
+    }
+  },
+);
 
 let isExtensionEnabled: boolean;
-
-chrome.runtime.onInstalled.addListener(onExtensionInstalled);
-
-if (process.env.NODE_ENV === 'production') {
-	void chrome.runtime.setUninstallURL(UNINSTALL_URL);
-}
+chrome.storage.sync.get("globalSettings", (storage) => {
+  isExtensionEnabled = (storage as Config).globalSettings.isExtensionEnabled;
+});
 
 chrome.storage.onChanged.addListener((changes, namespace) => {
-	if (namespace === 'sync') {
-		if (changes?.isExtensionEnabled != null) {
-			isExtensionEnabled = changes.isExtensionEnabled.newValue;
-		}
-	}
+  if (namespace === "sync") {
+    if (changes?.globalSettings?.newValue?.isExtensionEnabled != null) {
+      isExtensionEnabled =
+        changes.globalSettings.newValue.isExtensionEnabled.newValue;
+    }
+  }
 });
 
-chrome.webNavigation.onCompleted.addListener((details) => {
-	const tabId = details.tabId;
-	const webAppContext: WebAppContext = getWebAppContext(details.url);
+chrome.webNavigation.onCompleted.addListener(async (details) => {
+  const tabId = details.tabId;
+  const webAppContext: WebAppContext = await getWebAppContext(details.url);
 
-	chrome.storage.sync.get('isExtensionEnabled', (storage) => {
-		isExtensionEnabled = storage.isExtensionEnabled;
-		if (!webAppContext.isSupported || !isExtensionEnabled) return;
-		dispatchWebAppContext(tabId, webAppContext);
-	});
+  if (!webAppContext.isSupported || !isExtensionEnabled) return;
+  await dispatchWebAppContext(tabId, webAppContext);
 });
 
-chrome.webNavigation.onHistoryStateUpdated.addListener((details) => {
-	const tabId = details.tabId;
-	const webAppContext: WebAppContext = getWebAppContext(details.url);
+chrome.webNavigation.onHistoryStateUpdated.addListener(async (details) => {
+  const tabId = details.tabId;
+  const webAppContext: WebAppContext = await getWebAppContext(details.url);
 
-	chrome.storage.sync.get('isExtensionEnabled', (storage) => {
-		isExtensionEnabled = storage.isExtensionEnabled;
-		if (!webAppContext.isSupported || !isExtensionEnabled) return;
-		dispatchWebAppContext(tabId, webAppContext);
-	});
+  if (!webAppContext.isSupported || !isExtensionEnabled) return;
+  await dispatchWebAppContext(tabId, webAppContext);
 });
