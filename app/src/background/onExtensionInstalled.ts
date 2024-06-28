@@ -1,19 +1,19 @@
-import { initialPreferences } from '../store';
+import { DEFAULT_CONFIG } from "../store";
 
-const INSTALL_URL: string = 'https://enrych.github.io/toppings-web/#/greetings';
+const INSTALL_URL: string = "https://enrych.github.io/toppings-web/#/greetings";
 
 const onExtensionInstalled = ({
-	reason,
+  reason,
 }: {
-	reason: chrome.runtime.OnInstalledReason;
+  reason: chrome.runtime.OnInstalledReason;
 }): void => {
-	if (reason === 'install' || reason === 'update') {
-		if (process.env.NODE_ENV === 'production') {
-			void chrome.tabs.create({ url: INSTALL_URL }); // This URL will be redirected to when extension is installed.
-		}
+  if (reason === "install" || reason === "update") {
+    if (process.env.NODE_ENV === "production") {
+      void chrome.tabs.create({ url: INSTALL_URL }); // This URL will be redirected to when extension is installed.
+    }
 
-		void chrome.storage.sync.set(initialPreferences);
-	}
+    void chrome.storage.sync.set(DEFAULT_CONFIG);
+  }
 };
 
 export default onExtensionInstalled;

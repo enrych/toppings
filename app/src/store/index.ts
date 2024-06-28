@@ -1,29 +1,4 @@
-export interface Preferences {
-  // General settings
-  isExtensionEnabled: boolean;
-
-  // Shortcut settings
-  toggleSpeedShortcut: string;
-  seekBackwardShortcut: string;
-  seekForwardShortcut: string;
-  increaseSpeedShortcut: string;
-  decreaseSpeedShortcut: string;
-
-  // Watch Toppings settings
-  watchEnabled: boolean;
-  customSpeedList: string[];
-  toggleSpeed: string;
-  defaultSpeed: string;
-  seekForward: string;
-  seekBackward: string;
-  increaseSpeed: string;
-  decreaseSpeed: string;
-
-  // Playlist Toppings settings (assuming boolean for playlistEnabled)
-  playlistEnabled: boolean;
-}
-
-export const initialPreferences = {
+export const DEFAULT_CONFIG = {
   // General
   isExtensionEnabled: true,
   // Shortcuts
@@ -55,6 +30,8 @@ export const initialPreferences = {
   // Playlist Toppings
   playlistEnabled: true,
 };
+
+export type Preferences = typeof DEFAULT_CONFIG;
 
 const GLOBAL_CONTEXT = Object.freeze({
   MAX_PLAYBACK_RATE: 16.0,
