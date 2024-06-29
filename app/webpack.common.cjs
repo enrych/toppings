@@ -1,6 +1,5 @@
 const path = require("path");
 const fs = require("fs");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
@@ -37,19 +36,7 @@ module.exports = {
     rules: [
       {
         test: /\.css$/i,
-        include: [
-          path.resolve(__dirname, "src/options"),
-          path.resolve(__dirname, "src/popup"),
-        ],
         use: ["style-loader", "css-loader", "postcss-loader"],
-      },
-      {
-        test: /\.css$/i,
-        exclude: [
-          path.resolve(__dirname, "src/options"),
-          path.resolve(__dirname, "src/popup"),
-        ],
-        use: [MiniCssExtractPlugin.loader, "css-loader"],
       },
       {
         test: /\.(ts|tsx)$/,
@@ -82,9 +69,6 @@ module.exports = {
         "src/manifest.json",
       ],
     }),
-    new MiniCssExtractPlugin({
-      filename: "css/[name].css",
-    }),
   ],
 
   resolve: {
@@ -102,8 +86,12 @@ function getWorkers() {
   const entryPoints = {};
 
   workers.forEach((dir) => {
+    const indexPath = fs.existsSync(path.resolve(workersPath, dir, "index.tsx"))
+      ? path.resolve(workersPath, dir, "index.tsx")
+      : path.resolve(workersPath, dir, "index.ts");
+
     entryPoints[dir] = {
-      import: path.resolve(workersPath, dir, "index.ts"),
+      import: indexPath,
       filename: "./workers/[name].js",
       library: {
         type: "module",
