@@ -1,4 +1,7 @@
-import { type ToppingsRequest } from "../../../../interfaces";
+export interface ToppingsRequest {
+  appName: string;
+  body?: Record<string, any>;
+}
 
 /**
  * Defines the structure of a request object for fetching data from the Toppings YouTube API.

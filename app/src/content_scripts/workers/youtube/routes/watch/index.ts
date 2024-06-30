@@ -1,7 +1,6 @@
 import { createMenuItem } from "../../common/dom";
 import YTPlayer from "../../common/VideoPlayer";
 import loadElement from "../../../../lib/loadElement";
-import { type Nullable } from "../../../../../types";
 import { type YouTubeWatchContext } from "../../../../../background/webAppContextParsers/parseYouTubeContext";
 import { YouTubeWorkerConfig } from "../../config";
 
@@ -19,10 +18,10 @@ let increaseSpeed: string;
 let decreaseSpeed: string;
 
 let currentSpeed: string;
-let doubleTapSeekElement: Nullable<HTMLElement>;
-let player: Nullable<YTPlayer>;
-let playerSettingsButton: Nullable<HTMLElement>;
-let playerPlaybackButton: Nullable<HTMLElement>;
+let doubleTapSeekElement: HTMLElement | null;
+let player: YTPlayer | null;
+let playerSettingsButton: HTMLElement | null;
+let playerPlaybackButton: HTMLElement | null;
 let customSpeed: string;
 let customSpeedButton: HTMLElement;
 let doubleTapSeekTimeout: ReturnType<typeof setTimeout>;
@@ -87,12 +86,12 @@ const setWatchDefaults = (): void => {
   }
 };
 
-const loadPlayer = async (videoID: string): Promise<Nullable<YTPlayer>> => {
+const loadPlayer = async (videoID: string): Promise<YTPlayer | null> => {
   const playerVideoElement = (await loadElement(
     "video",
     10000,
     500,
-  )) as Nullable<HTMLVideoElement>;
+  )) as HTMLVideoElement | null;
   if (playerVideoElement !== null) {
     const loadedPlayer = new YTPlayer(playerVideoElement, {
       videoID: videoID,
@@ -102,7 +101,7 @@ const loadPlayer = async (videoID: string): Promise<Nullable<YTPlayer>> => {
   return null;
 };
 
-const loadSettingsBtn = async (): Promise<Nullable<HTMLElement>> => {
+const loadSettingsBtn = async (): Promise<HTMLElement | null> => {
   const playerSettingsButton = await loadElement(
     ".ytp-settings-button",
     10000,
@@ -124,8 +123,8 @@ const onSettingsMenu = (): void => {
   });
 };
 
-const loadPlaybackSpeedBtn = async (): Promise<Nullable<HTMLElement>> => {
-  return await new Promise<Nullable<HTMLElement>>((resolve, reject) => {
+const loadPlaybackSpeedBtn = async (): Promise<HTMLElement | null> => {
+  return await new Promise<HTMLElement | null>((resolve, reject) => {
     const checkInterval = setInterval(() => {
       const labels = document.querySelectorAll(".ytp-menuitem-label");
       if (labels.length === 0) {
@@ -216,8 +215,8 @@ const onPlaybackSpeedMenu = (): void => {
   });
 };
 
-const loadPlaybackSpeedMenu = async (): Promise<Nullable<HTMLElement>> => {
-  return await new Promise<Nullable<HTMLElement>>((resolve, reject) => {
+const loadPlaybackSpeedMenu = async (): Promise<HTMLElement | null> => {
+  return await new Promise<HTMLElement | null>((resolve, reject) => {
     const checkInterval = setInterval(() => {
       const firstMenuItemLabel =
         document.getElementsByClassName("ytp-menuitem-label")[0];

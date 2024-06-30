@@ -1,5 +1,3 @@
-import { type Nullable } from "../../types";
-
 /**
  * Asynchronously loads an element with the specified selector within a timeout.
  *
@@ -13,8 +11,8 @@ const loadElement = async (
   selector: string,
   timeout: number,
   interval: number,
-): Promise<Nullable<HTMLElement>> => {
-  return await new Promise<Nullable<HTMLElement>>((resolve, reject) => {
+): Promise<HTMLElement | null> => {
+  return await new Promise<HTMLElement | null>((resolve, reject) => {
     const checkInterval = setInterval(() => {
       const element = document.querySelector(selector) as HTMLElement;
       if (element !== null) {

@@ -1,6 +1,5 @@
 import loadElement from "../../../../lib/loadElement";
 import ForgeDOM from "../../forgeDOM";
-import { type Nullable } from "../../../../../types";
 import { type UdemyPlayer } from "./interfaces";
 import {
   type UdemyLearnContext,
@@ -23,8 +22,8 @@ let increaseSpeed: string;
 let decreaseSpeed: string;
 
 let lastPlaybackRate: string;
-let player: Nullable<UdemyPlayer>;
-let playerPlaybackButton: Nullable<HTMLElement>;
+let player: UdemyPlayer | null;
+let playerPlaybackButton: HTMLElement | null;
 let customSpeed: string;
 let customSpeedButton: HTMLLIElement;
 
@@ -72,12 +71,12 @@ const setDefaults = (): void => {
 
 const loadPlayer = async (
   lectureData: UdemyLecture,
-): Promise<Nullable<UdemyPlayer>> => {
+): Promise<UdemyPlayer | null> => {
   const playerVideoElement = (await loadElement(
     "video",
     10000,
     500,
-  )) as Nullable<HTMLVideoElement>;
+  )) as HTMLVideoElement | null;
   if (playerVideoElement !== null) {
     playerVideoElement.addEventListener("play", function (event) {
       if (lastPlaybackRate !== undefined) {
@@ -118,7 +117,7 @@ const loadPlayer = async (
   return null;
 };
 
-const loadPlaybackBtn = async (): Promise<Nullable<HTMLElement>> => {
+const loadPlaybackBtn = async (): Promise<HTMLElement | null> => {
   const playerPlaybackButton = await loadElement(
     '[aria-label="Playback rate"]',
     10000,
