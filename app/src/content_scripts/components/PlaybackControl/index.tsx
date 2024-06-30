@@ -36,16 +36,16 @@ const DEFAULT_OPTIONS: PlaybackControlOptions = {
 
 export default function PlaybackControl({
   target,
-  options = {},
+  options: inOptions = {},
 }: {
   target: HTMLVideoElement;
   options?: PlaybackControlOptions;
 }) {
   const playbackControlRef = useRef<HTMLDivElement | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  const mergedOptions: PlaybackControlOptions = {
+  const options: PlaybackControlOptions = {
     ...DEFAULT_OPTIONS,
-    ...options,
+    ...inOptions,
   };
 
   useEffect(() => {
@@ -57,10 +57,65 @@ export default function PlaybackControl({
         setIsMenuOpen(false);
       }
     };
-    document.addEventListener("click", blurHandler);
 
-    return () => document.removeEventListener("click", blurHandler);
-  }, [playbackControlRef]);
+    const keybindingHandler = (e: KeyboardEvent) => {
+      const { key, target: eventTarget } = e;
+      const {
+        toggleSpeed,
+        seekBackward,
+        seekForward,
+        increaseSpeed,
+        decreaseSpeed,
+      } = options.keybindings!;
+
+      if (
+        eventTarget &&
+        ((eventTarget as HTMLElement).tagName === "INPUT" ||
+          (eventTarget as HTMLElement).tagName === "TEXTAREA" ||
+          (eventTarget as HTMLElement).isContentEditable)
+      ) {
+        return;
+      }
+
+      if (!target) return;
+      switch (key) {
+        case toggleSpeed.key.toLowerCase(): {
+          if (target.playbackRate.toFixed(2) !== "1.00") {
+            target.playbackRate = 1;
+          } else {
+            target.playbackRate = Number(toggleSpeed.value);
+          }
+          break;
+        }
+        case seekBackward.key.toLowerCase():
+          target.currentTime -= +seekBackward.value;
+          break;
+        case seekForward.key.toLowerCase():
+          target.currentTime += +seekForward.value;
+          break;
+        case increaseSpeed.key.toLowerCase(): {
+          const increasedSpeed = target.playbackRate + +increaseSpeed.value;
+          if (increasedSpeed > 16) return;
+          target.playbackRate = increasedSpeed;
+          break;
+        }
+        case decreaseSpeed.key.toLowerCase(): {
+          const decreasedSpeed = target.playbackRate - +increaseSpeed.value;
+          if (decreasedSpeed < 0.0625) return;
+          target.playbackRate = decreasedSpeed;
+          break;
+        }
+      }
+    };
+
+    document.addEventListener("click", blurHandler);
+    document.addEventListener("keydown", keybindingHandler);
+
+    return () => {
+      document.removeEventListener("click", blurHandler);
+      document.removeEventListener("keydown", keybindingHandler);
+    };
+  }, []);
 
   return (
     <div
@@ -71,7 +126,7 @@ export default function PlaybackControl({
       {isMenuOpen && (
         <PlaybackControlMenu
           target={target}
-          options={mergedOptions}
+          options={options}
           setIsMenuOpen={setIsMenuOpen}
         />
       )}
