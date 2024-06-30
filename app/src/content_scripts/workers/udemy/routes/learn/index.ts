@@ -1,4 +1,3 @@
-import GLOBAL_CONTEXT from "../../../../../store";
 import loadElement from "../../../../lib/loadElement";
 import ForgeDOM from "../../forgeDOM";
 import { type Nullable } from "../../../../../types";
@@ -241,7 +240,7 @@ const useShortcuts = (event: KeyboardEvent): void => {
           Number((+increaseSpeed).toFixed(2))
         ).toFixed(2),
       );
-      if (increasedSpeed > GLOBAL_CONTEXT.MAX_PLAYBACK_RATE) {
+      if (increasedSpeed > 16) {
         return;
       }
       changePlaybackSpeed(increasedSpeed);
@@ -252,7 +251,7 @@ const useShortcuts = (event: KeyboardEvent): void => {
           Number((+decreaseSpeed).toFixed(2))
         ).toFixed(2),
       );
-      if (decreasedSpeed < GLOBAL_CONTEXT.MIN_PLAYBACK_RATE) {
+      if (decreasedSpeed < 0.0625) {
         return;
       }
       changePlaybackSpeed(decreasedSpeed);
