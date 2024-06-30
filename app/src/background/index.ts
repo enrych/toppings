@@ -1,9 +1,9 @@
+import { DEFAULT_CONFIG, type Config } from "./store";
 import {
   type WebAppContext,
   getWebAppContext,
   dispatchWebAppContext,
 } from "./webAppContext";
-import { DEFAULT_CONFIG, type Config } from "../store";
 
 // TODO: Build the new website and update these links
 const INSTALL_URL = "https://enrych.github.io/toppings-web/#/greetings";
