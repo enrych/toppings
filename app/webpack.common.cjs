@@ -7,10 +7,7 @@ module.exports = {
   target: "web",
   entry: {
     background: "./src/background/index.ts",
-    content: [
-      "./src/content_scripts/index.ts",
-      "./src/content_scripts/core/index.ts",
-    ],
+    content: ["./src/content_scripts/index.ts"],
     popup: {
       filename: "./popup/index.js",
       import: "./src/popup/src/main.tsx",
