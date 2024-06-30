@@ -37,7 +37,7 @@ export default function PlaybackControlMenu({
 
   return (
     <div className="relative">
-      <div className="absolute bottom-[66px] right-1/4 py-[12px] bg-[#1a1a1a]/90 rounded-[8px] min-h-[250px] z-50 animate-toppings-pop-in leading-none">
+      <div className="absolute bottom-[66px] right-1/4 py-[12px] bg-[#1a1a1a]/90 rounded-[8px] min-h-fit z-50 animate-toppings-pop-in leading-none">
         <div className="mb-[8px] pt-[6px] pb-[18px] w-full flex justify-center items-center border-b border-white/30 border-solid select-none">
           <p className="text-[14px] text-white font-bold">Playback Rate</p>
         </div>
