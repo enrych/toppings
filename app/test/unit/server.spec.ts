@@ -1,8 +1,8 @@
 import { expect } from "chai";
-import { BASE_URI } from "../../src/server";
+import { SERVER_BASE_URI } from "../../src/background/store";
 
-describe("BASE_URI", () => {
+describe("SERVER_BASE_URI", () => {
   it("should use correct server URI", () => {
-    expect(BASE_URI).to.equal("https://toppings.pythonanywhere.com/v1");
+    expect(SERVER_BASE_URI).to.equal("https://toppings.pythonanywhere.com/v1");
   });
 });

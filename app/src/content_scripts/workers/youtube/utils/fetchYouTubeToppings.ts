@@ -1,4 +1,4 @@
-import { BASE_URI } from "../../../../server";
+import { SERVER_BASE_URI } from "../../../../background/store";
 import {
   type YouTubeToppingsRequest,
   type YouTubeToppingsResponse,
@@ -20,7 +20,7 @@ const fetchYouTubeToppings = async <T extends YouTubeToppingsResponse>(
     contentId = request.body.contentId;
   }
 
-  const apiURI = `${BASE_URI}/${endpoint}/${contentId}`;
+  const apiURI = `${SERVER_BASE_URI}/${endpoint}/${contentId}`;
 
   const httpResponse = await fetch(apiURI, {
     method: "GET",
