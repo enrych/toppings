@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "./index.css";
+import "../index.css";
 
 export default function ScrollToTop() {
   const [isActive, setIsActive] = useState(false);
