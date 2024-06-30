@@ -1,5 +1,6 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { PlaybackControlOptions } from ".";
+import PlaybackControlMenuItem from "./PlaybackControlMenuItem";
 
 export default function PlaybackControlMenu({
   target,
@@ -13,40 +14,63 @@ export default function PlaybackControlMenu({
   const [currentPlaybackRate, setCurrentPlaybackRate] = useState(
     target.playbackRate.toFixed(2),
   );
+  const [customPlaybackRate, setCustomPlaybackRate] = useState("NaN");
+  const [isCustomPlaybackRate, setIsCustomPlaybackRate] = useState(false);
   const playbackRates = options.playbackRates!;
+
+  const handlePlaybackRateChange = () => {
+    if (!playbackRates.includes(target.playbackRate.toFixed(2))) {
+      setIsCustomPlaybackRate(true);
+      setCustomPlaybackRate(target.playbackRate.toFixed(2));
+    }
+    setCurrentPlaybackRate(target.playbackRate.toFixed(2));
+  };
+
+  useEffect(() => {
+    handlePlaybackRateChange();
+    target.addEventListener("ratechange", handlePlaybackRateChange);
+
+    return () => {
+      target.removeEventListener("ratechange", handlePlaybackRateChange);
+    };
+  }, [target]);
 
   return (
     <div className="relative">
-      <div className="absolute bottom-[72px] right-1/4 bg-[#1a1a1a]/90 rounded-[8px] min-h-[250px] z-50 animate-toppings-pop-in leading-none">
-        <ul className="py-[12px] m-0 list-none overflow-y-auto" role="menu">
+      <div className="absolute bottom-[66px] right-1/4 py-[12px] bg-[#1a1a1a]/90 rounded-[8px] min-h-[250px] z-50 animate-toppings-pop-in leading-none">
+        <div className="mb-[8px] pt-[6px] pb-[18px] w-full flex justify-center items-center border-b border-white/30 border-solid select-none">
+          <p className="text-[14px] text-white font-bold">Playback Rate</p>
+        </div>
+        <ul className="m-0 list-none overflow-y-auto" role="menu">
+          {isCustomPlaybackRate && (
+            <PlaybackControlMenuItem
+              label={`Custom(${+customPlaybackRate})`}
+              isSelected={
+                Number(customPlaybackRate) === Number(currentPlaybackRate)
+                  ? "true"
+                  : "false"
+              }
+              onClick={() => {
+                target.playbackRate = +customPlaybackRate;
+                setCurrentPlaybackRate(customPlaybackRate);
+                setIsMenuOpen(false);
+              }}
+            />
+          )}
           {playbackRates.map((playbackRate) => {
             const isSelected =
               playbackRate === currentPlaybackRate ? "true" : "false";
             return (
-              <li
+              <PlaybackControlMenuItem
                 key={playbackRate}
-                className={`relative pl-0 list-item list-none cursor-pointer hover:bg-[#262626]/90 ${isSelected === "true" ? "bg-[#262626]/90" : ""}`}
-                role="none"
+                label={(+playbackRate).toString()}
+                isSelected={isSelected}
                 onClick={() => {
                   target.playbackRate = +playbackRate;
                   setCurrentPlaybackRate(playbackRate);
                   setIsMenuOpen(false);
                 }}
-              >
-                <button
-                  className="relative w-full h-auto m-0 py-[12px] px-[64px] bg-transparent text-white border-none outline-0 select-none"
-                  type="button"
-                  role="menuitemradio"
-                  tabIndex={-1}
-                  aria-checked={isSelected}
-                >
-                  <div className="flex items-center content-between min-h-4 min-w-[1px]">
-                    <span className="text-[12px] font-bold font-sans">
-                      {+playbackRate}
-                    </span>
-                  </div>
-                </button>
-              </li>
+              />
             );
           })}
         </ul>
