@@ -18,15 +18,15 @@ export default function PlaybackControlMenu({
   const [isCustomPlaybackRate, setIsCustomPlaybackRate] = useState(false);
   const playbackRates = options.playbackRates!;
 
-  const handlePlaybackRateChange = () => {
-    if (!playbackRates.includes(target.playbackRate.toFixed(2))) {
-      setIsCustomPlaybackRate(true);
-      setCustomPlaybackRate(target.playbackRate.toFixed(2));
-    }
-    setCurrentPlaybackRate(target.playbackRate.toFixed(2));
-  };
-
   useEffect(() => {
+    const handlePlaybackRateChange = () => {
+      if (!playbackRates.includes(target.playbackRate.toFixed(2))) {
+        setIsCustomPlaybackRate(true);
+        setCustomPlaybackRate(target.playbackRate.toFixed(2));
+      }
+      setCurrentPlaybackRate(target.playbackRate.toFixed(2));
+    };
+
     handlePlaybackRateChange();
     target.addEventListener("ratechange", handlePlaybackRateChange);
 
