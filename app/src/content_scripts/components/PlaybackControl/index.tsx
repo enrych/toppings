@@ -109,11 +109,15 @@ export default function PlaybackControl({
     };
 
     document.addEventListener("click", blurHandler);
-    document.addEventListener("keydown", keybindingHandler);
+    if (options.enableKeybindings) {
+      document.addEventListener("keydown", keybindingHandler);
+    }
 
     return () => {
       document.removeEventListener("click", blurHandler);
-      document.removeEventListener("keydown", keybindingHandler);
+      if (options.enableKeybindings) {
+        document.removeEventListener("keydown", keybindingHandler);
+      }
     };
   }, []);
 
