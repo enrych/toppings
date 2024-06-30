@@ -1,6 +1,6 @@
 import { createMetadataSection, createSectionItem } from "../../common/dom";
 import fetchYouTubeToppings from "../../utils/fetchYouTubeToppings";
-import { formatRuntime } from "../../../../utils/formatRuntime";
+import { formatRuntime } from "../../../../lib/formatRuntime";
 import { type YouTubePlaylistMetadata } from "../../common/interfaces";
 
 const addMetadataToppings = async (playlistID: string): Promise<void> => {

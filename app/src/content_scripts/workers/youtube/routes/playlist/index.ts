@@ -1,5 +1,5 @@
 import { YouTubePlaylistContext } from "../../../../../background/webAppContextParsers/parseYouTubeContext";
-import loadElement from "../../../../utils/loadElement";
+import loadElement from "../../../../lib/loadElement";
 import addMetadataToppings from "./addMetadataToppings";
 import "./index.css";
 

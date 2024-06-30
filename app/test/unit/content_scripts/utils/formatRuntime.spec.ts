@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { formatRuntime } from "../../../../src/content_scripts/utils/formatRuntime";
+import { formatRuntime } from "../../../../src/content_scripts/lib/formatRuntime";
 
 describe("formatRuntime", () => {
   it("should format runtime with days, hours, minutes, and seconds", () => {

@@ -1,6 +1,6 @@
 import { createMenuItem } from "../../common/dom";
 import YTPlayer from "../../common/VideoPlayer";
-import loadElement from "../../../../utils/loadElement";
+import loadElement from "../../../../lib/loadElement";
 import { type Nullable } from "../../../../../types";
 import { type YouTubeWatchContext } from "../../../../../background/webAppContextParsers/parseYouTubeContext";
 import { YouTubeWorkerConfig } from "../../config";

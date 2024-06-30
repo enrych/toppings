@@ -1,5 +1,5 @@
 import GLOBAL_CONTEXT from "../../../../../store";
-import loadElement from "../../../../utils/loadElement";
+import loadElement from "../../../../lib/loadElement";
 import ForgeDOM from "../../forgeDOM";
 import { type Nullable } from "../../../../../types";
 import { type UdemyPlayer } from "./interfaces";
