@@ -12,7 +12,7 @@ const loadElement = async (
   timeout: number,
   interval: number,
 ): Promise<HTMLElement | null> => {
-  return await new Promise<HTMLElement | null>((resolve, reject) => {
+  return await new Promise<HTMLElement | null>((resolve, _reject) => {
     const checkInterval = setInterval(() => {
       const element = document.querySelector(selector) as HTMLElement;
       if (element !== null) {

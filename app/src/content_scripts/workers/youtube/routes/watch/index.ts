@@ -124,7 +124,7 @@ const onSettingsMenu = (): void => {
 };
 
 const loadPlaybackSpeedBtn = async (): Promise<HTMLElement | null> => {
-  return await new Promise<HTMLElement | null>((resolve, reject) => {
+  return await new Promise<HTMLElement | null>((resolve, _reject) => {
     const checkInterval = setInterval(() => {
       const labels = document.querySelectorAll(".ytp-menuitem-label");
       if (labels.length === 0) {
@@ -216,7 +216,7 @@ const onPlaybackSpeedMenu = (): void => {
 };
 
 const loadPlaybackSpeedMenu = async (): Promise<HTMLElement | null> => {
-  return await new Promise<HTMLElement | null>((resolve, reject) => {
+  return await new Promise<HTMLElement | null>((resolve, _reject) => {
     const checkInterval = setInterval(() => {
       const firstMenuItemLabel =
         document.getElementsByClassName("ytp-menuitem-label")[0];
@@ -253,7 +253,7 @@ const getPlaybackSpeedItems = (): HTMLElement[] => {
     hasAriaChecked: "false",
     itemTabIndex: "0",
     itemLabel: `Custom(${Number(customSpeed)})`,
-    itemOnClick: (event) => {
+    itemOnClick: (_event) => {
       changePlaybackSpeed(Number(customSpeed));
       const panelBackButton = document.getElementsByClassName(
         "ytp-panel-back-button",
@@ -278,7 +278,7 @@ const getPlaybackSpeedItems = (): HTMLElement[] => {
             hasAriaChecked: "false",
             itemTabIndex: "0",
             itemLabel: `${Number(speed)}`,
-            itemOnClick: (event) => {
+            itemOnClick: (_event) => {
               changePlaybackSpeed(Number(speed));
               const panelBackButton = document.getElementsByClassName(
                 "ytp-panel-back-button",
@@ -294,7 +294,7 @@ const getPlaybackSpeedItems = (): HTMLElement[] => {
             hasAriaChecked: "false",
             itemTabIndex: "0",
             itemLabel: "Normal",
-            itemOnClick: (event) => {
+            itemOnClick: (_event) => {
               changePlaybackSpeed(1);
               const panelBackButton = document.getElementsByClassName(
                 "ytp-panel-back-button",
