@@ -1,3 +1,5 @@
+import { Config } from "./store";
+
 export interface WorkerConfig {
   generalSettings: WorkerConfigGeneralSettings;
   routes?: WorkerConfigRoutes;
@@ -13,6 +15,14 @@ export interface WorkerConfigRoutes {
     keybindings?: Record<string, string>;
     preferences?: Record<string, any>;
   };
+}
+
+export function getConfig(): Promise<Config> {
+  return new Promise((resolve) => {
+    chrome.storage.sync.get(undefined, (storage) => {
+      resolve(storage as Config);
+    });
+  });
 }
 
 export function getAllWorkersConfigs(): Promise<Record<string, WorkerConfig>> {

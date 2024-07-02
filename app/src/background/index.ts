@@ -1,3 +1,4 @@
+import { getConfig } from "./getWorkerConfig";
 import { DEFAULT_CONFIG, type Config } from "./store";
 import {
   type WebAppContext,
@@ -24,23 +25,11 @@ chrome.runtime.onInstalled.addListener(
   },
 );
 
-let isExtensionEnabled: boolean;
-chrome.storage.sync.get("globalSettings", (storage) => {
-  isExtensionEnabled = (storage as Config).globalSettings.isExtensionEnabled;
-});
-
-chrome.storage.onChanged.addListener((changes, namespace) => {
-  if (namespace === "sync") {
-    if (changes?.globalSettings?.newValue?.isExtensionEnabled != null) {
-      isExtensionEnabled =
-        changes.globalSettings.newValue.isExtensionEnabled.newValue;
-    }
-  }
-});
-
 chrome.webNavigation.onCompleted.addListener(async (details) => {
   const tabId = details.tabId;
   const webAppContext: WebAppContext = await getWebAppContext(details.url);
+  const config = await getConfig();
+  const isExtensionEnabled = config.globalSettings.isExtensionEnabled;
 
   if (!webAppContext.isSupported || !isExtensionEnabled) return;
   await dispatchWebAppContext(tabId, webAppContext);
@@ -49,6 +38,8 @@ chrome.webNavigation.onCompleted.addListener(async (details) => {
 chrome.webNavigation.onHistoryStateUpdated.addListener(async (details) => {
   const tabId = details.tabId;
   const webAppContext: WebAppContext = await getWebAppContext(details.url);
+  const config = await getConfig();
+  const isExtensionEnabled = config.globalSettings.isExtensionEnabled;
 
   if (!webAppContext.isSupported || !isExtensionEnabled) return;
   await dispatchWebAppContext(tabId, webAppContext);
