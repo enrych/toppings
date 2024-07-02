@@ -1,15 +1,37 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
-import Root from "./routes/root";
-import ErrorPage from "./error-page";
+import App from "./App";
+import General from "./pages/General";
+import ErrorPage from "./pages/error-page";
+import { Config } from "../../background/store";
 import "./index.css";
+import Advanced from "./pages/Advanced";
+
+const configLoader = async (): Promise<Config> => {
+  return new Promise((resolve) => {
+    chrome.storage.sync.get(undefined, (storage) => {
+      resolve(storage as Config);
+    });
+  });
+};
 
 const router = createMemoryRouter([
   {
     path: "/",
-    element: <Root />,
+    element: <App />,
+    loader: configLoader,
     errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "",
+        element: <General />,
+      },
+      {
+        path: "advanced",
+        element: <Advanced />,
+      },
+    ],
   },
 ]);
 
