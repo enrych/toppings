@@ -1,9 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const version = chrome.runtime.getManifest().version;
+  const location = useLocation();
 
   return (
     <div
@@ -29,7 +30,7 @@ export default function Sidebar() {
       </header>
       <nav className="space-y-4 w-full">
         <Link
-          className="flex items-center gap-2 font-medium text-foreground hover:bg-[#3d3d43]/50 px-3 py-2 rounded-md cursor-pointer"
+          className={`flex items-center gap-2 font-medium text-foreground hover:bg-[#3d3d43]/50 px-3 py-2 rounded-md cursor-pointer ${location.pathname === "/" ? "bg-[#3d3d43]/50" : ""}`}
           to="/"
         >
           <img
@@ -43,7 +44,7 @@ export default function Sidebar() {
           </div>
         </Link>
         <Link
-          className="flex items-center gap-2 font-medium text-foreground hover:bg-[#3d3d43]/50 px-3 py-2 rounded-md cursor-pointer"
+          className={`flex items-center gap-2 font-medium text-foreground hover:bg-[#3d3d43]/50 px-3 py-2 rounded-md cursor-pointer ${location.pathname === "/advanced" ? "bg-[#3d3d43]/50" : ""}`}
           to="/advanced"
         >
           <img
