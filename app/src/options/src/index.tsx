@@ -3,10 +3,10 @@ import ReactDOM from "react-dom/client";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import App from "./App";
 import General from "./pages/General";
+import Advanced from "./pages/Advanced";
 import ErrorPage from "./pages/error-page";
 import { Config } from "../../background/store";
 import "./index.css";
-import Advanced from "./pages/Advanced";
 
 const configLoader = async (): Promise<Config> => {
   return new Promise((resolve) => {
