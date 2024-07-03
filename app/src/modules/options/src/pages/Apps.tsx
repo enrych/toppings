@@ -1,8 +1,8 @@
 import { useContext } from "react";
 import ConfigContext from "../store";
-import Card from "../../../ui/Card";
+import Card from "../../../../ui/Card";
 import Switch from "../components/Switch";
-import { Config } from "../../../background/store";
+import { Config } from "../../../../store";
 import Keybinding from "../components/Keybinding";
 
 export default function Apps() {
@@ -26,7 +26,7 @@ export default function Apps() {
               title={`Enable ${workerKey.charAt(0).toUpperCase() + workerKey.slice(1)}`}
               description={`To enable/disable the ${workerKey} worker globally.`}
               isEnabled={workerConfig.generalSettings.isEnabled}
-              onToggle={() => {}}
+              onToggle={() => { }}
             />
             {Object.entries(workerConfig.routes).map(
               ([routeKey, routeConfig], routeIdx) => (

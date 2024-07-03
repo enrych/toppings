@@ -6,7 +6,7 @@ import General from "./pages/General";
 import Apps from "./pages/Apps";
 import Advanced from "./pages/Advanced";
 import ErrorPage from "./pages/error-page";
-import { Config } from "../../background/store";
+import { Config } from "../../../store";
 import "./index.css";
 
 const configLoader = async (): Promise<Config> => {

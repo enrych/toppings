@@ -1,6 +1,6 @@
 import React from "react";
 import { Dispatch, SetStateAction } from "react";
-import { Config } from "../../background/store";
+import { Config } from "../../../store";
 
 const ConfigContext = React.createContext<{
   config: Config;

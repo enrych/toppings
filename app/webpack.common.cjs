@@ -6,15 +6,15 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 module.exports = {
   target: "web",
   entry: {
-    background: "./src/background/index.ts",
-    content: ["./src/content_scripts/index.ts"],
+    background: "./src/modules/background/index.ts",
+    content: ["./src/modules/content_scripts/index.ts"],
     popup: {
       filename: "./popup/index.js",
-      import: "./src/popup/src/main.tsx",
+      import: "./src/modules/popup/src/main.tsx",
     },
     options: {
       filename: "./options/index.js",
-      import: "./src/options/src/index.tsx",
+      import: "./src/modules/options/src/index.tsx",
     },
     ...getWorkers(),
   },
@@ -61,8 +61,8 @@ module.exports = {
     new CopyWebpackPlugin({
       patterns: [
         { from: "src/assets", to: "assets" },
-        { from: "src/options/index.html", to: "options" },
-        { from: "src/popup/index.html", to: "popup" },
+        { from: "src/modules/options/index.html", to: "options" },
+        { from: "src/modules/popup/index.html", to: "popup" },
         "src/manifest.json",
       ],
     }),
@@ -78,7 +78,7 @@ module.exports = {
 };
 
 function getWorkers() {
-  const workersPath = path.resolve(__dirname, "src/content_scripts/workers");
+  const workersPath = path.resolve(__dirname, "src/modules/content_scripts/workers");
   const workers = getDirectories(workersPath);
   const entryPoints = {};
 

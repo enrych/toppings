@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import ConfigContext from "../store";
-import Card from "../../../ui/Card";
+import Card from "../../../../ui/Card";
 import Switch from "../components/Switch";
 
 export default function General() {

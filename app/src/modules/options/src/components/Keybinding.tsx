@@ -1,4 +1,4 @@
-import Tooltip from "../../../ui/Tooltip";
+import Tooltip from "../../../../ui/Tooltip";
 import { KeyboardEvent, useState } from "react";
 
 export default function KeybindingBlock({
