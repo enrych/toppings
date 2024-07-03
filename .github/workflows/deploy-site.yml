@@ -36,17 +36,8 @@ jobs:
         with:
           ref: v2.x
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 'lts/*'
-          cache: ${{ steps.detect-package-manager.outputs.manager }}
-
-      - name: Install Bun
-        run: |
-          curl -fsSL https://bun.sh/install | bash
-          echo 'export BUN_INSTALL="$HOME/.bun"' >> $GITHUB_ENV
-          echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> $GITHUB_ENV
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
