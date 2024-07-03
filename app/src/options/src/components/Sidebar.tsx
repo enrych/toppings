@@ -44,6 +44,20 @@ export default function Sidebar() {
           </div>
         </Link>
         <Link
+          className={`flex items-center gap-2 font-medium text-foreground hover:bg-[#3d3d43]/50 px-3 py-2 rounded-md cursor-pointer ${location.pathname === "/apps" ? "bg-[#3d3d43]/50" : ""}`}
+          to="/apps"
+        >
+          <img
+            src={chrome.runtime.getURL("assets/icons/apps.svg")}
+            alt="Apps"
+          />
+          <div
+            className={`transition-opacity duration-300 ${isCollapsed ? "opacity-0" : "opacity-100"}`}
+          >
+            Apps
+          </div>
+        </Link>
+        <Link
           className={`flex items-center gap-2 font-medium text-foreground hover:bg-[#3d3d43]/50 px-3 py-2 rounded-md cursor-pointer ${location.pathname === "/advanced" ? "bg-[#3d3d43]/50" : ""}`}
           to="/advanced"
         >

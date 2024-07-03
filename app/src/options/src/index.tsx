@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import App from "./App";
 import General from "./pages/General";
+import Apps from "./pages/Apps";
 import Advanced from "./pages/Advanced";
 import ErrorPage from "./pages/error-page";
 import { Config } from "../../background/store";
@@ -26,6 +27,10 @@ const router = createMemoryRouter([
       {
         path: "",
         element: <General />,
+      },
+      {
+        path: "Apps",
+        element: <Apps />,
       },
       {
         path: "advanced",
