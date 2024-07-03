@@ -1,5 +1,5 @@
 import Switch from "../../../ui/Switch";
-import Tooltip from "../../../ui/ToolTip";
+import Tooltip from "../../../ui/Tooltip";
 
 export default function SwitchBlock({
   title,
