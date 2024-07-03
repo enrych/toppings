@@ -1,5 +1,5 @@
 import webAppContextParser from './webAppContextParsers';
-import { type WorkerConfig } from '../../store/getWorkerConfig';
+import { type WorkerConfig } from '../../store/';
 
 export interface UnSupportedWebAppContext {
 	isSupported: false;

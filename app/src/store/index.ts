@@ -1,25 +1,23 @@
-import youtubeConfig from '../modules/content_scripts/workers/youtube/config';
-import udemyConfig from '../modules/content_scripts/workers/udemy/config';
+import SERVER_BASE_URI from './server';
+import DEFAULT_CONFIG, { type Config } from './config';
+import getConfig from './config/lib/getConfig';
+import getAllWorkerConfig from './config/worker/lib/getAllWorkerConfig';
+import getWorkerConfig from './config/worker/lib/getWorkerConfig';
+import type { YouTubeWorkerConfig, UdemyWorkerConfig } from './config/worker';
+import type {
+	WorkerConfig,
+	WorkerConfigGeneralSettings,
+	WorkerConfigRouteConfig,
+} from './config/worker/interfaces';
 
-export const SERVER_BASE_URI =
-	process.env.NODE_ENV === 'development'
-		? 'http://localhost:8000'
-		: 'https://toppings.pythonanywhere.com/v1';
-
-export const DEFAULT_CONFIG = {
-	globalSettings: {
-		isExtensionEnabled: true,
-	},
-	workers: {
-		youtube: {
-			...youtubeConfig,
-		},
-		udemy: {
-			...udemyConfig,
-		},
-	},
+export { getConfig, getAllWorkerConfig, getWorkerConfig };
+export type {
+	YouTubeWorkerConfig,
+	UdemyWorkerConfig,
+	WorkerConfig,
+	WorkerConfigGeneralSettings,
+	WorkerConfigRouteConfig,
+	Config,
 };
 
-export type Config = typeof DEFAULT_CONFIG;
-
-export default DEFAULT_CONFIG;
+export { SERVER_BASE_URI, DEFAULT_CONFIG };

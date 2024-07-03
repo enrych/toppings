@@ -1,5 +1,4 @@
-import { getConfig } from '../../store/getWorkerConfig';
-import { DEFAULT_CONFIG, type Config } from '../..//store';
+import { getConfig, DEFAULT_CONFIG, type Config } from '../../store/';
 import {
 	type WebAppContext,
 	getWebAppContext,

@@ -1,6 +1,5 @@
 import { type SupportedWebAppContext } from '../webAppContext';
-import getWorkerConfig from '../../../store/getWorkerConfig';
-import { YouTubeWorkerConfig } from '../../content_scripts/workers/youtube/config';
+import { getWorkerConfig, type YouTubeWorkerConfig } from '../../../store/';
 
 export interface YouTubeWatchContext extends SupportedWebAppContext {
 	contextData: {

@@ -1,4 +1,4 @@
-import { type WorkerConfig } from '../../../../store/getWorkerConfig';
+import { type WorkerConfig } from '../../../../store/';
 
 const udemyWorkerConfig = {
 	generalSettings: {

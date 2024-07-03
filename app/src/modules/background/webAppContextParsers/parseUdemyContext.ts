@@ -1,6 +1,5 @@
 import { type SupportedWebAppContext } from '../webAppContext';
-import getWorkerConfig from '../../../store/getWorkerConfig';
-import { UdemyWorkerConfig } from '../../content_scripts/workers/udemy/config';
+import { getWorkerConfig, type UdemyWorkerConfig } from '../../../store/';
 
 export interface UdemyLearnContext extends SupportedWebAppContext {
 	contextData: {
