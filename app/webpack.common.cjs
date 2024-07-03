@@ -10,7 +10,7 @@ module.exports = {
     content: ["./src/modules/content_scripts/index.ts"],
     popup: {
       filename: "./popup/index.js",
-      import: "./src/modules/popup/src/main.tsx",
+      import: "./src/modules/popup/src/index.tsx",
     },
     options: {
       filename: "./options/index.js",

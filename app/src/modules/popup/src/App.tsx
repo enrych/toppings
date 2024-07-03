@@ -1,10 +1,15 @@
-import './App.css'
+import { Outlet } from "react-router-dom";
+import Navbar from "./components/Navbar";
 
-const App = () => {
+function App() {
   return (
-    <main>
-      <h1>Popup Page</h1>
-    </main>
-  )
+    <div className="w-[320px] h-[480px] bg-[#0f0f10] text-[#e7e7e4]">
+      <div className="">
+        <Outlet />
+      </div>
+      <Navbar />
+    </div>
+  );
 }
-export default App
+
+export default App;
