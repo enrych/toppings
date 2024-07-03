@@ -6,12 +6,25 @@ import Switch from "../components/Switch";
 export default function General() {
   const { config, setConfig } = useContext(ConfigContext)!;
 
+  const setExtensionIcon = (isEnabled: boolean) => {
+    const prefix = `${isEnabled ? "" : "disabled_"}`;
+    chrome.action.setIcon({
+      path: {
+        16: `/assets/icons/${prefix}icon16.png`,
+        32: `/assets/icons/${prefix}icon32.png`,
+        48: `/assets/icons/${prefix}icon48.png`,
+        128: `/assets/icons/${prefix}icon128.png`,
+      },
+    });
+  };
+
   const handleExtensionToggle = (isEnabled: boolean) => {
     chrome.storage.sync.set({
       globalSettings: {
         isExtensionEnabled: isEnabled,
       },
     });
+    setExtensionIcon(isEnabled);
     setConfig((prev) => {
       return {
         ...prev,
