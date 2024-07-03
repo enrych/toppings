@@ -63,10 +63,14 @@ jobs:
             ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json', '**/yarn.lock', '**/bun.lockb') }}-
 
       - name: Install dependencies
-        run: cd docs && bun install
+        run: |
+          source $GITHUB_ENV
+          cd docs && bun install
 
       - name: Build with Next.js
-        run: cd docs && bun run build
+        run: |
+          source $GITHUB_ENV
+          cd docs && bun run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
