@@ -43,8 +43,8 @@ jobs:
       - name: Install Bun
         run: |
           curl -fsSL https://bun.sh/install | bash
-          echo 'export BUN_INSTALL="$HOME/.bun"' >> $BASH_ENV
-          echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> $BASH_ENV
+          echo 'export BUN_INSTALL="$HOME/.bun"' >> $GITHUB_ENV
+          echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> $GITHUB_ENV
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
