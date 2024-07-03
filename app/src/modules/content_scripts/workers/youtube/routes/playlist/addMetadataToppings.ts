@@ -23,7 +23,7 @@ const addMetadataToppings = async (playlistID: string): Promise<void> => {
     ToppingsHeader.id = "toppings__toppings-header";
 
     const ToppingsIcon = document.createElement("img");
-    ToppingsIcon.src = chrome.runtime.getURL("assets/icons/icon128.png");
+    ToppingsIcon.src = chrome.runtime.getURL("assets/icons/logo/icon128.png");
     ToppingsIcon.id = "toppings__toppings-icon";
 
     const ToppingsHeading = document.createElement("h2");
