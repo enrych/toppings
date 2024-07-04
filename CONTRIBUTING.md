@@ -1,6 +1,6 @@
 # Contributing Guide
 
-![GitHub issues by-label](https://img.shields.io/github/issues/enrich-platforms/toppings/good%20first%20issue?color=fe7c01&link=https%3A%2F%2Fgithub.com%2Fenrich-platforms%2Ftoppings%2Fissues%3Fq%3Dis%253Aopen%2Bis%253Aissue%2Blabel%253A%2522good%2Bfirst%2Bissue%2522)
+![GitHub issues by-label](https://img.shields.io/github/issues/enrych/toppings/good%20first%20issue?color=fe7c01&link=https%3A%2F%2Fgithub.com%2Fenrych%2Ftoppings%2Fissues%3Fq%3Dis%253Aopen%2Bis%253Aissue%2Blabel%253A%2522good%2Bfirst%2Bissue%2522)
 
 Welcome to the Toppings! We're excited that you're interested in contributing. Before you get started, please take a moment to read this guide, which outlines the contribution process.
 
@@ -89,7 +89,7 @@ Thank you for taking the time to contribute to our project!
 
 ## ❓ Need help getting started?
 
-- Browse [issues](https://github.com/enrich-platforms/toppings/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) with the "good first issue" label. These are issues we think are good for newcomers.
+- Browse [issues](https://github.com/enrych/toppings/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) with the "good first issue" label. These are issues we think are good for newcomers.
 - Raise an issue for a feature or a bug you want to tackle
 
 Thank you for considering contributing to Toppings! Your involvement helps make this project better for everyone. If you have any questions or need assistance, please reach out to us through GitHub issues.

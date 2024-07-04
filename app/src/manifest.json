@@ -4,8 +4,8 @@
   "short_name": "Toppings",
   "version": "2.0.0",
   "description": "Your web, your way.",
-  "homepage_url": "https://www.grabtoppings.xyz",
-  "author": "Enrich Platforms",
+  "homepage_url": "https://enrych.github.io/toppings",
+  "author": "Enrych Platforms",
   "icons": {
     "16": "/assets/icons/logo/icon16.png",
     "32": "/assets/icons/logo/icon32.png",
@@ -31,7 +31,7 @@
   ],
   "action": {
     "default_popup": "./popup/index.html",
-    "default_title": "Toppings: Preferences",
+    "default_title": "Toppings: Quick Access",
     "default_icon": "assets/icons/logo/icon128.png"
   },
   "web_accessible_resources": [
