@@ -10,6 +10,7 @@ export default function Navbar() {
       <nav className="w-full flex justify-evenly items-center">
         <Link
           className={`flex items-center gap-2 font-medium text-foreground hover:bg-[#3d3d43]/50 px-3 py-2 rounded-md cursor-pointer ${location.pathname === "/" ? "bg-[#3d3d43]/50" : ""}`}
+          title="Dashboard"
           to="/"
         >
           <img
@@ -17,28 +18,33 @@ export default function Navbar() {
             alt="Home"
           />
         </Link>
-        <Link
-          className={`flex items-center gap-2 font-medium text-foreground hover:bg-[#3d3d43]/50 px-3 py-2 rounded-md cursor-pointer ${location.pathname === "/notifications" ? "bg-[#3d3d43]/50" : ""}`}
-          to="/Notifications"
-        >
-          <img
-            src={chrome.runtime.getURL("assets/icons/bell.svg")}
-            alt="Bell"
-          />
-        </Link>
         <button
           className="flex items-center gap-2 font-medium text-foreground hover:bg-[#3d3d43]/50 px-3 py-2 rounded-md cursor-pointer"
+          title="Bug Report"
           onClick={() => {
-            window.open("https://enrych.github.io/toppings-web/");
+            window.open("https://www.github.com/enrych/toppings/issues");
           }}
         >
           <img
-            src={chrome.runtime.getURL("assets/icons/help.svg")}
-            alt="Help"
+            src={chrome.runtime.getURL("assets/icons/bug_report.svg")}
+            alt="Bug Report"
           />
         </button>
         <button
           className="flex items-center gap-2 font-medium text-foreground hover:bg-[#3d3d43]/50 px-3 py-2 rounded-md cursor-pointer"
+          title="Sponser"
+          onClick={() => {
+            window.open("https://darhkvoyd.me/sponser");
+          }}
+        >
+          <img
+            src={chrome.runtime.getURL("assets/icons/heart.svg")}
+            alt="Sponser"
+          />
+        </button>
+        <button
+          className="flex items-center gap-2 font-medium text-foreground hover:bg-[#3d3d43]/50 px-3 py-2 rounded-md cursor-pointer"
+          title="Open Preferences"
           onClick={() => {
             window.open(chrome.runtime.getURL("options/index.html"));
           }}
