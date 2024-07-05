@@ -2,6 +2,7 @@ import { useContext } from "react";
 import ConfigContext from "../store";
 import Card from "../../../../ui/Card";
 import Switch from "../components/Switch";
+import { produce } from "immer";
 
 export default function General() {
   const { config, setConfig } = useContext(ConfigContext)!;
@@ -19,20 +20,12 @@ export default function General() {
   };
 
   const handleExtensionToggle = (isEnabled: boolean) => {
-    chrome.storage.sync.set({
-      globalSettings: {
-        isExtensionEnabled: isEnabled,
-      },
+    const newConfig = produce(config, (draft) => {
+      draft.globalSettings.isExtensionEnabled = isEnabled;
     });
+    setConfig(newConfig);
     setExtensionIcon(isEnabled);
-    setConfig((prev) => {
-      return {
-        ...prev,
-        globalSettings: {
-          isExtensionEnabled: isEnabled,
-        },
-      };
-    });
+    chrome.storage.sync.set(newConfig);
   };
 
   return (

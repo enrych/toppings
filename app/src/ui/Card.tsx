@@ -17,7 +17,7 @@ function Card({
           <p className="text-gray-400 text-sm">{description}</p>
         </div>
       )}
-      <div className="flex flex-col items-start justify-around py-8 gap-8">
+      <div className="flex flex-col items-start justify-around py-8 gap-4">
         {children}
       </div>
     </section>
