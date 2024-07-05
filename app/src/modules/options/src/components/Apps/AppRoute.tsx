@@ -18,7 +18,6 @@ const AppRoute = ({
     WorkerConfigRouteConfig
   >;
   const appRoute = routes[routeName];
-  console.log(routeName, appRoute);
 
   const toggleAppRouteEnabled = (isEnabled: boolean) => {
     const newConfig = produce(config, (draft) => {
