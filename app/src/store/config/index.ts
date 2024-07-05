@@ -1,10 +1,10 @@
-import workersConfig from './worker';
+import workersConfig from "./worker";
 
 export const DEFAULT_CONFIG = {
-	globalSettings: {
-		isExtensionEnabled: true,
-	},
-	workers: workersConfig,
+  globalSettings: {
+    isExtensionEnabled: true as boolean,
+  },
+  workers: workersConfig,
 };
 
 export type Config = typeof DEFAULT_CONFIG;

@@ -1,46 +1,46 @@
-import { type WorkerConfig } from '../../../../store/';
+import { type WorkerConfig } from "../../../../store/";
 
 const youtubeWorkerConfig = {
-	generalSettings: {
-		isEnabled: true,
-	},
-	routes: {
-		watch: {
-			isEnabled: true,
-			keybindings: {
-				toggleSpeedShortcut: 'X',
-				seekBackwardShortcut: 'A',
-				seekForwardShortcut: 'D',
-				increaseSpeedShortcut: 'W',
-				decreaseSpeedShortcut: 'S',
-			},
-			// TODO: The Options page should save the values with toFixed(2) as part of saving
-			// validation so that content script doesn't have to bother about it.
-			preferences: {
-				customSpeedList: [
-					'0.25',
-					'0.50',
-					'0.75',
-					'1.00',
-					'1.25',
-					'1.50',
-					'1.75',
-					'2.00',
-					'2.25',
-					'2.50',
-				],
-				toggleSpeed: '1.50',
-				defaultSpeed: '1.00',
-				seekForward: 15,
-				seekBackward: 15,
-				increaseSpeed: '0.25',
-				decreaseSpeed: '0.25',
-			},
-		},
-		playlist: {
-			isEnabled: true,
-		},
-	},
+  generalSettings: {
+    isEnabled: true as boolean,
+  },
+  routes: {
+    watch: {
+      isEnabled: true as boolean,
+      keybindings: {
+        toggleSpeedShortcut: "X" as string,
+        seekBackwardShortcut: "A" as string,
+        seekForwardShortcut: "D" as string,
+        increaseSpeedShortcut: "W" as string,
+        decreaseSpeedShortcut: "S" as string,
+      },
+      // TODO: The Options page should save the values with toFixed(2) as part of saving
+      // validation so that content script doesn't have to bother about it.
+      preferences: {
+        customSpeedList: [
+          "0.25",
+          "0.50",
+          "0.75",
+          "1.00",
+          "1.25",
+          "1.50",
+          "1.75",
+          "2.00",
+          "2.25",
+          "2.50",
+        ] as Array<string>,
+        toggleSpeed: "1.50" as string,
+        defaultSpeed: "1.00" as string,
+        seekForward: 15 as number,
+        seekBackward: 15 as number,
+        increaseSpeed: "0.25" as string,
+        decreaseSpeed: "0.25" as string,
+      },
+    },
+    playlist: {
+      isEnabled: true as boolean,
+    },
+  },
 } satisfies WorkerConfig;
 
 export type YouTubeWorkerConfig = typeof youtubeWorkerConfig;
