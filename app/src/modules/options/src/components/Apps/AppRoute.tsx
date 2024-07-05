@@ -22,7 +22,9 @@ const AppRoute = ({
 
   const toggleAppRouteEnabled = (isEnabled: boolean) => {
     const newConfig = produce(config, (draft) => {
-      draft.workers[appName].routes[routeName].isEnabled = isEnabled;
+      (
+        draft.workers[appName].routes as Record<string, WorkerConfigRouteConfig>
+      )[routeName].isEnabled = isEnabled;
     });
     setConfig(newConfig);
     chrome.storage.sync.set(newConfig);
