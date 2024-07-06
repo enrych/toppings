@@ -51,6 +51,7 @@ export default function PreferenceInput({
     }
     setIsLoading(false);
     setIsValid(isValid);
+
     if (isValid) {
       const newConfig = produce(config, (draft) => {
         (
@@ -62,6 +63,11 @@ export default function PreferenceInput({
       });
       setConfig(newConfig);
       chrome.storage.sync.set(newConfig);
+
+      // Hide the validation SVG if valid
+      setTimeout(() => {
+        setIsValid(null);
+      }, 1500);
     }
   };
 
