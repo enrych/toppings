@@ -19,8 +19,6 @@ const Preferences = ({
   const appRoute = routes[routeName];
   const preferences = appRoute.preferences!;
 
-  console.log(preferences);
-
   const customPlaybackRatesValidator = (e: ChangeEvent<HTMLInputElement>) => {
     const regex = /^(\d+(\.\d+)?)(\s*,\s*\d+(\.\d+)?)*$/;
     const playbackRates = e.target.value.split(",").map((rate) => rate.trim());
@@ -60,6 +58,7 @@ const Preferences = ({
           appName={appName}
           routeName={routeName}
           preferenceName="customSpeedList"
+          type="list"
           validator={customPlaybackRatesValidator}
         />
       )}

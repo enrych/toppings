@@ -4,18 +4,20 @@ import { WorkerConfigRouteConfig, WorkerName } from "../../../../store";
 import Tooltip from "../../../../ui/Tooltip";
 import ConfigContext from "../store";
 import camelCaseToTitleCase from "../lib/camelCaseToTitleCase";
-import { debounce, isNaN } from "lodash";
+import { debounce } from "lodash";
 
 export default function PreferenceInput({
   appName,
   routeName,
   preferenceName,
+  type = "plain",
   validator,
   description,
 }: {
   appName: WorkerName;
   routeName: string;
   preferenceName: string;
+  type?: "plain" | "list";
   validator: (e: ChangeEvent<HTMLInputElement>) => boolean;
   description?: string;
 }) {
@@ -26,28 +28,40 @@ export default function PreferenceInput({
   >;
   const appRoute = routes[routeName];
   const [preference, setPreference] = useState<string>(
-    appRoute.preferences![preferenceName],
+    type === "plain" && !isNaN(Number(appRoute.preferences![preferenceName]))
+      ? Number(appRoute.preferences![preferenceName])
+      : appRoute.preferences![preferenceName],
   );
   const [isLoading, setIsLoading] = useState(false);
   const [isValid, setIsValid] = useState<boolean | null>(null);
 
   const preferenceTitle = camelCaseToTitleCase(preferenceName);
 
-  const debouncedValidator = useRef(
+  const configRef = useRef(config);
+
+  useEffect(() => {
+    configRef.current = config;
+  }, [config]);
+
+  const updatePreference = useRef(
     debounce((e: ChangeEvent<HTMLInputElement>) => {
       const isValid = validator(e);
-      console.log(isValid);
-      console.log(e.target.value);
+      let newPreference: any = Number(e.target.value).toFixed(2);
+      if (type === "list") {
+        newPreference = e.target.value
+          .split(",")
+          .map((substring) => Number(substring.trim()).toFixed(2));
+      }
       setIsLoading(false);
       setIsValid(isValid);
       if (isValid) {
-        const newConfig = produce(config, (draft) => {
+        const newConfig = produce(configRef.current, (draft) => {
           (
             draft.workers[appName].routes as Record<
               string,
               WorkerConfigRouteConfig
             >
-          )[routeName].preferences![preferenceName] = e.target.value;
+          )[routeName].preferences![preferenceName] = newPreference;
         });
         setConfig(newConfig);
         chrome.storage.sync.set(newConfig);
@@ -59,15 +73,16 @@ export default function PreferenceInput({
     e.preventDefault();
     e.stopPropagation();
     setPreference(e.target.value);
+    setIsValid(null);
     setIsLoading(true);
-    debouncedValidator(e);
+    updatePreference(e);
   };
 
   useEffect(() => {
     return () => {
-      debouncedValidator.cancel();
+      updatePreference.cancel();
     };
-  }, [debouncedValidator]);
+  }, [updatePreference]);
 
   return (
     <div className="font-sans w-full flex flex-col px-4 py-1">
@@ -95,7 +110,7 @@ export default function PreferenceInput({
             </Tooltip>
           )}
         </div>
-        <div className="flex flex-row">
+        <div className="relative">
           <input
             type="text"
             className="p-2 bg-black text-white text-center rounded border border-gray-600/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -104,12 +119,12 @@ export default function PreferenceInput({
             onChange={preferenceChangeHandler}
           />
           {isLoading && (
-            <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-blue-500 absolute"></div>
+            <div className="absolute top-1/2 -translate-y-1/2 -right-6 animate-spin rounded-full h-5 w-5 border-t-2 border-blue-500"></div>
           )}
           {isValid === true && (
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-green-500"
+              className="absolute top-1/2 -translate-y-1/2 -right-6 h-5 w-5 text-green-500"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -125,7 +140,7 @@ export default function PreferenceInput({
           {isValid === false && (
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-red-500"
+              className="absolute top-1/2 -translate-y-1/2 -right-6 h-5 w-5 text-red-500"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
