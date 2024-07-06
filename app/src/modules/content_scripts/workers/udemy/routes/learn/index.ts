@@ -16,8 +16,8 @@ let toggleTheatreShortcut: string;
 let customSpeedList: string[];
 let toggleSpeed: string;
 let defaultSpeed: string;
-let seekForward: number;
-let seekBackward: number;
+let seekForward: string;
+let seekBackward: string;
 let increaseSpeed: string;
 let decreaseSpeed: string;
 

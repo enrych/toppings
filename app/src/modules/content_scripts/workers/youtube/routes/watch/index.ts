@@ -12,8 +12,8 @@ let decreaseSpeedShortcut: string;
 let customPrecisionSpeedList: string[];
 let toggleSpeed: string;
 let defaultSpeed: string;
-let seekForward: number;
-let seekBackward: number;
+let seekForward: string;
+let seekBackward: string;
 let increaseSpeed: string;
 let decreaseSpeed: string;
 
@@ -326,10 +326,10 @@ const useShortcuts = (event: KeyboardEvent): void => {
       }
     } else if (event.key === `${seekBackwardShortcut.toLowerCase()}`) {
       (player as YTPlayer).seekCurrentTime("backward", +seekBackward);
-      onDoubleTapSeek("back", seekBackward);
+      onDoubleTapSeek("back", +seekBackward);
     } else if (event.key === `${seekForwardShortcut.toLowerCase()}`) {
       (player as YTPlayer).seekCurrentTime("forward", +seekForward);
-      onDoubleTapSeek("forward", seekForward);
+      onDoubleTapSeek("forward", +seekForward);
     } else if (event.key === `${increaseSpeedShortcut.toLowerCase()}`) {
       const increasedSpeed = Number(
         (
@@ -407,7 +407,9 @@ const changePlaybackSpeed = (speed: number): void => {
         currentSpeedItem.ariaChecked = "false";
       }
     } else {
-      customSpeedButton.setAttribute("aria-checked", "false");
+      if (customSpeedButton) {
+        customSpeedButton.setAttribute("aria-checked", "false");
+      }
     }
   }
 
@@ -424,14 +426,16 @@ const changePlaybackSpeed = (speed: number): void => {
       }
     } else {
       customSpeed = speed.toFixed(2);
-      customSpeedButton.style.display = "";
-      const customSpeedLabelElement = customSpeedButton.querySelector(
-        ".ytp-menuitem-label",
-      );
-      if (customSpeedLabelElement !== null) {
-        customSpeedLabelElement.textContent = `Custom(${Number(customSpeed)})`;
+      if (customSpeedButton) {
+        customSpeedButton.style.display = "";
+        const customSpeedLabelElement = customSpeedButton.querySelector(
+          ".ytp-menuitem-label",
+        );
+        if (customSpeedLabelElement !== null) {
+          customSpeedLabelElement.textContent = `Custom(${Number(customSpeed)})`;
+        }
+        customSpeedButton.setAttribute("aria-checked", "true");
       }
-      customSpeedButton.setAttribute("aria-checked", "true");
     }
     if (playerPlaybackButton !== null && playerPlaybackButton !== undefined) {
       playerPlaybackButton.children[2].textContent =

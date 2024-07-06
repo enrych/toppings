@@ -1,10 +1,9 @@
-import { ChangeEvent, useContext, useState, useRef, useEffect } from "react";
+import { ChangeEvent, useContext, useState } from "react";
 import { produce } from "immer";
 import { WorkerConfigRouteConfig, WorkerName } from "../../../../store";
 import Tooltip from "../../../../ui/Tooltip";
 import ConfigContext from "../store";
 import camelCaseToTitleCase from "../lib/camelCaseToTitleCase";
-import { debounce } from "lodash";
 
 export default function PreferenceInput({
   appName,
@@ -37,52 +36,34 @@ export default function PreferenceInput({
 
   const preferenceTitle = camelCaseToTitleCase(preferenceName);
 
-  const configRef = useRef(config);
-
-  useEffect(() => {
-    configRef.current = config;
-  }, [config]);
-
-  const updatePreference = useRef(
-    debounce((e: ChangeEvent<HTMLInputElement>) => {
-      const isValid = validator(e);
-      let newPreference: any = Number(e.target.value).toFixed(2);
-      if (type === "list") {
-        newPreference = e.target.value
-          .split(",")
-          .map((substring) => Number(substring.trim()).toFixed(2));
-      }
-      setIsLoading(false);
-      setIsValid(isValid);
-      if (isValid) {
-        const newConfig = produce(configRef.current, (draft) => {
-          (
-            draft.workers[appName].routes as Record<
-              string,
-              WorkerConfigRouteConfig
-            >
-          )[routeName].preferences![preferenceName] = newPreference;
-        });
-        setConfig(newConfig);
-        chrome.storage.sync.set(newConfig);
-      }
-    }, 300),
-  ).current;
-
   const preferenceChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setPreference(e.target.value);
     setIsValid(null);
     setIsLoading(true);
-    updatePreference(e);
+    const isValid = validator(e);
+    let newPreference: any = Number(e.target.value).toFixed(2);
+    if (type === "list") {
+      newPreference = e.target.value
+        .split(",")
+        .map((substring) => Number(substring.trim()).toFixed(2));
+    }
+    setIsLoading(false);
+    setIsValid(isValid);
+    if (isValid) {
+      const newConfig = produce(config, (draft) => {
+        (
+          draft.workers[appName].routes as Record<
+            string,
+            WorkerConfigRouteConfig
+          >
+        )[routeName].preferences![preferenceName] = newPreference;
+      });
+      setConfig(newConfig);
+      chrome.storage.sync.set(newConfig);
+    }
   };
-
-  useEffect(() => {
-    return () => {
-      updatePreference.cancel();
-    };
-  }, [updatePreference]);
 
   return (
     <div className="font-sans w-full flex flex-col px-4 py-1">
