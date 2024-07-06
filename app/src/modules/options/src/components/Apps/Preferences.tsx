@@ -10,7 +10,7 @@ const Preferences = ({
   appName: WorkerName;
   routeName: string;
 }) => {
-  const { config, setConfig } = useContext(ConfigContext)!;
+  const { config } = useContext(ConfigContext)!;
 
   const routes = config.workers[appName].routes as Record<
     string,
@@ -18,8 +18,40 @@ const Preferences = ({
   >;
   const appRoute = routes[routeName];
   const preferences = appRoute.preferences!;
+
   console.log(preferences);
-  const validator = (e: ChangeEvent) => true;
+
+  const customPlaybackRatesValidator = (e: ChangeEvent<HTMLInputElement>) => {
+    const regex = /^(\d+(\.\d+)?)(\s*,\s*\d+(\.\d+)?)*$/;
+    const playbackRates = e.target.value.split(",").map((rate) => rate.trim());
+
+    if (!regex.test(e.target.value) || playbackRates.length <= 1) {
+      return false;
+    }
+
+    const rates = playbackRates.map(parseFloat);
+    if (
+      rates.includes(NaN) ||
+      !rates.includes(1) ||
+      rates.some((rate) => rate < 0.0625 || rate > 16)
+    ) {
+      return false;
+    }
+
+    return true;
+  };
+
+  const isValidNumeric = (
+    e: ChangeEvent<HTMLInputElement>,
+    min: number,
+    max: number,
+  ) => {
+    const value = +e.target.value;
+    if (isNaN(value) || value < min || value > max) {
+      return false;
+    }
+    return true;
+  };
 
   return (
     <div>
@@ -28,47 +60,7 @@ const Preferences = ({
           appName={appName}
           routeName={routeName}
           preferenceName="customSpeedList"
-          validator={validator}
-        />
-      )}
-      {preferences.decreaseSpeed && (
-        <PreferenceInput
-          appName={appName}
-          routeName={routeName}
-          preferenceName="decreaseSpeed"
-          validator={validator}
-        />
-      )}
-      {preferences.defaultSpeed && (
-        <PreferenceInput
-          appName={appName}
-          routeName={routeName}
-          preferenceName="defaultSpeed"
-          validator={validator}
-        />
-      )}
-      {preferences.increaseSpeed && (
-        <PreferenceInput
-          appName={appName}
-          routeName={routeName}
-          preferenceName="increaseSpeed"
-          validator={validator}
-        />
-      )}
-      {preferences.seekBackward && (
-        <PreferenceInput
-          appName={appName}
-          routeName={routeName}
-          preferenceName="seekBackward"
-          validator={validator}
-        />
-      )}
-      {preferences.seekForward && (
-        <PreferenceInput
-          appName={appName}
-          routeName={routeName}
-          preferenceName="seekForward"
-          validator={validator}
+          validator={customPlaybackRatesValidator}
         />
       )}
       {preferences.toggleSpeed && (
@@ -76,7 +68,59 @@ const Preferences = ({
           appName={appName}
           routeName={routeName}
           preferenceName="toggleSpeed"
-          validator={validator}
+          validator={(e: ChangeEvent<HTMLInputElement>) => {
+            return isValidNumeric(e, 0.0625, 16);
+          }}
+        />
+      )}
+      {preferences.defaultSpeed && (
+        <PreferenceInput
+          appName={appName}
+          routeName={routeName}
+          preferenceName="defaultSpeed"
+          validator={(e: ChangeEvent<HTMLInputElement>) => {
+            return isValidNumeric(e, 0.0625, 16);
+          }}
+        />
+      )}
+      {preferences.decreaseSpeed && (
+        <PreferenceInput
+          appName={appName}
+          routeName={routeName}
+          preferenceName="decreaseSpeed"
+          validator={(e: ChangeEvent<HTMLInputElement>) => {
+            return isValidNumeric(e, 0, 1);
+          }}
+        />
+      )}
+      {preferences.increaseSpeed && (
+        <PreferenceInput
+          appName={appName}
+          routeName={routeName}
+          preferenceName="increaseSpeed"
+          validator={(e: ChangeEvent<HTMLInputElement>) => {
+            return isValidNumeric(e, 0, 1);
+          }}
+        />
+      )}
+      {preferences.seekBackward && (
+        <PreferenceInput
+          appName={appName}
+          routeName={routeName}
+          preferenceName="seekBackward"
+          validator={(e: ChangeEvent<HTMLInputElement>) => {
+            return isValidNumeric(e, 1, 60);
+          }}
+        />
+      )}
+      {preferences.seekForward && (
+        <PreferenceInput
+          appName={appName}
+          routeName={routeName}
+          preferenceName="seekForward"
+          validator={(e: ChangeEvent<HTMLInputElement>) => {
+            return isValidNumeric(e, 1, 60);
+          }}
         />
       )}
     </div>
