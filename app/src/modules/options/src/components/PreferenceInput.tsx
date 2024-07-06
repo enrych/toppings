@@ -1,4 +1,4 @@
-import { ChangeEvent, useContext, useState } from "react";
+import { ChangeEvent, useContext, useState, useEffect, useRef } from "react";
 import { produce } from "immer";
 import { WorkerConfigRouteConfig, WorkerName } from "../../../../store";
 import Tooltip from "../../../../ui/Tooltip";
@@ -33,6 +33,7 @@ export default function PreferenceInput({
   );
   const [isLoading, setIsLoading] = useState(false);
   const [isValid, setIsValid] = useState<boolean | null>(null);
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
   const preferenceTitle = camelCaseToTitleCase(preferenceName);
 
@@ -42,34 +43,49 @@ export default function PreferenceInput({
     setPreference(e.target.value);
     setIsValid(null);
     setIsLoading(true);
-    const isValid = validator(e);
-    let newPreference: any = Number(e.target.value).toFixed(2);
-    if (type === "list") {
-      newPreference = e.target.value
-        .split(",")
-        .map((substring) => Number(substring.trim()).toFixed(2));
-    }
-    setIsLoading(false);
-    setIsValid(isValid);
 
-    if (isValid) {
-      const newConfig = produce(config, (draft) => {
-        (
-          draft.workers[appName].routes as Record<
-            string,
-            WorkerConfigRouteConfig
-          >
-        )[routeName].preferences![preferenceName] = newPreference;
-      });
-      setConfig(newConfig);
-      chrome.storage.sync.set(newConfig);
-
-      // Hide the validation SVG if valid
-      setTimeout(() => {
-        setIsValid(null);
-      }, 1500);
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
     }
+
+    debounceTimer.current = setTimeout(() => {
+      const isValid = validator(e);
+      let newPreference: any = Number(e.target.value).toFixed(2);
+      if (type === "list") {
+        newPreference = e.target.value
+          .split(",")
+          .map((substring) => Number(substring.trim()).toFixed(2));
+      }
+      setIsLoading(false);
+      setIsValid(isValid);
+
+      if (isValid) {
+        const newConfig = produce(config, (draft) => {
+          (
+            draft.workers[appName].routes as Record<
+              string,
+              WorkerConfigRouteConfig
+            >
+          )[routeName].preferences![preferenceName] = newPreference;
+        });
+        setConfig(newConfig);
+        chrome.storage.sync.set(newConfig);
+
+        // Hide the validation SVG if valid
+        setTimeout(() => {
+          setIsValid(null);
+        }, 1500);
+      }
+    }, 750);
   };
+
+  useEffect(() => {
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="font-sans w-full flex flex-col px-4 py-1">
