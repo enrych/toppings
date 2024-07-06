@@ -14,7 +14,7 @@ const Routes = ({ name }: { name: WorkerName }) => {
 
   return (
     <div className="w-full">
-      <h3 className="pl-4 text-xl">Routes</h3>
+      <h3 className="pl-4 text-xl font-bold">Routes</h3>
       {appRoutes.map((appRoute, idx) => {
         return <AppRoute key={idx} appName={name} routeName={appRoute} />;
       })}

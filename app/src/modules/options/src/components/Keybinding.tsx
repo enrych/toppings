@@ -1,15 +1,31 @@
+import { KeyboardEvent, useContext, useState } from "react";
+import { produce } from "immer";
+import { WorkerConfigRouteConfig, WorkerName } from "../../../../store";
 import Tooltip from "../../../../ui/Tooltip";
-import { KeyboardEvent, useState } from "react";
+import ConfigContext from "../store";
+import camelCaseToTitleCase from "../lib/camelCaseToTitleCase";
 
 export default function KeybindingBlock({
-  title,
+  appName,
+  routeName,
+  keybinding,
   description,
 }: {
-  title: string;
+  appName: WorkerName;
+  routeName: string;
+  keybinding: string;
   description?: string;
 }) {
-  const [keyCode, setKeyCode] = useState<number>(0);
-  const [key, setKey] = useState<string>(String.fromCharCode(keyCode));
+  const { config, setConfig } = useContext(ConfigContext)!;
+  const routes = config.workers[appName].routes as Record<
+    string,
+    WorkerConfigRouteConfig
+  >;
+  const appRoute = routes[routeName];
+  const [key, setKey] = useState<string>(appRoute.keybindings![keybinding]);
+
+  const keybindingTitle = camelCaseToTitleCase(keybinding);
+
   const recordKeyHandler = (e: KeyboardEvent<HTMLInputElement>) => {
     if (
       (e.keyCode >= 48 && e.keyCode <= 57) || // Numbers 0-9
@@ -17,9 +33,18 @@ export default function KeybindingBlock({
     ) {
       e.preventDefault();
       e.stopPropagation();
-      setKeyCode(e.keyCode);
       const key = String.fromCharCode(e.keyCode);
       setKey(key);
+      const newConfig = produce(config, (draft) => {
+        (
+          draft.workers[appName].routes as Record<
+            string,
+            WorkerConfigRouteConfig
+          >
+        )[routeName].keybindings![keybinding] = key;
+      });
+      setConfig(newConfig);
+      chrome.storage.sync.set(newConfig);
     } else if (e.keyCode === 8 || e.keyCode === 27) {
       const key = "";
       setKey(key);
@@ -31,13 +56,15 @@ export default function KeybindingBlock({
   };
 
   const blurHandler = () => {
-    setKey(String.fromCharCode(keyCode));
+    setKey(appRoute.keybindings![keybinding]);
   };
 
   return (
-    <div className="font-sans w-full flex justify-between items-center px-4">
+    <div className="font-sans w-full flex justify-between items-center px-4 py-1">
       <div className="flex items-center space-x-3">
-        <label className="text-lg font-medium text-gray-100">{title}</label>
+        <label className="text-lg font-medium text-gray-100">
+          {keybindingTitle}
+        </label>
         {description && (
           <Tooltip text={description}>
             <svg

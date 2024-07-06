@@ -21,7 +21,7 @@ const GeneralSettings = ({ name }: { name: WorkerName }) => {
 
   return (
     <div className="w-full">
-      <h3 className="pl-4 text-xl">General Settings</h3>
+      <h3 className="pl-4 text-xl font-bold">General Settings</h3>
       <div className="pl-4">
         <Switch
           title={`Enable Worker for ${title}`}

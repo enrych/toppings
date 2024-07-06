@@ -3,6 +3,7 @@ import { produce } from "immer";
 import { WorkerConfigRouteConfig, WorkerName } from "../../../../../store";
 import ConfigContext from "../../store";
 import Switch from "../Switch";
+import Keybinding from "../Keybinding";
 
 const AppRoute = ({
   appName,
@@ -18,6 +19,8 @@ const AppRoute = ({
     WorkerConfigRouteConfig
   >;
   const appRoute = routes[routeName];
+  const isEnabled = appRoute.isEnabled;
+  const keybindings = Object.keys(appRoute.keybindings ?? {});
 
   const toggleAppRouteEnabled = (isEnabled: boolean) => {
     const newConfig = produce(config, (draft) => {
@@ -30,14 +33,27 @@ const AppRoute = ({
   };
 
   return (
-    <div className="pl-4 w-full">
-      <h3 className="pl-4 text-xl">{routeTitle}</h3>
-      <div className="pl-4 w-full">
+    <div className="pl-4 w-full py-2">
+      <h3 className="pl-4 text-xl font-medium">{routeTitle}</h3>
+      <div className="pl-4 w-full py-2">
         <Switch
           title={`Enable ${routeTitle} Route`}
-          isEnabled={appRoute.isEnabled}
+          isEnabled={isEnabled}
           onToggle={toggleAppRouteEnabled}
         />
+        <div className="py-2">
+          {keybindings.length > 0 &&
+            keybindings.map((keybinding, idx) => {
+              return (
+                <Keybinding
+                  key={idx}
+                  appName={appName}
+                  routeName={routeName}
+                  keybinding={keybinding}
+                />
+              );
+            })}
+        </div>
       </div>
     </div>
   );
