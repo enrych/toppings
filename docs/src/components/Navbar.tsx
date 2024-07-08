@@ -1,35 +1,63 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Button } from "./ui/button";
+import { akronim } from "@/lib/fonts";
+import toppingsLogo from "../../public/assets/icons/icon512.png";
+import cn from "@/lib/cn";
+import AddToBrowser from "./AddToBrowser";
 
 const Navbar = () => {
+  const [hasScrolled, setHasScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 0) {
+        setHasScrolled(true);
+      } else {
+        setHasScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
-    <nav className="sticky top-0 bg-white shadow-md z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <a href="/" className="text-xl font-bold text-gray-900">
-              Brand
-            </a>
-          </div>
-          <div className="flex">
-            <a
-              href="/"
-              className="px-3 py-2 rounded-md text-sm font-medium text-gray-700"
+    <nav
+      className={`sticky top-0 bg-background z-50 ${hasScrolled ? "shadow-md" : ""} transition-shadow duration-300`}
+    >
+      <div className="max-w-[90vw] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-[80px]">
+        <div className="flex items-center">
+          <Link href="/" className="flex items-center">
+            <Image
+              src={toppingsLogo}
+              alt="Toppings Logo"
+              className="h-10 w-auto mr-2"
+            />
+            <span
+              className={cn(
+                "text-4xl font-normal text-brandBlack",
+                akronim.className,
+              )}
             >
-              Home
-            </a>
-            <a
-              href="/about"
-              className="px-3 py-2 rounded-md text-sm font-medium text-gray-700"
-            >
-              About
-            </a>
-            <a
-              href="/contact"
-              className="px-3 py-2 rounded-md text-sm font-medium text-gray-700"
-            >
-              Contact
-            </a>
-          </div>
+              Toppings
+            </span>
+          </Link>
+        </div>
+        <div className="flex items-center">
+          <Button className="px-6 py-6 text-foreground" asChild variant="link">
+            <Link href="/docs">Docs</Link>
+          </Button>
+          <Button className="px-6 py-6 text-foreground" asChild variant="link">
+            <Link href="https://darhkvoyd.me/sponser" target="_blank">
+              Become a sponser
+            </Link>
+          </Button>
+          <AddToBrowser />
         </div>
       </div>
     </nav>
