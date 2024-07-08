@@ -1,23 +1,23 @@
 # Unit Tests
 
-Thanks for writing tests! Here's a quick run-down on our current setup.
+This guide provides an overview of our unit test setup and instructions for running and writing tests.
 
 ## Running Unit Tests
 
-```bash
-npm run test:unit
-```
+To execute all unit tests using Mocha, run:
 
-This will run all the unit tests using Mocha.
+```bash
+bun run test:unit
+```
 
 ## Writing Tests
 
-All unit tests are located in the `test` directory, mirroring the structure of the `src` directory. Each test file has a `.spec.ts` extension.
+When adding unit tests, place them in this directory and mirror the structure of the `src` directory. Each test file should have a `.spec.ts` extension.
 
 ## Additional Testing Commands
 
-- Run a specific test file:
+To run a specific test file, use the following command:
 
-  ```bash
-  npx cross-env TS_NODE_COMPILER_OPTIONS='{"module": "commonjs" }' mocha "test/unit/formatRuntime.spec.ts"
-  ```
+```bash
+bunx mocha "test/unit/modules/content_scripts/lib/formatRuntime.spec.ts"
+```

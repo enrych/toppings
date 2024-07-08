@@ -7,9 +7,10 @@
     "dev": "webpack --watch --config webpack.dev.cjs",
     "prod": "webpack --watch --config webpack.prod.cjs",
     "build": "webpack --config webpack.prod.cjs",
-    "release": "npm run build && node scripts/release.js",
+    "release": "bun run build && node scripts/release.js",
     "lint": "eslint . --fix",
     "type-check": "tsc --noEmit",
+    "test:all": "bun run test:static && bun run test:unit",
     "test:static": "eslint . && npm run type-check",
     "test:coverage": "nyc --reporter=html mocha 'test/unit/**/*.{js,ts}'",
     "test:unit": "mocha 'test/unit/**/*.{js,ts}'"
