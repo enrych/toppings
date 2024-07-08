@@ -1,11 +1,24 @@
 "use client";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import getExtensionWebStore from "@/lib/getExtensionWebStore";
 import { Button } from "./ui/button";
 
 const AddToBrowser = () => {
-  const { isSupported, browser, store } = getExtensionWebStore();
+  const [extensionData, setExtensionData] = useState({
+    isSupported: false,
+    browser: "browser",
+    store: "https://www.github.com/enrych/toppings",
+  });
+
+  useEffect(() => {
+    const data = getExtensionWebStore();
+    setExtensionData(data);
+  }, []);
+
+  const { isSupported, browser, store } = extensionData;
+
   return (
     <Button
       className="px-6 py-6 gap-2 bg-primary hover:bg-[#fc9c26] font-bold text-base"
