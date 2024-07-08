@@ -8,7 +8,7 @@ const AddToBrowser = () => {
   const { isSupported, browser, store } = getExtensionWebStore();
   return (
     <Button
-      className="px-6 py-6 gap-2 bg-accent hover:bg-[#fc9c26] font-bold text-base"
+      className="px-6 py-6 gap-2 bg-secondary hover:bg-[#fc9c26] font-bold text-base"
       asChild
     >
       <Link href={store} target="_blank">
