@@ -13,7 +13,7 @@ export default function Home() {
           >
             Your Web,
             <br />
-            <span className="text-secondary">Your Way</span>
+            <span className="text-primary">Your Way</span>
           </h1>
           <p className="mt-4 text-lg text-gray-700 text-center">
             Unlock a new level of customization, seamlessly enhance your
