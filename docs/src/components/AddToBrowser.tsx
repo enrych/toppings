@@ -26,7 +26,7 @@ const AddToBrowser = () => {
     >
       <Link href={store} target="_blank">
         <Image
-          src={`toppings/assets/icons/${isSupported ? browser : "github"}.svg`}
+          src={`/assets/icons/${isSupported ? browser : "github"}.svg`}
           alt={`${browser} Icon`}
           width={24}
           height={24}
