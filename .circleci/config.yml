@@ -18,6 +18,10 @@ jobs:
           command: cd app && bun install
 
       - run:
+          name: Run Static Tests
+          command: cd app && bun run test:static
+
+      - run:
           name: Run Unit Tests
           command: cd app && bun run test:unit
 
