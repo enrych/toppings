@@ -13,7 +13,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/sosodev/duration"
 
-	"github.com/enrich-platforms/toppings/server/internal/api"
+	"github.com/enrych/toppings/server/internal/api"
 )
 
 const (

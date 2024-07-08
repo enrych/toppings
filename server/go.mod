@@ -1,4 +1,4 @@
-module github.com/enrich-platforms/toppings/server
+module github.com/enrych/toppings/server
 
 go 1.22.0
 

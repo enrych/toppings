@@ -9,13 +9,20 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/rs/cors"
 
-	"github.com/enrich-platforms/toppings/server/internal/routes"
+	"github.com/enrych/toppings/server/internal/routes"
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
+	if os.Getenv("API_KEY") == "" {
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatal("Error loading .env file")
+		}
+	}
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
 	}
 
 	API_KEY := os.Getenv("API_KEY")
@@ -31,5 +38,5 @@ func main() {
 	y := r.PathPrefix("/youtube").Methods("GET").Subrouter()
 	y.HandleFunc("/playlist/{playlistID}", routes.HandleYouTubePlaylist)
 
-	log.Fatal(http.ListenAndServe(":8000", handler))
+	log.Fatal(http.ListenAndServe(":"+port, handler))
 }
