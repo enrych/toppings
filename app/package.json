@@ -7,11 +7,11 @@
     "dev": "webpack --watch --config webpack.dev.cjs",
     "prod": "webpack --watch --config webpack.prod.cjs",
     "build": "webpack --config webpack.prod.cjs",
-    "release": "bun run build && node scripts/release.js",
+    "release": "bun run build && bun scripts/release.js",
     "lint": "eslint . --fix",
     "type-check": "tsc --noEmit",
     "test:all": "bun run test:static && bun run test:unit",
-    "test:static": "eslint . && npm run type-check",
+    "test:static": "eslint . && bun run type-check",
     "test:coverage": "nyc --reporter=html mocha 'test/unit/**/*.{js,ts}'",
     "test:unit": "mocha 'test/unit/**/*.{js,ts}'"
   },
@@ -19,7 +19,7 @@
     "type": "git",
     "url": "git+https://github.com/enrych/toppings.git"
   },
-  "author": "Enrych",
+  "author": "Enrych Platforms",
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/enrych/toppings/issues"
