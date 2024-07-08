@@ -1,5 +1,6 @@
 import Image from "next/image";
 import heroIllustration from "../../public/assets/illustrations/hero.png";
+import AddToBrowser from "@/components/AddToBrowser";
 
 export default function Home() {
   return (
@@ -19,6 +20,9 @@ export default function Home() {
             favorite websites, and enjoy a more personalized browsing
             experience.
           </p>
+          <div className="py-8">
+            <AddToBrowser />
+          </div>
         </div>
         <div className="flex items-center justify-center w-full lg:w-1/2">
           <Image
