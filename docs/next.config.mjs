@@ -1,11 +1,18 @@
+import nextraConfig from "nextra";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   basePath: "/toppings",
-  reactStrictMode: true,
-  output: "export",
   images: {
     unoptimized: true,
   },
+  output: "export",
+  reactStrictMode: true,
 };
 
-export default nextConfig;
+const withNextra = nextraConfig({
+  theme: "nextra-theme-docs",
+  themeConfig: "./theme.config.jsx",
+});
+
+export default withNextra(nextConfig);
