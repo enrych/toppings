@@ -29,7 +29,7 @@ export default function Farewell() {
               asChild
             >
               <Link
-                href="https://docs.google.com/forms/d/e/1FAIpQLSfjPEHIUiKsMtI8nkM3bNHePT2EVwLg-frOozkWD8PXtO6UlQ/viewform"
+                href="https://github.com/enrych/toppings/discussions/new?category=feedback&title=Feedback:&body=Please%20provide%20your%20feedback%20here"
                 target="_blank"
               >
                 <Image src={formIcon} alt="Form" width={24} height={24} />
