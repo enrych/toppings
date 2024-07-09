@@ -12,6 +12,10 @@ const nextraConfig = {
   //   ),
   // },
   darkMode: false,
+  nextThemes: {
+    defaultTheme: "light",
+    enableSystem: false,
+  },
   docsRepositoryBase: "https://github.com/enrych/toppings/tree/main/docs",
   footer: {
     text: (
