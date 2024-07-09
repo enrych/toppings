@@ -1,0 +1,7 @@
+{
+  "extension": ["ts"],
+  "ignore": ["**/dist/**", "**/node_modules/**"],
+  "require": ["tsx"],
+  "recursive": true
+}
+

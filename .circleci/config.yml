@@ -3,21 +3,31 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: cimg/node:18.19
+      - image: cimg/node:20.11
+
     steps:
       - checkout
       - run:
+          name: Install Bun
+          command: |
+            curl -fsSL https://bun.sh/install | bash
+            echo 'export BUN_INSTALL="$HOME/.bun"' >> $BASH_ENV
+            echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> $BASH_ENV
+      - run:
           name: Install Dependencies
-          command: npm install
+          command: cd app && bun install
+
       - run:
           name: Run Static Tests
-          command: npm run test:static
+          command: cd app && bun run test:static
+
       - run:
           name: Run Unit Tests
-          command: npm run test:unit
+          command: cd app && bun run test:unit
+
       - run:
           name: Build for Production
-          command: npm run build:prod
+          command: cd app && bun run build
 
 workflows:
   version: 2
