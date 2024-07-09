@@ -49,15 +49,23 @@ const Navbar = () => {
           </Link>
         </div>
         <div className="flex items-center">
-          <Button className="px-6 py-6 text-foreground" asChild variant="link">
-            <Link href="/docs">Docs</Link>
-          </Button>
+          <div className="hidden lg:block">
+            <Button
+              className="px-6 py-6 text-foreground"
+              asChild
+              variant="link"
+            >
+              <Link href="/docs">Docs</Link>
+            </Button>
+          </div>
           <Button className="px-6 py-6 text-foreground" asChild variant="link">
             <Link href="https://darhkvoyd.me/sponser" target="_blank">
               Become a sponser
             </Link>
           </Button>
-          <AddToBrowser />
+          <div className="hidden lg:block">
+            <AddToBrowser />
+          </div>
         </div>
       </div>
     </nav>
