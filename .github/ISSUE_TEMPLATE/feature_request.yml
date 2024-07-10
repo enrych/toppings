@@ -1,7 +1,7 @@
 name: ⭐️ Feature Request
 description: Suggest an idea for this project
 title: "[<related_to>]: <feature>"
-labels: ["Type: Enhancement", "Type: Needs Investigation"]
+labels: ["Status: Needs Investigation", "Type: Enhancement"]
 body:
   - type: textarea
     attributes:
