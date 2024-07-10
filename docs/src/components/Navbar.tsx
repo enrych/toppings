@@ -59,8 +59,8 @@ const Navbar = () => {
             </Button>
           </div>
           <Button className="px-6 py-6 text-foreground" asChild variant="link">
-            <Link href="https://darhkvoyd.me/sponser" target="_blank">
-              Become a sponser
+            <Link href="https://darhkvoyd.me/sponsor" target="_blank">
+              Become a sponsor
             </Link>
           </Button>
           <div className="hidden lg:block">

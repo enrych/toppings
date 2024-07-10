@@ -32,14 +32,14 @@ export default function Navbar() {
         </button>
         <button
           className="flex items-center gap-2 font-medium text-foreground hover:bg-[#3d3d43]/50 px-3 py-2 rounded-md cursor-pointer"
-          title="Sponser"
+          title="Sponsor"
           onClick={() => {
-            window.open("https://darhkvoyd.me/sponser");
+            window.open("https://darhkvoyd.me/sponsor");
           }}
         >
           <img
             src={chrome.runtime.getURL("assets/icons/heart.svg")}
-            alt="Sponser"
+            alt="Sponsor"
           />
         </button>
         <button
