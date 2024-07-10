@@ -1,7 +1,7 @@
 name: 🐛 Bug
 description: Create a report to help us improve
 title: "[<directory>][<file>]: <issue>"
-labels: ["Type: Bug🐛", "Type: Needs Investigation"]
+labels: ["Status: Needs Investigation", "Type: Bug🐛"]
 body:
   - type: textarea
     attributes:
