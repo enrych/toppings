@@ -3,6 +3,7 @@ import { inter } from "../lib/fonts";
 import "./globals.css";
 import cn from "@/lib/cn";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Toppings: Your web, your way",
@@ -24,6 +25,7 @@ export default function RootLayout({
       >
         <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   );
