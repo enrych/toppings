@@ -1,13 +1,14 @@
-import runWatchWorker from "./routes/watch";
-import runPlaylistWorker from "./routes/playlist";
-import { type YouTubeContext } from "../../../background/webAppContextParsers";
-import { type YouTubeWorkerConfig } from "./config";
-import {
+import type {
+  YouTubeContext,
   YouTubePlaylistContext,
   YouTubeWatchContext,
   YouTubeShortsContext,
 } from "../../../background/webAppContextParsers/parseYouTubeContext";
+import { type YouTubeWorkerConfig } from "./config";
+import runWatchWorker from "./routes/watch";
+import runPlaylistWorker from "./routes/playlist";
 import runShortsWorker from "./routes/shorts";
+import "./global.css";
 
 const runYouTubeWorker = async (context: YouTubeContext): Promise<void> => {
   const { activeRoute } = context.contextData;
@@ -27,7 +28,7 @@ const runYouTubeWorker = async (context: YouTubeContext): Promise<void> => {
       break;
     }
     case "shorts": {
-      const isShortsWorkerEnabled = true;
+      const isShortsWorkerEnabled = workerConfig.routes.shorts.isEnabled;
       isShortsWorkerEnabled &&
         (await runShortsWorker(context as YouTubeShortsContext));
       break;
