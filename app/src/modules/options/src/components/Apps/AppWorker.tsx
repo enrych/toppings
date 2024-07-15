@@ -1,3 +1,4 @@
+import React from "react";
 import { WorkerName } from "../../../../../store";
 import Card from "../../../../../ui/Card";
 import GeneralSettings from "./GeneralSettings";
