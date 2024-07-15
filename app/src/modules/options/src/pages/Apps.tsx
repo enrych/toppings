@@ -1,3 +1,5 @@
+import React from "react";
+
 import AppsConfig from "../components/Apps";
 
 export default function Apps() {

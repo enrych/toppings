@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Outlet, useLoaderData } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import { Config } from "../../../store";

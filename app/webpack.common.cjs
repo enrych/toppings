@@ -43,7 +43,7 @@ module.exports = {
           options: {
             presets: [
               "@babel/preset-env",
-              ["@babel/preset-react", { runtime: "automatic" }],
+              "@babel/preset-react",
               "@babel/preset-typescript",
             ],
           },
@@ -78,7 +78,10 @@ module.exports = {
 };
 
 function getWorkers() {
-  const workersPath = path.resolve(__dirname, "src/modules/content_scripts/workers");
+  const workersPath = path.resolve(
+    __dirname,
+    "src/modules/content_scripts/workers",
+  );
   const workers = getDirectories(workersPath);
   const entryPoints = {};
 

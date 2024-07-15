@@ -1,3 +1,4 @@
+import React from "react";
 import { useContext } from "react";
 import ConfigContext from "../store";
 import Card from "../../../../ui/Card";
