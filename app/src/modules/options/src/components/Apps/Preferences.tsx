@@ -3,6 +3,8 @@ import { ChangeEvent, useContext } from "react";
 import ConfigContext from "../../store";
 import { WorkerConfigRouteConfig, WorkerName } from "../../../../../store";
 import PreferenceInput from "../PreferenceInput";
+import Switch from "../Switch";
+import { produce } from "immer";
 
 const Preferences = ({
   appName,
@@ -11,7 +13,7 @@ const Preferences = ({
   appName: WorkerName;
   routeName: string;
 }) => {
-  const { config } = useContext(ConfigContext)!;
+  const { config, setConfig } = useContext(ConfigContext)!;
 
   const routes = config.workers[appName].routes as Record<
     string,
@@ -120,6 +122,24 @@ const Preferences = ({
           preferenceName="seekForward"
           validator={(e: ChangeEvent<HTMLInputElement>) => {
             return isValidNumeric(e, 1, 60);
+          }}
+        />
+      )}
+      {Object.prototype.hasOwnProperty.call(preferences, "reelAutoScroll") && (
+        <Switch
+          title={`Enable Auto Scroll`}
+          isEnabled={preferences.reelAutoScroll}
+          onToggle={(isEnabled: boolean) => {
+            const newConfig = produce(config, (draft) => {
+              (
+                draft.workers[appName].routes as Record<
+                  string,
+                  WorkerConfigRouteConfig
+                >
+              )[routeName].preferences!.reelAutoScroll = isEnabled;
+            });
+            setConfig(newConfig);
+            chrome.storage.sync.set(newConfig);
           }}
         />
       )}

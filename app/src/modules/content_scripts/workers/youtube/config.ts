@@ -40,6 +40,15 @@ const youtubeWorkerConfig = {
     playlist: {
       isEnabled: true as boolean,
     },
+    shorts: {
+      isEnabled: true as boolean,
+      keybindings: {
+        toggleSpeedShortcut: "X" as string,
+      },
+      preferences: {
+        reelAutoScroll: true as boolean,
+      },
+    },
   },
 } satisfies WorkerConfig;
 
