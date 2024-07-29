@@ -37,7 +37,7 @@ Your feedback helps us improve! If you find Toppings useful, please consider sha
 
 Your support helps us reach more people and improve their web browsing experience!
 
-Toppings is completely free. If you find it useful, consider supporting us through [sponsorships](https://darhkvoyd.me/sponsors).
+Toppings is completely free. If you find it useful, consider supporting us through [sponsorships](https://darhkvoyd.me/sponsor).
 
 ---
 
