@@ -19,5 +19,5 @@ When adding unit tests, place them in this directory and mirror the structure of
 To run a specific test file, use the following command:
 
 ```bash
-bunx mocha "test/unit/modules/content_scripts/lib/formatRuntime.spec.ts"
+bunx mocha "test/unit/content_scripts/lib/formatRuntime.spec.ts"
 ```

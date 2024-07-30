@@ -38,7 +38,7 @@
     {
       "matches": ["<all_urls>"],
       "resources": [
-        "workers/*.js",
+        "webApps/*.js",
         "assets/**/*.png",
         "assets/**/*.svg",
         "options/assets/*.png"

@@ -1,0 +1,39 @@
+import { type SupportedWebAppContext } from "../background/webAppContext";
+import { type YouTubeContext, type UdemyContext } from "../background/parsers";
+
+async function runApp(
+  webAppContext: SupportedWebAppContext,
+): Promise<undefined> {
+  const {
+    appName,
+    webAppConfig: {
+      generalSettings: { isEnabled: isWebAppEnabled },
+    },
+  } = webAppContext;
+  if (isWebAppEnabled) {
+    switch (appName) {
+      case "youtube": {
+        const youtubeContext = webAppContext as YouTubeContext;
+        const { default: runYouTube } = await import(
+          /* webpackIgnore: true */ chrome.runtime.getURL("webApps/youtube.js")
+        );
+        void runYouTube(youtubeContext);
+        break;
+      }
+      case "udemy": {
+        const udemyContext = webAppContext as UdemyContext;
+        const { default: runUdemy } = await import(
+          /* webpackIgnore: true */ chrome.runtime.getURL("webApps/udemy.js")
+        );
+        void runUdemy(udemyContext);
+        break;
+      }
+    }
+  }
+}
+
+chrome.runtime.onMessage.addListener(
+  (webAppContext: SupportedWebAppContext): undefined => {
+    void runApp(webAppContext);
+  },
+);
