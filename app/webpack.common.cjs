@@ -6,17 +6,17 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 module.exports = {
   target: "web",
   entry: {
-    background: "./src/modules/background/index.ts",
-    content: ["./src/modules/content_scripts/index.ts"],
+    background: "./src/background/index.ts",
+    content: ["./src/content_scripts/index.ts"],
     popup: {
       filename: "./popup/index.js",
-      import: "./src/modules/popup/src/index.tsx",
+      import: "./src/popup/src/index.tsx",
     },
     options: {
       filename: "./options/index.js",
-      import: "./src/modules/options/src/index.tsx",
+      import: "./src/options/src/index.tsx",
     },
-    ...getWorkers(),
+    ...getWebAppsEntry(),
   },
 
   output: {
@@ -61,8 +61,8 @@ module.exports = {
     new CopyWebpackPlugin({
       patterns: [
         { from: "src/assets", to: "assets" },
-        { from: "src/modules/options/index.html", to: "options" },
-        { from: "src/modules/popup/index.html", to: "popup" },
+        { from: "src/options/index.html", to: "options" },
+        { from: "src/popup/index.html", to: "popup" },
         "src/manifest.json",
       ],
     }),
@@ -77,22 +77,19 @@ module.exports = {
   },
 };
 
-function getWorkers() {
-  const workersPath = path.resolve(
-    __dirname,
-    "src/modules/content_scripts/workers",
-  );
-  const workers = getDirectories(workersPath);
+function getWebAppsEntry() {
+  const webAppsPath = path.resolve(__dirname, "src/content_scripts/webApps");
+  const webApps = getDirectories(webAppsPath);
   const entryPoints = {};
 
-  workers.forEach((dir) => {
-    const indexPath = fs.existsSync(path.resolve(workersPath, dir, "index.tsx"))
-      ? path.resolve(workersPath, dir, "index.tsx")
-      : path.resolve(workersPath, dir, "index.ts");
+  webApps.forEach((dir) => {
+    const indexPath = fs.existsSync(path.resolve(webAppsPath, dir, "index.tsx"))
+      ? path.resolve(webAppsPath, dir, "index.tsx")
+      : path.resolve(webAppsPath, dir, "index.ts");
 
     entryPoints[dir] = {
       import: indexPath,
-      filename: "./workers/[name].js",
+      filename: "./webApps/[name].js",
       library: {
         type: "module",
       },
