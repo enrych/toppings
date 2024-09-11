@@ -3,6 +3,12 @@ import YTPlayer from "../../common/VideoPlayer";
 import { type YouTubeWatchContext } from "../../../../../background/parsers//parseYouTubeContext";
 import { YouTubeConfig } from "../../webApp.config";
 import loadElement from "../../../../../lib/loadElement";
+import elementReady from "element-ready";
+import {
+  LoopSegmentButton,
+  LoopSegmentStartMarker,
+  LoopSegmentEndMarker,
+} from "./components/LoopSegment";
 
 let toggleSpeedShortcut: string;
 let seekBackwardShortcut: string;
@@ -52,6 +58,14 @@ const runWatch = async (context: YouTubeWatchContext): Promise<void> => {
     playerSettingsButton = await loadSettingsBtn();
     document.addEventListener("keydown", useShortcuts);
     if (playerSettingsButton !== null) {
+      const rightControls = await elementReady("div.ytp-right-controls");
+      if (rightControls) {
+        rightControls.prepend(LoopSegmentButton);
+      }
+      const progressBar = await elementReady("div.ytp-progress-bar-container");
+      if (progressBar) {
+        progressBar.append(LoopSegmentStartMarker, LoopSegmentEndMarker);
+      }
       playerSettingsButton.removeEventListener("click", onSettingsMenu);
       playerSettingsButton.addEventListener("click", onSettingsMenu, {
         once: true,
