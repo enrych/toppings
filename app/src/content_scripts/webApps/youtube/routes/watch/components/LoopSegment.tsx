@@ -44,6 +44,14 @@ export const LoopSegmentEndMarker = (
   />
 );
 
+export async function initLoopSegment() {
+  video = (await elementReady("video")) as HTMLVideoElement | null;
+  disableLoopSegment();
+  LoopSegmentButton.setAttribute("aria-pressed", "false");
+  LoopSegmentStartMarker.classList.add("hidden");
+  LoopSegmentEndMarker.classList.add("hidden");
+}
+
 export function toggleLoopSegment(_event?: React.MouseEvent) {
   const isPressed = LoopSegmentButton.getAttribute("aria-pressed") ?? "false";
   if (isPressed === "true") {
@@ -58,7 +66,6 @@ export function toggleLoopSegment(_event?: React.MouseEvent) {
 }
 
 async function enableLoopSegment() {
-  video = (await elementReady("video")) as HTMLVideoElement | null;
   if (!video) return;
 
   timeUpdateListener = (_event: Event) => {

@@ -9,6 +9,7 @@ import {
   LoopSegmentStartMarker,
   LoopSegmentEndMarker,
   toggleLoopSegment,
+  initLoopSegment,
 } from "./components/LoopSegment";
 
 let toggleSpeedShortcut: string;
@@ -68,6 +69,7 @@ const runWatch = async (context: YouTubeWatchContext): Promise<void> => {
       const progressBar = await elementReady("div.ytp-progress-bar-container");
       if (progressBar) {
         progressBar.append(LoopSegmentStartMarker, LoopSegmentEndMarker);
+        initLoopSegment();
       }
       playerSettingsButton.removeEventListener("click", onSettingsMenu);
       playerSettingsButton.addEventListener("click", onSettingsMenu, {
