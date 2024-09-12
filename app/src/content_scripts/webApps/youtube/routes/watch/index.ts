@@ -8,6 +8,7 @@ import {
   LoopSegmentButton,
   LoopSegmentStartMarker,
   LoopSegmentEndMarker,
+  toggleLoopSegment,
 } from "./components/LoopSegment";
 
 let toggleSpeedShortcut: string;
@@ -15,6 +16,7 @@ let seekBackwardShortcut: string;
 let seekForwardShortcut: string;
 let increaseSpeedShortcut: string;
 let decreaseSpeedShortcut: string;
+let toggleLoopSegmentShortcut: string;
 let customPrecisionSpeedList: string[];
 let toggleSpeed: string;
 let defaultSpeed: string;
@@ -42,6 +44,7 @@ const runWatch = async (context: YouTubeWatchContext): Promise<void> => {
   seekForwardShortcut = keybindings.seekForwardShortcut;
   increaseSpeedShortcut = keybindings.increaseSpeedShortcut;
   decreaseSpeedShortcut = keybindings.decreaseSpeedShortcut;
+  toggleLoopSegmentShortcut = keybindings.toggleLoopSegmentShortcut;
   customPrecisionSpeedList = preferences.customSpeedList;
   toggleSpeed = preferences.toggleSpeed;
   defaultSpeed = preferences.defaultSpeed;
@@ -366,6 +369,8 @@ const useShortcuts = (event: KeyboardEvent): void => {
         return;
       }
       changePlaybackSpeed(decreasedSpeed);
+    } else if (event.key === `${toggleLoopSegmentShortcut.toLowerCase()}`) {
+      toggleLoopSegment();
     }
   }
 };

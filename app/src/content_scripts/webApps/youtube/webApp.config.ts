@@ -13,6 +13,7 @@ const youtubeConfig = {
         seekForwardShortcut: "D" as string,
         increaseSpeedShortcut: "W" as string,
         decreaseSpeedShortcut: "S" as string,
+        toggleLoopSegmentShortcut: "Z" as string,
       },
       // TODO: The Options page should save the values with toFixed(2) as part of saving
       // validation so that content script doesn't have to bother about it.

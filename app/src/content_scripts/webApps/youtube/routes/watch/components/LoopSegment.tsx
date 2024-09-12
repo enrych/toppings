@@ -11,19 +11,7 @@ export const LoopSegmentButton = (
     aria-pressed="false"
     aria-label="Loop Segment of the video."
     title="Loop Segment"
-    onClick={(_event: React.MouseEvent) => {
-      const isPressed =
-        LoopSegmentButton.getAttribute("aria-pressed") ?? "false";
-      if (isPressed === "true") {
-        disableLoopSegment();
-        LoopSegmentButton.setAttribute("aria-pressed", "false");
-      } else {
-        enableLoopSegment();
-        LoopSegmentButton.setAttribute("aria-pressed", "true");
-      }
-      LoopSegmentStartMarker.classList.toggle("hidden");
-      LoopSegmentEndMarker.classList.toggle("hidden");
-    }}
+    onClick={toggleLoopSegment}
   >
     <svg
       viewBox="-9.6 -9.6 43.20 43.20"
@@ -55,6 +43,19 @@ export const LoopSegmentEndMarker = (
     onMouseDown={(e) => handleMarkerDrag(e, "end")}
   />
 );
+
+export function toggleLoopSegment(_event?: React.MouseEvent) {
+  const isPressed = LoopSegmentButton.getAttribute("aria-pressed") ?? "false";
+  if (isPressed === "true") {
+    disableLoopSegment();
+    LoopSegmentButton.setAttribute("aria-pressed", "false");
+  } else {
+    enableLoopSegment();
+    LoopSegmentButton.setAttribute("aria-pressed", "true");
+  }
+  LoopSegmentStartMarker.classList.toggle("hidden");
+  LoopSegmentEndMarker.classList.toggle("hidden");
+}
 
 async function enableLoopSegment() {
   video = (await elementReady("video")) as HTMLVideoElement | null;
