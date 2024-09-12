@@ -9,3 +9,7 @@
   --tw-scale-x: 1;
   --tw-scale-y: 1;
 }
+
+#contentContainer.tp-yt-app-drawer[swipe-open].tp-yt-app-drawer::after {
+  width: 10px !important;
+}
