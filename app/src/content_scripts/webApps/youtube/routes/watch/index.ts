@@ -3,12 +3,21 @@ import YTPlayer from "../../common/VideoPlayer";
 import { type YouTubeWatchContext } from "../../../../../background/parsers//parseYouTubeContext";
 import { YouTubeConfig } from "../../webApp.config";
 import loadElement from "../../../../../lib/loadElement";
+import elementReady from "element-ready";
+import {
+  LoopSegmentButton,
+  LoopSegmentStartMarker,
+  LoopSegmentEndMarker,
+  toggleLoopSegment,
+  initLoopSegment,
+} from "./components/LoopSegment";
 
 let toggleSpeedShortcut: string;
 let seekBackwardShortcut: string;
 let seekForwardShortcut: string;
 let increaseSpeedShortcut: string;
 let decreaseSpeedShortcut: string;
+let toggleLoopSegmentShortcut: string;
 let customPrecisionSpeedList: string[];
 let toggleSpeed: string;
 let defaultSpeed: string;
@@ -36,6 +45,7 @@ const runWatch = async (context: YouTubeWatchContext): Promise<void> => {
   seekForwardShortcut = keybindings.seekForwardShortcut;
   increaseSpeedShortcut = keybindings.increaseSpeedShortcut;
   decreaseSpeedShortcut = keybindings.decreaseSpeedShortcut;
+  toggleLoopSegmentShortcut = keybindings.toggleLoopSegmentShortcut;
   customPrecisionSpeedList = preferences.customSpeedList;
   toggleSpeed = preferences.toggleSpeed;
   defaultSpeed = preferences.defaultSpeed;
@@ -52,6 +62,15 @@ const runWatch = async (context: YouTubeWatchContext): Promise<void> => {
     playerSettingsButton = await loadSettingsBtn();
     document.addEventListener("keydown", useShortcuts);
     if (playerSettingsButton !== null) {
+      const rightControls = await elementReady("div.ytp-right-controls");
+      if (rightControls) {
+        rightControls.prepend(LoopSegmentButton);
+      }
+      const progressBar = await elementReady("div.ytp-progress-bar-container");
+      if (progressBar) {
+        await initLoopSegment();
+        progressBar.append(LoopSegmentStartMarker, LoopSegmentEndMarker);
+      }
       playerSettingsButton.removeEventListener("click", onSettingsMenu);
       playerSettingsButton.addEventListener("click", onSettingsMenu, {
         once: true,
@@ -352,6 +371,8 @@ const useShortcuts = (event: KeyboardEvent): void => {
         return;
       }
       changePlaybackSpeed(decreasedSpeed);
+    } else if (event.key === `${toggleLoopSegmentShortcut.toLowerCase()}`) {
+      toggleLoopSegment();
     }
   }
 };
