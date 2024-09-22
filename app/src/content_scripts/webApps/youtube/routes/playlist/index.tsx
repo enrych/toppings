@@ -1,9 +1,8 @@
 import React from "dom-chef";
 import elementReady from "element-ready";
-import { type YouTubePlaylistContext } from "../../../../../background/parsers//parseYouTubeContext";
 import fetchYouTubeToppings from "../../utils/fetchYouTubeToppings";
+import { type YouTubePlaylistContext } from "../../../../../background/parsers//parseYouTubeContext";
 import { formatRuntime } from "../../../../../lib/formatRuntime";
-import "./index.css";
 
 const runPlaylist = async (context: YouTubePlaylistContext): Promise<void> => {
   const { playlistID } = context.contextData.payload;
