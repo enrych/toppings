@@ -6,7 +6,7 @@ import {
 } from "../../../../../background/parsers//parseYouTubeContext";
 import { formatRuntime } from "../../../../../lib/formatRuntime";
 
-const onYTPlaylistPage = async (
+const onPlaylistPage = async (
   context: YouTubePlaylistContext,
 ): Promise<void> => {
   const { playlistId } = context.contextData.payload;
@@ -78,4 +78,4 @@ const onYTPlaylistPage = async (
   }
 };
 
-export default onYTPlaylistPage;
+export default onPlaylistPage;
