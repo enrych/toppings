@@ -11,13 +11,14 @@ import type { YouTubeConfig } from "../../webApp.config";
 import type { YouTubeWatchContext } from "../../../../../background/parsers/parseYouTubeContext";
 
 let player: HTMLVideoElement | undefined;
+let playbackMenuButton: HTMLElement | undefined;
 let preferences: YouTubeConfig["routes"]["watch"]["preferences"] | undefined;
 let keybindings: YouTubeConfig["routes"]["watch"]["keybindings"] | undefined;
 
 const onWatchPage = async (context: YouTubeWatchContext) => {
   const webAppConfig = context.webAppConfig as YouTubeConfig;
-  preferences = webAppConfig.routes.watch.preferences;
   keybindings = webAppConfig.routes.watch.keybindings;
+  preferences = webAppConfig.routes.watch.preferences;
   if (preferences === undefined || keybindings === undefined) return;
 
   player = await elementReady("video", {
@@ -55,13 +56,8 @@ const onWatchPage = async (context: YouTubeWatchContext) => {
     progressBar.append(LoopSegmentStartMarker, LoopSegmentEndMarker);
   }
 
-  const doubleTapSeekElement = document.querySelector(
-    ".ytp-doubletap-ui-legacy",
-  );
-
   const playerSettingsButton = await elementReady("button.ytp-settings-button");
-  if (playerSettingsButton === null || playerSettingsButton === undefined)
-    return;
+  if (playerSettingsButton === undefined) return;
   playerSettingsButton.removeEventListener("click", onSettingsMenu);
   playerSettingsButton.addEventListener("click", onSettingsMenu, {
     once: true,
@@ -70,14 +66,15 @@ const onWatchPage = async (context: YouTubeWatchContext) => {
 
 const onSettingsMenu = async (): Promise<void> => {
   if (player === null || player === undefined) return;
+
   const settingsMenuLabels = await elementReady(".ytp-menuitem-label");
-  if (settingsMenuLabels === null || settingsMenuLabels === undefined) return;
+  if (settingsMenuLabels === undefined) return;
   const labels = document.querySelectorAll(".ytp-menuitem-label");
   if (labels.length === 0) return;
 
   for (const label of labels) {
     if (label.textContent === "Playback speed") {
-      const playbackMenuButton = label.parentNode as HTMLElement;
+      playbackMenuButton = label.parentNode as HTMLElement;
       playbackMenuButton.children[2].textContent =
         player.playbackRate === 1
           ? "Normal"
@@ -90,7 +87,6 @@ const onSettingsMenu = async (): Promise<void> => {
 
 const onPlaybackSpeedMenu = async (): Promise<void> => {
   if (player === undefined || player === null) return;
-  if (preferences === undefined || keybindings === undefined) return;
 
   const playbackRatePanel = await elementReady(".ytp-panel-animate-forward");
   if (playbackRatePanel === undefined) return;
@@ -102,6 +98,13 @@ const onPlaybackSpeedMenu = async (): Promise<void> => {
   if (menuPanelOptions) {
     menuPanelOptions.style.display = "none";
   }
+
+  replacePlaybackItems(playbackRatePanel);
+};
+
+const replacePlaybackItems = (playbackRatePanel: HTMLElement) => {
+  if (player === undefined || player === null) return;
+  if (preferences === undefined || keybindings === undefined) return;
 
   // Replace Native PlaybackRate Items
   const panelMenu = playbackRatePanel.querySelector(".ytp-panel-menu");
@@ -122,13 +125,15 @@ const onPlaybackSpeedMenu = async (): Promise<void> => {
         role="menuitemradio"
         aria-checked={isAriaChecked}
         tabIndex={0}
+        data-tppng-playback-rate={playbackRate}
         onClick={(_event) => {
-          setPlaybackRate(Number(playbackRate));
           const panelBackButton = document.querySelector(
             ".ytp-panel-back-button",
           ) as HTMLElement | null;
-          if (panelBackButton === null) return;
-          panelBackButton.click();
+          if (panelBackButton !== null) {
+            panelBackButton.click();
+          }
+          setPlaybackRate(Number(playbackRate));
         }}
       >
         <div className="ytp-menuitem-label">{label}</div>
@@ -136,26 +141,39 @@ const onPlaybackSpeedMenu = async (): Promise<void> => {
     );
   });
 
+  if (isCustomPlayback === "true") {
+    player.setAttribute(
+      "data-tppng-playback-rate",
+      player.playbackRate.toFixed(2),
+    );
+  }
   const customPlaybackRateItem = (
     <div
-      className={`ytp-menuitem tppng-playback-item ${isCustomPlayback === "true" ? "" : "hidden"}`}
+      className={`ytp-menuitem tppng-playback-item ${player.getAttribute("data-tppng-playback-rate") ? "" : "hidden"}`}
       id="tppng-playback-custom-item"
       role="menuitemradio"
       aria-checked={isCustomPlayback}
       tabIndex={0}
-      data-playback-rate={player.playbackRate}
-      onClick={(event) => {
-        setPlaybackRate(
-          Number(event.currentTarget.getAttribute("data-playback-rate") ?? "1"),
-        );
+      onClick={(_event) => {
         const panelBackButton = document.querySelector(
           ".ytp-panel-back-button",
         ) as HTMLElement | null;
-        if (panelBackButton === null) return;
-        panelBackButton.click();
+        if (panelBackButton !== null) {
+          panelBackButton.click();
+        }
+        setPlaybackRate(
+          Number(player!.getAttribute("data-tppng-playback-rate") ?? "1"),
+        );
       }}
     >
-      <div className="ytp-menuitem-label">Custom ({player.playbackRate})</div>
+      <div className="ytp-menuitem-label">
+        Custom (
+        {Number(
+          player!.getAttribute("data-tppng-playback-rate") ??
+            player!.playbackRate,
+        )}
+        )
+      </div>
     </div>
   );
   panelMenu.replaceChildren(customPlaybackRateItem, ...playbackRateItems);
@@ -269,7 +287,47 @@ const onDoubleTapSeek = (dataSide: "back" | "forward", time: number): void => {
 
 const setPlaybackRate = (rate: number): void => {
   if (player === null || player === undefined) return;
+
+  const prevPlaybackRate = player.playbackRate.toFixed(2);
+  const prevPlaybackMenuItem =
+    document.querySelector(
+      `.tppng-playback-item[data-tppng-playback-rate="${prevPlaybackRate}"]`,
+    ) || document.querySelector("#tppng-playback-custom-item");
+  if (prevPlaybackMenuItem) {
+    prevPlaybackMenuItem.ariaChecked = "false";
+  }
+
   player.playbackRate = rate;
+
+  const nextPlaybackRate = player.playbackRate.toFixed(2);
+  const nextPlaybackMenuItem =
+    document.querySelector(
+      `.tppng-playback-item[data-tppng-playback-rate="${nextPlaybackRate}"]`,
+    ) || document.querySelector("#tppng-playback-custom-item");
+  if (nextPlaybackMenuItem) {
+    nextPlaybackMenuItem.ariaChecked = "true";
+  }
+
+  if (nextPlaybackMenuItem?.id === "tppng-playback-custom-item") {
+    player.setAttribute(
+      "data-tppng-playback-rate",
+      player.playbackRate.toFixed(2),
+    );
+    nextPlaybackMenuItem.classList.remove("hidden");
+    const customPlaybackItemLabel = document.querySelector(
+      "#tppng-playback-custom-item > .ytp-menuitem-label",
+    );
+    if (customPlaybackItemLabel) {
+      customPlaybackItemLabel.textContent = `Custom (${player.playbackRate})`;
+    }
+  }
+
+  if (playbackMenuButton !== null && playbackMenuButton !== undefined) {
+    playbackMenuButton.children[2].textContent =
+      player.playbackRate === 1
+        ? "Normal"
+        : `${Number(player.playbackRate.toFixed(2))}`;
+  }
 };
 
 export default onWatchPage;
