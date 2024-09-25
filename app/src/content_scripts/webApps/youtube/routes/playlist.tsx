@@ -3,8 +3,8 @@ import elementReady from "element-ready";
 import {
   YouTubeValidPlaylist,
   type YouTubePlaylistContext,
-} from "../../../../../background/parsers//parseYouTubeContext";
-import { formatRuntime } from "../../../../../lib/formatRuntime";
+} from "../../../../background/parsers//parseYouTubeContext";
+import { formatRuntime } from "../../../../lib/formatRuntime";
 
 const onPlaylistPage = async (
   context: YouTubePlaylistContext,

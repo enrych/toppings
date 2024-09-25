@@ -6,9 +6,9 @@ import {
   LoopSegmentEndMarker,
   LoopSegmentStartMarker,
   toggleLoopSegment,
-} from "./components/LoopSegment";
-import type { YouTubeConfig } from "../../webApp.config";
-import type { YouTubeWatchContext } from "../../../../../background/parsers/parseYouTubeContext";
+} from "../components/LoopSegment";
+import type { YouTubeConfig } from "../webApp.config";
+import type { YouTubeWatchContext } from "../../../../background/parsers/parseYouTubeContext";
 
 let player: HTMLVideoElement | undefined;
 let playbackMenuButton: HTMLElement | undefined;

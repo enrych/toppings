@@ -1,10 +1,10 @@
-import { YouTubeShortsContext } from "../../../../../background/parsers//parseYouTubeContext";
-import loadElement from "../../../../../lib/loadElement";
-import { YouTubeConfig } from "../../webApp.config";
-import AutoScrollButton from "./components/AutoScrollButton";
+import { YouTubeShortsContext } from "../../../../background/parsers//parseYouTubeContext";
+import loadElement from "../../../../lib/loadElement";
+import { YouTubeConfig } from "../webApp.config";
+import AutoScrollButton from "../components/AutoScrollButton";
 import ToggleShortsSpeedButton, {
   togglePlaybackRate,
-} from "./components/TogglePlaybackRateButton";
+} from "../components/TogglePlaybackRateButton";
 
 let togglePlaybackRateKeybinding: string;
 let isAutoScrollEnabled: boolean;

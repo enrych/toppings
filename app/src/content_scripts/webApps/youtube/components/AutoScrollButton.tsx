@@ -1,5 +1,5 @@
 import React from "dom-chef";
-import { enableAutoScroll } from "..";
+import { enableAutoScroll } from "../routes/shorts";
 
 const AutoScrollButton = (
   <button
