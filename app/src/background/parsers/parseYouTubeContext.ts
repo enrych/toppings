@@ -100,6 +100,7 @@ export default async function parseYoutubeContext(
             webAppURL,
             activeRoute: "playlist",
             payload: {
+              playlistId: playlistId,
               averageRuntime: body.data.avg_runtime,
               totalRuntime: body.data.total_runtime,
               totalVideos: body.data.num_videos,
@@ -114,6 +115,9 @@ export default async function parseYoutubeContext(
           contextData: {
             webAppURL,
             activeRoute: "playlist",
+            payload: {
+              playlistId: playlistId,
+            },
           },
         };
       }
