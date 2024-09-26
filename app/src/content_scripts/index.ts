@@ -14,10 +14,10 @@ async function runApp(
     switch (appName) {
       case "youtube": {
         const youtubeContext = webAppContext as YouTubeContext;
-        const { default: runYouTube } = await import(
+        const { default: onYouTubeLoaded } = await import(
           /* webpackIgnore: true */ chrome.runtime.getURL("webApps/youtube.js")
         );
-        void runYouTube(youtubeContext);
+        void onYouTubeLoaded(youtubeContext);
         break;
       }
       case "udemy": {

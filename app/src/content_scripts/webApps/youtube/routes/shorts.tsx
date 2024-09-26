@@ -1,65 +1,70 @@
-import { YouTubeShortsContext } from "../../../../background/parsers//parseYouTubeContext";
-import loadElement from "../../../../lib/loadElement";
-import { YouTubeConfig } from "../webApp.config";
-import AutoScrollButton from "../components/AutoScrollButton";
-import ToggleShortsSpeedButton, {
-  togglePlaybackRate,
-} from "../components/TogglePlaybackRateButton";
+import React from "dom-chef";
+import elementReady from "element-ready";
+import type { YouTubeShortsContext } from "../../../../background/parsers/parseYouTubeContext";
+import type { YouTubeConfig } from "../webApp.config";
 
-let togglePlaybackRateKeybinding: string;
-let isAutoScrollEnabled: boolean;
+let player: HTMLVideoElement | undefined;
+let keybindings: YouTubeConfig["routes"]["shorts"]["keybindings"] | undefined;
+let preferences: YouTubeConfig["routes"]["shorts"]["preferences"] | undefined;
 
-const runShorts = async (context: YouTubeShortsContext): Promise<void> => {
-  const { keybindings, preferences } = (context.webAppConfig as YouTubeConfig)
-    .routes.shorts;
-  togglePlaybackRateKeybinding = keybindings.toggleSpeedShortcut;
-  isAutoScrollEnabled = preferences.reelAutoScroll;
+const onShortsPage = async (context: YouTubeShortsContext): Promise<void> => {
+  const webAppConfig = context.webAppConfig as YouTubeConfig;
+  keybindings = webAppConfig.routes.shorts.keybindings;
+  preferences = webAppConfig.routes.shorts.preferences;
+  if (keybindings === undefined || preferences === undefined) return;
 
-  const reel = (await loadElement("video", 10000, 1000)) as HTMLVideoElement;
-  if (reel !== null) {
-    document.body.removeEventListener("keydown", addShortsKeybindings);
-    document.body.addEventListener("keydown", addShortsKeybindings);
-    reel.loop = false;
-    reel.removeEventListener("ended", autoScrollHandler);
-    reel.addEventListener("ended", autoScrollHandler);
+  player = await elementReady("ytd-reel-video-renderer[is-active] video", {
+    stopOnDomReady: false,
+  });
+  if (player === undefined) return;
 
-    const actions = reel
-      .closest("ytd-reel-video-renderer")
-      ?.querySelector("#actions");
+  const playerActions = player
+    .closest("ytd-reel-video-renderer[is-active]")
+    ?.querySelector("#actions");
+  if (!playerActions) return;
 
-    const isAutoScrollButton = actions?.querySelector(
-      "#toppings-shorts-auto-scroll-btn",
-    );
-    if (!isAutoScrollButton) {
-      actions?.prepend(AutoScrollButton);
-      if (!isAutoScrollEnabled) {
-        AutoScrollButton.classList.add("bg-white/10");
-        AutoScrollButton.classList.remove("bg-white/20");
-      } else {
-        AutoScrollButton.classList.add("bg-white/20");
-        AutoScrollButton.classList.remove("bg-white/10");
-      }
+  // Keyboard Shortcuts
+  document.body.removeEventListener("keydown", useShortcuts);
+  document.body.addEventListener("keydown", useShortcuts);
+
+  // Auto Scroll
+  setupAutoScroll();
+  player.removeEventListener("playing", setupAutoScroll);
+  player.addEventListener("playing", setupAutoScroll);
+  player.removeEventListener("ended", scrollToNextReel);
+  player.addEventListener("ended", scrollToNextReel);
+
+  const autoScrollButton = playerActions.querySelector("#tppng-auto-scroll");
+  if (!autoScrollButton) {
+    playerActions.prepend(AutoScrollButton);
+    if (!preferences.reelAutoScroll) {
+      AutoScrollButton.classList.add("bg-white/10");
+      AutoScrollButton.classList.remove("bg-white/20");
+    } else {
+      AutoScrollButton.classList.add("bg-white/20");
+      AutoScrollButton.classList.remove("bg-white/10");
     }
+  }
 
-    const isToggleShortsSpeedButton = actions?.querySelector(
-      "#toppings-shorts-toggle-playback-rate-btn",
-    );
-    if (!isToggleShortsSpeedButton) {
-      actions?.prepend(ToggleShortsSpeedButton);
-      if (reel.playbackRate === 1) {
-        ToggleShortsSpeedButton.classList.add("bg-white/10");
-        ToggleShortsSpeedButton.classList.remove("bg-white/20");
-      } else {
-        ToggleShortsSpeedButton.classList.add("bg-white/20");
-        ToggleShortsSpeedButton.classList.remove("bg-white/10");
-      }
+  // Toggle Playback Rate
+  const togglePlaybackRateButton = playerActions.querySelector(
+    "#tppng-toggle-playback-rate",
+  );
+  if (!togglePlaybackRateButton) {
+    playerActions.prepend(TogglePlaybackRateButton);
+    if (player.playbackRate === 1) {
+      TogglePlaybackRateButton.classList.add("bg-white/10");
+      TogglePlaybackRateButton.classList.remove("bg-white/20");
+    } else {
+      TogglePlaybackRateButton.classList.add("bg-white/20");
+      TogglePlaybackRateButton.classList.remove("bg-white/10");
     }
   }
 };
 
-export default runShorts;
-
-function addShortsKeybindings(event: KeyboardEvent) {
+function useShortcuts(event: KeyboardEvent) {
+  if (player === null || player === undefined) return;
+  if (keybindings === undefined) return;
   if (
     event.target !== null &&
     (event.target as HTMLElement).tagName !== "INPUT" &&
@@ -68,39 +73,35 @@ function addShortsKeybindings(event: KeyboardEvent) {
       "#contenteditable-root.yt-formatted-string",
     )
   ) {
-    if (event.key === `${togglePlaybackRateKeybinding.toLowerCase()}`) {
+    if (event.key === `${keybindings.toggleSpeedShortcut.toLowerCase()}`) {
       togglePlaybackRate();
     }
   }
 }
 
-export function enableAutoScroll() {
-  if (isAutoScrollEnabled) {
-    isAutoScrollEnabled = false;
-  } else {
-    isAutoScrollEnabled = true;
-  }
-  AutoScrollButton.classList.toggle("bg-white/10");
-  AutoScrollButton.classList.toggle("bg-white/20");
+let setupTimeoutId: ReturnType<typeof setTimeout>;
+function setupAutoScroll() {
+  if (player === null || player === undefined) return;
+  if (!preferences?.reelAutoScroll) return;
+  clearTimeout(setupTimeoutId);
+  setupTimeoutId = setTimeout(() => {
+    player?.removeAttribute("loop");
+  }, 400);
 }
 
-function autoScrollHandler(event: Event) {
-  const reel = event.currentTarget as HTMLVideoElement;
-  if (!isAutoScrollEnabled) {
-    reel.play();
-    setTimeout(() => {
-      reel.loop = false;
-    }, 1000);
+function scrollToNextReel() {
+  if (player === null || player === undefined) return;
+  if (preferences === undefined) return;
+  if (!preferences.reelAutoScroll) {
+    player.play();
     return;
   }
-  const isCommentSectionVisibility = document
+
+  const isCommentsExpanded = document
     .querySelector("ytd-engagement-panel-section-list-renderer")
     ?.getAttribute("visibility");
-  if (isCommentSectionVisibility === "ENGAGEMENT_PANEL_VISIBILITY_EXPANDED") {
-    reel.play();
-    setTimeout(() => {
-      reel.loop = false;
-    }, 1000);
+  if (isCommentsExpanded === "ENGAGEMENT_PANEL_VISIBILITY_EXPANDED") {
+    player.play();
     return;
   }
   const nextReelButton = document.querySelector(
@@ -109,3 +110,39 @@ function autoScrollHandler(event: Event) {
 
   nextReelButton.click();
 }
+
+const AutoScrollButton = (
+  <button
+    id="#tppng-auto-scroll"
+    className="mt-[16px] yt-spec-button-shape-next yt-spec-button-shape-next--mono yt-spec-button-shape-next--size-l yt-spec-button-shape-next--icon-button outline-none border-none font-medium text-white"
+    onClick={enableAutoScroll}
+  >
+    Auto
+  </button>
+);
+
+const TogglePlaybackRateButton = (
+  <button
+    id="#tppng-toggle-playback-rate"
+    className="yt-spec-button-shape-next yt-spec-button-shape-next--mono yt-spec-button-shape-next--size-l yt-spec-button-shape-next--icon-button outline-none border-none font-medium text-white"
+    onClick={togglePlaybackRate}
+  >
+    2x
+  </button>
+);
+
+function togglePlaybackRate() {
+  if (player === null || player === undefined) return;
+  player.playbackRate = player.playbackRate === 1 ? 2 : 1;
+  TogglePlaybackRateButton.classList.toggle("bg-white/10");
+  TogglePlaybackRateButton.classList.toggle("bg-white/20");
+}
+
+function enableAutoScroll() {
+  if (preferences === undefined) return;
+  preferences.reelAutoScroll = !preferences.reelAutoScroll;
+  AutoScrollButton.classList.toggle("bg-white/10");
+  AutoScrollButton.classList.toggle("bg-white/20");
+}
+
+export default onShortsPage;
