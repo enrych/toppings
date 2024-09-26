@@ -1,9 +1,9 @@
 import React from "dom-chef";
 import elementReady from "element-ready";
-import {
+import type {
   YouTubeValidPlaylist,
-  type YouTubePlaylistContext,
-} from "../../../../background/parsers//parseYouTubeContext";
+  YouTubePlaylistContext,
+} from "../../../../background/parsers/parseYouTubeContext";
 import { formatRuntime } from "../../../../lib/formatRuntime";
 
 const onPlaylistPage = async (
