@@ -144,11 +144,12 @@ const replacePlaybackItems = (playbackRatePanel: HTMLElement) => {
 
   const customPlaybackRateItem = (
     <div
-      className={`ytp-menuitem tppng-playback-item ${isPresetRate ? "hidden" : ""}`}
+      className="ytp-menuitem tppng-playback-item"
       id="tppng-playback-custom-item"
       role="menuitemradio"
       aria-checked={isPresetRate ? "false" : "true"}
       tabIndex={0}
+      style={{ display: isPresetRate ? "none" : "block" }}
       onClick={(_event) => {
         const panelBackButton = document.querySelector(
           ".ytp-panel-back-button",
