@@ -43,6 +43,7 @@ const onWatchPage = async (context: YouTubeWatchContext) => {
   }
 
   // Keyboard Shortcuts
+  document.removeEventListener("keydown", useShortcuts);
   document.addEventListener("keydown", useShortcuts);
 
   // Loop Segment
@@ -79,6 +80,8 @@ const onSettingsMenu = async (): Promise<void> => {
         player.playbackRate === 1
           ? "Normal"
           : `${Number(player.playbackRate.toFixed(2))}`;
+
+      playbackMenuButton.removeEventListener("click", onPlaybackRateMenu);
       playbackMenuButton.addEventListener("click", onPlaybackRateMenu);
       break;
     }
