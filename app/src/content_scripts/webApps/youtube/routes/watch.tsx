@@ -109,15 +109,16 @@ const replacePlaybackItems = (playbackRatePanel: HTMLElement) => {
   // Replace Native PlaybackRate Items
   const panelMenu = playbackRatePanel.querySelector(".ytp-panel-menu");
   if (panelMenu === null) return;
-  // TODO: Instead of sorting list each time, just sort it while saving in options
-  let isCustomPlayback: "true" | "false" = "true";
+
+  const currentRate = player.playbackRate.toFixed(2);
+  const isPresetRate = preferences.customSpeedList.some(
+    (rate) => rate === currentRate,
+  );
+
   const playbackRateItems = preferences.customSpeedList.map((playbackRate) => {
     const label = playbackRate === "1.00" ? "Normal" : Number(playbackRate);
-    const isAriaChecked =
-      playbackRate === player!.playbackRate.toFixed(2) ? "true" : "false";
-    if (isAriaChecked === "true") {
-      isCustomPlayback = "false";
-    }
+    const isAriaChecked = playbackRate === currentRate ? "true" : "false";
+
     return (
       <div
         key={playbackRate}
@@ -141,18 +142,12 @@ const replacePlaybackItems = (playbackRatePanel: HTMLElement) => {
     );
   });
 
-  if (isCustomPlayback === "true") {
-    player.setAttribute(
-      "data-tppng-playback-rate",
-      player.playbackRate.toFixed(2),
-    );
-  }
   const customPlaybackRateItem = (
     <div
-      className={`ytp-menuitem tppng-playback-item ${player.getAttribute("data-tppng-playback-rate") ? "" : "hidden"}`}
+      className={`ytp-menuitem tppng-playback-item ${isPresetRate ? "hidden" : ""}`}
       id="tppng-playback-custom-item"
       role="menuitemradio"
-      aria-checked={isCustomPlayback}
+      aria-checked={isPresetRate ? "false" : "true"}
       tabIndex={0}
       onClick={(_event) => {
         const panelBackButton = document.querySelector(
@@ -176,6 +171,7 @@ const replacePlaybackItems = (playbackRatePanel: HTMLElement) => {
       </div>
     </div>
   );
+
   panelMenu.replaceChildren(customPlaybackRateItem, ...playbackRateItems);
 };
 
@@ -306,19 +302,18 @@ const setPlaybackRate = (rate: number): void => {
     ) || document.querySelector("#tppng-playback-custom-item");
   if (nextPlaybackMenuItem) {
     nextPlaybackMenuItem.ariaChecked = "true";
-  }
-
-  if (nextPlaybackMenuItem?.id === "tppng-playback-custom-item") {
-    player.setAttribute(
-      "data-tppng-playback-rate",
-      player.playbackRate.toFixed(2),
-    );
-    nextPlaybackMenuItem.classList.remove("hidden");
-    const customPlaybackItemLabel = document.querySelector(
-      "#tppng-playback-custom-item > .ytp-menuitem-label",
-    );
-    if (customPlaybackItemLabel) {
-      customPlaybackItemLabel.textContent = `Custom (${player.playbackRate})`;
+    if (nextPlaybackMenuItem.id === "tppng-playback-custom-item") {
+      player.setAttribute(
+        "data-tppng-playback-rate",
+        player.playbackRate.toFixed(2),
+      );
+      nextPlaybackMenuItem.classList.remove("hidden");
+      const customPlaybackItemLabel = document.querySelector(
+        "#tppng-playback-custom-item > .ytp-menuitem-label",
+      );
+      if (customPlaybackItemLabel) {
+        customPlaybackItemLabel.textContent = `Custom (${player.playbackRate})`;
+      }
     }
   }
 
