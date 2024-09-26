@@ -1,7 +1,7 @@
 import React from "dom-chef";
 import elementReady from "element-ready";
 import {
-  initLoopSegment,
+  setupLoopSegment,
   LoopSegmentButton,
   LoopSegmentEndMarker,
   LoopSegmentStartMarker,
@@ -32,8 +32,8 @@ const onWatchPage = async (context: YouTubeWatchContext) => {
   if (labels.length !== 0) {
     for (const label of labels) {
       if (label.textContent === "Playback speed") {
-        const playbackRateButton = label.parentNode as HTMLElement;
-        playbackRateButton.children[2].textContent =
+        const playbackMenuButton = label.parentNode as HTMLElement;
+        playbackMenuButton.children[2].textContent =
           player.playbackRate === 1
             ? "Normal"
             : `${Number(player.playbackRate.toFixed(2))}`;
@@ -52,7 +52,7 @@ const onWatchPage = async (context: YouTubeWatchContext) => {
   }
   const progressBar = await elementReady("div.ytp-progress-bar-container");
   if (progressBar) {
-    await initLoopSegment();
+    await setupLoopSegment();
     progressBar.append(LoopSegmentStartMarker, LoopSegmentEndMarker);
   }
 
@@ -67,8 +67,8 @@ const onWatchPage = async (context: YouTubeWatchContext) => {
 const onSettingsMenu = async (): Promise<void> => {
   if (player === null || player === undefined) return;
 
-  const settingsMenuLabels = await elementReady(".ytp-menuitem-label");
-  if (settingsMenuLabels === undefined) return;
+  const menuItemLabels = await elementReady(".ytp-menuitem-label");
+  if (menuItemLabels === undefined) return;
   const labels = document.querySelectorAll(".ytp-menuitem-label");
   if (labels.length === 0) return;
 
@@ -79,13 +79,13 @@ const onSettingsMenu = async (): Promise<void> => {
         player.playbackRate === 1
           ? "Normal"
           : `${Number(player.playbackRate.toFixed(2))}`;
-      playbackMenuButton.addEventListener("click", onPlaybackSpeedMenu);
+      playbackMenuButton.addEventListener("click", onPlaybackRateMenu);
       break;
     }
   }
 };
 
-const onPlaybackSpeedMenu = async (): Promise<void> => {
+const onPlaybackRateMenu = async (): Promise<void> => {
   if (player === undefined || player === null) return;
 
   const playbackRatePanel = await elementReady(".ytp-panel-animate-forward");
@@ -206,29 +206,29 @@ const useShortcuts = (event: KeyboardEvent): void => {
     } else if (
       event.key === `${keybindings.increaseSpeedShortcut.toLowerCase()}`
     ) {
-      const increasedSpeed = Number(
+      const increasedPlaybackRate = Number(
         (
           Number(player.playbackRate.toFixed(2)) +
           Number((+preferences.increaseSpeed).toFixed(2))
         ).toFixed(2),
       );
-      if (increasedSpeed > 16) {
+      if (increasedPlaybackRate > 16) {
         return;
       }
-      setPlaybackRate(increasedSpeed);
+      setPlaybackRate(increasedPlaybackRate);
     } else if (
       event.key === `${keybindings.decreaseSpeedShortcut.toLowerCase()}`
     ) {
-      const decreasedSpeed = Number(
+      const decreasedPlaybackRate = Number(
         (
           Number((+player.playbackRate).toFixed(2)) -
           Number((+preferences.decreaseSpeed).toFixed(2))
         ).toFixed(2),
       );
-      if (decreasedSpeed < 0.0625) {
+      if (decreasedPlaybackRate < 0.0625) {
         return;
       }
-      setPlaybackRate(decreasedSpeed);
+      setPlaybackRate(decreasedPlaybackRate);
     } else if (
       event.key === `${keybindings.toggleLoopSegmentShortcut.toLowerCase()}`
     ) {
