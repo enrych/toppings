@@ -149,7 +149,7 @@ const replacePlaybackItems = (playbackRatePanel: HTMLElement) => {
       role="menuitemradio"
       aria-checked={isPresetRate ? "false" : "true"}
       tabIndex={0}
-      style={{ display: isPresetRate ? "none" : "block" }}
+      style={{ display: isPresetRate ? "none" : "" }}
       onClick={(_event) => {
         const panelBackButton = document.querySelector(
           ".ytp-panel-back-button",
@@ -297,7 +297,7 @@ const setPlaybackRate = (rate: number): void => {
   player.playbackRate = rate;
 
   const nextPlaybackRate = player.playbackRate.toFixed(2);
-  const nextPlaybackMenuItem =
+  const nextPlaybackMenuItem: HTMLElement | null =
     document.querySelector(
       `.tppng-playback-item[data-tppng-playback-rate="${nextPlaybackRate}"]`,
     ) || document.querySelector("#tppng-playback-custom-item");
@@ -308,7 +308,7 @@ const setPlaybackRate = (rate: number): void => {
         "data-tppng-playback-rate",
         player.playbackRate.toFixed(2),
       );
-      nextPlaybackMenuItem.classList.remove("hidden");
+      nextPlaybackMenuItem.style.display = "";
       const customPlaybackItemLabel = document.querySelector(
         "#tppng-playback-custom-item > .ytp-menuitem-label",
       );
