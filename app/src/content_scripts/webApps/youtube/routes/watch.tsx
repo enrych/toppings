@@ -60,9 +60,7 @@ const onWatchPage = async (context: YouTubeWatchContext) => {
   const playerSettingsButton = await elementReady("button.ytp-settings-button");
   if (playerSettingsButton === undefined) return;
   playerSettingsButton.removeEventListener("click", onSettingsMenu);
-  playerSettingsButton.addEventListener("click", onSettingsMenu, {
-    once: true,
-  });
+  playerSettingsButton.addEventListener("click", onSettingsMenu);
 };
 
 const onSettingsMenu = async (): Promise<void> => {
