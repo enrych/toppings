@@ -8,7 +8,7 @@ import onPlaylistPage from "./routes/playlist";
 import onShortsPage from "./routes/shorts";
 import onWatchPage from "./routes/watch";
 import type { YouTubeConfig } from "./webApp.config";
-import "./global.css";
+import "./index.css";
 
 const onYouTubeLoaded = async (context: YouTubeContext): Promise<void> => {
   const { activeRoute } = context.contextData;
