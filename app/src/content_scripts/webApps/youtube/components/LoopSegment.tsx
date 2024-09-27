@@ -44,7 +44,7 @@ export const LoopSegmentEndMarker = (
   />
 );
 
-export async function initLoopSegment() {
+export async function setupLoopSegment() {
   video = (await elementReady("video")) as HTMLVideoElement | null;
   disableLoopSegment();
   LoopSegmentButton.setAttribute("aria-pressed", "false");

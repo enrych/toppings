@@ -1,0 +1,6 @@
+@tailwind base;
+@tailwind utilities;
+
+#contentContainer.tp-yt-app-drawer[swipe-open].tp-yt-app-drawer::after {
+  width: 10px !important;
+}
