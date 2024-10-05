@@ -23,7 +23,10 @@ Experience the difference with Toppings!
 
 ---
 
-## Contributing
+## Contributing/Manual Install
+
+> [!NOTE]
+> For Firefox developement, use `BROWSER=firefox` environment variable.
 
 We welcome contributions from the community! Whether you're interested in adding new features, fixing bugs, or improving documentation, please follow our [Contributing Guide](./CONTRIBUTING.md) to get started.
 
