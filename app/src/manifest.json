@@ -44,5 +44,10 @@
         "options/assets/*.png"
       ]
     }
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "toppings@enry.ch"
+    }
+  }
 }
