@@ -89,6 +89,10 @@ module.exports = (env) => {
                   manifest.web_accessible_resources.flatMap(
                     (resource) => resource.resources,
                   );
+
+                manifest.browser_specific_settings = {
+                  gecko: { id: "toppings@enry.ch" },
+                };
               }
               return JSON.stringify(manifest, null, 2);
             },
