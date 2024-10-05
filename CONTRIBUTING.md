@@ -49,6 +49,9 @@ bun install
 bun run dev
 ```
 
+> [!NOTE]
+> For Firefox developement, use `BROWSER=firefox` environment variable.
+
 ### Server
 
 #### 🛠️ Run the Go Server

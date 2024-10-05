@@ -32,8 +32,7 @@ async function runApp(
   }
 }
 
-chrome.runtime.onMessage.addListener(
-  (webAppContext: SupportedWebAppContext): undefined => {
-    void runApp(webAppContext);
-  },
-);
+chrome.runtime.onMessage.addListener((webAppContext: string): undefined => {
+  const parsedWebAppContext = JSON.parse(webAppContext);
+  void runApp(parsedWebAppContext);
+});

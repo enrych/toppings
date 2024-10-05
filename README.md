@@ -23,7 +23,10 @@ Experience the difference with Toppings!
 
 ---
 
-## Contributing
+## Contributing/Manual Install
+
+> [!NOTE]
+> For Firefox developement, use `BROWSER=firefox` environment variable.
 
 We welcome contributions from the community! Whether you're interested in adding new features, fixing bugs, or improving documentation, please follow our [Contributing Guide](./CONTRIBUTING.md) to get started.
 
@@ -34,6 +37,7 @@ We welcome contributions from the community! Whether you're interested in adding
 Your feedback helps us improve! If you find Toppings useful, please consider sharing it with others and leaving a review on:
 
 - [Chrome Web Store](https://chrome.google.com/webstore/detail/toppings/aemiblppibhggpgijajindcmmomboibl)
+- [Mozilla Firefox Addons](https://addons.mozilla.org/en-US/firefox/addon/toppings/)
 
 Your support helps us reach more people and improve their web browsing experience!
 
