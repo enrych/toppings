@@ -20,6 +20,7 @@ Unlock a new level of customization, seamlessly enhance your favorite websites, 
 Experience the difference with Toppings!
 
 - [Download Toppings on Chrome](https://chrome.google.com/webstore/detail/toppings/aemiblppibhggpgijajindcmmomboibl)
+- [Download Toppigns on Firefox](https://addons.mozilla.org/en-US/firefox/addon/toppings/)
 
 ---
 
