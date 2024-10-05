@@ -6,13 +6,15 @@ const chalk = require("chalk");
 const APP_ROOT_DIR = path.join(__dirname, "..");
 const DIST_DIR = path.join(APP_ROOT_DIR, "dist");
 const MANIFEST_FILE = path.join(DIST_DIR, "manifest.json");
+const BROWSER = process.env.BROWSER || "chrome";
+const STORE = BROWSER === "chrome" ? "Chrome Web Store" : "Mozilla Add-ons";
 
 async function createArchive() {
   try {
     const manifestData = await fs.readFile(MANIFEST_FILE, "utf8");
     const manifest = JSON.parse(manifestData);
     const RELEASE_VERSION = manifest.version;
-    const RELEASE_FILENAME = `toppings_v${RELEASE_VERSION}.zip`;
+    const RELEASE_FILENAME = `toppings_v${RELEASE_VERSION}_${BROWSER}.zip`;
 
     const writeStream = fs.createWriteStream(RELEASE_FILENAME);
     const archive = archiver("zip", { zlib: { level: 9 } });
@@ -28,7 +30,7 @@ async function createArchive() {
       ┗---------------------------------┛
 
       Congratulations! Toppings has been successfully bundled and prepare for a new release.
-      You can now upload the '${RELEASE_FILENAME}' file to the Chrome Web Store and GitHub releases.
+      You can now upload the '${RELEASE_FILENAME}' file to the ${STORE} and GitHub releases.
       `;
 
       console.log(chalk.yellow(message));
