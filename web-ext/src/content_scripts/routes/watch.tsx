@@ -7,18 +7,18 @@ import {
   LoopSegmentStartMarker,
   toggleLoopSegment,
 } from "../components/LoopSegment";
-import type { YouTubeConfig } from "../webApp.config";
-import type { YouTubeWatchContext } from "../../../../background/parsers/parseYouTubeContext";
+import { WatchContext } from "../../background/context";
+import { Storage } from "../../background/store";
 
 let player: HTMLVideoElement | undefined;
 let playbackMenuButton: HTMLElement | undefined;
-let preferences: YouTubeConfig["routes"]["watch"]["preferences"] | undefined;
-let keybindings: YouTubeConfig["routes"]["watch"]["keybindings"] | undefined;
+let preferences: Storage["routes"]["watch"]["preferences"] | undefined;
+let keybindings: Storage["routes"]["watch"]["keybindings"] | undefined;
 
-const onWatchPage = async (context: YouTubeWatchContext) => {
-  const webAppConfig = context.webAppConfig as YouTubeConfig;
-  keybindings = webAppConfig.routes.watch.keybindings;
-  preferences = webAppConfig.routes.watch.preferences;
+const onWatchPage = async (ctx: WatchContext) => {
+  const { store } = ctx;
+  keybindings = store.routes.watch.keybindings;
+  preferences = store.routes.watch.preferences;
   if (preferences === undefined || keybindings === undefined) return;
 
   player = await elementReady("video", {

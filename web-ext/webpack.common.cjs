@@ -1,5 +1,4 @@
 const path = require("path");
-const fs = require("fs");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
@@ -19,7 +18,6 @@ module.exports = () => {
         filename: "./options/index.js",
         import: "./src/options/src/index.tsx",
       },
-      ...getWebAppsEntry(),
     },
     output: {
       filename: "[name].js",
@@ -108,32 +106,3 @@ module.exports = () => {
     },
   };
 };
-
-function getWebAppsEntry() {
-  const webAppsPath = path.resolve(__dirname, "src/content_scripts/webApps");
-  const webApps = getDirectories(webAppsPath);
-  const entryPoints = {};
-
-  webApps.forEach((dir) => {
-    const indexPath = fs.existsSync(path.resolve(webAppsPath, dir, "index.tsx"))
-      ? path.resolve(webAppsPath, dir, "index.tsx")
-      : path.resolve(webAppsPath, dir, "index.ts");
-
-    entryPoints[dir] = {
-      import: indexPath,
-      filename: "./webApps/[name].js",
-      library: {
-        type: "module",
-      },
-    };
-  });
-
-  return entryPoints;
-}
-
-function getDirectories(source) {
-  return fs
-    .readdirSync(source, { withFileTypes: true })
-    .filter((dirent) => dirent.isDirectory())
-    .map((dirent) => dirent.name);
-}

@@ -7,13 +7,13 @@ import Apps from "./pages/Apps";
 import Advanced from "./pages/Advanced";
 import ErrorPage from "./pages/error-page";
 import "./index.css";
-import getExtensionConfig from "../../lib/getExtensionConfig";
+import { getStorage } from "../../background/store";
 
 const router = createMemoryRouter([
   {
     path: "/",
     element: <App />,
-    loader: getExtensionConfig,
+    loader: getStorage,
     errorElement: <ErrorPage />,
     children: [
       {

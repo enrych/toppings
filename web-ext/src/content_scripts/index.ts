@@ -1,34 +1,36 @@
-import { type SupportedWebAppContext } from "../background/webAppContext";
-import { type YouTubeContext, type UdemyContext } from "../background/parsers";
+import type {
+  Context,
+  PlaylistContext,
+  ShortsContext,
+  WatchContext,
+} from "../background/context";
 
-async function runApp(
-  webAppContext: SupportedWebAppContext,
-): Promise<undefined> {
-  const {
-    appName,
-    webAppConfig: {
-      generalSettings: { isEnabled: isWebAppEnabled },
-    },
-  } = webAppContext;
-  if (isWebAppEnabled) {
-    switch (appName) {
-      case "youtube": {
-        const youtubeContext = webAppContext as YouTubeContext;
-        const { default: onYouTubeLoaded } = await import(
-          /* webpackIgnore: true */ chrome.runtime.getURL("webApps/youtube.js")
-        );
-        void onYouTubeLoaded(youtubeContext);
-        break;
-      }
-      case "udemy": {
-        const udemyContext = webAppContext as UdemyContext;
-        const { default: runUdemy } = await import(
-          /* webpackIgnore: true */ chrome.runtime.getURL("webApps/udemy.js")
-        );
-        void runUdemy(udemyContext);
-        break;
-      }
+import onPlaylistPage from "./routes/playlist";
+import onShortsPage from "./routes/shorts";
+import onWatchPage from "./routes/watch";
+import "./index.css";
+
+async function runApp(ctx: Context): Promise<undefined> {
+  const { endpoint, store } = ctx;
+
+  switch (endpoint) {
+    case "watch": {
+      const isWatchEnabled = store.routes.watch.isEnabled;
+      isWatchEnabled && (await onWatchPage(ctx as WatchContext));
+      break;
     }
+    case "playlist": {
+      const isPlaylistEnabled = store.routes.playlist.isEnabled;
+      isPlaylistEnabled && (await onPlaylistPage(ctx as PlaylistContext));
+      break;
+    }
+    case "shorts": {
+      const isShortsEnabled = store.routes.shorts.isEnabled;
+      isShortsEnabled && (await onShortsPage(ctx as ShortsContext));
+      break;
+    }
+    default:
+      break;
   }
 }
 

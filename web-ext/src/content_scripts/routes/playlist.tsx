@@ -1,23 +1,21 @@
 import React from "dom-chef";
 import elementReady from "element-ready";
-import type {
-  YouTubeValidPlaylist,
-  YouTubePlaylistContext,
-} from "../../../../background/parsers/parseYouTubeContext";
-import { formatRuntime } from "../../../../lib/formatRuntime";
+import {
+  PlaylistContext,
+  ValidPlaylistPayload,
+} from "../../background/context";
+import { formatRuntime } from "../../lib/formatRuntime";
 
-const onPlaylistPage = async (
-  context: YouTubePlaylistContext,
-): Promise<void> => {
-  const { playlistId } = context.contextData.payload;
+const onPlaylistPage = async (ctx: PlaylistContext): Promise<void> => {
+  const { playlistId } = ctx.payload;
   const metadataActionBar = await elementReady("div.metadata-action-bar");
   if (metadataActionBar === null || metadataActionBar === undefined) return;
 
   let runtimeSection = document.querySelector("div#tppng-ytp-runtime-section");
   if (runtimeSection === null) {
     if (playlistId === "WL" || playlistId === "LL") return;
-    const { averageRuntime, totalRuntime } = context.contextData
-      .payload as YouTubeValidPlaylist;
+    const { averageRuntime, totalRuntime } =
+      ctx.payload as ValidPlaylistPayload;
 
     runtimeSection = (
       <div
@@ -61,8 +59,8 @@ const onPlaylistPage = async (
       runtimeSection.remove();
       return;
     } else {
-      const { averageRuntime, totalRuntime } = context.contextData
-        .payload as YouTubeValidPlaylist;
+      const { averageRuntime, totalRuntime } =
+        ctx.payload as ValidPlaylistPayload;
       const averageRuntimeElement = document.getElementById(
         "tppng-ytp-average-runtime",
       );

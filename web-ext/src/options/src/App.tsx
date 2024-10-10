@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { Outlet, useLoaderData } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
 import ConfigContext from "./store";
-import { ExtensionConfig } from "../../extension.config";
+import { Storage } from "../../background/store";
 
 function App() {
-  const loadedConfig = useLoaderData() as ExtensionConfig;
-  const [config, setConfig] = useState<ExtensionConfig>(loadedConfig);
+  const loadedConfig = useLoaderData() as Storage;
+  const [config, setConfig] = useState<Storage>(loadedConfig);
 
   return (
     <ConfigContext.Provider value={{ config, setConfig }}>

@@ -1,10 +1,10 @@
 import React from "react";
 import { Dispatch, SetStateAction } from "react";
-import { ExtensionConfig } from "../../extension.config";
+import { Storage } from "../../background/store";
 
 const ConfigContext = React.createContext<{
-  config: ExtensionConfig;
-  setConfig: Dispatch<SetStateAction<ExtensionConfig>>;
+  config: Storage;
+  setConfig: Dispatch<SetStateAction<Storage>>;
 } | null>(null);
 
 export default ConfigContext;

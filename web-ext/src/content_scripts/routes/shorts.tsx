@@ -1,16 +1,16 @@
 import React from "dom-chef";
 import elementReady from "element-ready";
-import type { YouTubeShortsContext } from "../../../../background/parsers/parseYouTubeContext";
-import type { YouTubeConfig } from "../webApp.config";
+import { Storage } from "../../background/store";
+import { ShortsContext } from "../../background/context";
 
 let player: HTMLVideoElement | undefined;
-let keybindings: YouTubeConfig["routes"]["shorts"]["keybindings"] | undefined;
-let preferences: YouTubeConfig["routes"]["shorts"]["preferences"] | undefined;
+let keybindings: Storage["routes"]["shorts"]["keybindings"] | undefined;
+let preferences: Storage["routes"]["shorts"]["preferences"] | undefined;
 
-const onShortsPage = async (context: YouTubeShortsContext): Promise<void> => {
-  const webAppConfig = context.webAppConfig as YouTubeConfig;
-  keybindings = webAppConfig.routes.shorts.keybindings;
-  preferences = webAppConfig.routes.shorts.preferences;
+const onShortsPage = async (ctx: ShortsContext): Promise<void> => {
+  const { store } = ctx;
+  keybindings = store.routes.shorts.keybindings;
+  preferences = store.routes.shorts.preferences;
   if (keybindings === undefined || preferences === undefined) return;
 
   player = await elementReady("ytd-reel-video-renderer[is-active] video", {
