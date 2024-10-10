@@ -1,10 +1,5 @@
-import DEFAULT_CONFIG from "../extension.config";
-import getExtensionConfig from "../lib/getExtensionConfig";
-import {
-  type WebAppContext,
-  getWebAppContext,
-  dispatchWebAppContext,
-} from "./webAppContext";
+import { DEFAULT_STORE, getStorage } from "./store";
+import { type IContext, getContext, dispatchContext } from "./context";
 
 const INSTALL_URL = "https://enrych.github.io/toppings/greetings";
 const UNINSTALL_URL = "https://enrych.github.io/toppings/farewell";
@@ -19,27 +14,27 @@ chrome.runtime.onInstalled.addListener(
         void chrome.runtime.setUninstallURL(UNINSTALL_URL);
       }
 
-      void chrome.storage.sync.set(DEFAULT_CONFIG);
+      void chrome.storage.sync.set(DEFAULT_STORE);
     }
   },
 );
 
 chrome.webNavigation.onCompleted.addListener(async (details) => {
   const tabId = details.tabId;
-  const webAppContext: WebAppContext = await getWebAppContext(details.url);
-  const config = await getExtensionConfig();
-  const isExtensionEnabled = config.globalSettings.isExtensionEnabled;
+  const ctx = await getContext(details.url);
+  const store = await getStorage();
+  const isExtensionEnabled = store.globalSettings.isExtensionEnabled;
 
-  if (!webAppContext.isSupported || !isExtensionEnabled) return;
-  await dispatchWebAppContext(tabId, webAppContext);
+  if (!ctx.isSupported || !isExtensionEnabled) return;
+  await dispatchContext(tabId, ctx);
 });
 
 chrome.webNavigation.onHistoryStateUpdated.addListener(async (details) => {
   const tabId = details.tabId;
-  const webAppContext: WebAppContext = await getWebAppContext(details.url);
-  const config = await getExtensionConfig();
-  const isExtensionEnabled = config.globalSettings.isExtensionEnabled;
+  const ctx = await getContext(details.url);
+  const store = await getStorage();
+  const isExtensionEnabled = store.globalSettings.isExtensionEnabled;
 
-  if (!webAppContext.isSupported || !isExtensionEnabled) return;
-  await dispatchWebAppContext(tabId, webAppContext);
+  if (!ctx.isSupported || !isExtensionEnabled) return;
+  await dispatchContext(tabId, ctx);
 });
