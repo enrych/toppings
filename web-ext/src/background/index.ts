@@ -1,5 +1,5 @@
 import { DEFAULT_STORE, getStorage } from "./store";
-import { type IContext, getContext, dispatchContext } from "./context";
+import { getContext, dispatchContext } from "./context";
 
 const INSTALL_URL = "https://enrych.github.io/toppings/greetings";
 const UNINSTALL_URL = "https://enrych.github.io/toppings/farewell";
