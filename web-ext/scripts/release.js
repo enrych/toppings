@@ -3,8 +3,8 @@ const archiver = require("archiver");
 const path = require("path");
 const chalk = require("chalk");
 
-const APP_ROOT_DIR = path.join(__dirname, "..");
-const DIST_DIR = path.join(APP_ROOT_DIR, "dist");
+const WEB_EXT_DIR = path.join(__dirname, "..");
+const DIST_DIR = path.join(WEB_EXT_DIR, "dist");
 const MANIFEST_FILE = path.join(DIST_DIR, "manifest.json");
 const BROWSER = process.env.BROWSER || "chrome";
 const STORE = BROWSER === "chrome" ? "Chrome Web Store" : "Mozilla Add-ons";
