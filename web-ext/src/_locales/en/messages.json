@@ -1,0 +1,10 @@
+{
+  "description": {
+    "message": "Your YouTube, Your Way.",
+    "description": "extension description"
+  },
+  "popupTitle": {
+    "message": "Quick Access",
+    "description": "Browser action popup title"
+  }
+}
