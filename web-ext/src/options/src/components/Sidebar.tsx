@@ -11,11 +11,11 @@ export default function Sidebar() {
     <div
       className={`p-6 bg-[#18181b] shadow h-full flex flex-col items-center transition-all duration-300 ${isCollapsed ? "w-24" : "w-64"}`}
     >
-      <header className="flex justify-between items-center mb-8 w-full">
+      <header className="tw-flex tw-justify-between tw-items-center tw-mb-8 tw-w-full">
         {!isCollapsed && (
-          <div className="flex flex-col items-left">
-            <h1 className="text-2xl font-bold">Toppings</h1>
-            <div className="text-xs text-gray-500">
+          <div className="tw-flex tw-flex-col tw-items-left">
+            <h1 className="tw-text-2xl tw-font-bold">Toppings</h1>
+            <div className="tw-text-xs tw-text-gray-500">
               v<span id="version">{version}</span>
             </div>
           </div>
@@ -29,7 +29,7 @@ export default function Sidebar() {
           }}
         />
       </header>
-      <nav className="space-y-4 w-full">
+      <nav className="tw-space-y-4 tw-w-full">
         <Link
           className={`flex items-center gap-2 font-medium text-foreground hover:bg-[#3d3d43]/50 px-3 py-2 rounded-md cursor-pointer ${location.pathname === "/" ? "bg-[#3d3d43]/50" : ""}`}
           to="/"

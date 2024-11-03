@@ -8,7 +8,7 @@ export default function AppsConfig() {
   const webApps = config.webApps;
   const webAppsName = Object.keys(webApps) as Array<keyof typeof webApps>;
   return (
-    <div className="w-full">
+    <div className="tw-w-full">
       {webAppsName.map((webAppName, idx) => {
         return <WebAppsSettings key={idx} name={webAppName} />;
       })}

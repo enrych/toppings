@@ -15,8 +15,8 @@ const Routes = ({ name }: { name: WebApps }) => {
   const appRoutes = Object.keys(routes);
 
   return (
-    <div className="w-full">
-      <h3 className="pl-4 text-xl font-bold">Routes</h3>
+    <div className="tw-w-full">
+      <h3 className="tw-pl-4 tw-text-xl tw-font-bold">Routes</h3>
       {appRoutes.map((appRoute, idx) => {
         return <AppRoute key={idx} appName={name} routeName={appRoute} />;
       })}

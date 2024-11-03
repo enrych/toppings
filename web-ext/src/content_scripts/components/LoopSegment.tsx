@@ -7,7 +7,7 @@ let timeUpdateListener: ((event: Event) => void) | null = null;
 
 export const LoopSegmentButton = (
   <button
-    className="ytp-button text-center"
+    className="ytp-button tw-text-center"
     aria-pressed="false"
     aria-label="Loop Segment of the video."
     title="Loop Segment"
@@ -31,7 +31,7 @@ export const LoopSegmentButton = (
 export const LoopSegmentStartMarker = (
   <div
     id="start-marker"
-    className="absolute top-[-25px] left-0 hidden cursor-pointer w-0 h-0 border-solid border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[20px] border-t-[red] transform -translate-x-1/2 z-[9999]"
+    className="tw-absolute tw-top-[-25px] tw-left-0 tw-hidden tw-cursor-pointer tw-w-0 tw-h-0 tw-border-solid tw-border-l-[10px] tw-border-l-transparent tw-border-r-[10px] tw-border-r-transparent tw-border-t-[20px] tw-border-t-[red] tw-transform -tw-translate-x-1/2 tw-z-[9999]"
     onMouseDown={(e) => handleMarkerDrag(e, "start")}
   />
 );
@@ -39,7 +39,7 @@ export const LoopSegmentStartMarker = (
 export const LoopSegmentEndMarker = (
   <div
     id="end-marker"
-    className="absolute top-[-25px] left-full hidden cursor-pointer w-0 h-0 border-solid border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[20px] border-t-[red] transform -translate-x-1/2 z-[9999]"
+    className="tw-absolute tw-top-[-25px] tw-left-full tw-hidden tw-cursor-pointer tw-w-0 tw-h-0 tw-border-solid tw-border-l-[10px] tw-border-l-transparent tw-border-r-[10px] tw-border-r-transparent tw-border-t-[20px] tw-border-t-[red] tw-transform -tw-translate-x-1/2 tw-z-[9999]"
     onMouseDown={(e) => handleMarkerDrag(e, "end")}
   />
 );

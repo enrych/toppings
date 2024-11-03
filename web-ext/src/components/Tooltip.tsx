@@ -9,16 +9,16 @@ const Tooltip = ({ children, text }: TooltipProps) => {
   const [visible, setVisible] = useState(false);
 
   return (
-    <div className="relative flex items-center">
+    <div className="tw-relative tw-flex tw-items-center">
       <div
         onMouseEnter={() => setVisible(true)}
         onMouseLeave={() => setVisible(false)}
-        className="cursor-pointer"
+        className="tw-cursor-pointer"
       >
         {children}
       </div>
       {visible && (
-        <div className="absolute left-full ml-2 w-40 p-2 text-xs text-white bg-black rounded shadow-lg z-10">
+        <div className="tw-absolute tw-left-full tw-ml-2 tw-w-40 tw-p-2 tw-text-xs tw-text-white tw-bg-black tw-rounded tw-shadow-lg tw-z-10">
           {text}
         </div>
       )}

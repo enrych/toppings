@@ -124,7 +124,7 @@ const AutoScrollButton = (
 const TogglePlaybackRateButton = (
   <button
     id="#tppng-toggle-playback-rate"
-    className="yt-spec-button-shape-next yt-spec-button-shape-next--mono yt-spec-button-shape-next--size-l yt-spec-button-shape-next--icon-button outline-none border-none font-medium text-white"
+    className="tw-yt-spec-button-shape-next tw-yt-spec-button-shape-next--mono tw-yt-spec-button-shape-next--size-l tw-yt-spec-button-shape-next--icon-button tw-outline-none tw-border-none tw-font-medium tw-text-white"
     onClick={togglePlaybackRate}
   >
     2x

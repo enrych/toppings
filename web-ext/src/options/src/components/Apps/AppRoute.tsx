@@ -39,15 +39,15 @@ const AppRoute = ({
   };
 
   return (
-    <div className="pl-4 w-full py-2">
-      <h3 className="pl-4 text-xl font-medium">&#8226; {routeTitle}</h3>
-      <div className="pl-4 w-full py-2">
+    <div className="tw-pl-4 tw-w-full tw-py-2">
+      <h3 className="tw-pl-4 tw-text-xl tw-font-medium">&#8226; {routeTitle}</h3>
+      <div className="tw-pl-4 tw-w-full tw-py-2">
         <Switch
           title={`Enable ${routeTitle} Route`}
           isEnabled={isEnabled}
           onToggle={toggleAppRouteEnabled}
         />
-        <div className="py-2">
+        <div className="tw-py-2">
           {keybindings.length > 0 &&
             keybindings.map((keybinding, idx) => {
               return (

@@ -61,6 +61,7 @@ module.exports = () => {
           { from: "src/assets", to: "assets" },
           { from: "src/options/index.html", to: "options" },
           { from: "src/popup/index.html", to: "popup" },
+          { from: "src/_locales", to: "_locales" },
           {
             from: "src/manifest.json",
             to: "manifest.json",

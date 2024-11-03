@@ -12,7 +12,7 @@ function App() {
     <ConfigContext.Provider value={{ config, setConfig }}>
       <div className="flex h-screen bg-[#0f0f10] text-[#e7e7e4]">
         <Sidebar />
-        <div className="py-6 px-16 overflow-y-auto w-full">
+        <div className="tw-py-6 tw-px-16 tw-overflow-y-auto tw-w-full">
           <Outlet />
         </div>
       </div>

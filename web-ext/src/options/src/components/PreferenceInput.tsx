@@ -87,10 +87,10 @@ export default function PreferenceInput({
   }, []);
 
   return (
-    <div className="font-sans w-full flex flex-col px-4 py-1">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center space-x-3">
-          <label className="text-lg font-medium text-gray-100">
+    <div className="tw-font-sans tw-w-full tw-flex tw-flex-col tw-px-4 tw-py-1">
+      <div className="tw-flex tw-justify-between tw-items-center">
+        <div className="tw-flex tw-items-center tw-space-x-3">
+          <label className="tw-text-lg tw-font-medium tw-text-gray-100">
             {preferenceTitle}
           </label>
           {description && (
@@ -112,7 +112,7 @@ export default function PreferenceInput({
             </Tooltip>
           )}
         </div>
-        <div className="relative">
+        <div className="tw-relative">
           <input
             type="text"
             className="p-2 bg-black text-white text-center rounded border border-gray-600/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -128,7 +128,7 @@ export default function PreferenceInput({
               fill="none"
             >
               <circle
-                className="opacity-25"
+                className="tw-opacity-25"
                 cx="12"
                 cy="12"
                 r="10"
@@ -136,7 +136,7 @@ export default function PreferenceInput({
                 strokeWidth="4"
               />
               <path
-                className="opacity-75"
+                className="tw-opacity-75"
                 fill="currentColor"
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291l-1.707-1.707A7.968 7.968 0 014 12H0c0 3.312 1.344 6.312 3.515 8.485l2.485-2.485z"
               />

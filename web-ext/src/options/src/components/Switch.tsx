@@ -14,9 +14,9 @@ export default function SwitchBlock({
   onToggle: (isEnabled: boolean) => void;
 }) {
   return (
-    <div className="font-sans w-full flex justify-between items-center px-4">
-      <div className="flex items-center space-x-3">
-        <label className="text-lg font-medium text-gray-100">{title}</label>
+    <div className="tw-font-sans tw-w-full tw-flex tw-justify-between tw-items-center tw-px-4">
+      <div className="tw-flex tw-items-center tw-space-x-3">
+        <label className="tw-text-lg tw-font-medium tw-text-gray-100">{title}</label>
         {description && (
           <Tooltip text={description}>
             <svg

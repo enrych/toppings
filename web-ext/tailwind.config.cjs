@@ -4,6 +4,7 @@ module.exports = {
     preflight: false,
   },
   content: ["./src/**/*.tsx"],
+  prefix: "tw-",
   theme: {
     extend: {
       colors: {

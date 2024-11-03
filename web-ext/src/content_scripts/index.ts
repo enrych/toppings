@@ -4,7 +4,7 @@ import type {
   ShortsContext,
   WatchContext,
 } from "../background/context";
-
+//
 import onPlaylistPage from "./routes/playlist";
 import onShortsPage from "./routes/shorts";
 import onWatchPage from "./routes/watch";
@@ -34,7 +34,7 @@ async function runApp(ctx: Context): Promise<undefined> {
   }
 }
 
-chrome.runtime.onMessage.addListener((webAppContext: string): undefined => {
-  const parsedWebAppContext = JSON.parse(webAppContext);
+chrome.runtime.onMessage.addListener((ctx: string): undefined => {
+  const parsedWebAppContext = JSON.parse(ctx);
   void runApp(parsedWebAppContext);
 });

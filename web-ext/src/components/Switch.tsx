@@ -16,22 +16,26 @@ const Switch = ({
   };
 
   return (
-    <label className="relative inline-flex items-center h-6 rounded-full w-11 cursor-pointer">
+    <label className="tw-relative tw-inline-flex tw-items-center tw-h-6 tw-rounded-full tw-w-11 tw-cursor-pointer">
       <input
         type="checkbox"
         checked={checked}
         onChange={handleChange}
-        className="sr-only"
+        className="tw-sr-only"
       />
       <div
-        className={`block w-full h-full rounded-full transition-colors duration-300 ease-in-out ${
-          checked ? "bg-blue-500" : "bg-gray-600 border border-gray-400"
+        className={`tw-block tw-w-full tw-h-full tw-rounded-full tw-transition-colors tw-duration-300 tw-ease-in-out ${
+          checked
+            ? "tw-bg-blue-500"
+            : "tw-bg-gray-600 tw-border tw-border-gray-400"
         }`}
       ></div>
       <span
-        className={`absolute left-1 top-1 transform transition-transform duration-300 ease-in-out ${
-          checked ? "translate-x-5 bg-white" : "translate-x-0 bg-gray-300"
-        } inline-block w-4 h-4 rounded-full`}
+        className={`tw-absolute tw-left-1 tw-top-1 tw-transform tw-transition-transform tw-duration-300 tw-ease-in-out ${
+          checked
+            ? "tw-translate-x-5 tw-bg-white"
+            : "tw-translate-x-0 tw-bg-gray-300"
+        } tw-inline-block tw-w-4 tw-h-4 tw-rounded-full`}
       />
     </label>
   );

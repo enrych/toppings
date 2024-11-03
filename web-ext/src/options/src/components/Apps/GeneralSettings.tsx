@@ -21,9 +21,9 @@ const GeneralSettings = ({ name }: { name: WebApps }) => {
   };
 
   return (
-    <div className="w-full">
-      <h3 className="pl-4 text-xl font-bold">General Settings</h3>
-      <div className="pl-4">
+    <div className="tw-w-full">
+      <h3 className="tw-pl-4 tw-text-xl tw-font-bold">General Settings</h3>
+      <div className="tw-pl-4">
         <Switch
           title={`Enable ${title}`}
           isEnabled={generalSettings.isEnabled}
