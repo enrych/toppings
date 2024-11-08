@@ -33,7 +33,7 @@
     "128": "assets/icons/icon128.png"
   },
   "manifest_version": 3,
-  "name": "Toppings on YouTube",
+  "name": "Toppings",
   "options_ui": {
     "open_in_tab": true,
     "page": "/options/index.html"
