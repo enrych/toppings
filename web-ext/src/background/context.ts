@@ -3,16 +3,12 @@ import { getStorage, Storage } from "./store";
 export interface IContext {
   isSupported: boolean;
   store: Storage;
-  endpoint?: string;
-  payload?: ContextPayload | ContextPayload[];
-}
-
-export interface ContextPayload {
-  [key: string]: any;
+  pathname: "watch" | "playlist" | "shorts" | null;
+  payload: Record<string, any> | null;
 }
 
 export interface WatchContext extends IContext {
-  endpoint: "watch";
+  pathname: "watch";
   payload: WatchPayload;
 }
 
@@ -21,7 +17,7 @@ export interface WatchPayload {
 }
 
 export interface PlaylistContext extends IContext {
-  endpoint: "playlist";
+  pathname: "playlist";
   payload: ValidPlaylistPayload | InvalidPlaylistPayload;
 }
 
@@ -49,7 +45,7 @@ export interface PlaylistResponse {
 }
 
 export interface ShortsContext extends IContext {
-  endpoint: "shorts";
+  pathname: "shorts";
   payload: ShortsPayload;
 }
 
@@ -90,7 +86,7 @@ export const getContext = async (href: string): Promise<IContext> => {
         return {
           isSupported: true,
           store: store,
-          endpoint: "playlist",
+          pathname: "playlist",
           payload: {
             playlistId: playlistId,
             averageRuntime: body.data.avg_runtime,
@@ -102,7 +98,7 @@ export const getContext = async (href: string): Promise<IContext> => {
         return {
           isSupported: true,
           store: store,
-          endpoint: "playlist",
+          pathname: "playlist",
           payload: {
             playlistId: playlistId ?? "",
           },
@@ -116,7 +112,7 @@ export const getContext = async (href: string): Promise<IContext> => {
         return {
           isSupported: true,
           store: store,
-          endpoint: "watch",
+          pathname: "watch",
           payload: {
             videoId,
           },
@@ -131,7 +127,7 @@ export const getContext = async (href: string): Promise<IContext> => {
         return {
           isSupported: true,
           store: store,
-          endpoint: "shorts",
+          pathname: "shorts",
           payload: {
             shortId,
           },
@@ -143,6 +139,8 @@ export const getContext = async (href: string): Promise<IContext> => {
   return {
     isSupported: false,
     store: store,
+    pathname: null,
+    payload: null,
   };
 };
 
