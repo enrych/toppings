@@ -19,7 +19,7 @@
       "all_frames": true,
       "js": ["/content.js"],
       "matches": ["*://*.youtube.com/*"],
-      "run_at": "document_start"
+      "run_at": "document_end"
     }
   ],
   "default_locale": "en",
