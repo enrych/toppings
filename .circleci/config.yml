@@ -15,19 +15,19 @@ jobs:
             echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> $BASH_ENV
       - run:
           name: Install Dependencies
-          command: cd app && bun install
+          command: cd web-ext && bun install
 
       - run:
           name: Run Static Tests
-          command: cd app && bun run test:static
+          command: cd web-ext && bun run test:static
 
       - run:
           name: Run Unit Tests
-          command: cd app && bun run test:unit
+          command: cd web-ext && bun run test:unit
 
       - run:
           name: Build for Production
-          command: cd app && bun run build
+          command: cd web-ext && bun run build
 
 workflows:
   version: 2
