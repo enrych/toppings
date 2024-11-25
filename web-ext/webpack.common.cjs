@@ -102,8 +102,8 @@ module.exports = () => {
     resolve: {
       extensions: [".ts", ".js", ".tsx"],
     },
-    experiments: {
-      outputModule: true,
+    optimization: {
+      minimize: false,
     },
   };
 };
