@@ -72,7 +72,7 @@ export const getContext = async (href: string): Promise<IContext> => {
             ? "http://localhost:8787"
             : "https://toppings.enry.ch";
         const response = await fetch(
-          `${SERVER_BASE_URI}/youtube/playlist/${playlistId}`,
+          `${SERVER_BASE_URI}/playlist/${playlistId}`,
           {
             method: "GET",
             headers: {
