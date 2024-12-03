@@ -1,17 +1,22 @@
-import { AutoRouter } from 'itty-router';
-import getPlaylist from './routes/playlist';
+import { AutoRouter, cors } from "itty-router";
+import getPlaylist from "./routes/playlist";
 
-const router = AutoRouter();
+const { preflight, corsify } = cors();
 
-router.get('/playlist/:playlistID', getPlaylist);
+const router = AutoRouter({
+  before: [preflight],
+  finally: [corsify],
+});
+
+router.get("/playlist/:playlistID", getPlaylist);
 
 router.all(
-	'*',
-	() =>
-		new Response(JSON.stringify({ error_message: 'Not found' }), {
-			status: 404,
-			headers: { 'Content-Type': 'application/json' },
-		}),
+  "*",
+  () =>
+    new Response(JSON.stringify({ error_message: "Not found" }), {
+      status: 404,
+      headers: { "Content-Type": "application/json" },
+    }),
 );
 
 export default router;
