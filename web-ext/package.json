@@ -5,6 +5,7 @@
   "private": "true",
   "scripts": {
     "dev": "webpack --watch --config webpack.dev.cjs",
+    "dev:firefox": "BROWSER=firefox bun run dev",
     "prod": "webpack --watch --config webpack.prod.cjs",
     "build": "webpack --config webpack.prod.cjs",
     "release": "bun run build && bun scripts/release.js",
