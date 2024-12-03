@@ -1,11 +1,18 @@
 const path = require("path");
+const fs = require("fs");
+const { merge } = require("webpack-merge");
+
+// Plugins
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
-module.exports = () => {
-  const isFirefox = process.env.BROWSER === "firefox";
+module.exports = (env, argv) => {
+  const isDevelopment = argv.mode === "development";
+  const browser = env.browser || "chrome";
 
-  return {
+  const packageJson = JSON.parse(fs.readFileSync("./package.json", "utf-8"));
+
+  const commonConfig = {
     target: "web",
     entry: {
       background: "./src/background/index.ts",
@@ -67,7 +74,7 @@ module.exports = () => {
             to: "manifest.json",
             transform(content) {
               const manifest = JSON.parse(content.toString());
-              if (isFirefox) {
+              if (browser === "firefox") {
                 manifest.manifest_version = 2;
 
                 manifest.background = {
@@ -100,10 +107,23 @@ module.exports = () => {
       }),
     ],
     resolve: {
-      extensions: [".ts", ".js", ".tsx"],
+      extensions: [".ts", ".tsx"],
     },
     optimization: {
       minimize: false,
     },
   };
+
+  const developmentConfig = {
+    mode: "development",
+    devtool: "cheap-module-source-map",
+  };
+
+  const productionConfig = {
+    mode: "production",
+  };
+
+  const envConfig = isDevelopment ? developmentConfig : productionConfig;
+
+  return merge(commonConfig, envConfig);
 };
