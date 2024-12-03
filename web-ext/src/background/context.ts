@@ -69,8 +69,8 @@ export const getContext = async (href: string): Promise<IContext> => {
       if (playlistId != null && playlistId !== "WL" && playlistId !== "LL") {
         const SERVER_BASE_URI =
           process.env.NODE_ENV === "development"
-            ? "http://localhost:8080"
-            : "https://toppings.onrender.com";
+            ? "http://localhost:8787"
+            : "https://toppings.enry.ch";
         const response = await fetch(
           `${SERVER_BASE_URI}/youtube/playlist/${playlistId}`,
           {
