@@ -1,7 +1,7 @@
 {
-  "name": "toppings",
+  "name": "Toppings",
   "version": "3.0.0",
-  "description": "Your web, your way.",
+  "description": "Your YouTube, Your Way.",
   "private": "true",
   "scripts": {
     "dev": "webpack --watch --mode development --env browser=chrome",
