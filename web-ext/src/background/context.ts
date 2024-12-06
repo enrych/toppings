@@ -171,5 +171,10 @@ export const dispatchContext = async (
 ): Promise<void> => {
   // For URL, To ensure the message is structurally cloneable across browsers.
   const serializedContext = JSON.stringify(ctx);
-  return await chrome.tabs.sendMessage(tabId, serializedContext);
+  // sendMessage will throw "Error: Could not establish connection. Receiving end does not exist."
+  // if there is no content script loaded in the given tab. This error is
+  // noisy and mysterious (it usually doesn't have a valid line number), so we silence it.
+  return await chrome.tabs
+    .sendMessage(tabId, serializedContext)
+    .catch(() => {});
 };
