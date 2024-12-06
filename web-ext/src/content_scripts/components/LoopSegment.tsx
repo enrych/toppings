@@ -48,8 +48,8 @@ export async function setupLoopSegment() {
   video = (await elementReady("video")) as HTMLVideoElement | null;
   disableLoopSegment();
   LoopSegmentButton.setAttribute("aria-pressed", "false");
-  LoopSegmentStartMarker.classList.add("hidden");
-  LoopSegmentEndMarker.classList.add("hidden");
+  LoopSegmentStartMarker.classList.add("tw-hidden");
+  LoopSegmentEndMarker.classList.add("tw-hidden");
 }
 
 export function toggleLoopSegment(_event?: React.MouseEvent) {
@@ -61,8 +61,8 @@ export function toggleLoopSegment(_event?: React.MouseEvent) {
     enableLoopSegment();
     LoopSegmentButton.setAttribute("aria-pressed", "true");
   }
-  LoopSegmentStartMarker.classList.toggle("hidden");
-  LoopSegmentEndMarker.classList.toggle("hidden");
+  LoopSegmentStartMarker.classList.toggle("tw-hidden");
+  LoopSegmentEndMarker.classList.toggle("tw-hidden");
 }
 
 async function enableLoopSegment() {
