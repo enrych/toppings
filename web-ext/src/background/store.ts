@@ -1,51 +1,58 @@
 export const DEFAULT_STORE = {
-  globalSettings: {
-    isExtensionEnabled: true as boolean,
-  },
-  routes: {
+  isExtensionEnabled: true as boolean,
+  preferences: {
     watch: {
       isEnabled: true as boolean,
-      keybindings: {
-        toggleSpeedShortcut: "X" as string,
-        seekBackwardShortcut: "A" as string,
-        seekForwardShortcut: "D" as string,
-        increaseSpeedShortcut: "W" as string,
-        decreaseSpeedShortcut: "S" as string,
-        toggleLoopSegmentShortcut: "Z" as string,
+      defaultPlaybackRate: "1.00" as string,
+      togglePlaybackRate: {
+        key: "X" as string,
+        value: "1.50" as string,
+      },
+      seekBackward: {
+        key: "A" as string,
+        value: "15.00" as string,
+      },
+      seekForward: {
+        key: "D" as string,
+        value: "15.00" as string,
+      },
+      increasePlaybackRate: {
+        key: "W" as string,
+        value: "0.25" as string,
+      },
+      decreasePlaybackRate: {
+        key: "S" as string,
+        value: "0.25" as string,
+      },
+      toggleLoopSegment: {
+        key: "Z" as string,
       },
       // TODO: The Options page should save the values with toFixed(2) as part of saving
       // validation so that content script doesn't have to bother about it.
-      preferences: {
-        customSpeedList: [
-          "0.25",
-          "0.50",
-          "0.75",
-          "1.00",
-          "1.25",
-          "1.50",
-          "1.75",
-          "2.00",
-          "2.25",
-          "2.50",
-        ] as Array<string>,
-        toggleSpeed: "1.50" as string,
-        defaultSpeed: "1.00" as string,
-        seekForward: "15.00" as string,
-        seekBackward: "15.00" as string,
-        increaseSpeed: "0.25" as string,
-        decreaseSpeed: "0.25" as string,
-      },
+      customPlaybackRates: [
+        "0.25",
+        "0.50",
+        "0.75",
+        "1.00",
+        "1.25",
+        "1.50",
+        "1.75",
+        "2.00",
+        "2.25",
+        "2.50",
+      ] as Array<string>,
     },
     playlist: {
       isEnabled: true as boolean,
     },
     shorts: {
       isEnabled: true as boolean,
-      keybindings: {
-        toggleSpeedShortcut: "X" as string,
+      togglePlaybackRate: {
+        key: "X" as string,
+        value: "1.5" as string,
       },
-      preferences: {
-        reelAutoScroll: true as boolean,
+      reelAutoScroll: {
+        value: true as boolean,
       },
     },
   },
@@ -60,18 +67,3 @@ export const getStorage = async (): Promise<Storage> => {
 };
 
 export type Storage = typeof DEFAULT_STORE;
-
-// export interface WebAppConfig {
-//   generalSettings: WebAppGeneralSettings;
-//   routes?: Record<string, WebAppRouteConfig>;
-// }
-//
-// export interface WebAppGeneralSettings {
-//   isEnabled: boolean;
-// }
-//
-// export interface WebAppRouteConfig {
-//   isEnabled: boolean;
-//   keybindings?: Record<string, string>;
-//   preferences?: Record<string, any>;
-// }
