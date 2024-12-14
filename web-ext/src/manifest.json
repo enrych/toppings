@@ -34,18 +34,12 @@
     "128": "assets/icons/icon128.png"
   },
   "manifest_version": 3,
-  "name": "Toppings",
+  "name": "Toppings on YouTube",
   "options_ui": {
     "open_in_tab": true,
     "page": "/options/index.html"
   },
-  "permissions": [
-    "webNavigation",
-    "storage",
-    "scripting",
-    "contextMenus",
-    "activeTab"
-  ],
+  "permissions": ["webNavigation", "storage"],
   "short_name": "Toppings",
   "version": "0.0.0",
   "web_accessible_resources": [
