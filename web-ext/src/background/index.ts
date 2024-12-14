@@ -6,7 +6,7 @@ const UNINSTALL_URL = "https://enrych.github.io/toppings/farewell";
 
 // Handle Events
 chrome.runtime.onInstalled.addListener(onInitialize);
-chrome.webNavigation.onCompleted.addListener(onWebNavigation);
+chrome.runtime.onMessage.addListener(onConnected);
 chrome.webNavigation.onHistoryStateUpdated.addListener(onWebNavigation);
 
 type InitializeDetails = Parameters<
@@ -32,4 +32,35 @@ async function onWebNavigation(details: WebNavigationDetails) {
 
   if (!ctx.isSupported || !isExtensionEnabled) return;
   await dispatchContext(tabId, ctx);
+}
+
+function onConnected(
+  message: any,
+  sender: chrome.runtime.MessageSender,
+  sendResponse: (response: any) => void,
+) {
+  (async () => {
+    const event = message.event;
+    if (event !== "connected") return;
+
+    const tabId = sender.tab?.id;
+    if (!tabId) return;
+
+    const url = sender.url;
+    if (!url) return;
+
+    const ctx = await getContext(url);
+    const isExtensionEnabled = ctx.store.globalSettings.isExtensionEnabled;
+
+    if (!ctx.isSupported || !isExtensionEnabled) return;
+    await dispatchContext(tabId, ctx);
+
+    sendResponse(true);
+  })().catch((err) => {
+    console.error("Error in onConnected:", err);
+    sendResponse(false); // or handle error as needed
+  });
+
+  // Return true to indicate that sendResponse will be called asynchronously
+  return true;
 }
