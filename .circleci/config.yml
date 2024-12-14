@@ -18,16 +18,16 @@ jobs:
           command: cd web-ext && bun install
 
       - run:
-          name: Run Static Tests
-          command: cd web-ext && bun run test:static
+          name: Run Tests
+          command: cd web-ext && bun run test
 
       - run:
-          name: Run Unit Tests
-          command: cd web-ext && bun run test:unit
-
-      - run:
-          name: Build for Production
+          name: Build for Chrome Production
           command: cd web-ext && bun run build
+
+      - run:
+          name: Build for Firefox Production
+          command: cd web-ext && bun run build:firefox
 
 workflows:
   version: 2
