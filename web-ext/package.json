@@ -11,7 +11,6 @@
     "build:firefox": "webpack --config ./scripts/build.js --env production firefox",
     "release": "bun run build && bun scripts/release.js",
     "release:firefox": "bun run build:firefox && bun scripts/release.js firefox",
-    "lint": "eslint . --fix",
     "type-check": "tsc --noEmit",
     "test": "bun run type-check"
   },
