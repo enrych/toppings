@@ -1,4 +1,4 @@
-@config "../../../tailwind.preflight.config.cjs";
+/* @config "../../../tailwind.preflight.config.cjs"; */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

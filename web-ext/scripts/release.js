@@ -1,22 +1,31 @@
-const fs = require("fs-extra");
-const archiver = require("archiver");
-const path = require("path");
-const chalk = require("chalk");
+import path from "node:path";
+import archiver from "archiver";
+import chalk from "chalk";
+import fs from "fs-extra";
 
-const WEB_EXT_DIR = path.join(__dirname, "..");
-const DIST_DIR = path.join(WEB_EXT_DIR, "dist");
-const MANIFEST_FILE = path.join(DIST_DIR, "manifest.json");
-const BROWSER = process.env.BROWSER || "chrome";
-const STORE = BROWSER === "chrome" ? "Chrome Web Store" : "Mozilla Add-ons";
+const DIST_DIR = path.resolve("dist");
+const PACKAGE_FILE = path.resolve("package.json");
+const isFirefox = process.argv[2] === "firefox" ? "firefox" : "chrome";
 
 async function createArchive() {
   try {
-    const manifestData = await fs.readFile(MANIFEST_FILE, "utf8");
-    const manifest = JSON.parse(manifestData);
-    const RELEASE_VERSION = manifest.version;
-    const RELEASE_FILENAME = `toppings_v${RELEASE_VERSION}_${BROWSER}.zip`;
+    if (!fs.existsSync(DIST_DIR)) {
+      throw new Error(
+        `The 'dist' directory was not found at ${DIST_DIR}. Please ensure it exists before running this script.`,
+      );
+    }
+    if (!fs.existsSync(PACKAGE_FILE)) {
+      throw new Error(
+        `The 'package.json' file was not found at ${PACKAGE_FILE}. Please ensure it exists before running this script.`,
+      );
+    }
 
-    const writeStream = fs.createWriteStream(RELEASE_FILENAME);
+    const packageJson = JSON.parse(fs.readFileSync(PACKAGE_FILE, "utf-8"));
+    const version = packageJson.version;
+    const filename = `toppings_v${version}_${isFirefox}.zip`;
+    const store = isFirefox ? "Mozilla Add-ons" : "Chrome Web Store";
+
+    const writeStream = fs.createWriteStream(filename);
     const archive = archiver("zip", { zlib: { level: 9 } });
     archive.pipe(writeStream);
 
@@ -25,12 +34,12 @@ async function createArchive() {
       const message = `
       ┏---------------------------------┓
       |                |
-      |   Release Version: ${RELEASE_VERSION}        |
+      |   Release Version: ${version}        |
       |                |
       ┗---------------------------------┛
 
       Congratulations! Toppings has been successfully bundled and prepare for a new release.
-      You can now upload the '${RELEASE_FILENAME}' file to the ${STORE} and GitHub releases.
+      You can now upload the '${filename}' file to the ${store} and GitHub releases.
       `;
 
       console.log(chalk.yellow(message));

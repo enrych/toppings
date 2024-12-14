@@ -3,13 +3,22 @@
 		"jsx": "react-jsx",
 		"outDir": "./dist/",
 		"strict": true,
-		"lib": ["esnext", "dom", "dom.iterable"],
+		"lib": [
+			"esnext",
+			"dom",
+			"dom.iterable"
+		],
 		"module": "ES2020",
 		"target": "ES6",
 		"allowJs": true,
 		"moduleResolution": "node",
 		"noEmitOnError": true,
-		"types": ["chrome-types", "node", "mocha", "chai"],
+		"types": [
+			"chrome-types",
+			"node",
+			"mocha",
+			"chai"
+		],
 		"allowSyntheticDefaultImports": true
 	}
 }
