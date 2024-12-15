@@ -27,10 +27,9 @@ type WebNavigationDetails = Parameters<
 >[0];
 async function onWebNavigation(details: WebNavigationDetails) {
   const tabId = details.tabId;
-  const ctx = await getContext(details.url);
-  const isExtensionEnabled = ctx.store.isExtensionEnabled;
 
-  if (!ctx.isSupported || !isExtensionEnabled) return;
+  const ctx = await getContext(details.url);
+  if (!ctx?.store.isExtensionEnabled) return;
   await dispatchContext(tabId, ctx);
 }
 
@@ -50,9 +49,7 @@ function onConnected(
     if (!url) return;
 
     const ctx = await getContext(url);
-    const isExtensionEnabled = ctx.store.isExtensionEnabled;
-
-    if (!ctx.isSupported || !isExtensionEnabled) return;
+    if (!ctx?.store.isExtensionEnabled) return;
     await dispatchContext(tabId, ctx);
 
     sendResponse(true);

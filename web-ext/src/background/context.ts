@@ -151,7 +151,7 @@ export const getContext = async (rawURL: string): Promise<Context> => {
  */
 export const dispatchContext = async (
   tabId: number,
-  ctx: Context,
+  ctx: Exclude<Context, null>,
 ): Promise<void> => {
   // For URL, To ensure the message is structurally cloneable across browsers.
   const serializedContext = JSON.stringify(ctx);
