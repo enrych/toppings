@@ -42,6 +42,7 @@
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^7.1.2",
     "dom-chef": "^5.1.1",
+    "dotenv-flow-webpack": "^2.0.0",
     "fs-extra": "^11.2.0",
     "postcss": "^8.4.38",
     "postcss-loader": "^8.1.1",
