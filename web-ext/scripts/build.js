@@ -4,6 +4,7 @@ import tailwindcss from "tailwindcss";
 import autoprefixer from "autoprefixer";
 import CopyWebpackPlugin from "copy-webpack-plugin";
 import { CleanWebpackPlugin } from "clean-webpack-plugin";
+import DotEnvFlow from "dotenv-flow-webpack";
 
 export default (env) => {
   return {
@@ -127,6 +128,7 @@ export default (env) => {
           },
         ],
       }),
+      new DotEnvFlow(),
     ],
     resolve: {
       extensions: [".ts", ".tsx"],

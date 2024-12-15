@@ -1,38 +1,41 @@
 import { getStorage, Storage } from "./store";
 
-export interface IContext {
-  isSupported: boolean;
-  store: Storage;
-  pathname: "watch" | "playlist" | "shorts" | null;
+const SERVER_BASE_URI = process.env.SERVER_BASE_URI;
+
+export type Context = WatchContext | PlaylistContext | ShortsContext | null;
+
+export interface BaseContext {
+  event: string;
   payload: Record<string, any> | null;
+  store: Storage;
 }
 
-export interface WatchContext extends IContext {
-  pathname: "watch";
+export type WatchContext = BaseContext & {
+  event: "watch";
   payload: WatchPayload;
-}
+};
 
-export interface WatchPayload {
-  videoId: string;
-}
+export type WatchPayload = {
+  videoId: string | null;
+};
 
-export interface PlaylistContext extends IContext {
-  pathname: "playlist";
+export type PlaylistContext = BaseContext & {
+  event: "playlist";
   payload: ValidPlaylistPayload | InvalidPlaylistPayload;
-}
+};
 
-export interface ValidPlaylistPayload {
+export type ValidPlaylistPayload = {
   playlistId: string;
   averageRuntime: number;
   totalRuntime: number;
   totalVideos: string;
-}
+};
 
-export interface InvalidPlaylistPayload {
-  playlistId: "WL" | "LL" | "";
-}
+export type InvalidPlaylistPayload = {
+  playlistId: "WL" | "LL" | null;
+};
 
-export interface PlaylistResponse {
+export type PlaylistResponse = {
   ok: boolean;
   status: number;
   error_message: string;
@@ -42,113 +45,94 @@ export interface PlaylistResponse {
     avg_runtime: number;
     total_runtime: number;
   };
-}
+};
 
-export interface ShortsContext extends IContext {
-  pathname: "shorts";
+export type ShortsContext = BaseContext & {
+  event: "shorts";
   payload: ShortsPayload;
-}
+};
 
-export interface ShortsPayload {
-  shortId: string;
-}
+export type ShortsPayload = {
+  shortId: string | null;
+};
 
-export type Context = WatchContext | PlaylistContext | ShortsContext;
-
-export const getContext = async (href: string): Promise<IContext> => {
-  const url = new URL(href);
+export const getContext = async (rawURL: string): Promise<Context> => {
+  const url = new URL(rawURL);
   const store = await getStorage();
 
   if (!store) {
-    throw new Error("extension store not found.");
+    throw new Error("Extension store not found.");
   }
 
-  switch (url.pathname) {
-    case "/playlist": {
-      const playlistId = url.searchParams.get("list");
-      if (playlistId != null && playlistId !== "WL" && playlistId !== "LL") {
-        const SERVER_BASE_URI =
-          process.env.NODE_ENV === "development"
-            ? "http://localhost:8787"
-            : "https://toppings.enry.ch";
-        const response = await fetch(
-          `${SERVER_BASE_URI}/playlist/${playlistId}`,
-          {
-            method: "GET",
-            headers: {
-              Accept: "application/json",
-            },
-          },
-        );
+  if (url.pathname.startsWith("/watch")) {
+    const videoId = url.searchParams.get("v") || null;
 
-        const body = (await response.json()) as PlaylistResponse;
+    return {
+      event: "watch",
+      payload: { videoId },
+      store,
+    } as const;
+  } else if (url.pathname.startsWith("/playlist")) {
+    const playlistId = url.searchParams.get("list") || null;
 
-        return {
-          isSupported: true,
-          store: store,
-          pathname: "playlist",
-          payload: {
-            playlistId: playlistId,
-            averageRuntime: body.data.avg_runtime,
-            totalRuntime: body.data.total_runtime,
-            totalVideos: body.data.num_videos,
-          },
-        } as PlaylistContext;
-      } else {
-        return {
-          isSupported: true,
-          store: store,
-          pathname: "playlist",
-          payload: {
-            playlistId: playlistId ?? "",
-          },
-        } as PlaylistContext;
-      }
+    if (playlistId === null || playlistId === "WL" || playlistId === "LL") {
+      return {
+        event: "playlist",
+        payload: { playlistId },
+        store,
+      } as const;
     }
 
-    case "/watch": {
-      const videoId = url.searchParams.get("v");
-      if (videoId != null) {
-        return {
-          isSupported: true,
-          store: store,
-          pathname: "watch",
-          payload: {
-            videoId,
-          },
-        } as WatchContext;
-      }
-      break;
-    }
+    try {
+      const response = await fetch(
+        `${SERVER_BASE_URI}/playlist/${playlistId}`,
+        {
+          method: "GET",
+          headers: { Accept: "application/json" },
+        },
+      );
 
-    default: {
-      if (url.pathname.startsWith("/shorts")) {
-        const shortId = url.pathname.split("/").at(2) ?? "";
-        return {
-          isSupported: true,
-          store: store,
-          pathname: "shorts",
-          payload: {
-            shortId,
-          },
-        } as ShortsContext;
+      if (!response.ok) {
+        throw new Error(`Failed to fetch playlist data: ${response.status}`);
       }
+
+      const body = (await response.json()) as PlaylistResponse;
+
+      return {
+        event: "playlist",
+        payload: {
+          playlistId,
+          averageRuntime: body.data.avg_runtime,
+          totalRuntime: body.data.total_runtime,
+          totalVideos: body.data.num_videos,
+        },
+        store,
+      } as const;
+    } catch (error) {
+      console.error("Error fetching playlist data:", error);
+      return {
+        event: "playlist",
+        payload: { playlistId: null },
+        store,
+      } as const;
     }
+  } else if (url.pathname.startsWith("/shorts")) {
+    const shortId = url.pathname.split("/")[2] || null;
+    return {
+      event: "shorts",
+      payload: { shortId },
+      store,
+    } as const;
   }
 
-  return {
-    isSupported: false,
-    store: store,
-    pathname: null,
-    payload: null,
-  };
+  return null;
 };
 
 /**
  * Dispatches the provided context to the specified tab using `chrome.tabs.sendMessage`.
  *
  * @param {number} tabId - The ID of the tab to send the message to.
- * @param {IContext} ctx - The context to be sent to the tab.
+ * @param {Context} ctx - The context to be sent to the tab.
  * @returns {Promise<void>} A promise that resolves when the message is sent.
  *
  * @remarks
@@ -167,7 +151,7 @@ export const getContext = async (href: string): Promise<IContext> => {
  */
 export const dispatchContext = async (
   tabId: number,
-  ctx: IContext,
+  ctx: Context,
 ): Promise<void> => {
   // For URL, To ensure the message is structurally cloneable across browsers.
   const serializedContext = JSON.stringify(ctx);
