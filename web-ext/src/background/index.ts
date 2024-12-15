@@ -39,7 +39,10 @@ function onConnected(
   sendResponse: (response: any) => void,
 ) {
   (async () => {
-    const event = message.event;
+    const { type, payload } = JSON.parse(message);
+    if (type !== "event") return;
+
+    const event = payload;
     if (event !== "connected") return;
 
     const tabId = sender.tab?.id;
@@ -50,7 +53,8 @@ function onConnected(
 
     const ctx = await getContext(url);
     if (!ctx?.store.isExtensionEnabled) return;
-    sendResponse(JSON.stringify(ctx));
+
+    sendResponse(JSON.stringify({ type: "context", payload: ctx }));
   })();
 
   // Return true to indicate that sendResponse will be called asynchronously

@@ -7,23 +7,27 @@ import onWatchPage from "./routes/watch";
 import "./index.css";
 
 const eventHandlers: Record<keyof Storage["preferences"], Function> = {
-  watch: onWatchPage,
   playlist: onPlaylistPage,
   shorts: onShortsPage,
+  watch: onWatchPage,
 };
 
-function onEvent(context: string): undefined {
+function runApp(message: any): undefined {
   (async () => {
-    const ctx = JSON.parse(context) as Exclude<Context, null>;
-    const { event, store } = ctx;
-    const handler = eventHandlers[event];
+    const { type, payload } = JSON.parse(message);
+
+    if (type !== "context") return;
+    const ctx = payload as Exclude<Context, null>;
+
+    const { name, store } = ctx;
+    const handler = eventHandlers[name];
 
     if (!handler) {
-      console.warn(`No handler found for event: ${event}`);
+      console.warn(`No handler found for event: ${name}`);
       return;
     }
 
-    const isFeatureEnabled = store.preferences[event].isEnabled;
+    const isFeatureEnabled = store.preferences[name].isEnabled;
     if (!isFeatureEnabled) return;
 
     await handler(ctx);
@@ -31,5 +35,5 @@ function onEvent(context: string): undefined {
 }
 
 // Handle Events
-chrome.runtime.sendMessage({ event: "connected" }, {}, onEvent);
-chrome.runtime.onMessage.addListener(onEvent);
+chrome.runtime.sendMessage({ type: "event", payload: "connected" }, {}, runApp);
+chrome.runtime.onMessage.addListener(runApp);

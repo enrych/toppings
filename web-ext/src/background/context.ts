@@ -5,13 +5,13 @@ const SERVER_BASE_URI = process.env.SERVER_BASE_URI;
 export type Context = WatchContext | PlaylistContext | ShortsContext | null;
 
 export interface BaseContext {
-  event: string;
+  name: string;
   payload: Record<string, any> | null;
   store: Storage;
 }
 
 export type WatchContext = BaseContext & {
-  event: "watch";
+  name: "watch";
   payload: WatchPayload;
 };
 
@@ -20,7 +20,7 @@ export type WatchPayload = {
 };
 
 export type PlaylistContext = BaseContext & {
-  event: "playlist";
+  name: "playlist";
   payload: ValidPlaylistPayload | InvalidPlaylistPayload;
 };
 
@@ -48,7 +48,7 @@ export type PlaylistResponse = {
 };
 
 export type ShortsContext = BaseContext & {
-  event: "shorts";
+  name: "shorts";
   payload: ShortsPayload;
 };
 
@@ -68,7 +68,7 @@ export const getContext = async (rawURL: string): Promise<Context> => {
     const videoId = url.searchParams.get("v") || null;
 
     return {
-      event: "watch",
+      name: "watch",
       payload: { videoId },
       store,
     } as const;
@@ -77,7 +77,7 @@ export const getContext = async (rawURL: string): Promise<Context> => {
 
     if (playlistId === null || playlistId === "WL" || playlistId === "LL") {
       return {
-        event: "playlist",
+        name: "playlist",
         payload: { playlistId },
         store,
       } as const;
@@ -99,7 +99,7 @@ export const getContext = async (rawURL: string): Promise<Context> => {
       const body = (await response.json()) as PlaylistResponse;
 
       return {
-        event: "playlist",
+        name: "playlist",
         payload: {
           playlistId,
           averageRuntime: body.data.avg_runtime,
@@ -111,7 +111,7 @@ export const getContext = async (rawURL: string): Promise<Context> => {
     } catch (error) {
       console.error("Error fetching playlist data:", error);
       return {
-        event: "playlist",
+        name: "playlist",
         payload: { playlistId: null },
         store,
       } as const;
@@ -119,7 +119,7 @@ export const getContext = async (rawURL: string): Promise<Context> => {
   } else if (url.pathname.startsWith("/shorts")) {
     const shortId = url.pathname.split("/")[2] || null;
     return {
-      event: "shorts",
+      name: "shorts",
       payload: { shortId },
       store,
     } as const;
@@ -154,7 +154,8 @@ export const dispatchContext = async (
   ctx: Exclude<Context, null>,
 ): Promise<void> => {
   // For URL, To ensure the message is structurally cloneable across browsers.
-  const serializedContext = JSON.stringify(ctx);
+  const message = { type: "context", payload: ctx };
+  const serializedContext = JSON.stringify(message);
   // sendMessage will throw "Error: Could not establish connection. Receiving end does not exist."
   // if there is no content script loaded in the given tab. This error is
   // noisy and mysterious (it usually doesn't have a valid line number), so we silence it.
