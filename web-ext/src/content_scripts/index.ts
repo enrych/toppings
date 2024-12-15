@@ -12,26 +12,24 @@ const eventHandlers: Record<keyof Storage["preferences"], Function> = {
   shorts: onShortsPage,
 };
 
-async function runApp(ctx: Exclude<Context, null>): Promise<void> {
-  const { event, store } = ctx;
-  const handler = eventHandlers[event];
+function onEvent(context: string): undefined {
+  (async () => {
+    const ctx = JSON.parse(context) as Exclude<Context, null>;
+    const { event, store } = ctx;
+    const handler = eventHandlers[event];
 
-  if (!handler) {
-    console.warn(`No handler found for event: ${event}`);
-    return;
-  }
+    if (!handler) {
+      console.warn(`No handler found for event: ${event}`);
+      return;
+    }
 
-  const isFeatureEnabled = store.preferences[event].isEnabled;
-  if (!isFeatureEnabled) return;
+    const isFeatureEnabled = store.preferences[event].isEnabled;
+    if (!isFeatureEnabled) return;
 
-  await handler(ctx);
+    await handler(ctx);
+  })();
 }
 
-chrome.runtime.sendMessage({
-  event: "connected",
-});
-
-chrome.runtime.onMessage.addListener((ctx: string): undefined => {
-  const parsedWebAppContext = JSON.parse(ctx);
-  void runApp(parsedWebAppContext);
-});
+// Handle Events
+chrome.runtime.sendMessage({ event: "connected" }, {}, onEvent);
+chrome.runtime.onMessage.addListener(onEvent);

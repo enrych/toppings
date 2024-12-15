@@ -50,13 +50,8 @@ function onConnected(
 
     const ctx = await getContext(url);
     if (!ctx?.store.isExtensionEnabled) return;
-    await dispatchContext(tabId, ctx);
-
-    sendResponse(true);
-  })().catch((err) => {
-    console.error("Error in onConnected:", err);
-    sendResponse(false); // or handle error as needed
-  });
+    sendResponse(JSON.stringify(ctx));
+  })();
 
   // Return true to indicate that sendResponse will be called asynchronously
   return true;
