@@ -1,33 +1,30 @@
-<!-- In order to keep off topic discussion to a minimum, it helps if the "work to be done" is already agreed on. -->
-<!--
-Thanks for submitting a pull request! Please provide enough information so that others can review your pull request.
--->
+<!-- The title should briefly describe the type of change (e.g., Bugfix: Fix issue with user login, Feature: Add new reporting dashboard) -->
 
-**What kind of change does this PR introduce?**
+## Description
 
-<!-- E.g. a bugfix, feature, refactoring, etc… -->
+<!-- What does this PR do?
+Explain the change, feature, or bugfix in clear terms. Focus on what has been changed or added. Provide enough context for someone unfamiliar with the issue to understand the scope. -->
 
-**Issue Number:**
+## Motivation
 
-<!-- Pick one of the below options.  Please remove those which don't apply. -->
+<!-- Why is this change necessary?
+Explain the reason for the change, whether it's to fix a bug, introduce a new feature, or improve performance. Highlight the value it brings and any pain points it solves. -->
 
-- Closes #**_ <!-- Replace _** with the issue number this PR resolves -->
-- Related to #\_\_\_ <!-- Use when the PR doesn't completely resolve an issue -->
-- Others? <!-- Add any additional notes or references here -->
+## Implementation Details
 
-**Screenshots/videos:**
+<!-- How was this change implemented?
+Discuss the technical approach and reasoning behind the key decisions you made. Include any trade-offs, design considerations, or architectural changes that impacted the solution. If applicable, mention alternatives you considered. -->
 
-<!--Add screenshots or videos wherever possible.-->
+## Screenshots / Visual Changes
 
-**If relevant, did you update the documentation?**
+<!-- If applicable, include screenshots or GIFs that demonstrate visual changes, UI updates, or new features in action. Remove this section if it's not relevant. -->
 
-<!--Add link to it-->
+## Related Issues
 
-**Summary**
+<!-- List the issues that this PR closes or relates to.
+Use closing keywords like "Closes #123", "Fixes #456", or mention "Related to #789" for partially addressed issues. -->
 
-<!-- Explain the motivation for making this change. What existing problem does the pull request solve? -->
-<!-- Try to link to an open issue for more information. -->
+## Additional Considerations
 
-**Does this PR introduce a breaking change?**
-
-<!-- If this PR introduces a breaking change, please describe the impact and a migration path for existing applications. -->
+<!-- Any additional information or considerations that the reviewer should be aware of.
+Mention anything that could impact other parts of the system, potential backward incompatibilities, or plans for future refactoring. -->

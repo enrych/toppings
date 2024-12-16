@@ -1,31 +1,44 @@
-name: ⭐️ Feature Request
-description: Suggest an idea for this project
-title: "[<related_to>]: <feature>"
+name: Feature Request
+description: Suggest a new feature or improvement.
+title: "Feature: [Brief description of the feature]"
 labels: ["Status: Needs Investigation", "Type: Enhancement"]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Please provide the necessary details below to help us evaluate the request.
+
+  - type: input
+    id: description
+    attributes:
+      label: Feature Description
+      description: "Provide a clear description of the feature."
+      placeholder: "Describe the feature you'd like to see implemented."
+
   - type: textarea
+    id: use_case
     attributes:
-      label: Is your feature request related to a problem? Please describe
-      description: A clear and concise description of what the problem is
-    validations:
-      required: true
+      label: Use Case
+      description: "Describe a scenario where this feature would be useful."
+      placeholder: "Explain how this feature would be valuable to users."
+
   - type: textarea
+    id: possible_implementation
     attributes:
-      label: Describe the solution you'd like
-      description: A clear and concise description of what you want to happen
-    validations:
-      required: true
+      label: Possible Implementation (Optional)
+      description: "If you have ideas on how this feature could be implemented, describe them here."
+      placeholder: "Provide ideas or code snippets (if any)."
+
   - type: textarea
+    id: alternatives_considered
     attributes:
-      label: Additional context
-      description: Add any other context about the problem here
-    validations:
-      required: false
-  - type: dropdown
+      label: Alternatives Considered
+      description: "Describe any alternative solutions you've considered."
+      placeholder: "Explain why the alternatives might not be sufficient."
+
+  - type: textarea
+    id: additional_context
     attributes:
-      label: Are you working on this?
-      options:
-        - "Yes"
-        - "No"
-    validations:
-      required: true
+      label: Additional Context
+      description: "Add any other relevant information, references, or links."
+      placeholder: "Include any related issues, links, or additional information."

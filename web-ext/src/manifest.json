@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json.schemastore.org/chrome-manifest",
+  "action": {
+    "default_icon": {
+      "16": "assets/icons/icon16.png",
+      "32": "assets/icons/icon32.png",
+      "48": "assets/icons/icon48.png",
+      "128": "assets/icons/icon128.png"
+    },
+    "default_title": "__MSG_popupTitle__",
+    "default_popup": "popup/index.html"
+  },
+  "author": "Enrych",
+  "background": {
+    "service_worker": "/background.js"
+  },
+  "commands": {},
+  "content_scripts": [
+    {
+      "all_frames": true,
+      "js": ["/content.js"],
+      "matches": ["https://www.youtube.com/*"],
+      "run_at": "document_end"
+    }
+  ],
+  "default_locale": "en",
+  "description": "__MSG_description__",
+  "homepage_url": "https://enrych.github.io/toppings",
+  "host_permissions": ["*://*.youtube.com/*"],
+  "icons": {
+    "16": "assets/icons/icon16.png",
+    "32": "assets/icons/icon32.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
+  },
+  "manifest_version": 3,
+  "name": "Toppings on YouTube",
+  "options_ui": {
+    "open_in_tab": true,
+    "page": "/options/index.html"
+  },
+  "permissions": ["webNavigation", "storage"],
+  "short_name": "Toppings",
+  "version": "0.0.0",
+  "web_accessible_resources": [
+    {
+      "matches": ["https://*/*"],
+      "resources": ["assets/*"]
+    }
+  ]
+}
