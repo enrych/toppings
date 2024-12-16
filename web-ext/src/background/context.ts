@@ -39,14 +39,12 @@ export type InvalidPlaylistPayload = {
 };
 
 export type PlaylistResponse = {
-  ok: boolean;
-  status: number;
-  error_message: string;
-  data: {
-    num_videos: string;
+  pathName: "playlist";
+  payload: {
     playlist_id: string;
-    avg_runtime: number;
-    total_runtime: number;
+    total_videos: string;
+    total_runtime_seconds: number;
+    average_runtime_seconds: number;
   };
 };
 
@@ -104,10 +102,10 @@ export const getContext = async (rawURL: string): Promise<Context> => {
       return {
         pageName: "playlist",
         payload: {
-          playlistId,
-          averageRuntime: body.data.avg_runtime,
-          totalRuntime: body.data.total_runtime,
-          totalVideos: body.data.num_videos,
+          playlistId: body.payload.playlist_id,
+          averageRuntime: body.payload.average_runtime_seconds,
+          totalRuntime: body.payload.total_runtime_seconds,
+          totalVideos: body.payload.total_videos,
         },
         store,
       } as const;

@@ -73,8 +73,8 @@ const calculatePlaylistMetrics = async (playlistID: string, apiKey: string) => {
   return {
     pathname: "playlist",
     payload: {
-      id: playlistID,
-      total_videos: videoCount,
+      playlist_id: playlistID,
+      total_videos: `${videoCount}`,
       total_runtime_seconds: totalRuntime,
       average_runtime_seconds: Math.round(totalRuntime / videoCount),
     },
