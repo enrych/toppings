@@ -7,7 +7,9 @@ import {
 
 const onPlaylistPage = async (ctx: PlaylistContext): Promise<void> => {
   const { playlistId } = ctx.payload;
-  const metadataActionBar = await elementReady("div.metadata-action-bar");
+  const metadataActionBar = await elementReady(
+    "yt-content-metadata-view-model.yt-content-metadata-view-model-wiz:not(#header yt-content-metadata-view-model.yt-content-metadata-view-model-wiz)",
+  );
   if (metadataActionBar === null || metadataActionBar === undefined) return;
 
   let runtimeSection = document.querySelector("div#tppng-ytp-runtime-section");
@@ -18,20 +20,20 @@ const onPlaylistPage = async (ctx: PlaylistContext): Promise<void> => {
 
     runtimeSection = (
       <div
-        className="metadata-text-wrapper style-scope ytd-playlist-header-renderer tw-box-border tw-h-fit tw-rounded-[8px] tw-bg-[rgba(101,101,101,0.4)] tw-backdrop-saturate-[180%] tw-backdrop-blur-[10px] tw-px-[15px] tw-py-[12px] tw-shadow-[0_4px_30px_rgba(0,0,0,0.1)] tw-transition-all tw-duration-300 tw-ease-in-out hover:tw-shadow-[0_4px_10px_rgba(0,0,0,0.15)]"
+        className="tw-mt-[2px] tw-box-border tw-h-fit tw-rounded-[8px] tw-bg-[rgba(101,101,101,0.4)] tw-backdrop-saturate-[180%] tw-backdrop-blur-[10px] tw-px-[15px] tw-py-[12px] tw-shadow-[0_4px_30px_rgba(0,0,0,0.1)] tw-transition-all tw-duration-300 tw-ease-in-out hover:tw-shadow-[0_4px_10px_rgba(0,0,0,0.15)]"
         id="tppng-ytp-runtime-section"
       >
-        <div className="mb-[6px] w-full flex items-center">
+        <div className="tw-mb-[6px] tw-w-full tw-flex tw-items-center">
           <img
-            src={chrome.runtime.getURL("assets/icons/logo/icon128.png")}
-            className="mx-[6px] w-[24px]"
+            src={chrome.runtime.getURL("assets/icons/icon128.png")}
+            className="tw-mx-[6px] tw-w-[24px]"
             alt="Toppings Icon"
           />
-          <h2 className="mx-[6px] text-[1.6rem] font-extrabold text-white ml-[10px]">
+          <h2 className="tw-mx-[6px] tw-text-[1.6rem] tw-font-extrabold tw-text-white tw-ml-[10px]">
             Toppings
           </h2>
         </div>
-        <div className="flex flex-col justify-evenly items-start pl-[10px] text-[12px] text-[#b9b8b8]">
+        <div className="tw-flex tw-flex-col tw-justify-evenly tw-items-start tw-pl-[10px] tw-text-[12px] tw-text-[#b9b8b8]">
           <div>
             <span>Average Runtime: </span>
             <span id="tppng-ytp-average-runtime">
@@ -48,11 +50,8 @@ const onPlaylistPage = async (ctx: PlaylistContext): Promise<void> => {
       </div>
     );
 
-    if (metadataActionBar.lastChild === null) return;
-    metadataActionBar.insertBefore(
-      runtimeSection,
-      metadataActionBar.lastChild.previousSibling,
-    );
+    if (metadataActionBar === null) return;
+    metadataActionBar.append(runtimeSection);
   } else {
     if (playlistId === "WL" || playlistId === "LL") {
       runtimeSection.remove();
