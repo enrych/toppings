@@ -3,7 +3,9 @@ export const DEFAULT_STORE = {
   preferences: {
     watch: {
       isEnabled: true as boolean,
-      defaultPlaybackRate: "1.00" as string,
+      defaultPlaybackRate: {
+        value: "1.00" as string,
+      },
       togglePlaybackRate: {
         key: "X" as string,
         value: "1.50" as string,

@@ -1,9 +1,9 @@
 import type { Context } from "../background/context";
 import type { Storage } from "../background/store";
 
-import onPlaylistPage from "./routes/playlist";
-import onShortsPage from "./routes/shorts";
-import onWatchPage from "./routes/watch";
+import onPlaylistPage from "./pages/playlist";
+import onShortsPage from "./pages/shorts";
+import onWatchPage from "./pages/watch";
 import "./index.css";
 
 const pageHandlers: Record<keyof Storage["preferences"], Function> = {

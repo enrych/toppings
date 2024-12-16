@@ -4,16 +4,12 @@ import type { Storage } from "../../background/store";
 import type { ShortsContext } from "../../background/context";
 
 let player: HTMLVideoElement | undefined;
-let keybindings: Storage["routes"]["shorts"]["keybindings"] | undefined;
-let preferences: Storage["routes"]["shorts"]["preferences"] | undefined;
+let preferences: Storage["preferences"]["shorts"] | undefined;
 
-const onShortsPage = async (ctx: ShortsContext): Promise<void> => {
-  if (!ctx.store.routes.shorts.isEnabled) return;
-
+const onShortsPage = async (ctx: ShortsContext) => {
   const { store } = ctx;
-  keybindings = store.routes.shorts.keybindings;
-  preferences = store.routes.shorts.preferences;
-  if (keybindings === undefined || preferences === undefined) return;
+  preferences = store.preferences.shorts;
+  if (preferences === undefined) return;
 
   player = await elementReady("ytd-reel-video-renderer[is-active] video", {
     stopOnDomReady: false,
@@ -39,7 +35,7 @@ const onShortsPage = async (ctx: ShortsContext): Promise<void> => {
   const autoScrollButton = playerActions.querySelector("#tppng-auto-scroll");
   if (!autoScrollButton) {
     playerActions.prepend(AutoScrollButton);
-    if (!preferences.reelAutoScroll) {
+    if (!preferences.reelAutoScroll.value) {
       AutoScrollButton.classList.add("tw-bg-white/10");
       AutoScrollButton.classList.remove("tw-bg-white/20");
     } else {
@@ -66,7 +62,7 @@ const onShortsPage = async (ctx: ShortsContext): Promise<void> => {
 
 function useShortcuts(event: KeyboardEvent) {
   if (player === null || player === undefined) return;
-  if (keybindings === undefined) return;
+  if (preferences === undefined) return;
   if (
     event.target !== null &&
     (event.target as HTMLElement).tagName !== "INPUT" &&
@@ -75,7 +71,7 @@ function useShortcuts(event: KeyboardEvent) {
       "#contenteditable-root.yt-formatted-string",
     )
   ) {
-    if (event.key === `${keybindings.toggleSpeedShortcut.toLowerCase()}`) {
+    if (event.key === `${preferences.togglePlaybackRate.key.toLowerCase()}`) {
       togglePlaybackRate();
     }
   }
@@ -84,7 +80,7 @@ function useShortcuts(event: KeyboardEvent) {
 let setupTimeoutId: ReturnType<typeof setTimeout>;
 function setupAutoScroll() {
   if (player === null || player === undefined) return;
-  if (!preferences?.reelAutoScroll) return;
+  if (!preferences?.reelAutoScroll.value) return;
   clearTimeout(setupTimeoutId);
   setupTimeoutId = setTimeout(() => {
     player?.removeAttribute("loop");
@@ -94,7 +90,7 @@ function setupAutoScroll() {
 function scrollToNextReel() {
   if (player === null || player === undefined) return;
   if (preferences === undefined) return;
-  if (!preferences.reelAutoScroll) {
+  if (!preferences.reelAutoScroll.value) {
     player.play();
     return;
   }
@@ -142,7 +138,7 @@ function togglePlaybackRate() {
 
 function enableAutoScroll() {
   if (preferences === undefined) return;
-  preferences.reelAutoScroll = !preferences.reelAutoScroll;
+  preferences.reelAutoScroll.value = !preferences.reelAutoScroll.value;
   AutoScrollButton.classList.toggle("tw-bg-white/10");
   AutoScrollButton.classList.toggle("tw-bg-white/20");
 }

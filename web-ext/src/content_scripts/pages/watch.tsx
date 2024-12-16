@@ -12,14 +12,12 @@ import { Storage } from "../../background/store";
 
 let player: HTMLVideoElement | undefined;
 let playbackMenuButton: HTMLElement | undefined;
-let preferences: Storage["routes"]["watch"]["preferences"] | undefined;
-let keybindings: Storage["routes"]["watch"]["keybindings"] | undefined;
+let preferences: Storage["preferences"]["watch"] | undefined;
 
 const onWatchPage = async (ctx: WatchContext) => {
   const { store } = ctx;
-  keybindings = store.routes.watch.keybindings;
-  preferences = store.routes.watch.preferences;
-  if (preferences === undefined || keybindings === undefined) return;
+  preferences = store.preferences.watch;
+  if (preferences === undefined) return;
 
   player = await elementReady("video", {
     stopOnDomReady: false,
@@ -27,7 +25,7 @@ const onWatchPage = async (ctx: WatchContext) => {
   if (player === null || player === undefined) return;
 
   // Reset Player
-  player.playbackRate = parseFloat(preferences.defaultSpeed);
+  player.playbackRate = parseFloat(preferences.defaultPlaybackRate.value);
   const labels = document.querySelectorAll(".ytp-menuitem-label");
   if (labels.length !== 0) {
     for (const label of labels) {
@@ -105,43 +103,45 @@ const onPlaybackRateMenu = async (): Promise<void> => {
 
 const replacePlaybackItems = (playbackRatePanel: HTMLElement) => {
   if (player === undefined || player === null) return;
-  if (preferences === undefined || keybindings === undefined) return;
+  if (preferences === undefined) return;
 
   // Replace Native PlaybackRate Items
   const panelMenu = playbackRatePanel.querySelector(".ytp-panel-menu");
   if (panelMenu === null) return;
 
   const currentRate = player.playbackRate.toFixed(2);
-  const isPresetRate = preferences.customSpeedList.some(
+  const isPresetRate = preferences.customPlaybackRates.some(
     (rate) => rate === currentRate,
   );
 
-  const playbackRateItems = preferences.customSpeedList.map((playbackRate) => {
-    const label = playbackRate === "1.00" ? "Normal" : Number(playbackRate);
-    const isAriaChecked = playbackRate === currentRate ? "true" : "false";
+  const playbackRateItems = preferences.customPlaybackRates.map(
+    (playbackRate) => {
+      const label = playbackRate === "1.00" ? "Normal" : Number(playbackRate);
+      const isAriaChecked = playbackRate === currentRate ? "true" : "false";
 
-    return (
-      <div
-        key={playbackRate}
-        className="tw-ytp-menuitem tw-tppng-playback-item"
-        role="menuitemradio"
-        aria-checked={isAriaChecked}
-        tabIndex={0}
-        data-tppng-playback-rate={playbackRate}
-        onClick={(_event) => {
-          const panelBackButton = document.querySelector(
-            ".ytp-panel-back-button",
-          ) as HTMLElement | null;
-          if (panelBackButton !== null) {
-            panelBackButton.click();
-          }
-          setPlaybackRate(Number(playbackRate));
-        }}
-      >
-        <div className="tw-ytp-menuitem-label">{label}</div>
-      </div>
-    );
-  });
+      return (
+        <div
+          key={playbackRate}
+          className="tw-ytp-menuitem tw-tppng-playback-item"
+          role="menuitemradio"
+          aria-checked={isAriaChecked}
+          tabIndex={0}
+          data-tppng-playback-rate={playbackRate}
+          onClick={(_event) => {
+            const panelBackButton = document.querySelector(
+              ".ytp-panel-back-button",
+            ) as HTMLElement | null;
+            if (panelBackButton !== null) {
+              panelBackButton.click();
+            }
+            setPlaybackRate(Number(playbackRate));
+          }}
+        >
+          <div className="tw-ytp-menuitem-label">{label}</div>
+        </div>
+      );
+    },
+  );
 
   const customPlaybackRateItem = (
     <div
@@ -179,7 +179,7 @@ const replacePlaybackItems = (playbackRatePanel: HTMLElement) => {
 
 const useShortcuts = (event: KeyboardEvent): void => {
   if (player === null || player === undefined) return;
-  if (preferences === undefined || keybindings === undefined) return;
+  if (preferences === undefined) return;
   if (
     event.target !== null &&
     (event.target as HTMLElement).tagName !== "INPUT" &&
@@ -188,29 +188,25 @@ const useShortcuts = (event: KeyboardEvent): void => {
       "#contenteditable-root.yt-formatted-string",
     )
   ) {
-    if (event.key === `${keybindings.toggleSpeedShortcut.toLowerCase()}`) {
+    if (event.key === `${preferences.togglePlaybackRate.key.toLowerCase()}`) {
       if (player.playbackRate !== 1) {
         setPlaybackRate(1);
       } else {
-        setPlaybackRate(Number(preferences.toggleSpeed));
+        setPlaybackRate(Number(preferences.togglePlaybackRate.value));
       }
+    } else if (event.key === `${preferences.seekBackward.key.toLowerCase()}`) {
+      player.currentTime -= +preferences.seekBackward.value;
+      onDoubleTapSeek("back", +preferences.seekBackward.value);
+    } else if (event.key === `${preferences.seekForward.key.toLowerCase()}`) {
+      player.currentTime += +preferences.seekForward.value;
+      onDoubleTapSeek("forward", +preferences.seekForward.value);
     } else if (
-      event.key === `${keybindings.seekBackwardShortcut.toLowerCase()}`
-    ) {
-      player.currentTime -= +preferences.seekBackward;
-      onDoubleTapSeek("back", +preferences.seekBackward);
-    } else if (
-      event.key === `${keybindings.seekForwardShortcut.toLowerCase()}`
-    ) {
-      player.currentTime += +preferences.seekForward;
-      onDoubleTapSeek("forward", +preferences.seekForward);
-    } else if (
-      event.key === `${keybindings.increaseSpeedShortcut.toLowerCase()}`
+      event.key === `${preferences.increasePlaybackRate.key.toLowerCase()}`
     ) {
       const increasedPlaybackRate = Number(
         (
           Number(player.playbackRate.toFixed(2)) +
-          Number((+preferences.increaseSpeed).toFixed(2))
+          Number((+preferences.increasePlaybackRate.value).toFixed(2))
         ).toFixed(2),
       );
       if (increasedPlaybackRate > 16) {
@@ -218,12 +214,12 @@ const useShortcuts = (event: KeyboardEvent): void => {
       }
       setPlaybackRate(increasedPlaybackRate);
     } else if (
-      event.key === `${keybindings.decreaseSpeedShortcut.toLowerCase()}`
+      event.key === `${preferences.decreasePlaybackRate.key.toLowerCase()}`
     ) {
       const decreasedPlaybackRate = Number(
         (
           Number((+player.playbackRate).toFixed(2)) -
-          Number((+preferences.decreaseSpeed).toFixed(2))
+          Number((+preferences.decreasePlaybackRate.value).toFixed(2))
         ).toFixed(2),
       );
       if (decreasedPlaybackRate < 0.0625) {
@@ -231,7 +227,7 @@ const useShortcuts = (event: KeyboardEvent): void => {
       }
       setPlaybackRate(decreasedPlaybackRate);
     } else if (
-      event.key === `${keybindings.toggleLoopSegmentShortcut.toLowerCase()}`
+      event.key === `${preferences.toggleLoopSegment.key.toLowerCase()}`
     ) {
       toggleLoopSegment();
     }
