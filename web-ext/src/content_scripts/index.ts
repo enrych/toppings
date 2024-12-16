@@ -6,7 +6,7 @@ import onShortsPage from "./routes/shorts";
 import onWatchPage from "./routes/watch";
 import "./index.css";
 
-const handlers: Record<keyof Storage["preferences"], Function> = {
+const pageHandlers: Record<keyof Storage["preferences"], Function> = {
   playlist: onPlaylistPage,
   shorts: onShortsPage,
   watch: onWatchPage,
@@ -19,15 +19,15 @@ function runApp(message: any): undefined {
     if (type !== "context") return;
     const ctx = payload as Exclude<Context, null>;
 
-    const { name, store } = ctx;
-    const handler = handlers[name];
+    const { pageName, store } = ctx;
+    const handler = pageHandlers[pageName];
 
     if (!handler) {
-      console.warn(`No handler found: ${name}`);
+      console.warn(`No handler found: ${pageName}`);
       return;
     }
 
-    const isEnabled = store.preferences[name].isEnabled;
+    const isEnabled = store.preferences[pageName].isEnabled;
     if (!isEnabled) return;
 
     await handler(ctx);

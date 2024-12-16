@@ -5,13 +5,13 @@ const SERVER_BASE_URI = process.env.SERVER_BASE_URI;
 export type Context = WatchContext | PlaylistContext | ShortsContext | null;
 
 export interface BaseContext {
-  name: string;
+  pageName: string;
   payload: Record<string, any> | null;
   store: Storage;
 }
 
 export type WatchContext = BaseContext & {
-  name: "watch";
+  pageName: "watch";
   payload: WatchPayload;
 };
 
@@ -20,7 +20,7 @@ export type WatchPayload = {
 };
 
 export type PlaylistContext = BaseContext & {
-  name: "playlist";
+  pageName: "playlist";
   payload: ValidPlaylistPayload | InvalidPlaylistPayload;
 };
 
@@ -48,7 +48,7 @@ export type PlaylistResponse = {
 };
 
 export type ShortsContext = BaseContext & {
-  name: "shorts";
+  pageName: "shorts";
   payload: ShortsPayload;
 };
 
@@ -68,7 +68,7 @@ export const getContext = async (rawURL: string): Promise<Context> => {
     const videoId = url.searchParams.get("v") || null;
 
     return {
-      name: "watch",
+      pageName: "watch",
       payload: { videoId },
       store,
     } as const;
@@ -77,7 +77,7 @@ export const getContext = async (rawURL: string): Promise<Context> => {
 
     if (playlistId === null || playlistId === "WL" || playlistId === "LL") {
       return {
-        name: "playlist",
+        pageName: "playlist",
         payload: { playlistId },
         store,
       } as const;
@@ -99,7 +99,7 @@ export const getContext = async (rawURL: string): Promise<Context> => {
       const body = (await response.json()) as PlaylistResponse;
 
       return {
-        name: "playlist",
+        pageName: "playlist",
         payload: {
           playlistId,
           averageRuntime: body.data.avg_runtime,
@@ -111,7 +111,7 @@ export const getContext = async (rawURL: string): Promise<Context> => {
     } catch (error) {
       console.error("Error fetching playlist data:", error);
       return {
-        name: "playlist",
+        pageName: "playlist",
         payload: { playlistId: null },
         store,
       } as const;
@@ -119,7 +119,7 @@ export const getContext = async (rawURL: string): Promise<Context> => {
   } else if (url.pathname.startsWith("/shorts")) {
     const shortId = url.pathname.split("/")[2] || null;
     return {
-      name: "shorts",
+      pageName: "shorts",
       payload: { shortId },
       store,
     } as const;
