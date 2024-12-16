@@ -1,13 +1,15 @@
 import React from "dom-chef";
 import elementReady from "element-ready";
-import { Storage } from "../../background/store";
-import { ShortsContext } from "../../background/context";
+import type { Storage } from "../../background/store";
+import type { ShortsContext } from "../../background/context";
 
 let player: HTMLVideoElement | undefined;
 let keybindings: Storage["routes"]["shorts"]["keybindings"] | undefined;
 let preferences: Storage["routes"]["shorts"]["preferences"] | undefined;
 
 const onShortsPage = async (ctx: ShortsContext): Promise<void> => {
+  if (!ctx.store.routes.shorts.isEnabled) return;
+
   const { store } = ctx;
   keybindings = store.routes.shorts.keybindings;
   preferences = store.routes.shorts.preferences;
@@ -38,11 +40,11 @@ const onShortsPage = async (ctx: ShortsContext): Promise<void> => {
   if (!autoScrollButton) {
     playerActions.prepend(AutoScrollButton);
     if (!preferences.reelAutoScroll) {
-      AutoScrollButton.classList.add("bg-white/10");
-      AutoScrollButton.classList.remove("bg-white/20");
+      AutoScrollButton.classList.add("tw-bg-white/10");
+      AutoScrollButton.classList.remove("tw-bg-white/20");
     } else {
-      AutoScrollButton.classList.add("bg-white/20");
-      AutoScrollButton.classList.remove("bg-white/10");
+      AutoScrollButton.classList.add("tw-bg-white/20");
+      AutoScrollButton.classList.remove("tw-bg-white/10");
     }
   }
 
@@ -53,11 +55,11 @@ const onShortsPage = async (ctx: ShortsContext): Promise<void> => {
   if (!togglePlaybackRateButton) {
     playerActions.prepend(TogglePlaybackRateButton);
     if (player.playbackRate === 1) {
-      TogglePlaybackRateButton.classList.add("bg-white/10");
-      TogglePlaybackRateButton.classList.remove("bg-white/20");
+      TogglePlaybackRateButton.classList.add("tw-bg-white/10");
+      TogglePlaybackRateButton.classList.remove("tw-bg-white/20");
     } else {
-      TogglePlaybackRateButton.classList.add("bg-white/20");
-      TogglePlaybackRateButton.classList.remove("bg-white/10");
+      TogglePlaybackRateButton.classList.add("tw-bg-white/20");
+      TogglePlaybackRateButton.classList.remove("tw-bg-white/10");
     }
   }
 };
@@ -114,7 +116,7 @@ function scrollToNextReel() {
 const AutoScrollButton = (
   <button
     id="#tppng-auto-scroll"
-    className="mt-[16px] yt-spec-button-shape-next yt-spec-button-shape-next--mono yt-spec-button-shape-next--size-l yt-spec-button-shape-next--icon-button outline-none border-none font-medium text-white"
+    className="tw-mt-[16px] yt-spec-button-shape-next yt-spec-button-shape-next--mono yt-spec-button-shape-next--size-l yt-spec-button-shape-next--icon-button tw-outline-none tw-border-none tw-font-medium tw-text-white"
     onClick={enableAutoScroll}
   >
     Auto
@@ -124,7 +126,7 @@ const AutoScrollButton = (
 const TogglePlaybackRateButton = (
   <button
     id="#tppng-toggle-playback-rate"
-    className="tw-yt-spec-button-shape-next tw-yt-spec-button-shape-next--mono tw-yt-spec-button-shape-next--size-l tw-yt-spec-button-shape-next--icon-button tw-outline-none tw-border-none tw-font-medium tw-text-white"
+    className="yt-spec-button-shape-next yt-spec-button-shape-next--mono yt-spec-button-shape-next--size-l yt-spec-button-shape-next--icon-button tw-outline-none tw-border-none tw-font-medium tw-text-white"
     onClick={togglePlaybackRate}
   >
     2x
@@ -134,15 +136,15 @@ const TogglePlaybackRateButton = (
 function togglePlaybackRate() {
   if (player === null || player === undefined) return;
   player.playbackRate = player.playbackRate === 1 ? 2 : 1;
-  TogglePlaybackRateButton.classList.toggle("bg-white/10");
-  TogglePlaybackRateButton.classList.toggle("bg-white/20");
+  TogglePlaybackRateButton.classList.toggle("tw-bg-white/10");
+  TogglePlaybackRateButton.classList.toggle("tw-bg-white/20");
 }
 
 function enableAutoScroll() {
   if (preferences === undefined) return;
   preferences.reelAutoScroll = !preferences.reelAutoScroll;
-  AutoScrollButton.classList.toggle("bg-white/10");
-  AutoScrollButton.classList.toggle("bg-white/20");
+  AutoScrollButton.classList.toggle("tw-bg-white/10");
+  AutoScrollButton.classList.toggle("tw-bg-white/20");
 }
 
 export default onShortsPage;
