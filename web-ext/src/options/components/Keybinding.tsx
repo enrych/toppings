@@ -1,33 +1,19 @@
 import React from "react";
-import { KeyboardEvent, useContext, useState } from "react";
-import { produce } from "immer";
-import Tooltip from "../../../components/Tooltip";
-import ConfigContext from "../store";
-import camelCaseToTitleCase from "../lib/camelCaseToTitleCase";
-import { WebApps } from "../../../extension.config";
-import { WebAppRouteConfig } from "../../../lib/getWebAppConfig";
+import { KeyboardEvent, useState } from "react";
+import Tooltip from "./Tooltip";
 
 export default function KeybindingBlock({
-  appName,
-  routeName,
-  keybinding,
+  title,
   description,
+  keybinding,
+  onChange,
 }: {
-  appName: WebApps;
-  routeName: string;
-  keybinding: string;
+  title: string;
   description?: string;
+  keybinding: string;
+  onChange: (key: string) => void;
 }) {
-  const { config, setConfig } = useContext(ConfigContext)!;
-  const routes = config.webApps[appName].routes as Record<
-    string,
-    WebAppRouteConfig
-  >;
-  const appRoute = routes[routeName];
-  const [key, setKey] = useState<string>(appRoute.keybindings![keybinding]);
-
-  const keybindingTitle = camelCaseToTitleCase(keybinding);
-
+  const [key, setKey] = useState(keybinding);
   const recordKeyHandler = (e: KeyboardEvent<HTMLInputElement>) => {
     if (
       (e.keyCode >= 48 && e.keyCode <= 57) || // Numbers 0-9
@@ -37,16 +23,11 @@ export default function KeybindingBlock({
       e.stopPropagation();
       const key = String.fromCharCode(e.keyCode);
       setKey(key);
-      const newConfig = produce(config, (draft) => {
-        (draft.webApps[appName].routes as Record<string, WebAppRouteConfig>)[
-          routeName
-        ].keybindings![keybinding] = key;
-      });
-      setConfig(newConfig);
-      chrome.storage.sync.set(newConfig);
+      onChange(key);
     } else if (e.keyCode === 8 || e.keyCode === 27) {
       const key = "";
       setKey(key);
+      onChange(key);
     }
   };
 
@@ -55,20 +36,20 @@ export default function KeybindingBlock({
   };
 
   const blurHandler = () => {
-    setKey(appRoute.keybindings![keybinding]);
+    setKey(keybinding);
   };
 
   return (
     <div className="tw-font-sans tw-w-full tw-flex tw-justify-between tw-items-center tw-px-4 tw-py-1">
       <div className="tw-flex tw-items-center tw-space-x-3">
         <label className="tw-text-lg tw-font-medium tw-text-gray-100">
-          {keybindingTitle}
+          {title}
         </label>
         {description && (
           <Tooltip text={description}>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-gray-400 hover:text-gray-200 transition-colors duration-200"
+              className="tw-h-5 tw-w-5 tw-text-gray-400 hover:tw-text-gray-200 tw-transition-colors tw-duration-200"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -85,7 +66,7 @@ export default function KeybindingBlock({
       </div>
       <input
         type="text"
-        className="p-2 bg-black text-white text-center rounded border border-gray-600/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="tw-p-2 tw-bg-black tw-text-white tw-text-center tw-rounded tw-border tw-border-gray-600/50 tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500"
         placeholder="Press a key"
         value={key}
         onKeyDown={recordKeyHandler}

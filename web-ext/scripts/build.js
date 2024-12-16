@@ -16,11 +16,11 @@ export default (env) => {
       content: ["./src/content_scripts/index.ts"],
       popup: {
         filename: "./popup/index.js",
-        import: "./src/popup/src/index.tsx",
+        import: "./src/popup/index.tsx",
       },
       options: {
         filename: "./options/index.js",
-        import: "./src/options/src/index.tsx",
+        import: "./src/options/index.tsx",
       },
     },
     output: {

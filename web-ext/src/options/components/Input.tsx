@@ -1,48 +1,29 @@
 import React from "react";
-import { ChangeEvent, useContext, useState, useEffect, useRef } from "react";
-import { produce } from "immer";
-import Tooltip from "../../../components/Tooltip";
-import ConfigContext from "../store";
-import camelCaseToTitleCase from "../lib/camelCaseToTitleCase";
-import { WebApps } from "../../../extension.config";
-import { WebAppRouteConfig } from "../../../lib/getWebAppConfig";
+import { ChangeEvent, useState, useEffect, useRef } from "react";
+import Tooltip from "./Tooltip";
 
-export default function PreferenceInput({
-  appName,
-  routeName,
-  preferenceName,
-  type = "plain",
-  validator,
+export default function InputBlock({
+  title,
   description,
+  initialValue,
+  validator,
+  onChange,
 }: {
-  appName: WebApps;
-  routeName: string;
-  preferenceName: string;
-  type?: "plain" | "list";
-  validator: (e: ChangeEvent<HTMLInputElement>) => boolean;
+  title: string;
   description?: string;
+  initialValue: string;
+  validator: (value: string) => boolean;
+  onChange: (value: string) => void;
 }) {
-  const { config, setConfig } = useContext(ConfigContext)!;
-  const routes = config.webApps[appName].routes as Record<
-    string,
-    WebAppRouteConfig
-  >;
-  const appRoute = routes[routeName];
-  const [preference, setPreference] = useState<string>(
-    type === "plain" && !isNaN(Number(appRoute.preferences![preferenceName]))
-      ? Number(appRoute.preferences![preferenceName])
-      : appRoute.preferences![preferenceName],
-  );
+  const [value, setValue] = useState(initialValue);
   const [isLoading, setIsLoading] = useState(false);
   const [isValid, setIsValid] = useState<boolean | null>(null);
   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
-  const preferenceTitle = camelCaseToTitleCase(preferenceName);
-
-  const preferenceChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+  const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    setPreference(e.target.value);
+    setValue(e.target.value);
     setIsValid(null);
     setIsLoading(true);
 
@@ -51,25 +32,12 @@ export default function PreferenceInput({
     }
 
     debounceTimer.current = setTimeout(() => {
-      const isValid = validator(e);
-      let newPreference: any = Number(e.target.value).toFixed(2);
-      if (type === "list") {
-        newPreference = e.target.value
-          .split(",")
-          .map((substring) => Number(substring.trim()).toFixed(2));
-      }
+      const isValid = validator(e.target.value);
       setIsLoading(false);
       setIsValid(isValid);
 
       if (isValid) {
-        const newConfig = produce(config, (draft) => {
-          (draft.webApps[appName].routes as Record<string, WebAppRouteConfig>)[
-            routeName
-          ].preferences![preferenceName] = newPreference;
-        });
-        setConfig(newConfig);
-        chrome.storage.sync.set(newConfig);
-
+        onChange(e.target.value);
         // Hide the validation SVG if valid
         setTimeout(() => {
           setIsValid(null);
@@ -91,13 +59,13 @@ export default function PreferenceInput({
       <div className="tw-flex tw-justify-between tw-items-center">
         <div className="tw-flex tw-items-center tw-space-x-3">
           <label className="tw-text-lg tw-font-medium tw-text-gray-100">
-            {preferenceTitle}
+            {title}
           </label>
           {description && (
             <Tooltip text={description}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-gray-400 hover:text-gray-200 transition-colors duration-200"
+                className="tw-h-5 tw-w-5 tw-text-gray-400 tw-hover:text-gray-200 tw-transition-colors duration-200"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -115,14 +83,14 @@ export default function PreferenceInput({
         <div className="tw-relative">
           <input
             type="text"
-            className="p-2 bg-black text-white text-center rounded border border-gray-600/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="tw-p-2 tw-bg-black tw-text-white tw-text-center tw-rounded tw-border tw-border-gray-600/50 tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500"
             placeholder="Enter your preferences"
-            value={preference}
-            onChange={preferenceChangeHandler}
+            value={value}
+            onChange={onChangeHandler}
           />
           {isLoading && (
             <svg
-              className="absolute top-[8px] -right-6 animate-spin h-5 w-5 text-blue-500"
+              className="tw-absolute tw-top-[8px] -tw-right-6 tw-animate-spin tw-h-5 tw-w-5 tw-text-blue-500"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="none"
@@ -145,7 +113,7 @@ export default function PreferenceInput({
           {isValid === true && (
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="absolute top-1/2 -translate-y-1/2 -right-6 h-5 w-5 text-green-500"
+              className="tw-absolute tw-top-1/2 -tw-translate-y-1/2 -tw-right-6 tw-h-5 tw-w-5 tw-text-green-500"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -161,7 +129,7 @@ export default function PreferenceInput({
           {isValid === false && (
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="absolute top-1/2 -translate-y-1/2 -right-6 h-5 w-5 text-red-500"
+              className="tw-absolute tw-top-1/2 -tw-translate-y-1/2 -tw-right-6 tw-h-5 tw-w-5 tw-text-red-500"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
