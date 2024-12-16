@@ -1,6 +1,9 @@
 import { getStorage, Storage } from "./store";
 
-const SERVER_BASE_URI = process.env.SERVER_BASE_URI;
+const SERVER_BASE_URI =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:8787"
+    : "https://toppings.enry.ch";
 
 export type Context = WatchContext | PlaylistContext | ShortsContext | null;
 
