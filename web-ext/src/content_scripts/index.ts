@@ -35,5 +35,9 @@ function runApp(message: any): undefined {
 }
 
 // Handle Events
-chrome.runtime.sendMessage({ type: "event", payload: "connected" }, {}, runApp);
+chrome.runtime.sendMessage(
+  JSON.stringify({ type: "event", payload: "connected" }),
+  {},
+  runApp,
+);
 chrome.runtime.onMessage.addListener(runApp);

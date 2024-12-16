@@ -39,6 +39,7 @@ function onConnected(
   sendResponse: (response: any) => void,
 ) {
   (async () => {
+    // This function handles the initial handshake between the content script and the background script.
     const { type, payload } = JSON.parse(message);
     if (type !== "event") return;
 
