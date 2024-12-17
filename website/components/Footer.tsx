@@ -65,7 +65,8 @@ const Footer = () => {
                       <li key={j} className={`${j > 0 ? "mt-4" : ""}`}>
                         <a
                           href={
-                            !link.href.includes("https://")
+                            !link.href.includes("https://") &&
+                            !link.href.startsWith("mailto")
                               ? `/toppings/${link.href}`
                               : link.href
                           }
@@ -98,7 +99,8 @@ const Footer = () => {
                       <li key={j} className={`${j > 0 ? "mt-4" : ""}`}>
                         <a
                           href={
-                            !link.href.includes("https://")
+                            !link.href.includes("https://") &&
+                            !link.href.startsWith("mailto")
                               ? `/toppings/${link.href}`
                               : link.href
                           }
