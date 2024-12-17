@@ -8,7 +8,7 @@ body:
       value: |
         Thanks for suggesting a feature! Please provide the necessary details below to help us evaluate the request.
 
-  - type: input
+  - type: textarea
     id: description
     attributes:
       label: Feature Description

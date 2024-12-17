@@ -8,7 +8,7 @@ body:
       value: |
         Thank you for reporting a bug! Please fill out the details below so we can help resolve the issue quickly.
 
-  - type: input
+  - type: textarea
     id: description
     attributes:
       label: Description
@@ -26,14 +26,14 @@ body:
         3. Scroll down to '...'
         4. See error
 
-  - type: input
+  - type: textarea
     id: expected_behavior
     attributes:
       label: Expected Behavior
       description: "Describe what you expected to happen."
       placeholder: "Expected outcome of the action."
 
-  - type: input
+  - type: textarea
     id: actual_behavior
     attributes:
       label: Actual Behavior
