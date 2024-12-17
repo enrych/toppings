@@ -37,5 +37,5 @@ jobs:
       - name: Install Dependencies
         run: cd web-ext && bun install
 
-      - name: Build for Firefox
+      - name: Build for Chrome
         run: cd web-ext && bun run build
