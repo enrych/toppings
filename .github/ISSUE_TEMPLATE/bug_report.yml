@@ -1,7 +1,7 @@
 name: Bug Report
 description: Report a bug or unexpected behavior.
 title: "Bug: [Brief description of the issue]"
-labels: ["Status: Needs Investigation", "Type: Bug🐛"]
+labels: ["Status: Needs Investigation", "Type: Bug 🐛"]
 body:
   - type: markdown
     attributes:
