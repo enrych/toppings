@@ -8,14 +8,14 @@ body:
       value: |
         Thanks for suggesting an update or addition to the documentation! Please fill out the details below.
 
-  - type: input
+  - type: textarea
     id: description
     attributes:
       label: Description
       description: "Describe the missing or unclear documentation."
       placeholder: "Explain the specific area or topic that requires documentation."
 
-  - type: input
+  - type: textarea
     id: reason_for_update
     attributes:
       label: Reason for Update

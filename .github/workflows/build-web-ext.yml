@@ -1,0 +1,41 @@
+name: Build web-ext
+
+on:
+  push:
+    paths:
+      - "web-ext/**"
+  pull_request:
+    paths:
+      - "web-ext/**"
+  workflow_dispatch:
+
+jobs:
+  build_firefox:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Install Dependencies
+        run: cd web-ext && bun install
+
+      - name: Build for Firefox
+        run: cd web-ext && bun run build:firefox
+
+  build_chrome:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Install Dependencies
+        run: cd web-ext && bun install
+
+      - name: Build for Firefox
+        run: cd web-ext && bun run build
