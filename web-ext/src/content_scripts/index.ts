@@ -36,6 +36,7 @@ function runApp(message: any): undefined {
 
 // Handle Events
 chrome.runtime.sendMessage(
+  chrome.runtime.id,
   JSON.stringify({ type: "event", payload: "connected" }),
   {},
   runApp,
