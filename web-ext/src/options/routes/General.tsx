@@ -164,12 +164,62 @@ export default function General() {
                 chrome.storage.sync.set(newConfig);
               }}
             />
+            <Input
+              title="Seek Backward"
+              initialValue={store.preferences.shorts.seekBackward.value}
+              validator={(value) => {
+                return isValidNumeric(value, 0, Infinity);
+              }}
+              onChange={(value) => {
+                const newConfig = produce(store, (draft) => {
+                  draft.preferences.shorts.seekBackward.value = value;
+                });
+                setStore(newConfig);
+                chrome.storage.sync.set(newConfig);
+              }}
+            />
+            <Input
+              title="Seek Forward"
+              initialValue={store.preferences.shorts.seekForward.value}
+              validator={(value) => {
+                return isValidNumeric(value, 0, Infinity);
+              }}
+              onChange={(value) => {
+                const newConfig = produce(store, (draft) => {
+                  draft.preferences.shorts.seekForward.value = value;
+                });
+                setStore(newConfig);
+                chrome.storage.sync.set(newConfig);
+              }}
+            />
             <Keybinding
               title="Toggle Playback Rate Shortcut"
               keybinding={store.preferences.shorts.togglePlaybackRate.key}
               onChange={(key) => {
                 const newConfig = produce(store, (draft) => {
                   draft.preferences.shorts.togglePlaybackRate.key = key;
+                });
+                setStore(newConfig);
+                chrome.storage.sync.set(newConfig);
+              }}
+            />
+            <Keybinding
+              title="Seek Backward Shortcut"
+              keybinding={store.preferences.shorts.seekBackward.key}
+              onChange={(key) => {
+                const newConfig = produce(store, (draft) => {
+                  draft.preferences.shorts.seekBackward.key = key;
+                });
+                setStore(newConfig);
+                chrome.storage.sync.set(newConfig);
+              }}
+            />
+            <Keybinding
+              title="Seek Forward Shortcut"
+              keybinding={store.preferences.shorts.seekForward.key}
+              onChange={(key) => {
+                const newConfig = produce(store, (draft) => {
+                  draft.preferences.shorts.seekForward.key = key;
                 });
                 setStore(newConfig);
                 chrome.storage.sync.set(newConfig);

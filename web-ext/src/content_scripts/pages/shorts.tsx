@@ -73,6 +73,10 @@ function useShortcuts(event: KeyboardEvent) {
   ) {
     if (event.key === `${preferences.togglePlaybackRate.key.toLowerCase()}`) {
       togglePlaybackRate();
+    } else if (event.key === `${preferences.seekBackward.key.toLowerCase()}`) {
+      player.currentTime -= +preferences.seekBackward.value;
+    } else if (event.key === `${preferences.seekForward.key.toLowerCase()}`) {
+      player.currentTime += +preferences.seekForward.value;
     }
   }
 }

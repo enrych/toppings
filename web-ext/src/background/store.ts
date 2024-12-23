@@ -53,6 +53,14 @@ export const DEFAULT_STORE = {
         key: "X" as string,
         value: "1.5" as string,
       },
+      seekBackward: {
+        key: "A" as string,
+        value: "5.00" as string,
+      },
+      seekForward: {
+        key: "D" as string,
+        value: "5.00" as string,
+      },
       reelAutoScroll: {
         value: true as boolean,
       },
