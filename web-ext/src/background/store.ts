@@ -29,6 +29,12 @@ export const DEFAULT_STORE = {
       toggleLoopSegment: {
         key: "Z" as string,
       },
+      setLoopSegmentBegin: {
+        key: "Q" as string,
+      },
+      setLoopSegmentEnd: {
+        key: "E" as string,
+      },
       // TODO: The Options page should save the values with toFixed(2) as part of saving
       // validation so that content script doesn't have to bother about it.
       customPlaybackRates: [

@@ -162,3 +162,49 @@ function handleMouseUp() {
     document.removeEventListener("mouseup", handleMouseUp);
   }
 }
+
+export function setLoopSegmentStart() {
+  if (!video) return;
+
+  const isLoopSegmentEnabled =
+    LoopSegmentButton.getAttribute("aria-pressed") === "true";
+
+  if (!isLoopSegmentEnabled) {
+    return;
+  }
+
+  const currentTime = video.currentTime;
+  const duration = video.duration;
+  const percentage = (currentTime / duration) * 100;
+
+  LoopSegmentStartMarker.style.left = `${percentage}%`;
+
+  // Ensure start marker does not cross the end marker
+  const endPercentage = parseFloat(LoopSegmentEndMarker.style.left);
+  if (percentage >= endPercentage) {
+    LoopSegmentStartMarker.style.left = `${endPercentage - 0.1}%`;
+  }
+}
+
+export function setLoopSegmentEnd() {
+  if (!video) return;
+
+  const isLoopSegmentEnabled =
+    LoopSegmentButton.getAttribute("aria-pressed") === "true";
+
+  if (!isLoopSegmentEnabled) {
+    return;
+  }
+
+  const currentTime = video.currentTime;
+  const duration = video.duration;
+  const percentage = (currentTime / duration) * 100;
+
+  LoopSegmentEndMarker.style.left = `${percentage}%`;
+
+  // Ensure end marker does not cross the start marker
+  const startPercentage = parseFloat(LoopSegmentStartMarker.style.left);
+  if (percentage <= startPercentage) {
+    LoopSegmentEndMarker.style.left = `${startPercentage + 0.1}%`;
+  }
+}

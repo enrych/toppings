@@ -6,6 +6,8 @@ import {
   LoopSegmentEndMarker,
   LoopSegmentStartMarker,
   toggleLoopSegment,
+  setLoopSegmentStart,
+  setLoopSegmentEnd,
 } from "../components/LoopSegment";
 import { WatchContext } from "../../background/context";
 import { Storage } from "../../background/store";
@@ -178,59 +180,74 @@ const replacePlaybackItems = (playbackRatePanel: HTMLElement) => {
 };
 
 const useShortcuts = (event: KeyboardEvent): void => {
-  if (player === null || player === undefined) return;
-  if (preferences === undefined) return;
-  if (
-    event.target !== null &&
-    (event.target as HTMLElement).tagName !== "INPUT" &&
-    (event.target as HTMLElement).tagName !== "TEXTAREA" &&
-    !(event.target as HTMLElement).matches(
-      "#contenteditable-root.yt-formatted-string",
-    )
-  ) {
-    if (event.key === `${preferences.togglePlaybackRate.key.toLowerCase()}`) {
-      if (player.playbackRate !== 1) {
-        setPlaybackRate(1);
-      } else {
-        setPlaybackRate(Number(preferences.togglePlaybackRate.value));
-      }
-    } else if (event.key === `${preferences.seekBackward.key.toLowerCase()}`) {
-      player.currentTime -= +preferences.seekBackward.value;
-      onDoubleTapSeek("back", +preferences.seekBackward.value);
-    } else if (event.key === `${preferences.seekForward.key.toLowerCase()}`) {
-      player.currentTime += +preferences.seekForward.value;
-      onDoubleTapSeek("forward", +preferences.seekForward.value);
-    } else if (
-      event.key === `${preferences.increasePlaybackRate.key.toLowerCase()}`
-    ) {
-      const increasedPlaybackRate = Number(
-        (
-          Number(player.playbackRate.toFixed(2)) +
-          Number((+preferences.increasePlaybackRate.value).toFixed(2))
-        ).toFixed(2),
+  if (!player || !preferences) return;
+
+  const target = event.target as HTMLElement;
+  const tagName = target?.tagName;
+  const isNotEditable =
+    tagName !== "INPUT" &&
+    tagName !== "TEXTAREA" &&
+    !target.matches("#contenteditable-root.yt-formatted-string");
+
+  if (!isNotEditable) return;
+
+  const key = event.key.toLowerCase();
+
+  switch (key) {
+    case preferences.togglePlaybackRate.key.toLowerCase(): {
+      setPlaybackRate(
+        player.playbackRate !== 1
+          ? 1
+          : Number(preferences.togglePlaybackRate.value),
       );
-      if (increasedPlaybackRate > 16) {
-        return;
-      }
-      setPlaybackRate(increasedPlaybackRate);
-    } else if (
-      event.key === `${preferences.decreasePlaybackRate.key.toLowerCase()}`
-    ) {
-      const decreasedPlaybackRate = Number(
-        (
-          Number((+player.playbackRate).toFixed(2)) -
-          Number((+preferences.decreasePlaybackRate.value).toFixed(2))
-        ).toFixed(2),
-      );
-      if (decreasedPlaybackRate < 0.0625) {
-        return;
-      }
-      setPlaybackRate(decreasedPlaybackRate);
-    } else if (
-      event.key === `${preferences.toggleLoopSegment.key.toLowerCase()}`
-    ) {
-      toggleLoopSegment();
+      break;
     }
+    case preferences.seekBackward.key.toLowerCase(): {
+      const value = Number(preferences.seekBackward.value);
+      player.currentTime -= value;
+      onDoubleTapSeek("back", value);
+      break;
+    }
+    case preferences.seekForward.key.toLowerCase(): {
+      const value = Number(preferences.seekForward.value);
+      player.currentTime += value;
+      onDoubleTapSeek("forward", value);
+      break;
+    }
+    case preferences.increasePlaybackRate.key.toLowerCase(): {
+      const value = Number(preferences.increasePlaybackRate.value);
+      const increasedPlaybackRate = Number(
+        (player.playbackRate + value).toFixed(2),
+      );
+      if (increasedPlaybackRate <= 16) {
+        setPlaybackRate(increasedPlaybackRate);
+      }
+      break;
+    }
+    case preferences.decreasePlaybackRate.key.toLowerCase(): {
+      const value = Number(preferences.decreasePlaybackRate.value);
+      const decreasedPlaybackRate = Number(
+        (player.playbackRate - value).toFixed(2),
+      );
+      if (decreasedPlaybackRate >= 0.0625) {
+        setPlaybackRate(decreasedPlaybackRate);
+      }
+      break;
+    }
+    case preferences.toggleLoopSegment.key.toLowerCase(): {
+      toggleLoopSegment();
+      break;
+    }
+    case preferences.setLoopSegmentBegin.key.toLowerCase(): {
+      setLoopSegmentStart();
+      break;
+    }
+    case preferences.setLoopSegmentEnd.key.toLowerCase(): {
+      setLoopSegmentEnd();
+      break;
+    }
+    default:
+      break;
   }
 };
 
