@@ -388,6 +388,28 @@ export default function General() {
               }}
             />
             <Keybinding
+              title="Set Loop Segment Begin Shortcut"
+              keybinding={store.preferences.watch.setLoopSegmentBegin.key}
+              onChange={(key) => {
+                const newConfig = produce(store, (draft) => {
+                  draft.preferences.watch.setLoopSegmentBegin.key = key;
+                });
+                setStore(newConfig);
+                chrome.storage.sync.set(newConfig);
+              }}
+            />
+            <Keybinding
+              title="Set Loop Segment End Shortcut"
+              keybinding={store.preferences.watch.setLoopSegmentEnd.key}
+              onChange={(key) => {
+                const newConfig = produce(store, (draft) => {
+                  draft.preferences.watch.setLoopSegmentEnd.key = key;
+                });
+                setStore(newConfig);
+                chrome.storage.sync.set(newConfig);
+              }}
+            />
+            <Keybinding
               title="Toggle Playback Rate Shortcut"
               keybinding={store.preferences.watch.togglePlaybackRate.key}
               onChange={(key) => {
