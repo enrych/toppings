@@ -122,7 +122,7 @@ const replacePlaybackItems = (playbackRatePanel: HTMLElement) => {
       return (
         <div
           key={playbackRate}
-          className="tw-ytp-menuitem tw-tppng-playback-item"
+          className="ytp-menuitem tw-tppng-playback-item"
           role="menuitemradio"
           aria-checked={isAriaChecked}
           tabIndex={0}
@@ -137,7 +137,7 @@ const replacePlaybackItems = (playbackRatePanel: HTMLElement) => {
             setPlaybackRate(Number(playbackRate));
           }}
         >
-          <div className="tw-ytp-menuitem-label">{label}</div>
+          <div className="ytp-menuitem-label">{label}</div>
         </div>
       );
     },
@@ -145,7 +145,7 @@ const replacePlaybackItems = (playbackRatePanel: HTMLElement) => {
 
   const customPlaybackRateItem = (
     <div
-      className="tw-ytp-menuitem tw-tppng-playback-item"
+      className="ytp-menuitem tw-tppng-playback-item"
       id="tppng-playback-custom-item"
       role="menuitemradio"
       aria-checked={isPresetRate ? "false" : "true"}
@@ -163,7 +163,7 @@ const replacePlaybackItems = (playbackRatePanel: HTMLElement) => {
         );
       }}
     >
-      <div className="tw-ytp-menuitem-label">
+      <div className="ytp-menuitem-label">
         Custom (
         {Number(
           player!.getAttribute("data-tppng-playback-rate") ??
