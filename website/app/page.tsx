@@ -13,7 +13,7 @@ export default function Home() {
           >
             Your YouTube,
             <br />
-            <span className="text-primary ">Your Way</span>
+            <span className="text-primary">Your Way</span>
           </h1>
           <p className="mt-4 text-lg text-gray-700 text-center">
             A customizable browser extension that gives you total control over
