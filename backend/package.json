@@ -9,9 +9,9 @@
     "cf-typegen": "wrangler types"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20241112.0",
+    "@types/node": "^24.7.1",
     "typescript": "^5.5.2",
-    "wrangler": "^3.60.3"
+    "wrangler": "^4.42.2"
   },
   "dependencies": {
     "itty-router": "^5.0.18"
