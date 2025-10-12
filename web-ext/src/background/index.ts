@@ -1,8 +1,14 @@
 import { DEFAULT_STORE } from "./store";
-import { getContext, dispatchContext } from "./context";
-
-const INSTALL_URL = "https://enrych.github.io/toppings/greetings";
-const UNINSTALL_URL = "https://enrych.github.io/toppings/farewell";
+import { getContext } from "./context";
+import { dispatchContext } from "./utils/dispatchContext";
+import {
+  EVENT_TYPE,
+  INSTALL_REASON,
+  INSTALL_URL,
+  MESSAGE_TYPE,
+  NODE_ENV,
+  UNINSTALL_URL,
+} from "../constants/global.constants";
 
 // Handle Events
 chrome.runtime.onInstalled.addListener(onInitialize);
@@ -13,8 +19,8 @@ type InitializeDetails = Parameters<
   Parameters<typeof chrome.runtime.onInstalled.addListener>[0]
 >[0];
 function onInitialize({ reason }: InitializeDetails): void {
-  if (reason === "install" || reason === "update") {
-    if (process.env.NODE_ENV === "production") {
+  if (reason === INSTALL_REASON.INSTALL || reason === INSTALL_REASON.UPDATE) {
+    if (process.env.NODE_ENV === NODE_ENV.PRODUCTION) {
       void chrome.tabs.create({ url: INSTALL_URL });
       void chrome.runtime.setUninstallURL(UNINSTALL_URL);
     }
@@ -41,10 +47,10 @@ function onConnected(
   (async () => {
     // This function handles the initial handshake between the content script and the background script.
     const { type, payload } = JSON.parse(message);
-    if (type !== "event") return;
+    if (type !== MESSAGE_TYPE.EVENT) return;
 
     const event = payload;
-    if (event !== "connected") return;
+    if (event !== EVENT_TYPE.CONNECTED) return;
 
     const tabId = sender.tab?.id;
     if (!tabId) return;

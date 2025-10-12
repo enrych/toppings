@@ -1,22 +1,18 @@
-import { AutoRouter, cors } from "itty-router";
-import getPlaylist from "./routes/playlist";
-
-const { preflight, corsify } = cors();
+import { AutoRouter, Router, error } from "itty-router";
+import { preflight, corsify } from "./middlewares/cors";
+import ResponseEntity from "./utils/responseEntity";
+import { playlistRouter } from "./routers/playlist";
 
 const router = AutoRouter({
   before: [preflight],
   finally: [corsify],
+  catch: error,
 });
 
-router.get("/playlist/:playlistID", getPlaylist);
+router.get("/ping", () => {
+  return ResponseEntity.ok("pong");
+});
 
-router.all(
-  "*",
-  () =>
-    new Response(JSON.stringify({ error_message: "Not found" }), {
-      status: 404,
-      headers: { "Content-Type": "application/json" },
-    }),
-);
+router.all("/playlist/*", playlistRouter);
 
 export default router;

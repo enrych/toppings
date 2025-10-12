@@ -60,11 +60,11 @@ export default function General() {
   };
 
   const setIsPageEnabled = (
-    pageName: keyof (typeof store)["preferences"],
+    pathname: keyof (typeof store)["preferences"],
     isEnabled: boolean,
   ) => {
     const newConfig = produce(store, (draft) => {
-      draft.preferences[pageName].isEnabled = isEnabled;
+      draft.preferences[pathname].isEnabled = isEnabled;
     });
     setStore(newConfig);
     chrome.storage.sync.set(newConfig);
