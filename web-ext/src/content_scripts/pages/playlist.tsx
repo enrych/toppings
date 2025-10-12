@@ -1,22 +1,29 @@
 import React from "dom-chef";
 import elementReady from "element-ready";
 import {
+  InvalidPlaylistPayload,
   PlaylistContext,
   ValidPlaylistPayload,
 } from "../../background/context";
 
 const onPlaylistPage = async (ctx: PlaylistContext): Promise<void> => {
-  const { playlistId } = ctx.payload;
+  const { payload } = ctx;
+
   const metadataActionBar = await elementReady(
-    "yt-content-metadata-view-model.yt-content-metadata-view-model-wiz:not(#header yt-content-metadata-view-model.yt-content-metadata-view-model-wiz)",
+    "#page-manager ytd-browse > yt-page-header-renderer .yt-page-header-view-model__page-header-content yt-content-metadata-view-model",
   );
-  if (metadataActionBar === null || metadataActionBar === undefined) return;
+  if (!metadataActionBar) return;
 
   let runtimeSection = document.querySelector("div#tppng-ytp-runtime-section");
-  if (runtimeSection === null) {
-    if (playlistId === "WL" || playlistId === "LL") return;
-    const { averageRuntime, totalRuntime } =
-      ctx.payload as ValidPlaylistPayload;
+
+  const isValidPayload = (
+    p: ValidPlaylistPayload | InvalidPlaylistPayload,
+  ): p is ValidPlaylistPayload => "averageRuntime" in p && "totalRuntime" in p;
+
+  if (!runtimeSection) {
+    if (!isValidPayload(payload)) return; // skip if invalid or private playlist
+
+    const { averageRuntime, totalRuntime } = payload;
 
     runtimeSection = (
       <div
@@ -50,26 +57,24 @@ const onPlaylistPage = async (ctx: PlaylistContext): Promise<void> => {
       </div>
     );
 
-    if (metadataActionBar === null) return;
     metadataActionBar.append(runtimeSection);
   } else {
-    if (playlistId === "WL" || playlistId === "LL") {
-      runtimeSection.remove();
+    if (!isValidPayload(payload)) {
+      runtimeSection.remove(); // remove section for private/invalid playlists
       return;
-    } else {
-      const { averageRuntime, totalRuntime } =
-        ctx.payload as ValidPlaylistPayload;
-      const averageRuntimeElement = document.getElementById(
-        "tppng-ytp-average-runtime",
-      );
-      const totalRuntimeElement = document.getElementById(
-        "tppng-ytp-total-runtime",
-      );
+    }
 
-      if (averageRuntimeElement && totalRuntimeElement) {
-        averageRuntimeElement.textContent = formatRuntime(averageRuntime);
-        totalRuntimeElement.textContent = formatRuntime(totalRuntime);
-      }
+    const { averageRuntime, totalRuntime } = payload;
+    const averageRuntimeElement = document.getElementById(
+      "tppng-ytp-average-runtime",
+    );
+    const totalRuntimeElement = document.getElementById(
+      "tppng-ytp-total-runtime",
+    );
+
+    if (averageRuntimeElement && totalRuntimeElement) {
+      averageRuntimeElement.textContent = formatRuntime(averageRuntime);
+      totalRuntimeElement.textContent = formatRuntime(totalRuntime);
     }
   }
 };

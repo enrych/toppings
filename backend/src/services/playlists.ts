@@ -52,10 +52,10 @@ class PlaylistService {
     return {
       pathname: "playlist",
       payload: {
-        playlist_id: playlistId,
-        total_videos: `${videoCount}`,
-        total_runtime_seconds: totalRuntime,
-        average_runtime_seconds: Math.round(totalRuntime / videoCount),
+        playlistId: playlistId,
+        totalVideos: videoCount,
+        totalRuntime: totalRuntime,
+        averageRuntime: Math.round(totalRuntime / videoCount),
       },
     };
   }
