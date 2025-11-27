@@ -11,7 +11,7 @@
   "devDependencies": {
     "@types/node": "^24.7.1",
     "typescript": "^5.5.2",
-    "wrangler": "^4.42.2"
+    "wrangler": "^4.51.0"
   },
   "dependencies": {
     "itty-router": "^5.0.18"
