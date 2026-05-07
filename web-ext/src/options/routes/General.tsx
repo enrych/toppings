@@ -6,6 +6,24 @@ import Card from "../components/Card";
 import Switch from "../components/Switch";
 import Keybinding from "../components/Keybinding";
 import Input from "../components/Input";
+import Tooltip from "../components/Tooltip";
+
+const InfoIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="tw-h-5 tw-w-5 tw-text-gray-400 tw-hover:text-gray-200 tw-transition-colors duration-200"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M13 16h-1v-4h-1m1-4h.01M12 18.5A6.5 6.5 0 1118.5 12A6.508 6.508 0 0112 18.5z"
+    />
+  </svg>
+);
 
 export default function General() {
   const { store, setStore } = useContext(StoreContext)!;
@@ -255,17 +273,17 @@ export default function General() {
                 chrome.storage.sync.set(newConfig);
               }}
             />
-            <div className="tw-flex tw-items-center tw-justify-between tw-py-3">
-              <div>
-                <div className="tw-text-gray-300 tw-text-sm tw-font-medium">
+            <div className="tw-font-sans tw-w-full tw-flex tw-justify-between tw-items-center tw-px-4">
+              <div className="tw-flex tw-items-center tw-space-x-3">
+                <label className="tw-text-lg tw-font-medium tw-text-gray-100">
                   Default Audio Mode Screen
-                </div>
-                <div className="tw-text-gray-500 tw-text-xs tw-mt-0.5">
-                  Can also be changed from the player while in audio mode
-                </div>
+                </label>
+                <Tooltip text="Can also be changed from the player while in audio mode">
+                  <InfoIcon />
+                </Tooltip>
               </div>
               <select
-                className="tw-bg-[#1a1a2e] tw-text-gray-300 tw-border tw-border-gray-600/30 tw-rounded-md tw-px-3 tw-py-1.5 tw-text-sm tw-cursor-pointer"
+                className="tw-p-2 tw-bg-black tw-text-white tw-text-center tw-rounded tw-border tw-border-gray-600/50 tw-focus:outline-none tw-focus:ring-2 tw-focus:ring-blue-500 tw-cursor-pointer"
                 value={store.preferences.watch.audioMode.screenMode}
                 onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                   const mode = e.target.value as
@@ -285,7 +303,8 @@ export default function General() {
               </select>
             </div>
             <Input
-              title="Custom Background Image URL"
+              title="Custom Background URL"
+              description="A URL to an image — used when Custom mode is active"
               initialValue={
                 store.preferences.watch.audioMode.customBackground.globalImageUrl
               }
@@ -299,14 +318,14 @@ export default function General() {
                 chrome.storage.sync.set(newConfig);
               }}
             />
-            <div className="tw-flex tw-items-center tw-justify-between tw-py-3">
-              <div>
-                <div className="tw-text-gray-300 tw-text-sm tw-font-medium">
-                  Custom Background Image (Local File)
-                </div>
-                <div className="tw-text-gray-500 tw-text-xs tw-mt-0.5">
-                  Upload an image from your computer (overrides URL above)
-                </div>
+            <div className="tw-font-sans tw-w-full tw-flex tw-justify-between tw-items-center tw-px-4">
+              <div className="tw-flex tw-items-center tw-space-x-3">
+                <label className="tw-text-lg tw-font-medium tw-text-gray-100">
+                  Custom Background Image
+                </label>
+                <Tooltip text="Upload an image from your computer — overrides the URL above when set">
+                  <InfoIcon />
+                </Tooltip>
               </div>
               <div className="tw-flex tw-items-center tw-gap-2">
                 <input
@@ -330,7 +349,7 @@ export default function General() {
                   }}
                 />
                 <button
-                  className="tw-bg-[#1a1a2e] tw-text-gray-400 tw-border tw-border-gray-600/30 tw-rounded-md tw-px-3 tw-py-1.5 tw-text-sm tw-cursor-pointer hover:tw-text-gray-200 hover:tw-border-gray-500/50 tw-transition-colors"
+                  className="tw-p-2 tw-bg-black tw-text-white tw-text-center tw-rounded tw-border tw-border-gray-600/50 tw-cursor-pointer hover:tw-border-gray-400 tw-transition-colors"
                   onClick={() => {
                     document
                       .getElementById("tppng-audio-mode-image-upload")
@@ -340,7 +359,7 @@ export default function General() {
                   Choose File
                 </button>
                 <button
-                  className="tw-bg-[#1a1a2e] tw-text-gray-400 tw-border tw-border-gray-600/30 tw-rounded-md tw-px-3 tw-py-1.5 tw-text-sm tw-cursor-pointer hover:tw-text-gray-200 hover:tw-border-gray-500/50 tw-transition-colors"
+                  className="tw-p-2 tw-bg-black tw-text-gray-400 tw-text-center tw-rounded tw-border tw-border-gray-600/50 tw-cursor-pointer hover:tw-text-white hover:tw-border-gray-400 tw-transition-colors"
                   onClick={() => {
                     chrome.storage.local.remove("audioMode_globalCustomImage");
                   }}
@@ -349,17 +368,17 @@ export default function General() {
                 </button>
               </div>
             </div>
-            <div className="tw-flex tw-items-center tw-justify-between tw-py-3">
-              <div>
-                <div className="tw-text-gray-300 tw-text-sm tw-font-medium">
+            <div className="tw-font-sans tw-w-full tw-flex tw-justify-between tw-items-center tw-px-4">
+              <div className="tw-flex tw-items-center tw-space-x-3">
+                <label className="tw-text-lg tw-font-medium tw-text-gray-100">
                   Reset Pinned Videos
-                </div>
-                <div className="tw-text-gray-500 tw-text-xs tw-mt-0.5">
-                  Clear all video-specific audio mode overrides
-                </div>
+                </label>
+                <Tooltip text="Clear all video-specific audio mode overrides">
+                  <InfoIcon />
+                </Tooltip>
               </div>
               <button
-                className="tw-bg-[#1a1a2e] tw-text-gray-400 tw-border tw-border-gray-600/30 tw-rounded-md tw-px-3 tw-py-1.5 tw-text-sm tw-cursor-pointer hover:tw-text-gray-200 hover:tw-border-gray-500/50 tw-transition-colors"
+                className="tw-p-2 tw-bg-black tw-text-white tw-text-center tw-rounded tw-border tw-border-gray-600/50 tw-cursor-pointer hover:tw-border-gray-400 tw-transition-colors"
                 onClick={() => {
                   chrome.storage.local.get(null, (items) => {
                     const pinKeys = Object.keys(items).filter((k) =>
