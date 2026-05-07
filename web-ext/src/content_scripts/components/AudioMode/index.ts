@@ -98,6 +98,9 @@ export async function setupAudioMode(
     onSetDefault: handleSetDefault,
     onPinToVideo: handlePinToVideo,
     onUnpinVideo: handleUnpinVideo,
+    onExitAudioMode: () => {
+      if (isAudioModeActive) toggleAudioMode();
+    },
   });
 
   if (videoId) {
@@ -212,6 +215,16 @@ function applyScreenMode() {
   }
 }
 
+function setYouTubeChromeHidden(hidden: boolean) {
+  const moviePlayer = document.getElementById("movie_player");
+  if (!moviePlayer) return;
+  if (hidden) {
+    moviePlayer.classList.add("tppng-audio-mode-on");
+  } else {
+    moviePlayer.classList.remove("tppng-audio-mode-on");
+  }
+}
+
 export function toggleAudioMode() {
   isAudioModeActive = !isAudioModeActive;
   AudioModeButton.setAttribute(
@@ -228,11 +241,13 @@ export function toggleAudioMode() {
     applyScreenMode();
     updateActiveMode(currentScreenMode, videoPinned);
     showAudioModeUI();
+    setYouTubeChromeHidden(true);
   } else {
     AudioModeOverlay.classList.remove("tw-opacity-100");
     AudioModeOverlay.classList.add("tw-opacity-0");
     hideAudioModeUI();
     stopVisualizer();
+    setYouTubeChromeHidden(false);
     setTimeout(() => {
       if (!isAudioModeActive) {
         AudioModeOverlay.classList.add("tw-hidden");
@@ -251,6 +266,7 @@ export function teardownAudioMode() {
   AudioModeOverlay.classList.add("tw-hidden");
   hideAudioModeUI();
   stopVisualizer();
+  setYouTubeChromeHidden(false);
   if (adObserver) {
     adObserver.disconnect();
     adObserver = null;

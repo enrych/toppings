@@ -6,6 +6,7 @@ type OnModeAction = {
   onSetDefault: (mode: ScreenMode) => void;
   onPinToVideo: (mode: ScreenMode) => void;
   onUnpinVideo: () => void;
+  onExitAudioMode: () => void;
 };
 
 let video: HTMLVideoElement | null = null;
@@ -63,6 +64,20 @@ const volumeBtn = (
   />
 ) as HTMLButtonElement;
 volumeBtn.innerHTML = VolumeIcon;
+
+const CloseIcon = `<svg viewBox="0 0 24 24" fill="white" width="20" height="20"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>`;
+
+const closeBtn = (
+  <button
+    className="tw-absolute tw-top-4 tw-right-4 tw-bg-black/40 tw-border tw-border-white/20 tw-cursor-pointer tw-p-2 tw-rounded-full hover:tw-bg-white/20 tw-flex tw-items-center tw-justify-center tw-w-9 tw-h-9 tw-z-10"
+    aria-label="Exit Audio Mode"
+    title="Exit Audio Mode"
+    onClick={() => {
+      if (modeActions) modeActions.onExitAudioMode();
+    }}
+  />
+) as HTMLButtonElement;
+closeBtn.innerHTML = CloseIcon;
 
 const titleEl = (
   <div className="tw-text-white tw-text-xl tw-font-semibold tw-text-center tw-max-w-[80%] tw-truncate" />
@@ -137,9 +152,10 @@ const modeSwitcher = (
 export const AudioModeUIContainer = (
   <div
     id="tppng-audio-mode-ui"
-    className="tw-absolute tw-inset-0 tw-z-[61] tw-hidden tw-flex tw-flex-col tw-items-center tw-justify-center tw-bg-transparent"
+    className="tw-absolute tw-inset-0 tw-z-[9001] tw-hidden tw-flex tw-flex-col tw-items-center tw-justify-center tw-bg-transparent"
     style={{ pointerEvents: "auto" }}
   >
+    {closeBtn}
     <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-flex-1 tw-gap-2">
       {titleEl}
       {channelEl}

@@ -4,3 +4,17 @@
 #contentContainer.tp-yt-app-drawer[swipe-open].tp-yt-app-drawer::after {
   width: 10px !important;
 }
+
+/* Hide YouTube player chrome while Audio Mode is active.
+ * Our custom UI replaces the native controls and gradient overlays. */
+#movie_player.tppng-audio-mode-on .ytp-chrome-bottom,
+#movie_player.tppng-audio-mode-on .ytp-chrome-top,
+#movie_player.tppng-audio-mode-on .ytp-gradient-bottom,
+#movie_player.tppng-audio-mode-on .ytp-gradient-top,
+#movie_player.tppng-audio-mode-on .ytp-ce-element,
+#movie_player.tppng-audio-mode-on .ytp-iv-player-content,
+#movie_player.tppng-audio-mode-on .ytp-pause-overlay,
+#movie_player.tppng-audio-mode-on .ytp-cards-teaser {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
