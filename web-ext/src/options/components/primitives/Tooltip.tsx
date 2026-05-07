@@ -116,6 +116,12 @@ export default function Tooltip({ children, text, side = "right" }: TooltipProps
       onMouseLeave={() => setVisible(false)}
       onFocus={() => setVisible(true)}
       onBlur={() => setVisible(false)}
+      // Hide on click. Without this, a hovered button stays "hovered" after
+      // a click that mutates the surrounding DOM (e.g. collapsing the
+      // sidebar) — the mouseleave event never fires because the cursor
+      // doesn't move out of the wrapper, and React may reuse the Tooltip
+      // instance across re-renders, keeping `visible=true` stale.
+      onClick={() => setVisible(false)}
       aria-describedby={visible ? tooltipId : undefined}
     >
       {children}
