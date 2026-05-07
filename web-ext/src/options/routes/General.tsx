@@ -232,6 +232,76 @@ export default function General() {
               isEnabled={store.preferences.watch.isEnabled}
               onToggle={setIsPageEnabled.bind(null, "watch")}
             />
+            <Switch
+              title="Enable Audio Mode"
+              description="Listen to videos without visuals — toggle with a player button or keyboard shortcut"
+              isEnabled={store.preferences.watch.audioMode.isEnabled}
+              onToggle={(isEnabled) => {
+                const newConfig = produce(store, (draft) => {
+                  draft.preferences.watch.audioMode.isEnabled = isEnabled;
+                });
+                setStore(newConfig);
+                chrome.storage.sync.set(newConfig);
+              }}
+            />
+            <Keybinding
+              title="Toggle Audio Mode Shortcut"
+              keybinding={store.preferences.watch.audioMode.toggleAudioMode.key}
+              onChange={(key) => {
+                const newConfig = produce(store, (draft) => {
+                  draft.preferences.watch.audioMode.toggleAudioMode.key = key;
+                });
+                setStore(newConfig);
+                chrome.storage.sync.set(newConfig);
+              }}
+            />
+            <Input
+              title="Audio Mode Screen (black, visualizer, custom)"
+              initialValue={store.preferences.watch.audioMode.screenMode}
+              validator={(value) => {
+                return ["black", "visualizer", "custom"].includes(
+                  value.trim().toLowerCase(),
+                );
+              }}
+              onChange={(value) => {
+                const mode = value.trim().toLowerCase() as
+                  | "black"
+                  | "visualizer"
+                  | "custom";
+                const newConfig = produce(store, (draft) => {
+                  draft.preferences.watch.audioMode.screenMode = mode;
+                });
+                setStore(newConfig);
+                chrome.storage.sync.set(newConfig);
+              }}
+            />
+            <Input
+              title="Custom Background Image URL"
+              initialValue={
+                store.preferences.watch.audioMode.customBackground.globalImageUrl
+              }
+              validator={() => true}
+              onChange={(value) => {
+                const newConfig = produce(store, (draft) => {
+                  draft.preferences.watch.audioMode.customBackground.globalImageUrl =
+                    value.trim();
+                });
+                setStore(newConfig);
+                chrome.storage.sync.set(newConfig);
+              }}
+            />
+            <Switch
+              title="Remember Audio Mode Per Video"
+              description="Pin audio mode state for individual videos"
+              isEnabled={store.preferences.watch.audioMode.rememberPerVideo}
+              onToggle={(isEnabled) => {
+                const newConfig = produce(store, (draft) => {
+                  draft.preferences.watch.audioMode.rememberPerVideo = isEnabled;
+                });
+                setStore(newConfig);
+                chrome.storage.sync.set(newConfig);
+              }}
+            />
             <Input
               title="Custom Playback Rates"
               initialValue={store.preferences.watch.customPlaybackRates.toString()}

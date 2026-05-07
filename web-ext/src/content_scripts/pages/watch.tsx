@@ -9,6 +9,11 @@ import {
   setLoopSegmentStart,
   setLoopSegmentEnd,
 } from "../components/LoopSegment";
+import {
+  setupAudioMode,
+  AudioModeButton,
+  toggleAudioMode,
+} from "../components/AudioMode";
 import { WatchContext } from "../../background/context";
 import { Storage } from "../../background/store";
 
@@ -46,15 +51,21 @@ const onWatchPage = async (ctx: WatchContext) => {
   document.removeEventListener("keydown", useShortcuts);
   document.addEventListener("keydown", useShortcuts);
 
-  // Loop Segment
+  // Loop Segment & Audio Mode
   const rightControls = await elementReady("div.ytp-right-controls");
   if (rightControls) {
-    rightControls.prepend(LoopSegmentButton);
+    rightControls.prepend(AudioModeButton, LoopSegmentButton);
   }
   const progressBar = await elementReady("div.ytp-progress-bar-container");
   if (progressBar) {
     await setupLoopSegment();
     progressBar.append(LoopSegmentStartMarker, LoopSegmentEndMarker);
+  }
+
+  // Audio Mode
+  const moviePlayer = document.getElementById("movie_player");
+  if (moviePlayer) {
+    await setupAudioMode(moviePlayer, ctx.payload.videoId ?? "", preferences.audioMode);
   }
 
   const playerSettingsButton = await elementReady("button.ytp-settings-button");
@@ -244,6 +255,10 @@ const useShortcuts = (event: KeyboardEvent): void => {
     }
     case preferences.setLoopSegmentEnd.key.toLowerCase(): {
       setLoopSegmentEnd();
+      break;
+    }
+    case preferences.audioMode.toggleAudioMode.key.toLowerCase(): {
+      toggleAudioMode();
       break;
     }
     default:
