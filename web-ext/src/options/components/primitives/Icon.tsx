@@ -24,7 +24,9 @@ type IconName =
   | "alert"
   | "external"
   | "chevron-down"
-  | "chevron-right";
+  | "chevron-right"
+  | "chevron-left"
+  | "panel-left";
 
 const PATHS: Record<IconName, string> = {
   info: "M13 16h-1v-4h-1m1-4h.01M12 18.5A6.5 6.5 0 1118.5 12A6.508 6.508 0 0112 18.5z",
@@ -58,6 +60,9 @@ const PATHS: Record<IconName, string> = {
     "M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7zm5 16H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7z",
   "chevron-down": "M6 9l6 6 6-6",
   "chevron-right": "M9 6l6 6-6 6",
+  "chevron-left": "M15 18l-6-6 6-6",
+  "panel-left":
+    "M3 4a1 1 0 011-1h16a1 1 0 011 1v16a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm6 1H5v14h4V5zm2 14h8V5h-8v14z",
 };
 
 const FILLED: Set<IconName> = new Set([
@@ -73,6 +78,7 @@ const FILLED: Set<IconName> = new Set([
   "search",
   "alert",
   "external",
+  "panel-left",
 ]);
 
 interface IconProps extends React.SVGAttributes<SVGSVGElement> {
