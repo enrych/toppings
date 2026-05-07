@@ -1,0 +1,33 @@
+import React from "react";
+import PageHeader from "../components/layout/PageHeader";
+import Section from "../components/layout/Section";
+import Card from "../components/layout/Card";
+
+export default function Playlist() {
+  return (
+    <>
+      <PageHeader
+        title="Playlist"
+        description="Settings for YouTube playlist pages."
+      />
+
+      <div className="tw-flex tw-flex-col tw-gap-8">
+        <Section
+          title="Runtime Statistics"
+          description="When enabled, the total and average runtime for a playlist appears at the top of the page."
+        >
+          <Card>
+            <p className="tw-text-sm tw-text-gray-400 tw-py-3">
+              The Playlist feature toggle lives on the
+              {" "}
+              <a href="/" className="tw-text-blue-400 hover:tw-text-blue-300">
+                General
+              </a>{" "}
+              page. There are no other playlist-specific settings yet.
+            </p>
+          </Card>
+        </Section>
+      </div>
+    </>
+  );
+}
