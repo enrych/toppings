@@ -16,7 +16,14 @@ export const AudioModeCanvas = (
   />
 ) as unknown as HTMLCanvasElement;
 
-export function startVisualizer(video: HTMLVideoElement) {
+/**
+ * Ensures the video's audio is routed through the AudioContext to the
+ * destination (speakers). Once createMediaElementSource is called, the video
+ * no longer outputs audio directly — it must go through the graph. We keep
+ * `source -> destination` connected at all times so audio plays in every
+ * screen mode, and only attach/detach the analyser side-branch.
+ */
+export function ensureAudioRouting(video: HTMLVideoElement) {
   try {
     if (!audioContext) {
       audioContext = new AudioContext();
@@ -24,10 +31,31 @@ export function startVisualizer(video: HTMLVideoElement) {
 
     if (connectedVideo !== video) {
       if (source) {
-        source.disconnect();
+        try {
+          source.disconnect();
+        } catch (_e) {}
       }
       source = audioContext.createMediaElementSource(video);
+      source.connect(audioContext.destination);
       connectedVideo = video;
+    }
+
+    if (audioContext.state === "suspended") {
+      audioContext.resume();
+    }
+  } catch (_e) {
+    // If we can't create the source (e.g. it was created elsewhere), the
+    // video keeps its native audio output and the visualizer falls back.
+  }
+}
+
+export function startVisualizer(video: HTMLVideoElement) {
+  try {
+    ensureAudioRouting(video);
+
+    if (!audioContext || !source) {
+      renderFallbackWave();
+      return;
     }
 
     if (!analyser) {
@@ -36,12 +64,7 @@ export function startVisualizer(video: HTMLVideoElement) {
       analyser.smoothingTimeConstant = SMOOTHING;
     }
 
-    source!.connect(analyser);
-    analyser.connect(audioContext.destination);
-
-    if (audioContext.state === "suspended") {
-      audioContext.resume();
-    }
+    source.connect(analyser);
 
     renderWaveform();
   } catch (_e) {

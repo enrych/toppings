@@ -33,8 +33,22 @@ type PerVideoPin = {
   imageUrl?: string;
 };
 
+const GLOBAL_CUSTOM_IMAGE_KEY = "audioMode_globalCustomImage";
+
 function pinStorageKey(videoId: string): string {
   return `audioMode_pin_${videoId}`;
+}
+
+function loadGlobalCustomImage(): Promise<string | null> {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(GLOBAL_CUSTOM_IMAGE_KEY, (result) => {
+      resolve((result[GLOBAL_CUSTOM_IMAGE_KEY] as string) ?? null);
+    });
+  });
+}
+
+function saveGlobalCustomImage(dataUrl: string) {
+  chrome.storage.local.set({ [GLOBAL_CUSTOM_IMAGE_KEY]: dataUrl });
 }
 
 function loadPerVideoPin(videoId: string): Promise<PerVideoPin | null> {
@@ -101,7 +115,15 @@ export async function setupAudioMode(
     onExitAudioMode: () => {
       if (isAudioModeActive) toggleAudioMode();
     },
+    onPickCustomImage: handlePickCustomImage,
   });
+
+  // If user uploaded a local image (stored in chrome.storage.local), it
+  // overrides the URL preference for the global custom background.
+  const localImage = await loadGlobalCustomImage();
+  if (localImage) {
+    currentCustomImageUrl = localImage;
+  }
 
   if (videoId) {
     const pin = await loadPerVideoPin(videoId);
@@ -187,6 +209,27 @@ function handleUnpinVideo() {
   videoPinned = false;
   removePerVideoPin(currentVideoId);
   updateActiveMode(currentScreenMode, false);
+}
+
+function handlePickCustomImage(file: File) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    const dataUrl = reader.result;
+    if (typeof dataUrl !== "string") return;
+    currentCustomImageUrl = dataUrl;
+    saveGlobalCustomImage(dataUrl);
+    if (videoPinned && currentVideoId) {
+      savePerVideoPin(currentVideoId, {
+        enabled: true,
+        screenMode: currentScreenMode,
+        imageUrl: dataUrl,
+      });
+    }
+    if (isAudioModeActive && currentScreenMode === "custom") {
+      applyScreenMode();
+    }
+  };
+  reader.readAsDataURL(file);
 }
 
 function applyScreenMode() {

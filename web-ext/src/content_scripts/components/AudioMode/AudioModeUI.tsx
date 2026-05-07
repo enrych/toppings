@@ -7,6 +7,7 @@ type OnModeAction = {
   onPinToVideo: (mode: ScreenMode) => void;
   onUnpinVideo: () => void;
   onExitAudioMode: () => void;
+  onPickCustomImage: (file: File) => void;
 };
 
 let video: HTMLVideoElement | null = null;
@@ -140,9 +141,36 @@ const pinBtn = (
   </button>
 ) as HTMLButtonElement;
 
+const customImageInput = (
+  <input
+    type="file"
+    accept="image/*"
+    className="tw-hidden"
+    onChange={(e: any) => {
+      const file = e.target?.files?.[0];
+      if (file && modeActions) {
+        modeActions.onPickCustomImage(file);
+      }
+      // Reset so picking the same file again still triggers onChange
+      if (e.target) e.target.value = "";
+    }}
+  />
+) as HTMLInputElement;
+
+const chooseImageBtn = (
+  <button
+    className="tw-hidden tw-px-3 tw-py-1.5 tw-text-[11px] tw-rounded-full tw-border tw-border-white/20 tw-bg-transparent tw-text-white/70 tw-cursor-pointer hover:tw-bg-white/10 hover:tw-text-white tw-transition-colors"
+    onClick={() => customImageInput.click()}
+  >
+    Choose Image
+  </button>
+) as HTMLButtonElement;
+
 const modeSwitcher = (
   <div className="tw-flex tw-items-center tw-gap-2 tw-flex-wrap tw-justify-center">
     {modeButtons.map((b) => b.el)}
+    {chooseImageBtn}
+    {customImageInput}
     <div className="tw-w-px tw-h-4 tw-bg-white/10" />
     {setDefaultBtn}
     {pinBtn}
@@ -232,6 +260,13 @@ export function updateActiveMode(mode: ScreenMode, pinned: boolean) {
       btn.el.classList.remove("tw-border-white/60", "tw-text-white", "tw-bg-white/10");
       btn.el.classList.add("tw-border-white/20", "tw-text-white/70", "tw-bg-transparent");
     }
+  }
+
+  // Show "Choose Image" button only when custom mode is active.
+  if (mode === "custom") {
+    chooseImageBtn.classList.remove("tw-hidden");
+  } else {
+    chooseImageBtn.classList.add("tw-hidden");
   }
 
   updatePinBtn();

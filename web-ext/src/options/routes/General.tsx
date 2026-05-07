@@ -302,6 +302,56 @@ export default function General() {
             <div className="tw-flex tw-items-center tw-justify-between tw-py-3">
               <div>
                 <div className="tw-text-gray-300 tw-text-sm tw-font-medium">
+                  Custom Background Image (Local File)
+                </div>
+                <div className="tw-text-gray-500 tw-text-xs tw-mt-0.5">
+                  Upload an image from your computer (overrides URL above)
+                </div>
+              </div>
+              <div className="tw-flex tw-items-center tw-gap-2">
+                <input
+                  type="file"
+                  accept="image/*"
+                  id="tppng-audio-mode-image-upload"
+                  className="tw-hidden"
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                      if (typeof reader.result === "string") {
+                        chrome.storage.local.set({
+                          audioMode_globalCustomImage: reader.result,
+                        });
+                      }
+                    };
+                    reader.readAsDataURL(file);
+                    e.target.value = "";
+                  }}
+                />
+                <button
+                  className="tw-bg-[#1a1a2e] tw-text-gray-400 tw-border tw-border-gray-600/30 tw-rounded-md tw-px-3 tw-py-1.5 tw-text-sm tw-cursor-pointer hover:tw-text-gray-200 hover:tw-border-gray-500/50 tw-transition-colors"
+                  onClick={() => {
+                    document
+                      .getElementById("tppng-audio-mode-image-upload")
+                      ?.click();
+                  }}
+                >
+                  Choose File
+                </button>
+                <button
+                  className="tw-bg-[#1a1a2e] tw-text-gray-400 tw-border tw-border-gray-600/30 tw-rounded-md tw-px-3 tw-py-1.5 tw-text-sm tw-cursor-pointer hover:tw-text-gray-200 hover:tw-border-gray-500/50 tw-transition-colors"
+                  onClick={() => {
+                    chrome.storage.local.remove("audioMode_globalCustomImage");
+                  }}
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
+            <div className="tw-flex tw-items-center tw-justify-between tw-py-3">
+              <div>
+                <div className="tw-text-gray-300 tw-text-sm tw-font-medium">
                   Reset Pinned Videos
                 </div>
                 <div className="tw-text-gray-500 tw-text-xs tw-mt-0.5">
