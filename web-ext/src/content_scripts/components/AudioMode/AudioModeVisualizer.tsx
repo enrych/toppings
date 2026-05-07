@@ -6,6 +6,9 @@ let source: MediaElementAudioSourceNode | null = null;
 let animationFrameId: number | null = null;
 let connectedVideo: HTMLVideoElement | null = null;
 
+const SMOOTHING = 0.82;
+const FFT_SIZE = 512;
+
 export const AudioModeCanvas = (
   <canvas
     id="tppng-audio-visualizer-canvas"
@@ -29,7 +32,8 @@ export function startVisualizer(video: HTMLVideoElement) {
 
     if (!analyser) {
       analyser = audioContext.createAnalyser();
-      analyser.fftSize = 256;
+      analyser.fftSize = FFT_SIZE;
+      analyser.smoothingTimeConstant = SMOOTHING;
     }
 
     source!.connect(analyser);
@@ -39,9 +43,9 @@ export function startVisualizer(video: HTMLVideoElement) {
       audioContext.resume();
     }
 
-    renderFrame();
+    renderWaveform();
   } catch (_e) {
-    renderFallbackPulse();
+    renderFallbackWave();
   }
 }
 
@@ -58,45 +62,104 @@ export function stopVisualizer() {
   }
 }
 
-function renderFrame() {
+function renderWaveform() {
   if (!analyser) return;
 
   const canvas = AudioModeCanvas;
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
 
-  const bufferLength = analyser.frequencyBinCount;
-  const dataArray = new Uint8Array(bufferLength);
+  const freqLength = analyser.frequencyBinCount;
+  const freqData = new Uint8Array(freqLength);
+  const timeData = new Uint8Array(analyser.fftSize);
 
   const draw = () => {
     animationFrameId = requestAnimationFrame(draw);
 
-    canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
-    canvas.height = canvas.offsetHeight * (window.devicePixelRatio || 1);
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = canvas.offsetWidth * dpr;
+    canvas.height = canvas.offsetHeight * dpr;
 
-    analyser!.getByteFrequencyData(dataArray);
+    const w = canvas.width;
+    const h = canvas.height;
+    const centerY = h / 2;
 
     ctx.fillStyle = "#000000";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, w, h);
 
-    const barWidth = (canvas.width / bufferLength) * 1.5;
-    let x = 0;
+    analyser!.getByteFrequencyData(freqData);
+    analyser!.getByteTimeDomainData(timeData);
 
-    for (let i = 0; i < bufferLength; i++) {
-      const barHeight = (dataArray[i] / 255) * canvas.height * 0.8;
-
-      const hue = (i / bufferLength) * 120 + 200;
-      ctx.fillStyle = `hsl(${hue}, 70%, 55%)`;
-      ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
-
-      x += barWidth + 1;
+    let avgFreq = 0;
+    for (let i = 0; i < freqLength; i++) {
+      avgFreq += freqData[i];
     }
+    avgFreq = avgFreq / freqLength / 255;
+
+    const amplitude = Math.max(0.02, avgFreq) * h * 0.4;
+
+    const points: { x: number; y: number }[] = [];
+    const totalPoints = 200;
+
+    for (let i = 0; i <= totalPoints; i++) {
+      const t = i / totalPoints;
+      const x = t * w;
+
+      const timeIndex = Math.floor(t * (timeData.length - 1));
+      const timeSample = (timeData[timeIndex] - 128) / 128;
+
+      const envelope =
+        Math.sin(t * Math.PI) *
+        Math.sin(t * Math.PI) *
+        (0.6 + 0.4 * Math.sin(t * Math.PI * 2));
+
+      const freqIndex = Math.floor(t * (freqLength - 1));
+      const freqInfluence = freqData[freqIndex] / 255;
+
+      const y =
+        centerY +
+        timeSample * amplitude * envelope +
+        Math.sin(t * Math.PI * 8 + avgFreq * 20) *
+          amplitude *
+          0.3 *
+          envelope *
+          freqInfluence;
+
+      points.push({ x, y });
+    }
+
+    ctx.beginPath();
+    ctx.moveTo(0, centerY);
+    ctx.lineTo(points[0].x, points[0].y);
+
+    for (let i = 1; i < points.length - 1; i++) {
+      const cpx = (points[i].x + points[i + 1].x) / 2;
+      const cpy = (points[i].y + points[i + 1].y) / 2;
+      ctx.quadraticCurveTo(points[i].x, points[i].y, cpx, cpy);
+    }
+
+    const last = points[points.length - 1];
+    ctx.lineTo(last.x, last.y);
+    ctx.lineTo(w, centerY);
+
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 2.5 * dpr;
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(0, centerY);
+    ctx.lineTo(w, centerY);
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
+    ctx.lineWidth = 1 * dpr;
+    ctx.stroke();
   };
 
   draw();
 }
 
-function renderFallbackPulse() {
+function renderFallbackWave() {
   const canvas = AudioModeCanvas;
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
@@ -106,20 +169,44 @@ function renderFallbackPulse() {
   const draw = () => {
     animationFrameId = requestAnimationFrame(draw);
 
-    canvas.width = canvas.offsetWidth * (window.devicePixelRatio || 1);
-    canvas.height = canvas.offsetHeight * (window.devicePixelRatio || 1);
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = canvas.offsetWidth * dpr;
+    canvas.height = canvas.offsetHeight * dpr;
+
+    const w = canvas.width;
+    const h = canvas.height;
+    const centerY = h / 2;
 
     ctx.fillStyle = "#000000";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillRect(0, 0, w, h);
 
-    phase += 0.02;
-    const radius =
-      Math.min(canvas.width, canvas.height) * 0.15 * (1 + Math.sin(phase) * 0.3);
+    phase += 0.015;
 
     ctx.beginPath();
-    ctx.arc(canvas.width / 2, canvas.height / 2, radius, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(100, 150, 255, ${0.3 + Math.sin(phase) * 0.2})`;
-    ctx.fill();
+    ctx.moveTo(0, centerY);
+
+    for (let x = 0; x <= w; x += 2) {
+      const t = x / w;
+      const envelope = Math.sin(t * Math.PI) * Math.sin(t * Math.PI);
+      const amplitude = h * 0.15 * envelope;
+      const y =
+        centerY +
+        Math.sin(t * Math.PI * 8 + phase) * amplitude +
+        Math.sin(t * Math.PI * 3 + phase * 0.7) * amplitude * 0.4;
+      ctx.lineTo(x, y);
+    }
+
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.6)";
+    ctx.lineWidth = 2 * dpr;
+    ctx.lineJoin = "round";
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(0, centerY);
+    ctx.lineTo(w, centerY);
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
+    ctx.lineWidth = 1 * dpr;
+    ctx.stroke();
   };
 
   draw();

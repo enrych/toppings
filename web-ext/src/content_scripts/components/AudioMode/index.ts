@@ -5,10 +5,11 @@ import {
   startVisualizer,
   stopVisualizer,
 } from "./AudioModeVisualizer";
-import { AudioModePopover, showPopover, hidePopover } from "./AudioModePopover";
 import {
   AudioModeUIContainer,
   initAudioModeUI,
+  setModeActions,
+  updateActiveMode,
   showAudioModeUI,
   hideAudioModeUI,
 } from "./AudioModeUI";
@@ -22,6 +23,7 @@ let currentPrefs: AudioModePrefs | null = null;
 let currentVideoId = "";
 let adObserver: MutationObserver | null = null;
 let pausedForAd = false;
+let videoPinned = false;
 
 type AudioModePrefs = Storage["preferences"]["watch"]["audioMode"];
 
@@ -62,9 +64,9 @@ export async function setupAudioMode(
   currentVideoId = videoId;
   currentScreenMode = prefs.screenMode;
   currentCustomImageUrl = prefs.customBackground.globalImageUrl;
+  videoPinned = false;
   AudioModeButton.setAttribute("aria-pressed", "false");
   AudioModeOverlay.classList.add("tw-hidden");
-  hidePopover();
   hideAudioModeUI();
   stopVisualizer();
 
@@ -75,13 +77,6 @@ export async function setupAudioMode(
 
   AudioModeButton.style.display = "";
   AudioModeButton.onclick = () => toggleAudioMode();
-  AudioModeButton.oncontextmenu = (e: MouseEvent) => {
-    e.preventDefault();
-    showPopover(currentScreenMode, onScreenModeChange, {
-      isPinned: false,
-      onTogglePin: () => togglePin(),
-    });
-  };
 
   if (!moviePlayer.querySelector("#tppng-audio-mode-overlay")) {
     moviePlayer.appendChild(AudioModeOverlay);
@@ -91,11 +86,6 @@ export async function setupAudioMode(
     moviePlayer.appendChild(AudioModeUIContainer);
   }
 
-  if (!moviePlayer.querySelector("#tppng-audio-mode-popover")) {
-    AudioModeButton.style.position = "relative";
-    AudioModeButton.appendChild(AudioModePopover);
-  }
-
   currentVideo =
     (moviePlayer.querySelector("video") as HTMLVideoElement) ?? null;
 
@@ -103,11 +93,19 @@ export async function setupAudioMode(
     initAudioModeUI(currentVideo);
   }
 
-  if (prefs.rememberPerVideo && videoId) {
+  setModeActions({
+    onModeChange: handleModeChange,
+    onSetDefault: handleSetDefault,
+    onPinToVideo: handlePinToVideo,
+    onUnpinVideo: handleUnpinVideo,
+  });
+
+  if (videoId) {
     const pin = await loadPerVideoPin(videoId);
     if (pin?.enabled) {
       currentScreenMode = pin.screenMode;
       if (pin.imageUrl) currentCustomImageUrl = pin.imageUrl;
+      videoPinned = true;
       toggleAudioMode();
     }
   }
@@ -144,40 +142,11 @@ function setupAdObserver(moviePlayer: HTMLElement) {
   });
 }
 
-function togglePin() {
-  if (!currentVideoId || !currentPrefs?.rememberPerVideo) return;
-
-  loadPerVideoPin(currentVideoId).then((existing) => {
-    if (existing) {
-      removePerVideoPin(currentVideoId);
-    } else {
-      savePerVideoPin(currentVideoId, {
-        enabled: isAudioModeActive,
-        screenMode: currentScreenMode,
-        imageUrl:
-          currentScreenMode === "custom" ? currentCustomImageUrl : undefined,
-      });
-    }
-  });
-}
-
-function onScreenModeChange(mode: "black" | "visualizer" | "custom") {
+function handleModeChange(mode: "black" | "visualizer" | "custom") {
   currentScreenMode = mode;
+  updateActiveMode(mode, videoPinned);
 
-  if (currentPrefs) {
-    chrome.storage.sync.get(undefined, (storage) => {
-      if (storage?.preferences?.watch?.audioMode) {
-        storage.preferences.watch.audioMode.screenMode = mode;
-        chrome.storage.sync.set(storage);
-      }
-    });
-  }
-
-  if (
-    currentPrefs?.rememberPerVideo &&
-    currentVideoId &&
-    isAudioModeActive
-  ) {
+  if (videoPinned && currentVideoId) {
     savePerVideoPin(currentVideoId, {
       enabled: true,
       screenMode: mode,
@@ -188,6 +157,33 @@ function onScreenModeChange(mode: "black" | "visualizer" | "custom") {
   if (isAudioModeActive) {
     applyScreenMode();
   }
+}
+
+function handleSetDefault(mode: "black" | "visualizer" | "custom") {
+  chrome.storage.sync.get(undefined, (storage) => {
+    if (storage?.preferences?.watch?.audioMode) {
+      storage.preferences.watch.audioMode.screenMode = mode;
+      chrome.storage.sync.set(storage);
+    }
+  });
+}
+
+function handlePinToVideo(mode: "black" | "visualizer" | "custom") {
+  if (!currentVideoId) return;
+  videoPinned = true;
+  savePerVideoPin(currentVideoId, {
+    enabled: true,
+    screenMode: mode,
+    imageUrl: mode === "custom" ? currentCustomImageUrl : undefined,
+  });
+  updateActiveMode(mode, true);
+}
+
+function handleUnpinVideo() {
+  if (!currentVideoId) return;
+  videoPinned = false;
+  removePerVideoPin(currentVideoId);
+  updateActiveMode(currentScreenMode, false);
 }
 
 function applyScreenMode() {
@@ -230,6 +226,7 @@ export function toggleAudioMode() {
       AudioModeOverlay.classList.add("tw-opacity-100");
     });
     applyScreenMode();
+    updateActiveMode(currentScreenMode, videoPinned);
     showAudioModeUI();
   } else {
     AudioModeOverlay.classList.remove("tw-opacity-100");
@@ -244,29 +241,16 @@ export function toggleAudioMode() {
       }
     }, 300);
   }
-
-  if (currentPrefs?.rememberPerVideo && currentVideoId) {
-    if (isAudioModeActive) {
-      savePerVideoPin(currentVideoId, {
-        enabled: true,
-        screenMode: currentScreenMode,
-        imageUrl:
-          currentScreenMode === "custom" ? currentCustomImageUrl : undefined,
-      });
-    } else {
-      removePerVideoPin(currentVideoId);
-    }
-  }
 }
 
 export function teardownAudioMode() {
   isAudioModeActive = false;
   pausedForAd = false;
+  videoPinned = false;
   AudioModeButton.setAttribute("aria-pressed", "false");
   AudioModeOverlay.classList.add("tw-hidden");
   hideAudioModeUI();
   stopVisualizer();
-  hidePopover();
   if (adObserver) {
     adObserver.disconnect();
     adObserver = null;

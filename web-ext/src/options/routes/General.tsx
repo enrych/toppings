@@ -255,26 +255,35 @@ export default function General() {
                 chrome.storage.sync.set(newConfig);
               }}
             />
-            <Input
-              title="Audio Mode Screen (black, visualizer, custom)"
-              initialValue={store.preferences.watch.audioMode.screenMode}
-              validator={(value) => {
-                return ["black", "visualizer", "custom"].includes(
-                  value.trim().toLowerCase(),
-                );
-              }}
-              onChange={(value) => {
-                const mode = value.trim().toLowerCase() as
-                  | "black"
-                  | "visualizer"
-                  | "custom";
-                const newConfig = produce(store, (draft) => {
-                  draft.preferences.watch.audioMode.screenMode = mode;
-                });
-                setStore(newConfig);
-                chrome.storage.sync.set(newConfig);
-              }}
-            />
+            <div className="tw-flex tw-items-center tw-justify-between tw-py-3">
+              <div>
+                <div className="tw-text-gray-300 tw-text-sm tw-font-medium">
+                  Default Audio Mode Screen
+                </div>
+                <div className="tw-text-gray-500 tw-text-xs tw-mt-0.5">
+                  Can also be changed from the player while in audio mode
+                </div>
+              </div>
+              <select
+                className="tw-bg-[#1a1a2e] tw-text-gray-300 tw-border tw-border-gray-600/30 tw-rounded-md tw-px-3 tw-py-1.5 tw-text-sm tw-cursor-pointer"
+                value={store.preferences.watch.audioMode.screenMode}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) => {
+                  const mode = e.target.value as
+                    | "black"
+                    | "visualizer"
+                    | "custom";
+                  const newConfig = produce(store, (draft) => {
+                    draft.preferences.watch.audioMode.screenMode = mode;
+                  });
+                  setStore(newConfig);
+                  chrome.storage.sync.set(newConfig);
+                }}
+              >
+                <option value="black">Black Screen</option>
+                <option value="visualizer">Visualizer</option>
+                <option value="custom">Custom Image</option>
+              </select>
+            </div>
             <Input
               title="Custom Background Image URL"
               initialValue={
@@ -290,18 +299,31 @@ export default function General() {
                 chrome.storage.sync.set(newConfig);
               }}
             />
-            <Switch
-              title="Remember Audio Mode Per Video"
-              description="Pin audio mode state for individual videos"
-              isEnabled={store.preferences.watch.audioMode.rememberPerVideo}
-              onToggle={(isEnabled) => {
-                const newConfig = produce(store, (draft) => {
-                  draft.preferences.watch.audioMode.rememberPerVideo = isEnabled;
-                });
-                setStore(newConfig);
-                chrome.storage.sync.set(newConfig);
-              }}
-            />
+            <div className="tw-flex tw-items-center tw-justify-between tw-py-3">
+              <div>
+                <div className="tw-text-gray-300 tw-text-sm tw-font-medium">
+                  Reset Pinned Videos
+                </div>
+                <div className="tw-text-gray-500 tw-text-xs tw-mt-0.5">
+                  Clear all video-specific audio mode overrides
+                </div>
+              </div>
+              <button
+                className="tw-bg-[#1a1a2e] tw-text-gray-400 tw-border tw-border-gray-600/30 tw-rounded-md tw-px-3 tw-py-1.5 tw-text-sm tw-cursor-pointer hover:tw-text-gray-200 hover:tw-border-gray-500/50 tw-transition-colors"
+                onClick={() => {
+                  chrome.storage.local.get(null, (items) => {
+                    const pinKeys = Object.keys(items).filter((k) =>
+                      k.startsWith("audioMode_pin_"),
+                    );
+                    if (pinKeys.length > 0) {
+                      chrome.storage.local.remove(pinKeys);
+                    }
+                  });
+                }}
+              >
+                Reset All
+              </button>
+            </div>
             <Input
               title="Custom Playback Rates"
               initialValue={store.preferences.watch.customPlaybackRates.toString()}

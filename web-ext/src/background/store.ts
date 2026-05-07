@@ -44,7 +44,6 @@ export const DEFAULT_STORE = {
         customBackground: {
           globalImageUrl: "" as string,
         },
-        rememberPerVideo: false as boolean,
       },
       // TODO: The Options page should save the values with toFixed(2) as part of saving
       // validation so that content script doesn't have to bother about it.

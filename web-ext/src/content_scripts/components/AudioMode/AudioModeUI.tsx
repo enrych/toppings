@@ -1,7 +1,18 @@
 import React from "dom-chef";
 
+type ScreenMode = "black" | "visualizer" | "custom";
+type OnModeAction = {
+  onModeChange: (mode: ScreenMode) => void;
+  onSetDefault: (mode: ScreenMode) => void;
+  onPinToVideo: (mode: ScreenMode) => void;
+  onUnpinVideo: () => void;
+};
+
 let video: HTMLVideoElement | null = null;
 let progressInterval: ReturnType<typeof setInterval> | null = null;
+let modeActions: OnModeAction | null = null;
+let activeScreenMode: ScreenMode = "black";
+let isPinnedForVideo = false;
 
 const PlayIcon = `<svg viewBox="0 0 24 24" fill="white" width="32" height="32"><path d="M8 5v14l11-7z"/></svg>`;
 const PauseIcon = `<svg viewBox="0 0 24 24" fill="white" width="32" height="32"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
@@ -61,6 +72,68 @@ const channelEl = (
   <div className="tw-text-white/60 tw-text-sm tw-text-center tw-mt-1" />
 );
 
+// --- Mode switcher (in-player) ---
+
+const modeButtons: { mode: ScreenMode; label: string; el: HTMLButtonElement }[] = [
+  { mode: "black", label: "Black", el: null as any },
+  { mode: "visualizer", label: "Visualizer", el: null as any },
+  { mode: "custom", label: "Custom", el: null as any },
+];
+
+for (const item of modeButtons) {
+  item.el = (
+    <button
+      className="tw-px-3 tw-py-1.5 tw-text-[12px] tw-rounded-full tw-border tw-border-white/20 tw-bg-transparent tw-text-white/70 tw-cursor-pointer hover:tw-bg-white/10 tw-transition-colors"
+      data-tppng-mode-btn={item.mode}
+      onClick={() => {
+        if (modeActions) modeActions.onModeChange(item.mode);
+      }}
+    >
+      {item.label}
+    </button>
+  ) as HTMLButtonElement;
+}
+
+const setDefaultBtn = (
+  <button
+    className="tw-px-3 tw-py-1.5 tw-text-[11px] tw-rounded-full tw-border tw-border-white/10 tw-bg-transparent tw-text-white/40 tw-cursor-pointer hover:tw-bg-white/10 hover:tw-text-white/70 tw-transition-colors"
+    onClick={() => {
+      if (modeActions) modeActions.onSetDefault(activeScreenMode);
+      updateSetDefaultBtn(true);
+    }}
+  >
+    Set as Default
+  </button>
+) as HTMLButtonElement;
+
+const pinBtn = (
+  <button
+    className="tw-px-3 tw-py-1.5 tw-text-[11px] tw-rounded-full tw-border tw-border-white/10 tw-bg-transparent tw-text-white/40 tw-cursor-pointer hover:tw-bg-white/10 hover:tw-text-white/70 tw-transition-colors"
+    onClick={() => {
+      if (!modeActions) return;
+      if (isPinnedForVideo) {
+        modeActions.onUnpinVideo();
+        isPinnedForVideo = false;
+      } else {
+        modeActions.onPinToVideo(activeScreenMode);
+        isPinnedForVideo = true;
+      }
+      updatePinBtn();
+    }}
+  >
+    Pin to Video
+  </button>
+) as HTMLButtonElement;
+
+const modeSwitcher = (
+  <div className="tw-flex tw-items-center tw-gap-2 tw-flex-wrap tw-justify-center">
+    {modeButtons.map((b) => b.el)}
+    <div className="tw-w-px tw-h-4 tw-bg-white/10" />
+    {setDefaultBtn}
+    {pinBtn}
+  </div>
+);
+
 export const AudioModeUIContainer = (
   <div
     id="tppng-audio-mode-ui"
@@ -72,6 +145,9 @@ export const AudioModeUIContainer = (
       {channelEl}
     </div>
     <div className="tw-w-full tw-px-8 tw-pb-6 tw-flex tw-flex-col tw-gap-3">
+      <div className="tw-flex tw-items-center tw-justify-center tw-mb-2">
+        {modeSwitcher}
+      </div>
       <div className="tw-flex tw-items-center tw-gap-3">
         {currentTimeEl}
         {progressBar}
@@ -122,6 +198,48 @@ export function initAudioModeUI(videoElement: HTMLVideoElement) {
   video.addEventListener("play", updatePlayPauseIcon);
   video.addEventListener("pause", updatePlayPauseIcon);
   updatePlayPauseIcon();
+}
+
+export function setModeActions(actions: OnModeAction) {
+  modeActions = actions;
+}
+
+export function updateActiveMode(mode: ScreenMode, pinned: boolean) {
+  activeScreenMode = mode;
+  isPinnedForVideo = pinned;
+
+  for (const btn of modeButtons) {
+    if (btn.mode === mode) {
+      btn.el.classList.remove("tw-border-white/20", "tw-text-white/70", "tw-bg-transparent");
+      btn.el.classList.add("tw-border-white/60", "tw-text-white", "tw-bg-white/10");
+    } else {
+      btn.el.classList.remove("tw-border-white/60", "tw-text-white", "tw-bg-white/10");
+      btn.el.classList.add("tw-border-white/20", "tw-text-white/70", "tw-bg-transparent");
+    }
+  }
+
+  updatePinBtn();
+  updateSetDefaultBtn(false);
+}
+
+function updatePinBtn() {
+  pinBtn.textContent = isPinnedForVideo ? "Unpin Video" : "Pin to Video";
+  if (isPinnedForVideo) {
+    pinBtn.classList.remove("tw-text-white/40", "tw-border-white/10");
+    pinBtn.classList.add("tw-text-white/70", "tw-border-white/30");
+  } else {
+    pinBtn.classList.remove("tw-text-white/70", "tw-border-white/30");
+    pinBtn.classList.add("tw-text-white/40", "tw-border-white/10");
+  }
+}
+
+function updateSetDefaultBtn(justSet: boolean) {
+  if (justSet) {
+    setDefaultBtn.textContent = "Default Set!";
+    setTimeout(() => {
+      setDefaultBtn.textContent = "Set as Default";
+    }, 1500);
+  }
 }
 
 export function showAudioModeUI() {
