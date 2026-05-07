@@ -57,7 +57,7 @@ export default function SectionNav({ items }: SectionNavProps) {
   return (
     <nav
       aria-label="On this page"
-      className="tw-sticky tw-top-6 tw-flex tw-flex-col tw-gap-1"
+      className="tw-flex tw-flex-col tw-gap-1"
     >
       <div className="tw-text-[11px] tw-uppercase tw-tracking-wider tw-text-gray-500 tw-font-semibold tw-px-3 tw-mb-1">
         On this page

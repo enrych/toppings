@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import PageHeader from "../components/layout/PageHeader";
 import Section from "../components/layout/Section";
 import Card from "../components/layout/Card";
@@ -18,11 +19,10 @@ export default function Playlist() {
         >
           <Card>
             <p className="tw-text-sm tw-text-gray-400 tw-py-3">
-              The Playlist feature toggle lives on the
-              {" "}
-              <a href="/" className="tw-text-blue-400 hover:tw-text-blue-300">
+              The Playlist feature toggle lives on the{" "}
+              <Link to="/" className="tw-text-blue-400 hover:tw-text-blue-300">
                 General
-              </a>{" "}
+              </Link>{" "}
               page. There are no other playlist-specific settings yet.
             </p>
           </Card>

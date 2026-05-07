@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import PageHeader from "../components/layout/PageHeader";
 import Section from "../components/layout/Section";
 import SectionNav from "../components/layout/SectionNav";
@@ -152,15 +153,14 @@ export default function Watch() {
           <Card>
             <p className="tw-text-sm tw-text-gray-400 tw-py-3">
               Use the loop button in the player or the keyboard shortcuts to
-              mark loop start/end points. Configure shortcuts on the
-              {" "}
-              <a
-                href="/keybindings"
+              mark loop start/end points. Configure shortcuts on the{" "}
+              <Link
+                to="/keybindings"
                 className="tw-text-blue-400 hover:tw-text-blue-300"
               >
                 Shortcuts
-              </a>
-              {" "}page.
+              </Link>{" "}
+              page.
             </p>
           </Card>
         </Section>
