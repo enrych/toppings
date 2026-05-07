@@ -442,6 +442,22 @@ export default function General() {
               </div>
             </div>
             <Input
+              title="Visualizer Sensitivity"
+              description="Multiplier on the visualizer wave amplitude — higher = larger wave (range 0.25 to 5.0)"
+              initialValue={
+                store.preferences.watch.audioMode.visualizerSensitivity ?? "1.5"
+              }
+              validator={(value) => isValidNumeric(value, 0.25, 5)}
+              onChange={(value) => {
+                const newConfig = produce(store, (draft) => {
+                  draft.preferences.watch.audioMode.visualizerSensitivity =
+                    value;
+                });
+                setStore(newConfig);
+                chrome.storage.sync.set(newConfig);
+              }}
+            />
+            <Input
               title="Custom Playback Rates"
               initialValue={store.preferences.watch.customPlaybackRates.toString()}
               validator={customPlaybackRatesValidator}

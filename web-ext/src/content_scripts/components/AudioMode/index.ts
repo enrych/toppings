@@ -4,6 +4,7 @@ import {
   AudioModeCanvas,
   startVisualizer,
   stopVisualizer,
+  setVisualizerSensitivity,
 } from "./AudioModeVisualizer";
 import {
   AudioModeUIContainer,
@@ -24,6 +25,10 @@ let currentVideoId = "";
 let adObserver: MutationObserver | null = null;
 let pausedForAd = false;
 let videoPinned = false;
+// Persists across SPA navigations within the same tab. If the user toggled
+// audio mode on, we keep it on as they move between videos until they
+// explicitly toggle it off.
+let userWantsAudioMode = false;
 
 type AudioModePrefs = Storage["preferences"]["watch"]["audioMode"];
 
@@ -73,6 +78,8 @@ export async function setupAudioMode(
   videoId: string,
   prefs: AudioModePrefs,
 ) {
+  // Reset transient per-video state but DO NOT reset userWantsAudioMode —
+  // we persist the user's intent across SPA navigations.
   isAudioModeActive = false;
   currentPrefs = prefs;
   currentVideoId = videoId;
@@ -83,6 +90,9 @@ export async function setupAudioMode(
   AudioModeOverlay.classList.add("tw-hidden");
   hideAudioModeUI();
   stopVisualizer();
+
+  const sensitivity = parseFloat(prefs.visualizerSensitivity ?? "1.5");
+  setVisualizerSensitivity(isFinite(sensitivity) ? sensitivity : 1.5);
 
   if (!prefs.isEnabled) {
     AudioModeButton.style.display = "none";
@@ -125,6 +135,7 @@ export async function setupAudioMode(
     currentCustomImageUrl = localImage;
   }
 
+  let pinAppliedAudio = false;
   if (videoId) {
     const pin = await loadPerVideoPin(videoId);
     if (pin?.enabled) {
@@ -132,7 +143,15 @@ export async function setupAudioMode(
       if (pin.imageUrl) currentCustomImageUrl = pin.imageUrl;
       videoPinned = true;
       toggleAudioMode();
+      pinAppliedAudio = true;
     }
+  }
+
+  // If a pin didn't already enable audio mode for this video, but the user
+  // had audio mode active on the previous video, keep it on. This makes
+  // audio mode "sticky" across SPA navigation, matching user expectations.
+  if (!pinAppliedAudio && userWantsAudioMode) {
+    toggleAudioMode();
   }
 
   setupAdObserver(moviePlayer);
@@ -273,6 +292,11 @@ function setYouTubeChromeHidden(hidden: boolean) {
 
 export function toggleAudioMode() {
   isAudioModeActive = !isAudioModeActive;
+  // Persist the user's intent across SPA navigations. After this toggle
+  // (whether triggered by user click, keyboard shortcut, or pin restore),
+  // userWantsAudioMode reflects the new state — so future page navigations
+  // will keep audio mode in the same state without user action.
+  userWantsAudioMode = isAudioModeActive;
   AudioModeButton.setAttribute(
     "aria-pressed",
     isAudioModeActive ? "true" : "false",

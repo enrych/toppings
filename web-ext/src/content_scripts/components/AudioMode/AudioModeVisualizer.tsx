@@ -9,6 +9,16 @@ let connectedVideo: HTMLVideoElement | null = null;
 const SMOOTHING = 0.82;
 const FFT_SIZE = 512;
 
+// Multiplier on the rendered wave amplitude. 1.0 = default. Tweak from the
+// options page; passed in via setVisualizerSensitivity.
+let sensitivity = 1.0;
+
+export function setVisualizerSensitivity(value: number) {
+  if (Number.isFinite(value) && value > 0) {
+    sensitivity = value;
+  }
+}
+
 export const AudioModeCanvas = (
   <canvas
     id="tppng-audio-visualizer-canvas"
@@ -113,13 +123,24 @@ function renderWaveform() {
     analyser!.getByteFrequencyData(freqData);
     analyser!.getByteTimeDomainData(timeData);
 
-    let avgFreq = 0;
-    for (let i = 0; i < freqLength; i++) {
-      avgFreq += freqData[i];
+    // Use peak loudness across the lower spectrum (where most music energy
+    // lives) instead of the flat average, which dilutes amplitude across the
+    // many quiet high-frequency bins. Then apply a sqrt curve so quieter
+    // sounds still produce a visible wave.
+    let peak = 0;
+    const halfLen = Math.floor(freqLength * 0.6);
+    let sumLow = 0;
+    for (let i = 0; i < halfLen; i++) {
+      const v = freqData[i];
+      if (v > peak) peak = v;
+      sumLow += v;
     }
-    avgFreq = avgFreq / freqLength / 255;
+    const peakNorm = peak / 255;
+    const avgLowNorm = sumLow / halfLen / 255;
+    // Blend peak and avg, then apply perceptual sqrt curve.
+    const loudness = Math.sqrt(peakNorm * 0.7 + avgLowNorm * 0.3);
 
-    const amplitude = Math.max(0.02, avgFreq) * h * 0.4;
+    const amplitude = Math.max(0.05, loudness) * h * 0.45 * sensitivity;
 
     const points: { x: number; y: number }[] = [];
     const totalPoints = 200;
@@ -142,9 +163,9 @@ function renderWaveform() {
       const y =
         centerY +
         timeSample * amplitude * envelope +
-        Math.sin(t * Math.PI * 8 + avgFreq * 20) *
+        Math.sin(t * Math.PI * 8 + loudness * 20) *
           amplitude *
-          0.3 *
+          0.35 *
           envelope *
           freqInfluence;
 
