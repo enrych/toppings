@@ -150,6 +150,7 @@ const customImageInput = (
       const file = e.target?.files?.[0];
       if (file && modeActions) {
         modeActions.onPickCustomImage(file);
+        flashChooseImageBtn(`Loaded: ${file.name}`);
       }
       // Reset so picking the same file again still triggers onChange
       if (e.target) e.target.value = "";
@@ -165,6 +166,25 @@ const chooseImageBtn = (
     Choose Image
   </button>
 ) as HTMLButtonElement;
+
+let chooseImageBtnFlashTimeout: ReturnType<typeof setTimeout> | null = null;
+function flashChooseImageBtn(text: string) {
+  if (chooseImageBtnFlashTimeout !== null) {
+    clearTimeout(chooseImageBtnFlashTimeout);
+  }
+  const original = "Choose Image";
+  // Truncate long file names so the button doesn't blow up the layout
+  const truncated = text.length > 28 ? text.slice(0, 25) + "..." : text;
+  chooseImageBtn.textContent = truncated;
+  chooseImageBtn.classList.remove("tw-text-white/70");
+  chooseImageBtn.classList.add("tw-text-white", "tw-border-white/60");
+  chooseImageBtnFlashTimeout = setTimeout(() => {
+    chooseImageBtn.textContent = original;
+    chooseImageBtn.classList.remove("tw-text-white", "tw-border-white/60");
+    chooseImageBtn.classList.add("tw-text-white/70");
+    chooseImageBtnFlashTimeout = null;
+  }, 2000);
+}
 
 const modeSwitcher = (
   <div className="tw-flex tw-items-center tw-gap-2 tw-flex-wrap tw-justify-center">

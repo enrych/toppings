@@ -250,7 +250,10 @@ function applyScreenMode() {
 
     case "custom":
       if (currentCustomImageUrl) {
-        AudioModeOverlay.style.backgroundImage = `url(${CSS.escape(currentCustomImageUrl)})`;
+        // Wrap in double quotes; CSS.escape() is for identifiers (class
+        // names/selectors) and would mangle the URL's : ; / + = characters.
+        const escapedUrl = currentCustomImageUrl.replace(/"/g, '\\"');
+        AudioModeOverlay.style.backgroundImage = `url("${escapedUrl}")`;
         AudioModeOverlay.style.backgroundSize = "cover";
         AudioModeOverlay.style.backgroundPosition = "center";
       }

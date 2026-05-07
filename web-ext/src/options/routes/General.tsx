@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import { useContext } from "react";
 import { produce } from "immer";
 import StoreContext from "../store";
@@ -27,6 +27,31 @@ const InfoIcon = () => (
 
 export default function General() {
   const { store, setStore } = useContext(StoreContext)!;
+  const [localCustomImage, setLocalCustomImage] = useState<string | null>(null);
+  const [pinnedVideoCount, setPinnedVideoCount] = useState<number>(0);
+
+  useEffect(() => {
+    const refresh = () => {
+      chrome.storage.local.get(null, (items) => {
+        setLocalCustomImage(
+          (items.audioMode_globalCustomImage as string) ?? null,
+        );
+        setPinnedVideoCount(
+          Object.keys(items).filter((k) => k.startsWith("audioMode_pin_"))
+            .length,
+        );
+      });
+    };
+    refresh();
+    const onChange = (
+      _changes: Record<string, chrome.storage.StorageChange>,
+      areaName: chrome.storage.AreaName,
+    ) => {
+      if (areaName === "local") refresh();
+    };
+    chrome.storage.onChanged.addListener(onChange);
+    return () => chrome.storage.onChanged.removeListener(onChange);
+  }, []);
 
   const setIsExtensionEnabled = (isEnabled: boolean) => {
     const newConfig = produce(store, (draft) => {
@@ -273,7 +298,7 @@ export default function General() {
                 chrome.storage.sync.set(newConfig);
               }}
             />
-            <div className="tw-font-sans tw-w-full tw-flex tw-justify-between tw-items-center tw-px-4">
+            <div className="tw-font-sans tw-w-full tw-flex tw-justify-between tw-items-center tw-px-4 tw-py-1">
               <div className="tw-flex tw-items-center tw-space-x-3">
                 <label className="tw-text-lg tw-font-medium tw-text-gray-100">
                   Default Audio Mode Screen
@@ -318,7 +343,7 @@ export default function General() {
                 chrome.storage.sync.set(newConfig);
               }}
             />
-            <div className="tw-font-sans tw-w-full tw-flex tw-justify-between tw-items-center tw-px-4">
+            <div className="tw-font-sans tw-w-full tw-flex tw-justify-between tw-items-center tw-px-4 tw-py-1">
               <div className="tw-flex tw-items-center tw-space-x-3">
                 <label className="tw-text-lg tw-font-medium tw-text-gray-100">
                   Custom Background Image
@@ -327,7 +352,18 @@ export default function General() {
                   <InfoIcon />
                 </Tooltip>
               </div>
-              <div className="tw-flex tw-items-center tw-gap-2">
+              <div className="tw-flex tw-items-center tw-gap-3">
+                {localCustomImage ? (
+                  <img
+                    src={localCustomImage}
+                    alt="Selected background"
+                    className="tw-w-12 tw-h-12 tw-object-cover tw-rounded tw-border tw-border-gray-600/50"
+                  />
+                ) : (
+                  <span className="tw-text-gray-500 tw-text-sm">
+                    No image selected
+                  </span>
+                )}
                 <input
                   type="file"
                   accept="image/*"
@@ -356,19 +392,23 @@ export default function General() {
                       ?.click();
                   }}
                 >
-                  Choose File
+                  {localCustomImage ? "Replace" : "Choose File"}
                 </button>
-                <button
-                  className="tw-p-2 tw-bg-black tw-text-gray-400 tw-text-center tw-rounded tw-border tw-border-gray-600/50 tw-cursor-pointer hover:tw-text-white hover:tw-border-gray-400 tw-transition-colors"
-                  onClick={() => {
-                    chrome.storage.local.remove("audioMode_globalCustomImage");
-                  }}
-                >
-                  Clear
-                </button>
+                {localCustomImage && (
+                  <button
+                    className="tw-p-2 tw-bg-black tw-text-gray-400 tw-text-center tw-rounded tw-border tw-border-gray-600/50 tw-cursor-pointer hover:tw-text-white hover:tw-border-gray-400 tw-transition-colors"
+                    onClick={() => {
+                      chrome.storage.local.remove(
+                        "audioMode_globalCustomImage",
+                      );
+                    }}
+                  >
+                    Clear
+                  </button>
+                )}
               </div>
             </div>
-            <div className="tw-font-sans tw-w-full tw-flex tw-justify-between tw-items-center tw-px-4">
+            <div className="tw-font-sans tw-w-full tw-flex tw-justify-between tw-items-center tw-px-4 tw-py-1">
               <div className="tw-flex tw-items-center tw-space-x-3">
                 <label className="tw-text-lg tw-font-medium tw-text-gray-100">
                   Reset Pinned Videos
@@ -377,21 +417,29 @@ export default function General() {
                   <InfoIcon />
                 </Tooltip>
               </div>
-              <button
-                className="tw-p-2 tw-bg-black tw-text-white tw-text-center tw-rounded tw-border tw-border-gray-600/50 tw-cursor-pointer hover:tw-border-gray-400 tw-transition-colors"
-                onClick={() => {
-                  chrome.storage.local.get(null, (items) => {
-                    const pinKeys = Object.keys(items).filter((k) =>
-                      k.startsWith("audioMode_pin_"),
-                    );
-                    if (pinKeys.length > 0) {
-                      chrome.storage.local.remove(pinKeys);
-                    }
-                  });
-                }}
-              >
-                Reset All
-              </button>
+              <div className="tw-flex tw-items-center tw-gap-3">
+                <span className="tw-text-gray-500 tw-text-sm">
+                  {pinnedVideoCount === 0
+                    ? "No pinned videos"
+                    : `${pinnedVideoCount} pinned`}
+                </span>
+                <button
+                  disabled={pinnedVideoCount === 0}
+                  className="tw-p-2 tw-bg-black tw-text-white tw-text-center tw-rounded tw-border tw-border-gray-600/50 tw-cursor-pointer hover:tw-border-gray-400 tw-transition-colors disabled:tw-opacity-40 disabled:tw-cursor-not-allowed"
+                  onClick={() => {
+                    chrome.storage.local.get(null, (items) => {
+                      const pinKeys = Object.keys(items).filter((k) =>
+                        k.startsWith("audioMode_pin_"),
+                      );
+                      if (pinKeys.length > 0) {
+                        chrome.storage.local.remove(pinKeys);
+                      }
+                    });
+                  }}
+                >
+                  Reset All
+                </button>
+              </div>
             </div>
             <Input
               title="Custom Playback Rates"
