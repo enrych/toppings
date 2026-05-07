@@ -40,21 +40,19 @@ export default function Sidebar() {
       >
         {collapsed ? (
           <div className="tw-flex tw-justify-center">
-            <div
-              aria-label="Toppings"
-              className="tw-w-9 tw-h-9 tw-rounded-md tw-bg-blue-500 tw-text-white tw-font-bold tw-text-sm tw-flex tw-items-center tw-justify-center"
-            >
-              T
-            </div>
+            <img
+              src="/assets/icons/icon48.png"
+              alt="Toppings"
+              className="tw-w-9 tw-h-9"
+            />
           </div>
         ) : (
           <div className="tw-flex tw-items-center tw-gap-2.5">
-            <div
-              aria-hidden="true"
-              className="tw-w-9 tw-h-9 tw-rounded-md tw-bg-blue-500 tw-text-white tw-font-bold tw-text-sm tw-flex tw-items-center tw-justify-center tw-flex-shrink-0"
-            >
-              T
-            </div>
+            <img
+              src="/assets/icons/icon48.png"
+              alt="Toppings logo"
+              className="tw-w-9 tw-h-9 tw-flex-shrink-0"
+            />
             <div className="tw-min-w-0">
               <div className="tw-flex tw-items-baseline tw-gap-2">
                 <h1 className="tw-text-lg tw-font-bold tw-text-white tw-truncate">
