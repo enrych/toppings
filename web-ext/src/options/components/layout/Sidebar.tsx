@@ -1,9 +1,9 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import Icon, { IconName } from "../primitives/Icon";
-import IconButton from "../primitives/IconButton";
-import Tooltip from "../primitives/Tooltip";
-import { useChromeStorageLocal } from "../../hooks/useChromeStorageLocal";
+import Icon, { IconName } from "../../../shared/components/primitives/Icon";
+import IconButton from "../../../shared/components/primitives/IconButton";
+import Tooltip from "../../../shared/components/primitives/Tooltip";
+import { useChromeStorageLocal } from "../../../shared/hooks/useChromeStorageLocal";
 
 interface NavItem {
   to: string;
@@ -31,19 +31,19 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`tw-flex-shrink-0 tw-bg-[#0c0c0e] tw-border-r tw-border-gray-800 tw-h-screen tw-sticky tw-top-0 tw-flex tw-flex-col tw-transition-[width] tw-duration-200 tw-ease-out ${
+      className={`tw-flex-shrink-0 tw-bg-bg tw-border-r tw-border-border-default tw-h-screen tw-sticky tw-top-0 tw-flex tw-flex-col tw-transition-[width] tw-duration-200 tw-ease-out ${
         collapsed ? "tw-w-[60px]" : "tw-w-60"
       }`}
     >
       <div
-        className={`tw-py-5 tw-border-b tw-border-gray-800 ${collapsed ? "tw-px-0" : "tw-px-5"}`}
+        className={`tw-py-5 tw-border-b tw-border-border-default ${collapsed ? "tw-px-0" : "tw-px-5"}`}
       >
         {collapsed ? (
           <div className="tw-flex tw-justify-center">
             <img
               src="/assets/icons/icon48.png"
               alt="Toppings"
-              className="tw-w-9 tw-h-9"
+              className="tw-w-8 tw-h-8"
             />
           </div>
         ) : (
@@ -51,18 +51,18 @@ export default function Sidebar() {
             <img
               src="/assets/icons/icon48.png"
               alt="Toppings logo"
-              className="tw-w-9 tw-h-9 tw-flex-shrink-0"
+              className="tw-w-8 tw-h-8 tw-flex-shrink-0"
             />
             <div className="tw-min-w-0">
               <div className="tw-flex tw-items-baseline tw-gap-2">
-                <h1 className="tw-text-lg tw-font-bold tw-text-white tw-truncate">
+                <h1 className="tw-text-lg tw-font-bold tw-text-fg tw-truncate">
                   Toppings
                 </h1>
-                <span className="tw-text-[10px] tw-text-gray-500 tw-font-mono">
+                <span className="tw-text-[10px] tw-text-fg-subtle tw-font-mono">
                   v{version}
                 </span>
               </div>
-              <p className="tw-text-xs tw-text-gray-500 tw-mt-0.5 tw-truncate">
+              <p className="tw-text-xs tw-text-fg-subtle tw-mt-0.5 tw-truncate">
                 Your YouTube, Your Way.
               </p>
             </div>
@@ -70,11 +70,9 @@ export default function Sidebar() {
         )}
       </div>
 
-      <nav
-        className={`tw-flex-1 tw-overflow-y-auto tw-overflow-x-hidden tw-py-3 ${collapsed ? "tw-px-2" : "tw-px-2"}`}
-      >
+      <nav className="tw-flex-1 tw-overflow-y-auto tw-py-3 tw-px-2">
         {!collapsed && (
-          <div className="tw-text-[11px] tw-uppercase tw-tracking-wider tw-text-gray-600 tw-font-semibold tw-px-3 tw-py-1 tw-mb-1">
+          <div className="tw-text-[11px] tw-uppercase tw-tracking-wider tw-text-fg-subtle tw-font-semibold tw-px-3 tw-py-1 tw-mb-1">
             Settings
           </div>
         )}
@@ -94,7 +92,7 @@ export default function Sidebar() {
       </nav>
 
       <div
-        className={`tw-py-3 tw-border-t tw-border-gray-800 tw-flex ${
+        className={`tw-py-3 tw-border-t tw-border-border-default tw-flex ${
           collapsed
             ? "tw-flex-col tw-items-center tw-gap-2 tw-px-1"
             : "tw-items-center tw-justify-between tw-px-5"
@@ -118,7 +116,7 @@ export default function Sidebar() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label="GitHub repository"
-                className="tw-w-7 tw-h-7 tw-inline-flex tw-items-center tw-justify-center tw-text-gray-500 hover:tw-text-white tw-rounded-md hover:tw-bg-white/5 tw-transition-colors"
+                className="tw-w-7 tw-h-7 tw-inline-flex tw-items-center tw-justify-center tw-text-fg-muted hover:tw-text-fg tw-rounded-md hover:tw-bg-surface-hover tw-transition-colors"
               >
                 <Icon name="external" size={14} />
               </a>
@@ -130,7 +128,7 @@ export default function Sidebar() {
               href="https://github.com/iamfaisalkhan/toppings"
               target="_blank"
               rel="noreferrer"
-              className="tw-text-xs tw-text-gray-400 hover:tw-text-white tw-transition-colors tw-inline-flex tw-items-center tw-gap-1"
+              className="tw-text-xs tw-text-fg-muted hover:tw-text-fg tw-transition-colors tw-inline-flex tw-items-center tw-gap-1"
             >
               GitHub
               <Icon name="external" size={11} />
@@ -169,15 +167,15 @@ function NavItemLink({ item, collapsed }: NavItemLinkProps) {
             : "tw-gap-3 tw-px-3 tw-py-2"
         } ${
           isActive
-            ? "tw-bg-white/[0.06] tw-text-white"
-            : "tw-text-gray-400 hover:tw-bg-white/[0.03] hover:tw-text-gray-200"
+            ? "tw-bg-surface-hover tw-text-fg"
+            : "tw-text-fg-muted hover:tw-bg-surface-hover hover:tw-text-fg"
         }`
       }
     >
       {({ isActive }) => (
         <>
           <span
-            className={`tw-flex-shrink-0 ${isActive ? "tw-text-blue-400" : "tw-text-gray-500"}`}
+            className={`tw-flex-shrink-0 ${isActive ? "tw-text-accent" : "tw-text-fg-subtle"}`}
           >
             <Icon name={item.icon} size={collapsed ? 18 : 16} />
           </span>

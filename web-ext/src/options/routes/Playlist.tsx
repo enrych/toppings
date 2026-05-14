@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import PageHeader from "../components/layout/PageHeader";
-import Section from "../components/layout/Section";
-import Card from "../components/layout/Card";
+import PageHeader from "../../shared/components/layout/PageHeader";
+import Section from "../../shared/components/layout/Section";
+import Card from "../../shared/components/layout/Card";
 
 export default function Playlist() {
   return (

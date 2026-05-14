@@ -1,11 +1,13 @@
 import React from "react";
-import PageHeader from "../components/layout/PageHeader";
-import Section from "../components/layout/Section";
-import Card from "../components/layout/Card";
-import Switch from "../components/form/Switch";
-import { useStoreUpdater } from "../hooks/useStoreUpdater";
-import { useToast } from "../components/feedback/ToastProvider";
-import { setExtensionIcon } from "../utils/browser";
+import PageHeader from "../../shared/components/layout/PageHeader";
+import Section from "../../shared/components/layout/Section";
+import Card from "../../shared/components/layout/Card";
+import Switch from "../../shared/components/form/Switch";
+import Select from "../../shared/components/form/Select";
+import { useStoreUpdater } from "../../shared/hooks/useStoreUpdater";
+import { useToast } from "../../shared/components/feedback/ToastProvider";
+import { setExtensionIcon } from "../../shared/utils/browser";
+import { ThemePreference } from "../../shared/utils/theme";
 
 export default function General() {
   const { store, update } = useStoreUpdater();
@@ -36,6 +38,42 @@ export default function General() {
                 toast.success(
                   isEnabled ? "Extension enabled" : "Extension disabled",
                 );
+              }}
+            />
+          </Card>
+        </Section>
+
+        <Section
+          title="Appearance"
+          description="Choose how the extension UI looks."
+        >
+          <Card>
+            <Select<ThemePreference>
+              label="Theme"
+              description="System follows your OS appearance. Affects the popup and options UI — YouTube itself is unaffected."
+              value={store.ui?.theme ?? "system"}
+              options={[
+                {
+                  value: "system",
+                  label: "System",
+                  description: "Match your operating system",
+                },
+                {
+                  value: "dark",
+                  label: "Dark",
+                  description: "Always use dark theme",
+                },
+                {
+                  value: "light",
+                  label: "Light",
+                  description: "Always use light theme",
+                },
+              ]}
+              onChange={(theme) => {
+                update((draft) => {
+                  if (!draft.ui) draft.ui = { theme: "system" };
+                  draft.ui.theme = theme;
+                });
               }}
             />
           </Card>

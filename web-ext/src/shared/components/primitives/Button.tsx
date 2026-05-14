@@ -5,13 +5,13 @@ type ButtonSize = "sm" | "md" | "lg";
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   primary:
-    "tw-bg-blue-500 tw-text-white tw-border tw-border-blue-500 hover:tw-bg-blue-600 hover:tw-border-blue-600 active:tw-bg-blue-700 disabled:tw-bg-blue-500/40 disabled:tw-border-blue-500/40 disabled:tw-cursor-not-allowed",
+    "tw-bg-accent tw-text-accent-fg tw-border tw-border-accent hover:tw-bg-accent-hover hover:tw-border-accent-hover disabled:tw-opacity-50 disabled:tw-cursor-not-allowed",
   secondary:
-    "tw-bg-transparent tw-text-gray-100 tw-border tw-border-gray-600/60 hover:tw-bg-white/5 hover:tw-border-gray-500 active:tw-bg-white/10 disabled:tw-opacity-40 disabled:tw-cursor-not-allowed",
+    "tw-bg-transparent tw-text-fg tw-border tw-border-border-strong hover:tw-bg-surface-hover disabled:tw-opacity-40 disabled:tw-cursor-not-allowed",
   ghost:
-    "tw-bg-transparent tw-text-gray-300 tw-border tw-border-transparent hover:tw-bg-white/5 hover:tw-text-white active:tw-bg-white/10 disabled:tw-opacity-40 disabled:tw-cursor-not-allowed",
+    "tw-bg-transparent tw-text-fg-muted tw-border tw-border-transparent hover:tw-bg-surface-hover hover:tw-text-fg disabled:tw-opacity-40 disabled:tw-cursor-not-allowed",
   danger:
-    "tw-bg-red-600 tw-text-white tw-border tw-border-red-600 hover:tw-bg-red-700 hover:tw-border-red-700 active:tw-bg-red-800 disabled:tw-opacity-40 disabled:tw-cursor-not-allowed",
+    "tw-bg-danger-bg tw-text-danger-fg tw-border tw-border-danger-fg/30 hover:tw-bg-danger-bg hover:tw-border-danger-fg/60 disabled:tw-opacity-40 disabled:tw-cursor-not-allowed",
 };
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {
@@ -47,7 +47,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
       ref={ref}
       type={type}
       className={[
-        "tw-inline-flex tw-items-center tw-justify-center tw-gap-2 tw-rounded-md tw-font-medium tw-transition-colors tw-duration-150 focus-visible:tw-outline-none focus-visible:tw-ring-2 focus-visible:tw-ring-blue-500/60 focus-visible:tw-ring-offset-2 focus-visible:tw-ring-offset-[#0f0f10]",
+        "tw-inline-flex tw-items-center tw-justify-center tw-gap-2 tw-rounded-md tw-font-medium tw-transition-colors tw-duration-150 focus-visible:tw-outline-none focus-visible:tw-ring-2 focus-visible:tw-ring-accent/50 focus-visible:tw-ring-offset-2 focus-visible:tw-ring-offset-bg",
         VARIANT_CLASSES[variant],
         SIZE_CLASSES[size],
         fullWidth ? "tw-w-full" : "",

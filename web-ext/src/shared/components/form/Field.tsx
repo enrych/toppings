@@ -9,18 +9,9 @@ interface FieldProps {
   error?: string;
   htmlFor?: string;
   children: ReactNode;
-  /** When true, label and control stack vertically. Default is horizontal. */
   stacked?: boolean;
 }
 
-/**
- * The canonical "settings row" wrapper. Pair a label (with optional inline
- * description tooltip) with a control on the right. Use `hint` for helper
- * text rendered below the control, and `error` for validation errors.
- *
- * All form components (Switch, Input, Select, etc.) compose this so spacing,
- * label styling, and accessibility stay consistent across the app.
- */
 export default function Field({
   label,
   description,
@@ -34,7 +25,7 @@ export default function Field({
     <div className="tw-flex tw-items-center tw-gap-2">
       <label
         htmlFor={htmlFor}
-        className="tw-text-[15px] tw-font-medium tw-text-gray-100 tw-leading-tight"
+        className="tw-text-[15px] tw-font-medium tw-text-fg tw-leading-tight"
       >
         {label}
       </label>
@@ -43,7 +34,7 @@ export default function Field({
           <Icon
             name="info"
             size={16}
-            className="tw-text-gray-500 hover:tw-text-gray-300"
+            className="tw-text-fg-subtle hover:tw-text-fg-muted"
           />
         </Tooltip>
       )}
@@ -57,7 +48,7 @@ export default function Field({
         <div>{children}</div>
         {(hint || error) && (
           <div
-            className={`tw-text-xs ${error ? "tw-text-red-400" : "tw-text-gray-500"}`}
+            className={`tw-text-xs ${error ? "tw-text-danger-fg" : "tw-text-fg-subtle"}`}
           >
             {error || hint}
           </div>
@@ -74,7 +65,7 @@ export default function Field({
       </div>
       {(hint || error) && (
         <div
-          className={`tw-text-xs ${error ? "tw-text-red-400" : "tw-text-gray-500"}`}
+          className={`tw-text-xs ${error ? "tw-text-danger-fg" : "tw-text-fg-subtle"}`}
         >
           {error || hint}
         </div>

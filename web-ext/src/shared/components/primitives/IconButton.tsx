@@ -5,11 +5,11 @@ type IconButtonSize = "sm" | "md" | "lg";
 
 const VARIANT_CLASSES: Record<IconButtonVariant, string> = {
   default:
-    "tw-bg-transparent tw-text-gray-300 tw-border tw-border-gray-600/40 hover:tw-bg-white/5 hover:tw-text-white",
+    "tw-bg-transparent tw-text-fg-muted tw-border tw-border-border-default hover:tw-bg-surface-hover hover:tw-text-fg",
   ghost:
-    "tw-bg-transparent tw-text-gray-400 tw-border tw-border-transparent hover:tw-bg-white/5 hover:tw-text-white",
+    "tw-bg-transparent tw-text-fg-muted tw-border tw-border-transparent hover:tw-bg-surface-hover hover:tw-text-fg",
   danger:
-    "tw-bg-transparent tw-text-red-400 tw-border tw-border-red-600/30 hover:tw-bg-red-500/10 hover:tw-text-red-300",
+    "tw-bg-transparent tw-text-danger-fg tw-border tw-border-danger-fg/30 hover:tw-bg-danger-bg hover:tw-border-danger-fg/60",
 };
 
 const SIZE_CLASSES: Record<IconButtonSize, string> = {
@@ -22,7 +22,7 @@ interface IconButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: IconButtonVariant;
   size?: IconButtonSize;
-  "aria-label": string; // required for accessibility
+  "aria-label": string;
 }
 
 const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
@@ -42,7 +42,7 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
         ref={ref}
         type={type}
         className={[
-          "tw-inline-flex tw-items-center tw-justify-center tw-rounded-md tw-transition-colors tw-duration-150 focus-visible:tw-outline-none focus-visible:tw-ring-2 focus-visible:tw-ring-blue-500/60 focus-visible:tw-ring-offset-2 focus-visible:tw-ring-offset-[#0f0f10] disabled:tw-opacity-40 disabled:tw-cursor-not-allowed",
+          "tw-inline-flex tw-items-center tw-justify-center tw-rounded-md tw-transition-colors tw-duration-150 focus-visible:tw-outline-none focus-visible:tw-ring-2 focus-visible:tw-ring-accent/50 focus-visible:tw-ring-offset-2 focus-visible:tw-ring-offset-bg disabled:tw-opacity-40 disabled:tw-cursor-not-allowed",
           VARIANT_CLASSES[variant],
           SIZE_CLASSES[size],
           className,

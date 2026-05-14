@@ -91,7 +91,7 @@ export default function Input({
         <input
           id={id}
           type="text"
-          className={`${inputWidthClass} tw-px-3 tw-py-2 tw-bg-[#0a0a0c] tw-text-white tw-text-sm tw-rounded-md tw-border tw-border-gray-600/50 focus:tw-outline-none focus:tw-border-blue-500 focus:tw-ring-2 focus:tw-ring-blue-500/30 tw-transition-colors`}
+          className={`${inputWidthClass} tw-px-3 tw-py-2 tw-bg-bg tw-text-fg tw-text-sm tw-rounded-md tw-border tw-border-border-strong focus:tw-outline-none focus:tw-border-accent focus:tw-ring-2 focus:tw-ring-accent/30 tw-transition-colors`}
           placeholder={placeholder}
           value={value}
           onChange={handleChange}
@@ -100,7 +100,7 @@ export default function Input({
           <span className="tw-absolute tw-right-2 tw-top-1/2 -tw-translate-y-1/2 tw-pointer-events-none">
             {status === "loading" && (
               <svg
-                className="tw-animate-spin tw-h-4 tw-w-4 tw-text-blue-400"
+                className="tw-animate-spin tw-h-4 tw-w-4 tw-text-accent"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="none"

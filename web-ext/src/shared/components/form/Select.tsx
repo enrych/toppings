@@ -101,20 +101,20 @@ export default function Select<T extends string>({
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
           onKeyDown={onKeyDown}
-          className="tw-w-44 tw-flex tw-items-center tw-justify-between tw-gap-2 tw-px-3 tw-py-2 tw-bg-[#0a0a0c] tw-text-white tw-text-sm tw-rounded-md tw-border tw-border-gray-600/50 focus-visible:tw-outline-none focus-visible:tw-border-blue-500 focus-visible:tw-ring-2 focus-visible:tw-ring-blue-500/30 hover:tw-border-gray-500 tw-transition-colors"
+          className="tw-w-44 tw-flex tw-items-center tw-justify-between tw-gap-2 tw-px-3 tw-py-2 tw-bg-bg tw-text-fg tw-text-sm tw-rounded-md tw-border tw-border-border-strong focus-visible:tw-outline-none focus-visible:tw-border-accent focus-visible:tw-ring-2 focus-visible:tw-ring-accent/30 hover:tw-border-border-strong tw-transition-colors"
         >
           <span className="tw-truncate">{selected?.label ?? "Select..."}</span>
           <Icon
             name="chevron-down"
             size={14}
-            className={`tw-text-gray-400 tw-transition-transform ${open ? "tw-rotate-180" : ""}`}
+            className={`tw-text-fg-muted tw-transition-transform ${open ? "tw-rotate-180" : ""}`}
           />
         </button>
         {open && (
           <ul
             ref={listRef}
             role="listbox"
-            className="tw-absolute tw-right-0 tw-mt-1 tw-w-56 tw-max-h-72 tw-overflow-y-auto tw-bg-[#1a1a1f] tw-border tw-border-gray-700 tw-rounded-md tw-shadow-xl tw-z-40 tw-py-1"
+            className="tw-absolute tw-right-0 tw-mt-1 tw-w-56 tw-max-h-72 tw-overflow-y-auto tw-bg-surface-2 tw-border tw-border-border-strong tw-rounded-md tw-shadow-xl tw-z-40 tw-py-1"
           >
             {options.map((opt, i) => {
               const isSelected = opt.value === value;
@@ -127,18 +127,18 @@ export default function Select<T extends string>({
                   onMouseEnter={() => setActiveIndex(i)}
                   onClick={() => select(opt.value)}
                   className={`tw-px-3 tw-py-2 tw-cursor-pointer tw-flex tw-items-start tw-gap-2 ${
-                    isActive ? "tw-bg-white/5" : ""
-                  } ${isSelected ? "tw-text-white" : "tw-text-gray-300"}`}
+                    isActive ? "tw-bg-surface-hover" : ""
+                  } ${isSelected ? "tw-text-fg" : "tw-text-fg-muted"}`}
                 >
                   <span
                     className={`tw-mt-1.5 tw-w-1.5 tw-h-1.5 tw-rounded-full ${
-                      isSelected ? "tw-bg-blue-400" : "tw-bg-transparent"
+                      isSelected ? "tw-bg-accent" : "tw-bg-transparent"
                     }`}
                   />
                   <div className="tw-flex tw-flex-col">
                     <span className="tw-text-sm">{opt.label}</span>
                     {opt.description && (
-                      <span className="tw-text-xs tw-text-gray-500">
+                      <span className="tw-text-xs tw-text-fg-subtle">
                         {opt.description}
                       </span>
                     )}

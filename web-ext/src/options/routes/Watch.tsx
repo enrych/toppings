@@ -1,11 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import PageHeader from "../components/layout/PageHeader";
-import Section from "../components/layout/Section";
-import SectionNav from "../components/layout/SectionNav";
-import Card from "../components/layout/Card";
-import Input from "../components/form/Input";
-import { useStoreUpdater } from "../hooks/useStoreUpdater";
+import PageHeader from "../../shared/components/layout/PageHeader";
+import Section from "../../shared/components/layout/Section";
+import SectionNav from "../../shared/components/layout/SectionNav";
+import Card from "../../shared/components/layout/Card";
+import Input from "../../shared/components/form/Input";
+import { useStoreUpdater } from "../../shared/hooks/useStoreUpdater";
 
 export const sectionNavItems = [
   { id: "playback-rate", label: "Playback Rate" },

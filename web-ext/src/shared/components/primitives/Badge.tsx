@@ -3,11 +3,15 @@ import React from "react";
 type BadgeTone = "neutral" | "success" | "warning" | "danger" | "info";
 
 const TONE_CLASSES: Record<BadgeTone, string> = {
-  neutral: "tw-bg-gray-700/40 tw-text-gray-300 tw-border-gray-600/40",
-  success: "tw-bg-green-500/10 tw-text-green-300 tw-border-green-500/30",
-  warning: "tw-bg-yellow-500/10 tw-text-yellow-300 tw-border-yellow-500/30",
-  danger: "tw-bg-red-500/10 tw-text-red-300 tw-border-red-500/30",
-  info: "tw-bg-blue-500/10 tw-text-blue-300 tw-border-blue-500/30",
+  neutral:
+    "tw-bg-surface-hover tw-text-fg-muted tw-border tw-border-border-default",
+  success:
+    "tw-bg-success-bg tw-text-success-fg tw-border tw-border-success-fg/30",
+  warning:
+    "tw-bg-warning-bg tw-text-warning-fg tw-border tw-border-warning-fg/30",
+  danger:
+    "tw-bg-danger-bg tw-text-danger-fg tw-border tw-border-danger-fg/30",
+  info: "tw-bg-info-bg tw-text-info-fg tw-border tw-border-info-fg/30",
 };
 
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
@@ -23,7 +27,7 @@ export default function Badge({
   return (
     <span
       className={[
-        "tw-inline-flex tw-items-center tw-px-2 tw-py-0.5 tw-text-xs tw-font-medium tw-rounded-full tw-border",
+        "tw-inline-flex tw-items-center tw-px-2 tw-py-0.5 tw-text-xs tw-font-medium tw-rounded-full",
         TONE_CLASSES[tone],
         className,
       ]

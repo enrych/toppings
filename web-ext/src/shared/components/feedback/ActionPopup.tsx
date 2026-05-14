@@ -56,18 +56,18 @@ export default function ActionPopup({
       <div className="tw-px-6 tw-pt-6 tw-pb-4">
         <h2
           id={titleId}
-          className="tw-text-lg tw-font-semibold tw-text-white tw-leading-tight"
+          className="tw-text-lg tw-font-semibold tw-text-fg tw-leading-tight"
         >
           {title}
         </h2>
         {description && (
-          <p className="tw-mt-2 tw-text-sm tw-text-gray-400 tw-leading-relaxed">
+          <p className="tw-mt-2 tw-text-sm tw-text-fg-muted tw-leading-relaxed">
             {description}
           </p>
         )}
       </div>
       {children && <div className="tw-px-6 tw-pb-4">{children}</div>}
-      <div className="tw-px-6 tw-py-4 tw-flex tw-justify-end tw-gap-2 tw-border-t tw-border-gray-700/50 tw-bg-black/20 tw-rounded-b-xl">
+      <div className="tw-px-6 tw-py-4 tw-flex tw-justify-end tw-gap-2 tw-border-t tw-border-border-subtle tw-bg-surface-hover tw-rounded-b-xl">
         {actions.map((action, i) => (
           <Button
             key={i}

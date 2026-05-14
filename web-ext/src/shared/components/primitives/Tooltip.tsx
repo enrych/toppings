@@ -137,7 +137,7 @@ export default function Tooltip({ children, text, side = "right" }: TooltipProps
               left: position.left,
               transform: transformBySide[side],
             }}
-            className="tw-w-max tw-max-w-[14rem] tw-px-2 tw-py-1.5 tw-text-xs tw-leading-snug tw-text-gray-100 tw-bg-[#1a1a1f] tw-border tw-border-gray-700 tw-rounded tw-shadow-xl tw-z-[10002] tw-pointer-events-none"
+            className="tw-w-max tw-max-w-[14rem] tw-px-2 tw-py-1.5 tw-text-xs tw-leading-snug tw-text-fg tw-bg-surface-2 tw-border tw-border-border-strong tw-rounded tw-shadow-xl tw-z-[10002] tw-pointer-events-none"
           >
             {text}
           </span>,

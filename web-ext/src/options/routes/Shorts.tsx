@@ -1,10 +1,10 @@
 import React from "react";
-import PageHeader from "../components/layout/PageHeader";
-import Section from "../components/layout/Section";
-import Card from "../components/layout/Card";
-import Switch from "../components/form/Switch";
-import Input from "../components/form/Input";
-import { useStoreUpdater } from "../hooks/useStoreUpdater";
+import PageHeader from "../../shared/components/layout/PageHeader";
+import Section from "../../shared/components/layout/Section";
+import Card from "../../shared/components/layout/Card";
+import Switch from "../../shared/components/form/Switch";
+import Input from "../../shared/components/form/Input";
+import { useStoreUpdater } from "../../shared/hooks/useStoreUpdater";
 
 export default function Shorts() {
   const { store, update } = useStoreUpdater();

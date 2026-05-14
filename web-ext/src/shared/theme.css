@@ -1,0 +1,107 @@
+/* -------------------------------------------------------------------------
+ * Theme tokens — shared between popup and options
+ *
+ * All UI colors flow through these CSS variables. Components reference them
+ * via semantic Tailwind utilities (tw-bg-surface, tw-text-fg, etc.).
+ * A theme swap is purely a value change in one place.
+ *
+ * Theme is applied via a `data-theme="dark|light"` attribute on <html>.
+ * Defaults to dark.
+ * -------------------------------------------------------------------------*/
+
+:root,
+[data-theme="dark"] {
+  /* Surfaces */
+  --color-bg: #0f0f10;
+  --color-surface: #18181b;
+  --color-surface-2: #1a1a1f;
+  --color-surface-hover: rgba(255, 255, 255, 0.05);
+
+  /* Text */
+  --color-fg: #f5f5f5;
+  --color-fg-muted: #a1a1aa;
+  --color-fg-subtle: #71717a;
+
+  /* Borders */
+  --color-border-subtle: rgba(255, 255, 255, 0.06);
+  --color-border-default: #27272a;
+  --color-border-strong: #3f3f46;
+
+  /* Accent (interactive primary) */
+  --color-accent: #3b82f6;
+  --color-accent-hover: #2563eb;
+  --color-accent-fg: #ffffff;
+
+  /* Tonal pairs (background + foreground) for status badges/toasts */
+  --color-danger-bg: rgba(239, 68, 68, 0.1);
+  --color-danger-fg: #fca5a5;
+  --color-success-bg: rgba(34, 197, 94, 0.1);
+  --color-success-fg: #86efac;
+  --color-info-bg: rgba(59, 130, 246, 0.1);
+  --color-info-fg: #93c5fd;
+  --color-warning-bg: rgba(234, 179, 8, 0.1);
+  --color-warning-fg: #fde047;
+}
+
+[data-theme="light"] {
+  --color-bg: #fafafa;
+  --color-surface: #ffffff;
+  --color-surface-2: #ffffff;
+  --color-surface-hover: rgba(0, 0, 0, 0.04);
+
+  --color-fg: #18181b;
+  --color-fg-muted: #52525b;
+  --color-fg-subtle: #71717a;
+
+  --color-border-subtle: rgba(0, 0, 0, 0.06);
+  --color-border-default: #e4e4e7;
+  --color-border-strong: #d4d4d8;
+
+  --color-accent: #2563eb;
+  --color-accent-hover: #1d4ed8;
+  --color-accent-fg: #ffffff;
+
+  --color-danger-bg: rgba(220, 38, 38, 0.08);
+  --color-danger-fg: #b91c1c;
+  --color-success-bg: rgba(22, 163, 74, 0.08);
+  --color-success-fg: #15803d;
+  --color-info-bg: rgba(37, 99, 235, 0.08);
+  --color-info-fg: #1d4ed8;
+  --color-warning-bg: rgba(202, 138, 4, 0.1);
+  --color-warning-fg: #a16207;
+}
+
+/*
+ * Keyframes referenced from arbitrary tailwind classes
+ * (e.g. `tw-animate-[fadeIn_150ms_ease-out]`).
+ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.96) translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

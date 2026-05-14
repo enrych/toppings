@@ -1,10 +1,10 @@
 import React from "react";
-import PageHeader from "../components/layout/PageHeader";
-import Section from "../components/layout/Section";
-import SectionNav from "../components/layout/SectionNav";
-import Card from "../components/layout/Card";
-import Keybinding from "../components/form/Keybinding";
-import { useStoreUpdater } from "../hooks/useStoreUpdater";
+import PageHeader from "../../shared/components/layout/PageHeader";
+import Section from "../../shared/components/layout/Section";
+import SectionNav from "../../shared/components/layout/SectionNav";
+import Card from "../../shared/components/layout/Card";
+import Keybinding from "../../shared/components/form/Keybinding";
+import { useStoreUpdater } from "../../shared/hooks/useStoreUpdater";
 
 export const sectionNavItems = [
   { id: "watch", label: "Watch" },

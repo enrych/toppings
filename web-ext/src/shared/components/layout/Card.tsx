@@ -12,9 +12,11 @@ interface CardProps {
 export default function Card({ children, className = "" }: CardProps) {
   return (
     <div
-      className={`tw-bg-[#18181b] tw-border tw-border-gray-800 tw-rounded-xl tw-divide-y tw-divide-gray-800/60 ${className}`}
+      className={`tw-bg-surface tw-border tw-border-border-default tw-rounded-xl ${className}`}
     >
-      <div className="tw-px-5 tw-py-1">{children}</div>
+      <div className="tw-px-5 tw-py-1 tw-divide-y tw-divide-border-subtle">
+        {children}
+      </div>
     </div>
   );
 }

@@ -106,7 +106,7 @@ export default function Popup({
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
         tabIndex={-1}
-        className={`tw-relative tw-w-full ${widthClass} tw-bg-[#18181b] tw-border tw-border-gray-700/50 tw-rounded-xl tw-shadow-2xl tw-text-gray-100 focus:tw-outline-none tw-animate-[popIn_180ms_ease-out]`}
+        className={`tw-relative tw-w-full ${widthClass} tw-bg-surface tw-border tw-border-border-strong tw-rounded-xl tw-shadow-2xl tw-text-fg focus:tw-outline-none tw-animate-[popIn_180ms_ease-out]`}
       >
         {children}
       </div>

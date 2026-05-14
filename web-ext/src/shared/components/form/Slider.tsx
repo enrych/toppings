@@ -56,12 +56,12 @@ export default function Slider({
           step={step}
           value={internal}
           onChange={handleChange}
-          className="tw-flex-1 tw-h-1 tw-rounded-full tw-appearance-none tw-cursor-pointer tw-bg-gray-600 focus:tw-outline-none"
+          className="tw-flex-1 tw-h-1 tw-rounded-full tw-appearance-none tw-cursor-pointer focus:tw-outline-none"
           style={{
-            background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${percent}%, #4b5563 ${percent}%, #4b5563 100%)`,
+            background: `linear-gradient(to right, var(--color-accent) 0%, var(--color-accent) ${percent}%, var(--color-border-strong) ${percent}%, var(--color-border-strong) 100%)`,
           }}
         />
-        <span className="tw-text-sm tw-font-mono tw-text-gray-300 tw-min-w-[3.5rem] tw-text-right">
+        <span className="tw-text-sm tw-font-mono tw-text-fg-muted tw-min-w-[3.5rem] tw-text-right">
           {format(internal)}
         </span>
       </div>

@@ -1,25 +1,25 @@
 import React from "react";
-import PageHeader from "../components/layout/PageHeader";
-import Section from "../components/layout/Section";
-import SectionNav from "../components/layout/SectionNav";
-import Card from "../components/layout/Card";
-import Switch from "../components/form/Switch";
-import Keybinding from "../components/form/Keybinding";
-import Input from "../components/form/Input";
-import Select from "../components/form/Select";
-import Slider from "../components/form/Slider";
-import FilePicker from "../components/form/FilePicker";
-import Field from "../components/form/Field";
-import Button from "../components/primitives/Button";
-import Badge from "../components/primitives/Badge";
-import Icon from "../components/primitives/Icon";
-import { useStoreUpdater } from "../hooks/useStoreUpdater";
-import { useToast } from "../components/feedback/ToastProvider";
-import { useConfirm } from "../components/feedback/ConfirmProvider";
+import PageHeader from "../../shared/components/layout/PageHeader";
+import Section from "../../shared/components/layout/Section";
+import SectionNav from "../../shared/components/layout/SectionNav";
+import Card from "../../shared/components/layout/Card";
+import Switch from "../../shared/components/form/Switch";
+import Keybinding from "../../shared/components/form/Keybinding";
+import Input from "../../shared/components/form/Input";
+import Select from "../../shared/components/form/Select";
+import Slider from "../../shared/components/form/Slider";
+import FilePicker from "../../shared/components/form/FilePicker";
+import Field from "../../shared/components/form/Field";
+import Button from "../../shared/components/primitives/Button";
+import Badge from "../../shared/components/primitives/Badge";
+import Icon from "../../shared/components/primitives/Icon";
+import { useStoreUpdater } from "../../shared/hooks/useStoreUpdater";
+import { useToast } from "../../shared/components/feedback/ToastProvider";
+import { useConfirm } from "../../shared/components/feedback/ConfirmProvider";
 import {
   useChromeStorageLocal,
   useChromeStorageLocalCount,
-} from "../hooks/useChromeStorageLocal";
+} from "../../shared/hooks/useChromeStorageLocal";
 
 export const sectionNavItems = [
   { id: "general", label: "General" },

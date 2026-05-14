@@ -37,8 +37,8 @@ export default function Switch({
         role="switch"
         aria-checked={checked}
         onClick={handleChange}
-        className={`tw-relative tw-inline-flex tw-h-6 tw-w-11 tw-flex-shrink-0 tw-cursor-pointer tw-rounded-full tw-border-2 tw-border-transparent tw-transition-colors tw-duration-200 focus-visible:tw-outline-none focus-visible:tw-ring-2 focus-visible:tw-ring-blue-500/60 focus-visible:tw-ring-offset-2 focus-visible:tw-ring-offset-[#0f0f10] ${
-          checked ? "tw-bg-blue-500" : "tw-bg-gray-600"
+        className={`tw-relative tw-inline-flex tw-h-6 tw-w-11 tw-flex-shrink-0 tw-cursor-pointer tw-rounded-full tw-border-2 tw-border-transparent tw-transition-colors tw-duration-200 focus-visible:tw-outline-none focus-visible:tw-ring-2 focus-visible:tw-ring-accent/50 focus-visible:tw-ring-offset-2 focus-visible:tw-ring-offset-bg ${
+          checked ? "tw-bg-accent" : "tw-bg-border-strong"
         }`}
       >
         <span

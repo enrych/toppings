@@ -9,14 +9,6 @@ interface SectionNavProps {
   items: SectionNavItem[];
 }
 
-/**
- * Right-rail in-page anchor nav. Highlights the section currently in view
- * using IntersectionObserver. Click an item to smooth-scroll to that
- * section.
- *
- * Use this when a single page has multiple Section blocks worth jumping
- * between (e.g. the Audio Mode page).
- */
 export default function SectionNav({ items }: SectionNavProps) {
   const [activeId, setActiveId] = useState<string | null>(items[0]?.id ?? null);
 
@@ -25,7 +17,6 @@ export default function SectionNav({ items }: SectionNavProps) {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        // Pick the entry closest to the top of the viewport.
         const visible = entries
           .filter((e) => e.isIntersecting)
           .sort(
@@ -55,11 +46,8 @@ export default function SectionNav({ items }: SectionNavProps) {
   };
 
   return (
-    <nav
-      aria-label="On this page"
-      className="tw-flex tw-flex-col tw-gap-1"
-    >
-      <div className="tw-text-[11px] tw-uppercase tw-tracking-wider tw-text-gray-500 tw-font-semibold tw-px-3 tw-mb-1">
+    <nav aria-label="On this page" className="tw-flex tw-flex-col tw-gap-1">
+      <div className="tw-text-[11px] tw-uppercase tw-tracking-wider tw-text-fg-subtle tw-font-semibold tw-px-3 tw-mb-1">
         On this page
       </div>
       {items.map((item) => {
@@ -71,8 +59,8 @@ export default function SectionNav({ items }: SectionNavProps) {
             onClick={(e) => onClick(e, item.id)}
             className={`tw-px-3 tw-py-1.5 tw-text-sm tw-rounded-md tw-transition-colors tw-border-l-2 ${
               active
-                ? "tw-text-white tw-border-blue-500 tw-bg-white/5"
-                : "tw-text-gray-400 tw-border-transparent hover:tw-text-gray-200 hover:tw-bg-white/[0.03]"
+                ? "tw-text-fg tw-border-accent tw-bg-surface-hover"
+                : "tw-text-fg-muted tw-border-transparent hover:tw-text-fg hover:tw-bg-surface-hover"
             }`}
           >
             {item.label}

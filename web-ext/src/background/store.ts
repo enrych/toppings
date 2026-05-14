@@ -1,5 +1,8 @@
 export const DEFAULT_STORE = {
   isExtensionEnabled: true as boolean,
+  ui: {
+    theme: "system" as "system" | "dark" | "light",
+  },
   preferences: {
     watch: {
       isEnabled: true as boolean,

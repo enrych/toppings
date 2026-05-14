@@ -56,10 +56,10 @@ export default function Keybinding({
         onFocus={() => setRecording(true)}
         onBlur={() => setRecording(false)}
         onKeyDown={onKeyDown}
-        className={`tw-w-32 tw-px-3 tw-py-2 tw-bg-[#0a0a0c] tw-text-white tw-text-sm tw-text-center tw-font-mono tw-rounded-md tw-border tw-cursor-pointer focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500/30 tw-transition-colors ${
+        className={`tw-w-32 tw-px-3 tw-py-2 tw-bg-bg tw-text-fg tw-text-sm tw-text-center tw-font-mono tw-rounded-md tw-border tw-cursor-pointer focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-accent/30 tw-transition-colors ${
           recording
-            ? "tw-border-blue-500 tw-text-blue-300"
-            : "tw-border-gray-600/50 hover:tw-border-gray-500"
+            ? "tw-border-accent tw-text-accent"
+            : "tw-border-border-strong hover:tw-border-border-strong"
         }`}
       />
     </Field>
