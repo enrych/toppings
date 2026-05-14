@@ -2,8 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import firefoxIcon from "@/assets/icons/firefox.svg";
 import githubIcon from "@/assets/icons/github.svg";
-import toppingsLogo from "@/assets/brand/toppings-logo-512.png";
 import InstallButton from "@/components/InstallButton";
+import WatchMockup from "./WatchMockup";
 import {
   BROWSER_TARGET,
   EXTERNAL_URL,
@@ -11,26 +11,28 @@ import {
 } from "toppings-constants";
 
 /**
- * Hero — implements the design-system handoff with the brand illustration
- * acting as the single permitted visual moment.
+ * Hero — implements the design-system handoff.
  *
- *  - Eyebrow with amber dot + status line ("Free · Open source · v2.4.0")
- *  - Oversized editorial headline; the single decorative effect is the
- *    amber highlighter behind ONE word ("way")
- *  - Lede paragraph capped at ~620px
- *  - Three CTAs: primary (Add to Chrome, ink fill, amber arrow), ghost
- *    Firefox, ghost Source
- *  - Hero meta line: two short trust statements with ink-bold lead-ins
- *  - Right column on desktop: the detailed pizza-slice illustration on a
- *    soft amber halo. Per the design system this is "the brand's one
- *    moment of visual storytelling and is allowed to break the
- *    minimalism rule because it carries the entire personality of
- *    Toppings."
+ * The visual on the right is a product mockup of YouTube with Toppings
+ * actually working inside it — Audio Mode veil over the player, amber
+ * loop markers on the progress bar, amber Toppings buttons in the
+ * controls, and the playlist-runtime card below. This is product-led
+ * visual storytelling (per the design's principle of "the brand asserts
+ * itself fully" in the playlist-runtime card area).
+ *
+ * The pizza-slice logo lives in the Navbar and Footer — it's a brand
+ * mark for the nav lockup, not a decoration. The hero earns its visual
+ * weight from the actual product.
+ *
+ *  - Left column (1.35fr): eyebrow, oversized headline with amber
+ *    highlighter on "way", lede, three CTAs, trust meta
+ *  - Right column (1fr): the watch-page mockup, sized to roughly 520px
+ *    on desktop; stacks below the copy on mobile
  */
 export default function Hero() {
   return (
     <section className="px-6 pb-24 pt-[88px] lg:px-14 lg:pb-[96px]">
-      <div className="mx-auto grid max-w-page gap-12 lg:grid-cols-[1.35fr_1fr] lg:items-center lg:gap-16">
+      <div className="mx-auto grid max-w-page gap-12 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-16">
         <div>
           <div className="t-eyebrow mb-6 inline-flex items-center gap-[10px] !text-[--fg-2]">
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber" />
@@ -38,13 +40,15 @@ export default function Hero() {
           </div>
 
           <h1
-            className="text-[56px] font-black leading-[0.92] tracking-[-0.045em] text-ink sm:text-[80px] lg:text-[112px]"
+            className="text-[56px] font-black leading-[0.92] tracking-[-0.045em] text-ink sm:text-[72px] lg:text-[96px]"
             style={{ fontWeight: 900, textWrap: "balance" }}
           >
             {WEBSITE_HERO.HEADLINE_LINE_1}
             <br />
             {WEBSITE_HERO.HEADLINE_LINE_2_BEFORE}
-            <span className="amber-underline">{WEBSITE_HERO.HEADLINE_LINE_2_HIGHLIGHT}</span>
+            <span className="amber-underline">
+              {WEBSITE_HERO.HEADLINE_LINE_2_HIGHLIGHT}
+            </span>
             {WEBSITE_HERO.HEADLINE_LINE_2_AFTER}
           </h1>
 
@@ -88,28 +92,9 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Brand illustration — the one permitted decorative visual. */}
-        <div className="relative mx-auto flex max-w-[420px] items-center justify-center lg:mx-0 lg:ml-auto lg:max-w-none">
-          {/* Soft amber halo behind the illustration — restrained, single tone. */}
-          <div
-            aria-hidden
-            className="absolute inset-0 -z-10"
-            style={{
-              background:
-                "radial-gradient(closest-side, rgba(252,169,41,0.22), rgba(252,169,41,0) 70%)",
-              filter: "blur(8px)",
-            }}
-          />
-          <Image
-            src={toppingsLogo}
-            alt="Toppings — a pizza-slice illustration that doubles as the brand mark"
-            width={420}
-            height={420}
-            priority
-            sizes="(min-width: 1024px) 420px, 80vw"
-            className="h-auto w-full max-w-[420px] select-none"
-            draggable={false}
-          />
+        {/* Product mockup — Toppings inside YouTube. */}
+        <div className="relative w-full lg:max-w-none">
+          <WatchMockup />
         </div>
       </div>
     </section>
