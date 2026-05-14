@@ -1,67 +1,93 @@
-name: Bug Report
-description: Report a bug or unexpected behavior.
-title: "Bug: [Brief description of the issue]"
-labels: ["Status: Needs Investigation", "Type: Bug 🐛"]
+name: Bug report
+description: Something is broken or behaves incorrectly.
+title: "[Bug] "
+labels: ["bug"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thank you for reporting a bug! Please fill out the details below so we can help resolve the issue quickly.
+        Thanks for taking the time to report a problem. The more specific you are, the faster we can triage.
+
+        **Using AI or automation to draft this?** That is fine — please still verify reproduction steps yourself and fill in version / environment accurately.
 
   - type: textarea
-    id: description
+    id: summary
     attributes:
-      label: Description
-      description: "Provide a clear and concise description of the bug."
-      placeholder: "Describe the bug in detail."
+      label: Summary
+      description: One or two sentences describing what goes wrong.
+      placeholder: e.g. Playlist runtime freezes when…
+    validations:
+      required: true
 
   - type: textarea
-    id: steps_to_reproduce
+    id: steps
     attributes:
-      label: Steps to Reproduce
-      description: "Please provide step-by-step instructions on how to reproduce the bug."
+      label: Steps to reproduce
+      description: Numbered steps someone else can follow from a clean state (after install / refresh as relevant).
       placeholder: |
-        1. Go to '...'
-        2. Click on '...'
-        3. Scroll down to '...'
-        4. See error
+        1. …
+        2. …
+        3. …
+    validations:
+      required: true
 
   - type: textarea
-    id: expected_behavior
+    id: expected
     attributes:
-      label: Expected Behavior
-      description: "Describe what you expected to happen."
-      placeholder: "Expected outcome of the action."
+      label: Expected behavior
+      placeholder: What should happen instead?
+    validations:
+      required: true
 
   - type: textarea
-    id: actual_behavior
+    id: actual
     attributes:
-      label: Actual Behavior
-      description: "Describe what actually happened."
-      placeholder: "Actual outcome that you observed."
+      label: Actual behavior
+      placeholder: What happened, including any error text if visible.
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Toppings version
+      description: Extension version from the store listing or the in-extension UI, if you can find it.
+      placeholder: e.g. 3.0.3
 
   - type: dropdown
     id: browser
     attributes:
       label: Browser
-      description: "Select the browser where the issue occurs."
       options:
-        - "Chrome"
-        - "Firefox"
-        - "Edge"
-        - "Safari"
-        - "Other"
+        - Chrome
+        - Firefox
+        - Edge
+        - Safari
+        - Other / not sure
+    validations:
+      required: true
 
   - type: input
     id: browser_version
     attributes:
-      label: Browser Version
-      description: "Provide the browser version where the bug occurred."
-      placeholder: "e.g., 91.0.4472.124"
+      label: Browser version (optional)
+      placeholder: e.g. 136.0.7103.93
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - macOS
+        - Windows
+        - Linux
+        - Other / not sure
+    validations:
+      required: true
 
   - type: textarea
-    id: additional_context
+    id: context
     attributes:
-      label: Additional Context
-      description: "Add any other context, logs, or screenshots to help us understand the issue."
-      placeholder: "Include logs, screenshots, or other details here."
+      label: Additional context
+      description: Screenshots, screen recording, console errors (extension/service worker), or anything else that helps.
+      placeholder: Attach images by dragging them into this field, or paste logs here.

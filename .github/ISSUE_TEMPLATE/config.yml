@@ -1,1 +1,11 @@
 blank_issues_enabled: true
+contact_links:
+  - name: Questions & ideas
+    url: https://github.com/enrych/toppings/discussions
+    about: Usage help, brainstorming, and general conversation — not for reproducible bug reports.
+  - name: Wiki
+    url: https://github.com/enrych/toppings/wiki
+    about: Community documentation; open a Documentation issue if something is wrong or missing.
+  - name: Security
+    url: https://github.com/enrych/toppings/security
+    about: Report sensitive issues through GitHub; do not file public issues for vulnerabilities.
