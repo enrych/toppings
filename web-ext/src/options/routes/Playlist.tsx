@@ -18,9 +18,12 @@ export default function Playlist() {
           description="When enabled, the total and average runtime for a playlist appears at the top of the page."
         >
           <Card>
-            <p className="tw-text-sm tw-text-gray-400 tw-py-3">
+            <p className="tw-text-sm tw-text-fg-muted tw-py-3">
               The Playlist feature toggle lives on the{" "}
-              <Link to="/" className="tw-text-blue-400 hover:tw-text-blue-300">
+              <Link
+                to="/"
+                className="tw-text-accent hover:tw-text-accent-hover"
+              >
                 General
               </Link>{" "}
               page. There are no other playlist-specific settings yet.

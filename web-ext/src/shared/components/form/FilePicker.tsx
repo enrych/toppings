@@ -46,10 +46,10 @@ export default function FilePicker({
           <img
             src={value}
             alt="Selected"
-            className="tw-w-12 tw-h-12 tw-object-cover tw-rounded tw-border tw-border-gray-600/50"
+            className="tw-w-12 tw-h-12 tw-object-cover tw-rounded tw-border tw-border-border-default"
           />
         ) : (
-          <div className="tw-w-12 tw-h-12 tw-rounded tw-border tw-border-dashed tw-border-gray-600/40 tw-flex tw-items-center tw-justify-center tw-text-gray-600">
+          <div className="tw-w-12 tw-h-12 tw-rounded tw-border tw-border-dashed tw-border-border-default tw-flex tw-items-center tw-justify-center tw-text-fg-subtle">
             <Icon name="image" size={20} />
           </div>
         )}

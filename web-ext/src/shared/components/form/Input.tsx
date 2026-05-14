@@ -121,10 +121,10 @@ export default function Input({
               </svg>
             )}
             {status === "valid" && (
-              <Icon name="check" size={16} className="tw-text-green-400" />
+              <Icon name="check" size={16} className="tw-text-success-fg" />
             )}
             {status === "invalid" && (
-              <Icon name="x" size={16} className="tw-text-red-400" />
+              <Icon name="x" size={16} className="tw-text-danger-fg" />
             )}
           </span>
         )}

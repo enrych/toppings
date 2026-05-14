@@ -151,12 +151,12 @@ export default function Watch() {
           description="Mark a section of any video to loop continuously."
         >
           <Card>
-            <p className="tw-text-sm tw-text-gray-400 tw-py-3">
+            <p className="tw-text-sm tw-text-fg-muted tw-py-3">
               Use the loop button in the player or the keyboard shortcuts to
               mark loop start/end points. Configure shortcuts on the{" "}
               <Link
                 to="/keybindings"
-                className="tw-text-blue-400 hover:tw-text-blue-300"
+                className="tw-text-accent hover:tw-text-accent-hover"
               >
                 Shortcuts
               </Link>{" "}
