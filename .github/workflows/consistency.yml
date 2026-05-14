@@ -1,0 +1,36 @@
+name: Consistency
+
+# Runs the cross-package consistency check on every PR. Hard failures
+# (version drift between manifest / package.json / EXTENSION_VERSION,
+# missing RELEASES entry, TODO placeholders, etc.) block the merge.
+# Soft warnings (un-documented features, aging doc snapshots) print to
+# the log but don't block.
+#
+# Local equivalent: bun run scripts/check-consistency.ts
+on:
+  pull_request:
+    paths:
+      - "packages/constants/**"
+      - "web-ext/src/manifest.json"
+      - "web-ext/package.json"
+      - "website/package.json"
+      - "backend/package.json"
+      - "package.json"
+      - "scripts/check-consistency.ts"
+      - "website/app/docs/**"
+      - ".github/workflows/consistency.yml"
+  push:
+    branches: [main]
+
+jobs:
+  consistency:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install workspace dependencies
+        run: bun install --frozen-lockfile
+      - name: Run consistency check
+        run: bun run scripts/check-consistency.ts

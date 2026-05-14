@@ -157,15 +157,18 @@ export interface ExtensionWhatsNewEntry {
   items: string[];
 }
 
-export const EXTENSION_WHATS_NEW: ExtensionWhatsNewEntry[] = [
-  {
-    version: EXTENSION_WHATS_NEW_VERSION.NEXT,
-    date: EXTENSION_WHATS_NEW_DATE.MAY_2026,
-    items: [
-      EXTENSION_WHATS_NEW_ITEM.AUDIO_MODE,
-      EXTENSION_WHATS_NEW_ITEM.VISUALIZER_SENSITIVITY,
-      EXTENSION_WHATS_NEW_ITEM.THEMES,
-      EXTENSION_WHATS_NEW_ITEM.OPTIONS_REDESIGN,
-    ],
-  },
-];
+/**
+ * Backwards-compatible flat-string view of the canonical RELEASES list
+ * (packages/constants/src/releases.ts). New consumers should import
+ * `RELEASES` and `userFacingItems` directly. This export exists so the
+ * legacy popup "What's New" panel keeps working without a sweeping
+ * refactor.
+ */
+import { RELEASES, userFacingItems } from "./releases";
+export const EXTENSION_WHATS_NEW: ExtensionWhatsNewEntry[] = RELEASES.map(
+  (r) => ({
+    version: r.version,
+    date: r.date,
+    items: userFacingItems(r.items).map((i) => i.text),
+  }),
+);

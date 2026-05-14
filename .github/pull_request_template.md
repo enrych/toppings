@@ -25,3 +25,15 @@ Use closing keywords like "Closes #123", "Fixes #456", or mention "Related to #7
 
 <!-- Any additional information or considerations that the reviewer should be aware of.
 Mention anything that could impact other parts of the system, potential backward incompatibilities, or plans for future refactoring. Write "NA" if not applicable. -->
+
+---
+
+**Cross-cutting checklist (only for features / behavior changes)**
+
+<!-- Tick what applies. Leave a blank line for unchecked items so reviewers can see the explicit list. The CI consistency check (.github/workflows/consistency.yml) enforces version sync; the items below are judgment calls only you can make. Bug fixes and refactors typically don't need any of these. -->
+
+- [ ] **Docs updated** — install guide / FAQ / keybindings under `website/app/docs/*` reflect the new behavior.
+- [ ] **Release notes** — added an item to the current entry in `packages/constants/src/releases.ts` (or marked `version: "next"` if not shipping yet).
+- [ ] **Feature catalog** — if this introduces a new top-level user-facing capability, added an entry to `EXTENSION_FEATURE_DEFINITIONS` in `packages/constants/src/extensionFeatureCatalog.ts`.
+- [ ] **Version bump** — if this PR is the release, ran `bun run scripts/bump-version.ts <kind>` and verified `bun run scripts/check-consistency.ts` is green.
+- [ ] **Doc snapshot** — for minor/major releases, ran with `--snapshot` so the previous version's docs are archived under `website/app/docs/v<minor>/`.

@@ -28,6 +28,7 @@ export const DOCS_NAV: DocsNavGroup[] = [
     items: [
       { id: "keybindings", label: "Keybindings", href: "/docs/keybindings" },
       { id: "faq", label: "FAQ", href: "/docs/faq" },
+      { id: "changelog", label: "Changelog", href: "/docs/changelog" },
     ],
   },
 ];

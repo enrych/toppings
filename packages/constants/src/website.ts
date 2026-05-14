@@ -1,4 +1,5 @@
 import { EXTERNAL_URL } from "./links";
+import { EXTENSION_VERSION } from "./version";
 
 export const WEBSITE_METADATA = {
   TITLE: "Toppings — Your YouTube, your way.",
@@ -72,8 +73,8 @@ export const WEBSITE_FOOTER_COPY = {
 export const WEBSITE_FOOTER_BRAND_ALT = "";
 
 export const WEBSITE_VERSION_DISPLAY = {
-  HERO_EYEBROW: "Free · Open source · v2.4.0",
-  FOOTER_FALLBACK: "2.4.0",
+  HERO_EYEBROW: `Free · Open source · v${EXTENSION_VERSION}`,
+  FOOTER_FALLBACK: EXTENSION_VERSION,
 } as const;
 
 export const WEBSITE_FOOTER_LINK_GROUPS = [

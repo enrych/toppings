@@ -1,6 +1,6 @@
 {
   "name": "toppings",
-  "version": "0.0.0",
+  "version": "3.0.3",
   "private": true,
   "scripts": {
     "deploy": "wrangler deploy",

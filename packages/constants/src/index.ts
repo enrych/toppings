@@ -12,4 +12,6 @@ export * from "./extensionYoutubePage";
 export * from "./http";
 export * from "./links";
 export * from "./markup";
+export * from "./releases";
+export * from "./version";
 export * from "./website";
