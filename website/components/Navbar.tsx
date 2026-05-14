@@ -2,7 +2,15 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import toppingsLogo from "@/assets/brand/toppings-logo-512.png";
 import InstallButton from "./InstallButton";
+import {
+  BROWSER_TARGET,
+  EXTERNAL_URL,
+  WEBSITE_BRAND,
+  WEBSITE_NAV_LINK,
+  WEBSITE_SCROLL,
+} from "toppings-constants";
 
 /**
  * Marketing Navbar. Implements the Claude Design handoff exactly:
@@ -17,7 +25,8 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
+    const onScroll = () =>
+      setScrolled(window.scrollY > WEBSITE_SCROLL.NAVBAR_BORDER_THRESHOLD_PX);
     onScroll();
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
@@ -35,8 +44,8 @@ export default function Navbar() {
       <div className="mx-auto flex h-[76px] max-w-page items-center justify-between px-6 lg:px-14">
         <Link href="/" className="flex items-center gap-3">
           <Image
-            src="/brand/toppings-logo-512.png"
-            alt="Toppings"
+            src={toppingsLogo}
+            alt={WEBSITE_BRAND.NAME}
             width={36}
             height={36}
             priority
@@ -46,22 +55,22 @@ export default function Navbar() {
             className="text-[22px] font-black tracking-[-0.04em] text-ink"
             style={{ fontWeight: 900 }}
           >
-            Toppings
+            {WEBSITE_BRAND.NAME}
           </span>
         </Link>
         <div className="flex items-center gap-7">
           <Link
-            href="https://github.com/enrych/toppings/wiki"
+            href={EXTERNAL_URL.GITHUB_WIKI}
             className="hidden text-sm font-medium text-[--fg-2] transition-colors duration-150 hover:text-flame lg:inline"
           >
-            Read Wiki
+            {WEBSITE_NAV_LINK.WIKI_LABEL}
           </Link>
           <Link
-            href="https://darhkvoyd.me/sponsor"
-            target="_blank"
+            href={EXTERNAL_URL.SPONSOR}
+            target={BROWSER_TARGET.BLANK}
             className="hidden text-sm font-medium text-[--fg-2] transition-colors duration-150 hover:text-flame lg:inline"
           >
-            Become a sponsor
+            {WEBSITE_NAV_LINK.SPONSOR_LABEL}
           </Link>
           <InstallButton size="sm" />
         </div>

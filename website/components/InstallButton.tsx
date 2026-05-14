@@ -1,21 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-
-const STORES = {
-  chrome: {
-    url: "https://chrome.google.com/webstore/detail/toppings/aemiblppibhggpgijajindcmmomboibl",
-    label: "Add to Chrome",
-  },
-  firefox: {
-    url: "https://addons.mozilla.org/en-US/firefox/addon/toppings/",
-    label: "Add to Firefox",
-  },
-  unknown: {
-    url: "https://www.github.com/enrych/toppings",
-    label: "Get Toppings",
-  },
-};
+import {
+  BROWSER_TARGET,
+  WEBSITE_INSTALL_DESTINATION,
+  WEBSITE_UA_PATTERN,
+} from "toppings-constants";
 
 interface InstallButtonProps {
   size?: "sm" | "md";
@@ -31,26 +21,30 @@ interface InstallButtonProps {
  * rule in globals.css.
  */
 export default function InstallButton({ size = "md" }: InstallButtonProps) {
-  const [agent, setAgent] = useState<keyof typeof STORES>("unknown");
+  const [agent, setAgent] = useState<keyof typeof WEBSITE_INSTALL_DESTINATION>(
+    "unknown",
+  );
 
   useEffect(() => {
     const ua = navigator.userAgent;
-    if (/chrome|chromium|crios|edg|opr\//i.test(ua)) setAgent("chrome");
-    else if (/firefox|fxios/i.test(ua)) setAgent("firefox");
+    if (WEBSITE_UA_PATTERN.CHROMIUM_LIKE.test(ua)) setAgent("chrome");
+    else if (WEBSITE_UA_PATTERN.FIREFOX_LIKE.test(ua)) setAgent("firefox");
     else setAgent("unknown");
   }, []);
 
   const sizing =
     size === "sm" ? { height: 40, padding: "0 18px", fontSize: 14 } : undefined;
 
+  const store = WEBSITE_INSTALL_DESTINATION[agent];
+
   return (
     <Link
-      href={STORES[agent].url}
-      target="_blank"
+      href={store.url}
+      target={BROWSER_TARGET.BLANK}
       className="btn btn--primary"
       style={sizing}
     >
-      {STORES[agent].label}
+      {store.label}
       <svg
         className="arrow"
         viewBox="0 0 24 24"

@@ -10,56 +10,10 @@
  * Mirrors design-system/toppings/project/colors_and_type.css.
  * ============================================================ */
 
-/* ---------- Self-hosted fonts ---------- */
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/fonts/inter-400.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("/fonts/inter-500.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 600;
-  font-display: swap;
-  src: url("/fonts/inter-600.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url("/fonts/inter-700.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 900;
-  font-display: swap;
-  src: url("/fonts/inter-900.woff2") format("woff2");
-}
-@font-face {
-  font-family: "JetBrains Mono";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/fonts/jetbrains-mono-400.woff2") format("woff2");
-}
-@font-face {
-  font-family: "JetBrains Mono";
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url("/fonts/jetbrains-mono-500.woff2") format("woff2");
-}
+/* Fonts (Inter + JetBrains Mono) are loaded via `next/font/local` in
+ * app/layout.tsx so they pick up the deployment's basePath automatically.
+ * The font-family names below resolve to the CSS variables that
+ * next/font/local exposes (--font-sans, --font-mono). */
 
 /* ---------- 1. Brand tokens (the four) ---------- */
 @layer base {
@@ -121,11 +75,18 @@
     --highlighter: var(--amber);
 
     /* ---------- Type ---------- */
+    /*
+     * next/font/local exposes --font-inter and --font-jetbrains-mono on
+     * <html> (see app/layout.tsx). We chain them through our semantic
+     * --font-sans / --font-mono vars so the fallback stack still applies
+     * if the woff2 fails to load.
+     */
     --font-sans:
-      "Inter", "Inter Variable", -apple-system, BlinkMacSystemFont,
+      var(--font-inter), -apple-system, BlinkMacSystemFont,
       "Helvetica Neue", Arial, sans-serif;
     --font-mono:
-      "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+      var(--font-jetbrains-mono), "SF Mono", ui-monospace, Menlo, Consolas,
+      monospace;
 
     --fw-regular: 400;
     --fw-medium: 500;

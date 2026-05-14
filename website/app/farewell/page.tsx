@@ -2,6 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import formIcon from "@/assets/icons/form.png";
 import farewellIllustration from "@/assets/illustrations/farewell.webp";
+import {
+  BROWSER_TARGET,
+  WEBSITE_FAREWELL,
+  WEBSITE_FEEDBACK_MAILTO_HREF,
+  WEBSITE_PRIMARY_BUTTON_HOVER_TW,
+} from "toppings-constants";
 
 export default function Farewell() {
   return (
@@ -12,29 +18,33 @@ export default function Farewell() {
             className="text-[70px] max-w-[700px] font-bold text-gray-900 leading-tight text-center "
             style={{ fontVariationSettings: "'wght' 900" }}
           >
-            Goodbye!
+            {WEBSITE_FAREWELL.TITLE_GOODBYE}
             <br />
-            <span className="text-primary">We&apos;ll Miss You!</span>
+            <span className="text-primary">{WEBSITE_FAREWELL.TITLE_MISS}</span>
           </h1>
           <p className="mt-4 text-lg text-gray-700 text-center">
-            We&apos;re sorry to see you go. We&apos;d love to hear about any
-            feedback you may have.
+            {WEBSITE_FAREWELL.BODY}
           </p>
           <div className="py-8">
             <Link
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-md ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground h-10 px-6 py-6 gap-2 bg-primary hover:bg-[#fc9c26] font-bold text-base"
-              href="mailto:divyadityasnaruka@gmail.com?subject=Feedback%20for%20Toppings"
-              target="_blank"
+              className={`inline-flex items-center justify-center whitespace-nowrap rounded-md ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground h-10 px-6 py-6 gap-2 bg-primary font-bold text-base ${WEBSITE_PRIMARY_BUTTON_HOVER_TW}`}
+              href={WEBSITE_FEEDBACK_MAILTO_HREF}
+              target={BROWSER_TARGET.BLANK}
             >
-              <Image src={formIcon} alt="Form" width={24} height={24} />
-              Help Us Improve!
+              <Image
+                src={formIcon}
+                alt={WEBSITE_FAREWELL.FORM_ICON_ALT}
+                width={24}
+                height={24}
+              />
+              {WEBSITE_FAREWELL.FEEDBACK_BUTTON}
             </Link>
           </div>
         </div>
         <div className="flex items-center justify-center w-full lg:w-1/2">
           <Image
             src={farewellIllustration}
-            alt="hero"
+            alt={WEBSITE_FAREWELL.ILLUSTRATION_ALT}
             className="max-w-none w-3/4 lg:w-[70vw] lg:h-[90vh] relative lg:transform drop-shadow-md select-none"
             draggable={false}
           />

@@ -1,36 +1,5 @@
-interface Feature {
-  n: string;
-  h: string;
-  p: string;
-  k: string;
-}
-
-const FEATURES: Feature[] = [
-  {
-    n: "01",
-    h: "Loop a segment",
-    p: "Drop two markers on the timeline. Anything between them loops, forever.",
-    k: "⇧ L",
-  },
-  {
-    n: "02",
-    h: "Custom playback",
-    p: "Set rates from 0.25x to 4x in any increment. Persists per channel.",
-    k: ", · .",
-  },
-  {
-    n: "03",
-    h: "Auto-scroll Shorts",
-    p: "When a Short ends, jump to the next. No taps. No thumbs.",
-    k: "auto",
-  },
-  {
-    n: "04",
-    h: "Playlist runtimes",
-    p: "See exactly how long that 47-video binge will take. Before you start.",
-    k: "live",
-  },
-];
+import type { ReactNode } from "react";
+import { WEBSITE_HOME_FEATURE_GRID } from "toppings-constants";
 
 /**
  * FeatureGrid — four equal cells separated by hairline rules. No cards,
@@ -38,36 +7,39 @@ const FEATURES: Feature[] = [
  * the point.
  */
 export default function FeatureGrid() {
+  const { ROWS, SECTION_HEADLINE, SECTION_LEDE_PART_1, SECTION_LEDE_PART_2 } =
+    WEBSITE_HOME_FEATURE_GRID;
+
   return (
     <section className="py-24 lg:py-[96px]">
       <div className="mx-auto max-w-page px-6 lg:px-14">
         <SectionHead
-          h2={<>Four small superpowers.</>}
+          h2={<>{SECTION_HEADLINE}</>}
           p={
             <>
-              We didn&rsquo;t redesign YouTube. We added the four buttons it
-              forgot — nothing more, nothing less.
+              {SECTION_LEDE_PART_1}
+              {SECTION_LEDE_PART_2}
             </>
           }
         />
       </div>
       <div className="mx-auto max-w-page px-6 lg:px-14">
         <div className="grid grid-cols-1 gap-px border-b border-t border-[--border-1] bg-[--border-1] sm:grid-cols-2 lg:grid-cols-4">
-          {FEATURES.map((f) => (
+          {ROWS.map((f) => (
             <div
-              key={f.n}
+              key={f.index}
               className="flex min-h-[220px] flex-col gap-3 bg-cream p-8 px-7"
             >
               <div className="font-mono text-xs font-medium uppercase tracking-[0.04em] text-[--fg-3]">
-                {f.n}
+                {f.index}
               </div>
               <h3 className="text-[22px] font-bold leading-[1.1] tracking-[-0.022em] text-ink">
-                {f.h}
+                {f.title}
               </h3>
-              <p className="text-sm leading-[1.55] text-[--fg-2]">{f.p}</p>
+              <p className="text-sm leading-[1.55] text-[--fg-2]">{f.body}</p>
               <div className="mt-auto inline-flex items-center gap-1 font-mono text-[11px] text-[--fg-3]">
                 <kbd className="kbd !min-w-0 !h-[22px] !px-1.5 !text-[11px] !font-medium">
-                  {f.k}
+                  {f.kbd}
                 </kbd>
               </div>
             </div>
@@ -87,8 +59,8 @@ export function SectionHead({
   p,
   inverse = false,
 }: {
-  h2: React.ReactNode;
-  p: React.ReactNode;
+  h2: ReactNode;
+  p: ReactNode;
   inverse?: boolean;
 }) {
   return (

@@ -1,52 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
-
-interface LinkGroup {
-  title: string;
-  links: Array<{ label: string; href: string }>;
-}
-
-const GROUPS: LinkGroup[] = [
-  {
-    title: "Product",
-    links: [
-      {
-        label: "Add to Chrome",
-        href: "https://chrome.google.com/webstore/detail/toppings/aemiblppibhggpgijajindcmmomboibl",
-      },
-      {
-        label: "Add to Firefox",
-        href: "https://addons.mozilla.org/en-US/firefox/addon/toppings/",
-      },
-      {
-        label: "What’s new",
-        href: "https://github.com/enrych/toppings/releases",
-      },
-    ],
-  },
-  {
-    title: "Docs",
-    links: [
-      { label: "Read Wiki", href: "https://github.com/enrych/toppings/wiki" },
-      {
-        label: "Keybindings",
-        href: "https://github.com/enrych/toppings/wiki/Keybindings",
-      },
-      { label: "FAQ", href: "https://github.com/enrych/toppings/wiki" },
-    ],
-  },
-  {
-    title: "Open source",
-    links: [
-      { label: "Source code", href: "https://github.com/enrych/toppings" },
-      {
-        label: "Report a bug",
-        href: "https://github.com/enrych/toppings/issues",
-      },
-      { label: "Become a sponsor", href: "https://darhkvoyd.me/sponsor" },
-    ],
-  },
-];
+import toppingsLogo from "@/assets/brand/toppings-logo-512.png";
+import {
+  WEBSITE_BRAND,
+  WEBSITE_FOOTER_BRAND_ALT,
+  WEBSITE_FOOTER_COPY,
+  WEBSITE_FOOTER_LINK_GROUPS,
+  WEBSITE_LINK_PROTOCOL_PREFIX,
+  WEBSITE_VERSION_DISPLAY,
+  BROWSER_TARGET,
+} from "toppings-constants";
 
 /**
  * Footer. Ink ground (per design: "the page closes on the brand's inverse
@@ -61,8 +24,8 @@ export default function Footer() {
           <div>
             <div className="mb-6 flex items-center gap-3">
               <Image
-                src="/brand/toppings-logo-512.png"
-                alt=""
+                src={toppingsLogo}
+                alt={WEBSITE_FOOTER_BRAND_ALT}
                 width={36}
                 height={36}
                 className="h-9 w-9"
@@ -71,15 +34,14 @@ export default function Footer() {
                 className="text-[22px] font-black tracking-[-0.04em]"
                 style={{ fontWeight: 900 }}
               >
-                Toppings
+                {WEBSITE_BRAND.NAME}
               </span>
             </div>
             <p className="max-w-[280px] text-sm leading-[1.5] text-[--fg-on-ink-2]">
-              A free, open-source browser extension for total control over
-              YouTube. Built by Enrych.
+              {WEBSITE_FOOTER_COPY.TAGLINE}
             </p>
           </div>
-          {GROUPS.map((g) => (
+          {WEBSITE_FOOTER_LINK_GROUPS.map((g) => (
             <div key={g.title}>
               <h4 className="t-eyebrow mb-[18px] !text-[--fg-on-ink-2]">
                 {g.title}
@@ -89,7 +51,11 @@ export default function Footer() {
                   <li key={l.label}>
                     <Link
                       href={l.href}
-                      target={l.href.startsWith("http") ? "_blank" : undefined}
+                      target={
+                        l.href.startsWith(WEBSITE_LINK_PROTOCOL_PREFIX)
+                          ? BROWSER_TARGET.BLANK
+                          : undefined
+                      }
                       className="text-sm text-[--fg-on-ink-1] transition-colors duration-150 hover:text-amber"
                     >
                       {l.label}
@@ -101,9 +67,15 @@ export default function Footer() {
           ))}
         </div>
         <div className="mt-16 flex items-center justify-between border-t border-[--border-on-ink-1] pt-6 text-xs text-[--fg-on-ink-2]">
-          <span>GPL-3.0 · {new Date().getFullYear()} · Toppings</span>
+          <span>
+            {WEBSITE_FOOTER_COPY.LICENSE_LINE_PREFIX}
+            {new Date().getFullYear()}
+            {WEBSITE_FOOTER_COPY.LICENSE_LINE_SUFFIX}
+          </span>
           <span className="font-mono">
-            v{process.env.NEXT_PUBLIC_TOPPINGS_VERSION ?? "2.4.0"}
+            v
+            {process.env.NEXT_PUBLIC_TOPPINGS_VERSION ??
+              WEBSITE_VERSION_DISPLAY.FOOTER_FALLBACK}
           </span>
         </div>
       </div>

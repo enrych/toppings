@@ -2,6 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import questionMarkIcon from "@/assets/icons/question-mark.svg";
 import greetingsIllustration from "@/assets/illustrations/greetings.webp";
+import {
+  BROWSER_TARGET,
+  EXTERNAL_URL,
+  WEBSITE_GREETINGS,
+  WEBSITE_PRIMARY_BUTTON_HOVER_TW,
+} from "toppings-constants";
 
 export default function Greetings() {
   return (
@@ -12,34 +18,34 @@ export default function Greetings() {
             className="text-[70px] max-w-[500px] font-bold text-gray-900 leading-tight text-center "
             style={{ fontVariationSettings: "'wght' 900" }}
           >
-            Success!
+            {WEBSITE_GREETINGS.TITLE_SUCCESS}
             <br />
-            <span className="text-primary">You&apos;re All Set!</span>
+            <span className="text-primary">{WEBSITE_GREETINGS.TITLE_SET}</span>
           </h1>
           <p className="mt-4 text-lg text-gray-700 text-center">
-            Thank you for installing our extension. <br />
-            Happy browsing!
+            {WEBSITE_GREETINGS.BODY} <br />
+            {WEBSITE_GREETINGS.BODY_LINE_2}
           </p>
           <div className="py-8">
             <Link
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-md ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground h-10 px-6 py-6 gap-2 bg-primary hover:bg-[#fc9c26] font-bold text-base"
-              href="https://github.com/enrych/toppings/wiki"
-              target="_blank"
+              className={`inline-flex items-center justify-center whitespace-nowrap rounded-md ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 text-primary-foreground h-10 px-6 py-6 gap-2 bg-primary font-bold text-base ${WEBSITE_PRIMARY_BUTTON_HOVER_TW}`}
+              href={EXTERNAL_URL.GITHUB_WIKI}
+              target={BROWSER_TARGET.BLANK}
             >
               <Image
                 src={questionMarkIcon}
-                alt="Question Mark"
+                alt={WEBSITE_GREETINGS.QUESTION_MARK_ALT}
                 width={24}
                 height={24}
               />
-              Read Wiki
+              {WEBSITE_GREETINGS.WIKI_BUTTON}
             </Link>
           </div>
         </div>
         <div className="flex items-center justify-center w-full lg:w-1/2">
           <Image
             src={greetingsIllustration}
-            alt="hero"
+            alt={WEBSITE_GREETINGS.ILLUSTRATION_ALT}
             className="max-w-none w-3/4 lg:w-[70vw] relative lg:transform drop-shadow-md select-none"
             draggable={false}
           />
