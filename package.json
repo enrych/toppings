@@ -1,0 +1,5 @@
+{
+  "name": "toppings-monorepo",
+  "private": true,
+  "workspaces": ["packages/constants", "web-ext", "website", "backend"]
+}

@@ -91,7 +91,7 @@ export default (env) => {
         },
         {
           test: /\.(ts|tsx)$/,
-          exclude: /node_modules/,
+          exclude: /node_modules\/(?!toppings-constants\/)/,
           use: {
             loader: "babel-loader",
             options: {

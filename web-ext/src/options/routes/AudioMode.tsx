@@ -20,6 +20,7 @@ import {
   useChromeStorageLocal,
   useChromeStorageLocalCount,
 } from "../../shared/hooks/useChromeStorageLocal";
+import { CHROME_STORAGE_LOCAL_KEY } from "toppings-constants";
 
 export const sectionNavItems = [
   { id: "general", label: "General" },
@@ -37,10 +38,12 @@ export default function AudioMode() {
   const confirm = useConfirm();
   const am = store.preferences.watch.audioMode;
   const [localImage, setLocalImage] = useChromeStorageLocal<string | null>(
-    "audioMode_globalCustomImage",
+    CHROME_STORAGE_LOCAL_KEY.AUDIO_MODE_GLOBAL_CUSTOM_IMAGE,
     null,
   );
-  const pinnedCount = useChromeStorageLocalCount("audioMode_pin_");
+  const pinnedCount = useChromeStorageLocalCount(
+    CHROME_STORAGE_LOCAL_KEY.AUDIO_MODE_PIN_KEY_PREFIX,
+  );
 
   const handlePickImage = (file: File) => {
     const reader = new FileReader();
@@ -70,7 +73,7 @@ export default function AudioMode() {
     if (!ok) return;
     chrome.storage.local.get(null, (items) => {
       const keys = Object.keys(items).filter((k) =>
-        k.startsWith("audioMode_pin_"),
+        k.startsWith(CHROME_STORAGE_LOCAL_KEY.AUDIO_MODE_PIN_KEY_PREFIX),
       );
       if (keys.length > 0) {
         chrome.storage.local.remove(keys, () => {

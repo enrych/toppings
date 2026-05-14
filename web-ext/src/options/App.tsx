@@ -9,6 +9,11 @@ import { useTheme } from "../shared/hooks/useTheme";
 import { SectionsRail as WatchRail } from "./routes/Watch";
 import { SectionsRail as AudioModeRail } from "./routes/AudioMode";
 import { SectionsRail as KeybindingsRail } from "./routes/Keybindings";
+import {
+  CHROME_STORAGE_LOCAL_KEY,
+  OPTIONS_RAIL_PATH,
+  ROUTE_PATH_ABSOLUTE_PREFIX,
+} from "toppings-constants";
 
 function ThemeApplier({ children }: { children: React.ReactNode }) {
   useTheme();
@@ -19,10 +24,10 @@ function ThemeApplier({ children }: { children: React.ReactNode }) {
  * Map of routes that have a section anchor rail to the rail component.
  * Pages without an entry render with full width.
  */
-const RAILS: Record<string, React.ComponentType> = {
-  "/watch": WatchRail,
-  "/audio-mode": AudioModeRail,
-  "/keybindings": KeybindingsRail,
+const RAILS: Partial<Record<string, React.ComponentType>> = {
+  [OPTIONS_RAIL_PATH.WATCH]: WatchRail,
+  [OPTIONS_RAIL_PATH.AUDIO_MODE]: AudioModeRail,
+  [OPTIONS_RAIL_PATH.KEYBINDINGS]: KeybindingsRail,
 };
 
 /**
@@ -34,13 +39,24 @@ const RAILS: Record<string, React.ComponentType> = {
 function PendingRouteHandler() {
   const navigate = useNavigate();
   useEffect(() => {
-    chrome.storage.local.get("options_pending_route", (result) => {
-      const route = result.options_pending_route as string | undefined;
-      if (route && typeof route === "string" && route.startsWith("/")) {
-        navigate(route, { replace: true });
-        chrome.storage.local.remove("options_pending_route");
-      }
-    });
+    chrome.storage.local.get(
+      [CHROME_STORAGE_LOCAL_KEY.OPTIONS_PENDING_ROUTE],
+      (result) => {
+        const route = result[
+          CHROME_STORAGE_LOCAL_KEY.OPTIONS_PENDING_ROUTE
+        ] as string | undefined;
+        if (
+          route &&
+          typeof route === "string" &&
+          route.startsWith(ROUTE_PATH_ABSOLUTE_PREFIX)
+        ) {
+          navigate(route, { replace: true });
+          chrome.storage.local.remove([
+            CHROME_STORAGE_LOCAL_KEY.OPTIONS_PENDING_ROUTE,
+          ]);
+        }
+      },
+    );
     // Run once on mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

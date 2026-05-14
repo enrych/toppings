@@ -1,3 +1,4 @@
+import { JSON_MESSAGE_FIELD, MESSAGE_TYPE } from "toppings-constants";
 import { Context } from "../context";
 
 /**
@@ -25,12 +26,11 @@ export const dispatchContext = async (
   tabId: number,
   ctx: Exclude<Context, null>,
 ): Promise<void> => {
-  // For URL, To ensure the message is structurally cloneable across browsers.
-  const message = { type: "context", payload: ctx };
+  const message = {
+    [JSON_MESSAGE_FIELD.TYPE]: MESSAGE_TYPE.CONTEXT,
+    [JSON_MESSAGE_FIELD.PAYLOAD]: ctx,
+  };
   const serializedContext = JSON.stringify(message);
-  // sendMessage will throw "Error: Could not establish connection. Receiving end does not exist."
-  // if there is no content script loaded in the given tab. This error is
-  // noisy and mysterious (it usually doesn't have a valid line number), so we silence it.
   return await chrome.tabs
     .sendMessage(tabId, serializedContext)
     .catch(() => {});

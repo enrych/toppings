@@ -1,4 +1,5 @@
-import { AutoRouter, Router, error } from "itty-router";
+import { AutoRouter, error } from "itty-router";
+import { BACKEND_ROUTE, BACKEND_RESPONSE_BODY } from "toppings-constants";
 import { preflight, corsify } from "./middlewares/cors";
 import ResponseEntity from "./utils/responseEntity";
 import { playlistRouter } from "./routers/playlist";
@@ -9,10 +10,10 @@ const router = AutoRouter({
   catch: error,
 });
 
-router.get("/ping", () => {
-  return ResponseEntity.ok("pong");
+router.get(BACKEND_ROUTE.PING, () => {
+  return ResponseEntity.ok(BACKEND_RESPONSE_BODY.PING_OK);
 });
 
-router.all("/playlist/*", playlistRouter);
+router.all(BACKEND_ROUTE.PLAYLIST_MOUNT, playlistRouter);
 
 export default router;

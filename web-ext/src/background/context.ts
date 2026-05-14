@@ -1,16 +1,19 @@
 import {
+  ERROR_MESSAGE,
+  HTTP_ACCEPT,
+  HTTP_HEADER,
+  HTTP_METHOD,
+  LIKED_VIDEOS_PLAYLIST_ID,
   LOCAL_SERVER_URL,
   NODE_ENV,
-  PROD_SERVER_URL,
   PATHNAME as YOUTUBE_PATHNAME,
+  PROD_SERVER_URL,
   WATCH_LATER_PLAYLIST_ID,
-  LIKED_VIDEOS_PLAYLIST_ID,
-  ERROR_MESSAGE,
+  WORKER_API_PATH,
+  YOUTUBE_PAGE_PATH,
   YOUTUBE_SEARCH_PARAM,
-  HTTP_METHOD,
-  HTTP_ACCEPT,
-  HTTP_STATUS,
-} from "../constants/global.constants";
+  YOUTUBE_URL_PATH_SEGMENT_INDEX,
+} from "toppings-constants";
 import { getStorage, Storage } from "./store";
 
 const SERVER_BASE_URL =
@@ -74,7 +77,7 @@ export const getContext = async (rawURL: string): Promise<Context> => {
     throw new Error(ERROR_MESSAGE.STORE_NOT_FOUND);
   }
 
-  if (url.pathname.startsWith("/watch")) {
+  if (url.pathname.startsWith(YOUTUBE_PAGE_PATH.WATCH)) {
     const videoId = url.searchParams.get(YOUTUBE_SEARCH_PARAM.VIDEO_ID);
     if (!videoId) return null;
 
@@ -83,7 +86,7 @@ export const getContext = async (rawURL: string): Promise<Context> => {
       payload: { videoId },
       store,
     } as const;
-  } else if (url.pathname.startsWith("/playlist")) {
+  } else if (url.pathname.startsWith(YOUTUBE_PAGE_PATH.PLAYLIST)) {
     const playlistId = url.searchParams.get(YOUTUBE_SEARCH_PARAM.PLAYLIST_ID);
 
     if (
@@ -100,10 +103,10 @@ export const getContext = async (rawURL: string): Promise<Context> => {
 
     try {
       const response = await fetch(
-        `${SERVER_BASE_URL}/playlist/${playlistId}`,
+        `${SERVER_BASE_URL}${WORKER_API_PATH.PLAYLIST_PREFIX}/${playlistId}`,
         {
           method: HTTP_METHOD.GET,
-          headers: { Accept: HTTP_ACCEPT.JSON },
+          headers: { [HTTP_HEADER.ACCEPT]: HTTP_ACCEPT.JSON },
         },
       );
 
@@ -125,8 +128,10 @@ export const getContext = async (rawURL: string): Promise<Context> => {
         store,
       } as const;
     }
-  } else if (url.pathname.startsWith("/shorts")) {
-    const shortId = url.pathname.split("/")[2] || null;
+  } else if (url.pathname.startsWith(YOUTUBE_PAGE_PATH.SHORTS)) {
+    const shortId =
+      url.pathname.split("/")[YOUTUBE_URL_PATH_SEGMENT_INDEX.SHORTS_VIDEO_ID] ||
+      null;
     return {
       pathname: YOUTUBE_PATHNAME.SHORTS,
       payload: { shortId },

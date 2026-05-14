@@ -2,124 +2,395 @@
 @tailwind components;
 @tailwind utilities;
 
-/* -------------------------------------------------------------------------
- * Toppings brand tokens
- *
- * Single accent (amber). Cream background. Near-black ink. Everything else
- * is grayscale. We deliberately do not have rose/violet/blue brand tokens —
- * restraint is the brand.
- *
- * Use these tokens (`cream`, `ink`, `amber`, `flame`) directly in tailwind
- * via the arbitrary-value `text-[...]`, `bg-[...]`, etc., or via the
- * `text-ink`, `bg-cream` semantic classes defined in tailwind.config.ts.
- * -------------------------------------------------------------------------*/
+/* ============================================================
+ * TOPPINGS — Design Tokens
+ * Implementation of the Claude Design handoff bundle (May 2026).
+ * Warm minimalism. Cream page, ink type, one amber accent.
+ * Four colors. No rainbows. No per-feature tonal variation.
+ * Mirrors design-system/toppings/project/colors_and_type.css.
+ * ============================================================ */
 
-@layer base {
-  :root {
-    /* shadcn-style HSL for the legacy ui (CallToAction etc.) */
-    --background: 36 100% 98%;
-    --foreground: 0 0% 4%;
-
-    --card: 36 100% 98%;
-    --card-foreground: 0 0% 4%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 4%;
-
-    --primary: 35 96% 57%;
-    --primary-foreground: 0 0% 4%;
-
-    --secondary: 36 30% 94%;
-    --secondary-foreground: 0 0% 4%;
-
-    --muted: 36 30% 94%;
-    --muted-foreground: 0 0% 32%;
-
-    --accent: 35 96% 57%;
-    --accent-foreground: 0 0% 4%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 35 96% 57%;
-
-    --radius: 0.5rem;
-
-    /* Direct brand tokens (rgb triplets so we can use them with /opacity) */
-    --cream: 255, 249, 239;
-    --ink: 10, 10, 10;
-    --amber: 252, 169, 41;
-    --flame: 245, 124, 32;
-  }
+/* ---------- Self-hosted fonts ---------- */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/inter-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/inter-500.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/fonts/inter-600.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/inter-700.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url("/fonts/inter-900.woff2") format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/jetbrains-mono-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/jetbrains-mono-500.woff2") format("woff2");
 }
 
+/* ---------- 1. Brand tokens (the four) ---------- */
 @layer base {
+  :root {
+    --cream: #fff9ef;
+    --ink: #0a0a0a;
+    --amber: #fca929;
+    --flame: #f57c20;
+
+    /* HSL forms for shadcn-style consumers (kept for back-compat) */
+    --background: 36 100% 97%;
+    --foreground: 0 0% 4%;
+    --primary: 36 97% 57%;
+    --primary-foreground: 0 0% 4%;
+    --secondary: 36 30% 94%;
+    --secondary-foreground: 0 0% 4%;
+    --muted: 36 30% 94%;
+    --muted-foreground: 0 0% 32%;
+    --accent: 36 97% 57%;
+    --accent-foreground: 0 0% 4%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 36 97% 57%;
+    --popover: 36 100% 97%;
+    --popover-foreground: 0 0% 4%;
+    --card: 36 100% 97%;
+    --card-foreground: 0 0% 4%;
+    --radius: 0.5rem;
+
+    /* ---------- 2. Surface & ink scale ---------- */
+    --surface-page: var(--cream);
+    --surface-raised: #fffcf6;
+    --surface-sunken: #f8f1e1;
+    --surface-inverse: var(--ink);
+
+    --fg-1: var(--ink);
+    --fg-2: rgba(10, 10, 10, 0.72);
+    --fg-3: rgba(10, 10, 10, 0.52);
+    --fg-4: rgba(10, 10, 10, 0.32);
+
+    --border-1: rgba(10, 10, 10, 0.1);
+    --border-2: rgba(10, 10, 10, 0.18);
+    --border-strong: var(--ink);
+
+    --fg-on-ink-1: #f2efe7;
+    --fg-on-ink-2: rgba(242, 239, 231, 0.66);
+    --fg-on-ink-3: rgba(242, 239, 231, 0.4);
+    --border-on-ink-1: rgba(242, 239, 231, 0.12);
+
+    /* Accent (amber) — semantic */
+    --accent-color: var(--amber);
+    --accent-hover: var(--flame);
+    --accent-pressed: #e26a12;
+    --accent-on: var(--ink);
+
+    /* Highlighter — used behind ONE word per page */
+    --highlighter: var(--amber);
+
+    /* ---------- Type ---------- */
+    --font-sans:
+      "Inter", "Inter Variable", -apple-system, BlinkMacSystemFont,
+      "Helvetica Neue", Arial, sans-serif;
+    --font-mono:
+      "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+
+    --fw-regular: 400;
+    --fw-medium: 500;
+    --fw-semibold: 600;
+    --fw-display: 900;
+
+    --tracking-display: -0.04em;
+    --tracking-heading: -0.022em;
+    --tracking-body: -0.011em;
+    --tracking-eyebrow: 0.14em;
+
+    --lh-display: 0.94;
+    --lh-heading: 1.04;
+    --lh-body: 1.5;
+    --lh-tight: 1.2;
+
+    --fs-eyebrow: 12px;
+    --fs-small: 13px;
+    --fs-body: 16px;
+    --fs-lead: 19px;
+    --fs-h4: 24px;
+    --fs-h3: 32px;
+    --fs-h2: 48px;
+    --fs-h1: 72px;
+    --fs-display: clamp(56px, 8.4vw, 128px);
+
+    /* ---------- Spacing & radius ---------- */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+    --space-7: 48px;
+    --space-8: 64px;
+    --space-9: 96px;
+    --space-10: 128px;
+
+    --radius-xs: 4px;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-pill: 999px;
+
+    /* ---------- Motion ---------- */
+    --ease-expo-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+    --dur-fast: 140ms;
+    --dur-base: 240ms;
+    --dur-slow: 480ms;
+
+    /* ---------- Elevation ---------- */
+    --shadow-1:
+      0 1px 2px rgba(10, 10, 10, 0.04), 0 1px 1px rgba(10, 10, 10, 0.03);
+    --shadow-2:
+      0 4px 12px rgba(10, 10, 10, 0.05), 0 1px 2px rgba(10, 10, 10, 0.04);
+    --shadow-3:
+      0 12px 32px rgba(10, 10, 10, 0.08), 0 2px 6px rgba(10, 10, 10, 0.04);
+  }
+
   * {
     @apply border-border;
   }
+  html,
   body {
-    @apply bg-background text-foreground;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    font-feature-settings: "kern", "liga", "ss01";
+    background: var(--surface-page);
+    color: var(--fg-1);
   }
 }
 
-/* -------------------------------------------------------------------------
- * Utilities
- * -------------------------------------------------------------------------*/
-
-@layer utilities {
-  /* Subtle film-grain texture. Adds tactile depth on cream surfaces. */
-  .grain {
-    position: relative;
-    isolation: isolate;
+/* ---------- Semantic type classes ---------- */
+@layer components {
+  .t-display {
+    font-family: var(--font-sans);
+    font-weight: var(--fw-display);
+    font-size: var(--fs-display);
+    line-height: var(--lh-display);
+    letter-spacing: var(--tracking-display);
+    color: var(--fg-1);
+    text-wrap: balance;
   }
-  .grain::after {
+  .t-h1 {
+    font-family: var(--font-sans);
+    font-weight: var(--fw-display);
+    font-size: var(--fs-h1);
+    line-height: var(--lh-display);
+    letter-spacing: var(--tracking-display);
+    color: var(--fg-1);
+    text-wrap: balance;
+  }
+  .t-h2 {
+    font-family: var(--font-sans);
+    font-weight: var(--fw-display);
+    font-size: var(--fs-h2);
+    line-height: var(--lh-heading);
+    letter-spacing: var(--tracking-display);
+    color: var(--fg-1);
+    text-wrap: balance;
+  }
+  .t-h3 {
+    font-family: var(--font-sans);
+    font-weight: var(--fw-semibold);
+    font-size: var(--fs-h3);
+    line-height: var(--lh-heading);
+    letter-spacing: var(--tracking-heading);
+    color: var(--fg-1);
+  }
+  .t-h4 {
+    font-family: var(--font-sans);
+    font-weight: var(--fw-semibold);
+    font-size: var(--fs-h4);
+    line-height: var(--lh-heading);
+    letter-spacing: var(--tracking-heading);
+    color: var(--fg-1);
+  }
+  .t-lead {
+    font-family: var(--font-sans);
+    font-weight: var(--fw-regular);
+    font-size: var(--fs-lead);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tracking-body);
+    color: var(--fg-2);
+    text-wrap: pretty;
+  }
+  .t-body {
+    font-family: var(--font-sans);
+    font-weight: var(--fw-regular);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    letter-spacing: var(--tracking-body);
+    color: var(--fg-1);
+    text-wrap: pretty;
+  }
+  .t-small {
+    font-family: var(--font-sans);
+    font-weight: var(--fw-regular);
+    font-size: var(--fs-small);
+    line-height: 1.45;
+    color: var(--fg-2);
+  }
+  .t-eyebrow {
+    font-family: var(--font-sans);
+    font-weight: var(--fw-semibold);
+    font-size: var(--fs-eyebrow);
+    line-height: 1;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--fg-2);
+  }
+  .t-mono {
+    font-family: var(--font-mono);
+    font-weight: var(--fw-regular);
+    font-size: var(--fs-small);
+    color: var(--fg-2);
+  }
+
+  /* ---------- The amber highlighter ---------- */
+  /* Wraps EXACTLY one word per page, behind the glyphs. */
+  .amber-underline {
+    position: relative;
+    display: inline-block;
+    isolation: isolate;
+    color: var(--fg-1);
+    white-space: nowrap;
+  }
+  .amber-underline::before {
     content: "";
     position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0.04;
-    mix-blend-mode: multiply;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-    z-index: 1;
+    inset: 18% -0.08em 12% -0.08em;
+    background: var(--highlighter);
+    z-index: -1;
+    transform: skew(-3deg);
+    border-radius: 2px;
   }
 
-  /* Tight editorial display heading (used for the giant hero). */
-  .text-display {
-    font-weight: 900;
-    letter-spacing: -0.04em;
-    line-height: 0.92;
-    font-variation-settings: "wght" 900;
+  /* ---------- Buttons (marketing) ---------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 48px;
+    padding: 0 22px;
+    border-radius: 6px;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition:
+      background var(--dur-base) var(--ease-expo-out),
+      color var(--dur-base) var(--ease-expo-out),
+      border-color var(--dur-base) var(--ease-expo-out),
+      transform var(--dur-fast) var(--ease-expo-out);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn:active {
+    transform: translateY(1px);
+  }
+  .btn--primary {
+    background: var(--ink);
+    color: var(--fg-on-ink-1);
+  }
+  .btn--primary:hover {
+    background: #1f1f1f;
+  }
+  .btn--primary .arrow {
+    color: var(--amber);
+  }
+  .btn--ghost {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid rgba(10, 10, 10, 0.14);
+  }
+  .btn--ghost:hover {
+    border-color: var(--ink);
+  }
+  .btn img {
+    width: 18px;
+    height: 18px;
+  }
+  .btn .arrow {
+    width: 16px;
+    height: 16px;
+  }
+  .section--inverse .btn--ghost,
+  .footer .btn--ghost {
+    color: var(--fg-on-ink-1);
+    border-color: rgba(242, 239, 231, 0.18);
+  }
+  .section--inverse .btn--ghost:hover,
+  .footer .btn--ghost:hover {
+    border-color: var(--fg-on-ink-1);
   }
 
-  /* Amber underline — used as the single brand accent on the headline. */
-  .amber-underline {
-    background-image: linear-gradient(
-      transparent 70%,
-      rgba(var(--amber), 0.55) 70%,
-      rgba(var(--amber), 0.55) 95%,
-      transparent 95%
-    );
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-    padding: 0 0.05em;
+  /* ---------- Keyboard chip ---------- */
+  .kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 32px;
+    padding: 0 10px;
+    background: var(--ink);
+    color: var(--fg-on-ink-1);
+    border-radius: 6px;
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1;
   }
 }
 
-@keyframes marquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-/* Honor reduced motion — pause decorative animations. */
+/* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -127,5 +398,6 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

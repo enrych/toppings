@@ -1,142 +1,112 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const Footer = () => {
-  const footerItems = [
-    {
-      title: "Relevant Links",
-      links: [
-        { title: "Read Wiki", href: "https://github.com/enrych/toppings/wiki" },
-        { title: "Become a sponsor", href: "https://darhkvoyd.me/sponsor" },
-        {
-          title: "Source code",
-          href: "https://github.com/enrych/toppings",
-        },
-        {
-          title: "Submit Feedback",
-          href: "mailto:divyadityasnaruka@gmail.com?subject=Feedback%20for%20Toppings",
-        },
-        {
-          title: "Report bugs",
-          href: "https://github.com/enrych/toppings/issues",
-        },
-      ],
-    },
-  ];
+interface LinkGroup {
+  title: string;
+  links: Array<{ label: string; href: string }>;
+}
 
-  const footerCenterItem = Math.ceil(footerItems.length / 2);
+const GROUPS: LinkGroup[] = [
+  {
+    title: "Product",
+    links: [
+      {
+        label: "Add to Chrome",
+        href: "https://chrome.google.com/webstore/detail/toppings/aemiblppibhggpgijajindcmmomboibl",
+      },
+      {
+        label: "Add to Firefox",
+        href: "https://addons.mozilla.org/en-US/firefox/addon/toppings/",
+      },
+      {
+        label: "What’s new",
+        href: "https://github.com/enrych/toppings/releases",
+      },
+    ],
+  },
+  {
+    title: "Docs",
+    links: [
+      { label: "Read Wiki", href: "https://github.com/enrych/toppings/wiki" },
+      {
+        label: "Keybindings",
+        href: "https://github.com/enrych/toppings/wiki/Keybindings",
+      },
+      { label: "FAQ", href: "https://github.com/enrych/toppings/wiki" },
+    ],
+  },
+  {
+    title: "Open source",
+    links: [
+      { label: "Source code", href: "https://github.com/enrych/toppings" },
+      {
+        label: "Report a bug",
+        href: "https://github.com/enrych/toppings/issues",
+      },
+      { label: "Become a sponsor", href: "https://darhkvoyd.me/sponsor" },
+    ],
+  },
+];
+
+/**
+ * Footer. Ink ground (per design: "the page closes on the brand's inverse
+ * note"). Brand lockup top-left, three link columns to the right, hairline
+ * divider, GPL-3.0 + version on the bottom rule.
+ */
+export default function Footer() {
   return (
-    <footer className="relative bottom-0 left-0 right-0 w-full bg-[#111111] text-background">
-      <div className="pt-16 pb-8 px-6 max-w-7xl lg:pt-32 lg:px-8 mx-auto">
-        <div className="lg:grid grid-cols-3 gap-8">
+    <footer className="footer bg-ink text-[--fg-on-ink-1]">
+      <div className="mx-auto max-w-page px-6 pb-8 pt-20 lg:px-14">
+        <div className="grid gap-14 lg:grid-cols-[2fr_1fr_1fr_1fr]">
           <div>
-            <p className="text-sm font-bold">
+            <div className="mb-6 flex items-center gap-3">
               <Image
-                className="inline-block rounded mr-2"
-                src="https://enry.ch/assets/brand/logo_dark.png"
-                width={24}
-                height={24}
-                alt="Enrych Logo"
+                src="/brand/toppings-logo-512.png"
+                alt=""
+                width={36}
+                height={36}
+                className="h-9 w-9"
               />
-              Enrych
-            </p>
-            <p className="mt-6 text-xs">For You, Your Way, Always!</p>
-            <div className="mt-6">
-              <Link
-                href="https://github.com/enrych/toppings"
-                target="_blank"
-                rel="noreferrer"
+              <span
+                className="text-[22px] font-black tracking-[-0.04em]"
+                style={{ fontWeight: 900 }}
               >
-                <svg fill="currentColor" viewBox="0 0 24 24" className="size-6">
-                  <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"></path>
-                </svg>
-              </Link>
+                Toppings
+              </span>
             </div>
+            <p className="max-w-[280px] text-sm leading-[1.5] text-[--fg-on-ink-2]">
+              A free, open-source browser extension for total control over
+              YouTube. Built by Enrych.
+            </p>
           </div>
-          <div className="mt-16 grid lg:mt-0 lg:col-span-2 lg:grid-cols-2 gap-8">
-            <>
-              {footerItems.slice(0, footerCenterItem).map((category, i) => (
-                <div key={i} className="nav-list">
-                  <h4 className="m-0 text-white leading-6 font-semibold text-sm">
-                    {category.title}
-                  </h4>
-                  <ul className="mt-6 list-none p-0">
-                    {category.links.map((link, j) => (
-                      <li key={j} className={`${j > 0 ? "mt-4" : ""}`}>
-                        <a
-                          href={
-                            !link.href.includes("https://") &&
-                            !link.href.startsWith("mailto")
-                              ? `/toppings/${link.href}`
-                              : link.href
-                          }
-                          target={
-                            link.href.startsWith("/") ? "_self" : "_blank"
-                          }
-                          rel={
-                            link.href.startsWith("/")
-                              ? ""
-                              : "noopener noreferrer"
-                          }
-                          className="text-gray-300 leading-6 text-sm no-underline"
-                        >
-                          {link.title}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </>
-            <div className="list-group">
-              {footerItems.slice(footerCenterItem).map((category, i) => (
-                <div key={i} className="nav-list">
-                  <h4 className="m-0 text-white leading-6 font-semibold text-sm">
-                    {category.title}
-                  </h4>
-                  <ul className="mt-6 list-none p-0">
-                    {category.links.map((link, j) => (
-                      <li key={j} className={`${j > 0 ? "mt-4" : ""}`}>
-                        <a
-                          href={
-                            !link.href.includes("https://") &&
-                            !link.href.startsWith("mailto")
-                              ? `/toppings/${link.href}`
-                              : link.href
-                          }
-                          target={
-                            link.href.startsWith("/") ? "_self" : "_blank"
-                          }
-                          rel={
-                            link.href.startsWith("/")
-                              ? ""
-                              : "noopener noreferrer"
-                          }
-                          className="text-gray-300 leading-6 text-sm no-underline"
-                        >
-                          {link.title}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+          {GROUPS.map((g) => (
+            <div key={g.title}>
+              <h4 className="t-eyebrow mb-[18px] !text-[--fg-on-ink-2]">
+                {g.title}
+              </h4>
+              <ul className="grid gap-3">
+                {g.links.map((l) => (
+                  <li key={l.label}>
+                    <Link
+                      href={l.href}
+                      target={l.href.startsWith("http") ? "_blank" : undefined}
+                      className="text-sm text-[--fg-on-ink-1] transition-colors duration-150 hover:text-amber"
+                    >
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
-          </div>
+          ))}
         </div>
-
-        <div className="mt-24 pt-8 border-t border-solid border-gray-100">
-          <span className="text-sm">
-            GPL-3.0 License {new Date().getFullYear()} ©{" "}
-            <a href="https://enrych.github.io/toppings" target="_blank">
-              Toppings
-            </a>
-            .
+        <div className="mt-16 flex items-center justify-between border-t border-[--border-on-ink-1] pt-6 text-xs text-[--fg-on-ink-2]">
+          <span>GPL-3.0 · {new Date().getFullYear()} · Toppings</span>
+          <span className="font-mono">
+            v{process.env.NEXT_PUBLIC_TOPPINGS_VERSION ?? "2.4.0"}
           </span>
         </div>
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}

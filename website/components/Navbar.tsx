@@ -1,77 +1,71 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Akronim } from "next/font/google";
-import toppingsLogo from "@/assets/icons/icon512.png";
-import CallToAction from "./CallToAction";
+import InstallButton from "./InstallButton";
 
-const akronim = Akronim({
-  weight: "400",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const Navbar = () => {
-  const [hasScrolled, setHasScrolled] = useState(false);
+/**
+ * Marketing Navbar. Implements the Claude Design handoff exactly:
+ *  - Sticky, transparent over hero; gains a 1px hairline border bottom on
+ *    scroll. No shadows, no gradients.
+ *  - Brand wordmark in Inter 900 with display tracking (the same face as
+ *    the headlines, so the lockup feels like a single voice).
+ *  - Right side: two muted text links + one ink-filled install CTA with
+ *    an amber trailing arrow.
+ */
+export default function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 0) {
-        setHasScrolled(true);
-      } else {
-        setHasScrolled(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
     <nav
-      className={`sticky top-0 bg-background z-50 ${hasScrolled ? "shadow-md" : ""} transition-shadow duration-300`}
+      className={[
+        "sticky top-0 z-50 bg-cream transition-colors duration-200",
+        scrolled
+          ? "border-b border-[--border-1]"
+          : "border-b border-transparent",
+      ].join(" ")}
     >
-      <div className="max-w-[90vw] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-[80px]">
-        <div className="flex items-center">
-          <Link href="/" className="flex items-center">
-            <Image
-              src={toppingsLogo}
-              alt="Toppings Logo"
-              className="h-10 w-auto mr-2"
-            />
-            <span
-              className={`text-4xl font-normal text-brandBlack ${akronim.className}`}
-            >
-              Toppings
-            </span>
-          </Link>
-        </div>
-        <div className="flex items-center">
-          <div className="hidden lg:block">
-            <Link
-              className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 underline-offset-4 hover:underline h-10 px-6 py-6 text-foreground"
-              href="https://github.com/enrych/toppings/wiki"
-            >
-              Read Wiki
-            </Link>
-          </div>
+      <div className="mx-auto flex h-[76px] max-w-page items-center justify-between px-6 lg:px-14">
+        <Link href="/" className="flex items-center gap-3">
+          <Image
+            src="/brand/toppings-logo-512.png"
+            alt="Toppings"
+            width={36}
+            height={36}
+            priority
+            className="h-9 w-9"
+          />
+          <span
+            className="text-[22px] font-black tracking-[-0.04em] text-ink"
+            style={{ fontWeight: 900 }}
+          >
+            Toppings
+          </span>
+        </Link>
+        <div className="flex items-center gap-7">
           <Link
-            className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 underline-offset-4 hover:underline h-10 px-6 py-6 text-foreground"
+            href="https://github.com/enrych/toppings/wiki"
+            className="hidden text-sm font-medium text-[--fg-2] transition-colors duration-150 hover:text-flame lg:inline"
+          >
+            Read Wiki
+          </Link>
+          <Link
             href="https://darhkvoyd.me/sponsor"
             target="_blank"
+            className="hidden text-sm font-medium text-[--fg-2] transition-colors duration-150 hover:text-flame lg:inline"
           >
             Become a sponsor
           </Link>
-          <div className="hidden lg:block">
-            <CallToAction />
-          </div>
+          <InstallButton size="sm" />
         </div>
       </div>
     </nav>
   );
-};
-
-export default Navbar;
+}

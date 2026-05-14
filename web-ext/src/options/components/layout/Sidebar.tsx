@@ -4,6 +4,16 @@ import Icon, { IconName } from "../../../shared/components/primitives/Icon";
 import IconButton from "../../../shared/components/primitives/IconButton";
 import Tooltip from "../../../shared/components/primitives/Tooltip";
 import { useChromeStorageLocal } from "../../../shared/hooks/useChromeStorageLocal";
+import {
+  BROWSER_TARGET,
+  CHROME_STORAGE_LOCAL_KEY,
+  EXTERNAL_URL,
+  LINK_REL,
+  OPTIONS_ASSET_PATH,
+  OPTIONS_DOCUMENT_PATH,
+  OPTIONS_SIDEBAR_NAV_ITEM,
+  OPTIONS_SIDEBAR_UI,
+} from "toppings-constants";
 
 interface NavItem {
   to: string;
@@ -11,21 +21,16 @@ interface NavItem {
   icon: IconName;
 }
 
-const NAV_ITEMS: NavItem[] = [
-  { to: "/", label: "General", icon: "general" },
-  { to: "/watch", label: "Watch", icon: "watch" },
-  { to: "/audio-mode", label: "Audio Mode", icon: "audio" },
-  { to: "/shorts", label: "Shorts", icon: "shorts" },
-  { to: "/playlist", label: "Playlist", icon: "playlist" },
-  { to: "/keybindings", label: "Shortcuts", icon: "keyboard" },
-];
-
-const COLLAPSED_KEY = "options_sidebar_collapsed";
+const NAV_ITEMS: NavItem[] = OPTIONS_SIDEBAR_NAV_ITEM.map((item) => ({
+  to: item.documentPath,
+  label: item.label,
+  icon: item.icon as IconName,
+}));
 
 export default function Sidebar() {
   const version = chrome.runtime.getManifest().version;
   const [collapsed, setCollapsed] = useChromeStorageLocal<boolean>(
-    COLLAPSED_KEY,
+    CHROME_STORAGE_LOCAL_KEY.OPTIONS_SIDEBAR_COLLAPSED,
     false,
   );
 
@@ -41,29 +46,29 @@ export default function Sidebar() {
         {collapsed ? (
           <div className="tw-flex tw-justify-center">
             <img
-              src="/assets/icons/icon48.png"
-              alt="Toppings"
+              src={OPTIONS_ASSET_PATH.ICON_48}
+              alt={OPTIONS_SIDEBAR_UI.ALT_LOGO_COLLAPSED}
               className="tw-w-8 tw-h-8"
             />
           </div>
         ) : (
           <div className="tw-flex tw-items-center tw-gap-2.5">
             <img
-              src="/assets/icons/icon48.png"
-              alt="Toppings logo"
+              src={OPTIONS_ASSET_PATH.ICON_48}
+              alt={OPTIONS_SIDEBAR_UI.ALT_LOGO}
               className="tw-w-8 tw-h-8 tw-flex-shrink-0"
             />
             <div className="tw-min-w-0">
               <div className="tw-flex tw-items-baseline tw-gap-2">
                 <h1 className="tw-text-lg tw-font-bold tw-text-fg tw-truncate">
-                  Toppings
+                  {OPTIONS_SIDEBAR_UI.BRAND_NAME}
                 </h1>
                 <span className="tw-text-[10px] tw-text-fg-subtle tw-font-mono">
                   v{version}
                 </span>
               </div>
               <p className="tw-text-xs tw-text-fg-subtle tw-mt-0.5 tw-truncate">
-                Your YouTube, Your Way.
+                {OPTIONS_SIDEBAR_UI.TAGLINE}
               </p>
             </div>
           </div>
@@ -73,7 +78,7 @@ export default function Sidebar() {
       <nav className="tw-flex-1 tw-overflow-y-auto tw-py-3 tw-px-2">
         {!collapsed && (
           <div className="tw-text-[11px] tw-uppercase tw-tracking-wider tw-text-fg-subtle tw-font-semibold tw-px-3 tw-py-1 tw-mb-1">
-            Settings
+            {OPTIONS_SIDEBAR_UI.SETTINGS_SECTION_LABEL}
           </div>
         )}
         <ul className="tw-flex tw-flex-col tw-gap-0.5">
@@ -100,22 +105,22 @@ export default function Sidebar() {
       >
         {collapsed ? (
           <>
-            <Tooltip text="Expand sidebar" side="right">
+            <Tooltip text={OPTIONS_SIDEBAR_UI.TOOLTIP_EXPAND} side="right">
               <IconButton
                 size="sm"
                 variant="ghost"
-                aria-label="Expand sidebar"
+                aria-label={OPTIONS_SIDEBAR_UI.ARIA_EXPAND}
                 onClick={() => setCollapsed(false)}
               >
                 <Icon name="chevron-right" size={14} />
               </IconButton>
             </Tooltip>
-            <Tooltip text="GitHub" side="right">
+            <Tooltip text={OPTIONS_SIDEBAR_UI.TOOLTIP_GITHUB} side="right">
               <a
-                href="https://github.com/iamfaisalkhan/toppings"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="GitHub repository"
+                href={EXTERNAL_URL.GITHUB_REPO}
+                target={BROWSER_TARGET.BLANK}
+                rel={LINK_REL.NO_REFERRER}
+                aria-label={OPTIONS_SIDEBAR_UI.ARIA_GITHUB_REPO}
                 className="tw-w-7 tw-h-7 tw-inline-flex tw-items-center tw-justify-center tw-text-fg-muted hover:tw-text-fg tw-rounded-md hover:tw-bg-surface-hover tw-transition-colors"
               >
                 <Icon name="external" size={14} />
@@ -125,19 +130,19 @@ export default function Sidebar() {
         ) : (
           <>
             <a
-              href="https://github.com/iamfaisalkhan/toppings"
-              target="_blank"
-              rel="noreferrer"
+              href={EXTERNAL_URL.GITHUB_REPO}
+              target={BROWSER_TARGET.BLANK}
+              rel={LINK_REL.NO_REFERRER}
               className="tw-text-xs tw-text-fg-muted hover:tw-text-fg tw-transition-colors tw-inline-flex tw-items-center tw-gap-1"
             >
-              GitHub
+              {OPTIONS_SIDEBAR_UI.FOOTER_GITHUB_LABEL}
               <Icon name="external" size={11} />
             </a>
-            <Tooltip text="Collapse sidebar" side="left">
+            <Tooltip text={OPTIONS_SIDEBAR_UI.TOOLTIP_COLLAPSE} side="left">
               <IconButton
                 size="sm"
                 variant="ghost"
-                aria-label="Collapse sidebar"
+                aria-label={OPTIONS_SIDEBAR_UI.ARIA_COLLAPSE}
                 onClick={() => setCollapsed(true)}
               >
                 <Icon name="chevron-left" size={14} />
@@ -159,7 +164,7 @@ function NavItemLink({ item, collapsed }: NavItemLinkProps) {
   return (
     <NavLink
       to={item.to}
-      end={item.to === "/"}
+      end={item.to === OPTIONS_DOCUMENT_PATH.HOME}
       className={({ isActive }) =>
         `tw-flex tw-items-center tw-rounded-md tw-transition-colors tw-text-sm ${
           collapsed

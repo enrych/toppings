@@ -14,6 +14,12 @@ import {
   showAudioModeUI,
   hideAudioModeUI,
 } from "./AudioModeUI";
+import {
+  ARIA_PRESSED,
+  CHROME_STORAGE_LOCAL_KEY,
+  EXTENSION_AUDIO_MODE_DOM,
+  YOUTUBE_PAGE_DOM,
+} from "toppings-constants";
 import { Storage } from "../../../background/store";
 
 let isAudioModeActive = false;
@@ -38,10 +44,11 @@ type PerVideoPin = {
   imageUrl?: string;
 };
 
-const GLOBAL_CUSTOM_IMAGE_KEY = "audioMode_globalCustomImage";
+const GLOBAL_CUSTOM_IMAGE_KEY =
+  CHROME_STORAGE_LOCAL_KEY.AUDIO_MODE_GLOBAL_CUSTOM_IMAGE;
 
 function pinStorageKey(videoId: string): string {
-  return `audioMode_pin_${videoId}`;
+  return `${CHROME_STORAGE_LOCAL_KEY.AUDIO_MODE_PIN_KEY_PREFIX}${videoId}`;
 }
 
 function loadGlobalCustomImage(): Promise<string | null> {
@@ -86,7 +93,7 @@ export async function setupAudioMode(
   currentScreenMode = prefs.screenMode;
   currentCustomImageUrl = prefs.customBackground.globalImageUrl;
   videoPinned = false;
-  AudioModeButton.setAttribute("aria-pressed", "false");
+  AudioModeButton.setAttribute("aria-pressed", ARIA_PRESSED.FALSE);
   AudioModeOverlay.classList.add("tw-hidden");
   hideAudioModeUI();
   stopVisualizer();
@@ -102,11 +109,11 @@ export async function setupAudioMode(
   AudioModeButton.style.display = "";
   AudioModeButton.onclick = () => toggleAudioMode();
 
-  if (!moviePlayer.querySelector("#tppng-audio-mode-overlay")) {
+  if (!moviePlayer.querySelector(`#${EXTENSION_AUDIO_MODE_DOM.OVERLAY_ELEMENT_ID}`)) {
     moviePlayer.appendChild(AudioModeOverlay);
   }
 
-  if (!moviePlayer.querySelector("#tppng-audio-mode-ui")) {
+  if (!moviePlayer.querySelector(`#${EXTENSION_AUDIO_MODE_DOM.UI_CONTAINER_ELEMENT_ID}`)) {
     moviePlayer.appendChild(AudioModeUIContainer);
   }
 
@@ -163,7 +170,9 @@ function setupAdObserver(moviePlayer: HTMLElement) {
   }
 
   adObserver = new MutationObserver(() => {
-    const isAdPlaying = moviePlayer.classList.contains("ad-showing");
+    const isAdPlaying = moviePlayer.classList.contains(
+      YOUTUBE_PAGE_DOM.AD_SHOWING_CLASS,
+    );
 
     if (isAdPlaying && isAudioModeActive && !pausedForAd) {
       pausedForAd = true;
@@ -281,12 +290,16 @@ function applyScreenMode() {
 }
 
 function setYouTubeChromeHidden(hidden: boolean) {
-  const moviePlayer = document.getElementById("movie_player");
+  const moviePlayer = document.getElementById(
+    YOUTUBE_PAGE_DOM.MOVIE_PLAYER_ELEMENT_ID,
+  );
   if (!moviePlayer) return;
   if (hidden) {
-    moviePlayer.classList.add("tppng-audio-mode-on");
+    moviePlayer.classList.add(EXTENSION_AUDIO_MODE_DOM.MOVIE_PLAYER_AUDIO_MODE_CLASS);
   } else {
-    moviePlayer.classList.remove("tppng-audio-mode-on");
+    moviePlayer.classList.remove(
+      EXTENSION_AUDIO_MODE_DOM.MOVIE_PLAYER_AUDIO_MODE_CLASS,
+    );
   }
 }
 
@@ -299,7 +312,7 @@ export function toggleAudioMode() {
   userWantsAudioMode = isAudioModeActive;
   AudioModeButton.setAttribute(
     "aria-pressed",
-    isAudioModeActive ? "true" : "false",
+    isAudioModeActive ? ARIA_PRESSED.TRUE : ARIA_PRESSED.FALSE,
   );
 
   if (isAudioModeActive) {
@@ -332,7 +345,7 @@ export function teardownAudioMode() {
   isAudioModeActive = false;
   pausedForAd = false;
   videoPinned = false;
-  AudioModeButton.setAttribute("aria-pressed", "false");
+  AudioModeButton.setAttribute("aria-pressed", ARIA_PRESSED.FALSE);
   AudioModeOverlay.classList.add("tw-hidden");
   hideAudioModeUI();
   stopVisualizer();

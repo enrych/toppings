@@ -7,9 +7,10 @@ import onWatchPage from "./pages/watch";
 import "./index.css";
 import {
   EVENT_TYPE,
+  JSON_MESSAGE_FIELD,
   MESSAGE_TYPE,
   WARNING_MESSAGE,
-} from "../constants/global.constants";
+} from "toppings-constants";
 
 const pageHandlers: Record<keyof Storage["preferences"], Function> = {
   playlist: onPlaylistPage,
@@ -19,7 +20,9 @@ const pageHandlers: Record<keyof Storage["preferences"], Function> = {
 
 function runApp(message: any): undefined {
   (async () => {
-    const { type, payload } = JSON.parse(message);
+    const parsed = JSON.parse(message) as Record<string, unknown>;
+    const type = parsed[JSON_MESSAGE_FIELD.TYPE];
+    const payload = parsed[JSON_MESSAGE_FIELD.PAYLOAD];
 
     if (type !== MESSAGE_TYPE.CONTEXT) return;
     const ctx = payload as Exclude<Context, null>;
@@ -42,7 +45,10 @@ function runApp(message: any): undefined {
 // Handle Events
 chrome.runtime.sendMessage(
   chrome.runtime.id,
-  JSON.stringify({ type: MESSAGE_TYPE.EVENT, payload: EVENT_TYPE.CONNECTED }),
+  JSON.stringify({
+    [JSON_MESSAGE_FIELD.TYPE]: MESSAGE_TYPE.EVENT,
+    [JSON_MESSAGE_FIELD.PAYLOAD]: EVENT_TYPE.CONNECTED,
+  }),
   {},
   runApp,
 );

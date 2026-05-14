@@ -5,10 +5,11 @@ import {
   EVENT_TYPE,
   INSTALL_REASON,
   INSTALL_URL,
+  JSON_MESSAGE_FIELD,
   MESSAGE_TYPE,
   NODE_ENV,
   UNINSTALL_URL,
-} from "../constants/global.constants";
+} from "toppings-constants";
 
 // Handle Events
 chrome.runtime.onInstalled.addListener(onInitialize);
@@ -46,7 +47,9 @@ function onConnected(
 ) {
   (async () => {
     // This function handles the initial handshake between the content script and the background script.
-    const { type, payload } = JSON.parse(message);
+    const parsed = JSON.parse(message) as Record<string, unknown>;
+    const type = parsed[JSON_MESSAGE_FIELD.TYPE];
+    const payload = parsed[JSON_MESSAGE_FIELD.PAYLOAD];
     if (type !== MESSAGE_TYPE.EVENT) return;
 
     const event = payload;
@@ -61,7 +64,12 @@ function onConnected(
     const ctx = await getContext(url);
     if (!ctx?.store.isExtensionEnabled) return;
 
-    sendResponse(JSON.stringify({ type: "context", payload: ctx }));
+    sendResponse(
+      JSON.stringify({
+        [JSON_MESSAGE_FIELD.TYPE]: MESSAGE_TYPE.CONTEXT,
+        [JSON_MESSAGE_FIELD.PAYLOAD]: ctx,
+      }),
+    );
   })();
 
   // Return true to indicate that sendResponse will be called asynchronously

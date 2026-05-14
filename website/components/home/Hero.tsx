@@ -1,104 +1,74 @@
-"use client";
-import { motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
-import MagneticCTA from "./MagneticCTA";
-import PlayerMockup from "./PlayerMockup";
+import firefoxIcon from "@/assets/icons/firefox.svg";
+import githubIcon from "@/assets/icons/github.svg";
+import InstallButton from "@/components/InstallButton";
 
 /**
- * Hero — exaggerated minimalism. Big editorial type, single amber accent
- * via an underline on the brand promise, generous whitespace. No mesh
- * gradients, no rainbows. The product mockup carries the visual weight.
+ * Hero — implements the design-system handoff exactly.
+ *
+ *  - Eyebrow with amber dot + status line ("Free · Open source · v2.4.0")
+ *  - Oversized editorial headline; the single decorative effect is the
+ *    amber highlighter behind ONE word ("way")
+ *  - Lede paragraph capped at ~620px
+ *  - Three CTAs: primary (Add to Chrome, ink fill, amber arrow), ghost
+ *    Firefox, ghost Source
+ *  - Hero meta line: two short trust statements with ink-bold lead-ins
  */
 export default function Hero() {
   return (
-    <section className="relative pt-10 lg:pt-16 pb-24 lg:pb-32 grain overflow-hidden">
-      {/* Single soft warm halo behind the headline. Subtle, not loud. */}
-      <div
-        aria-hidden
-        className="absolute -top-40 -left-20 w-[720px] h-[720px] rounded-full pointer-events-none -z-10"
-        style={{
-          background:
-            "radial-gradient(closest-side, rgba(252,169,41,0.16), transparent 65%)",
-          filter: "blur(10px)",
-        }}
-      />
-
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-12 gap-12 lg:gap-10 items-center">
-        {/* Copy column */}
-        <div className="lg:col-span-6 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ink/[0.04] text-[11px] font-medium text-ink/70 mb-7 tracking-wide"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-amber" />
-            New · Audio Mode for YouTube
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="text-display text-[56px] sm:text-[80px] lg:text-[104px] text-ink"
-          >
-            Your YouTube,
-            <br />
-            <span className="amber-underline">Your way</span>.
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className="mt-8 text-lg lg:text-xl text-ink/65 max-w-xl leading-relaxed"
-          >
-            A small, considered browser extension that puts YouTube on
-            your terms. Listen audio-only, fine-tune playback, loop
-            sections, scroll Shorts on autopilot.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-10 flex flex-wrap items-center gap-3"
-          >
-            <MagneticCTA />
-            <Link
-              href="https://github.com/enrych/toppings"
-              target="_blank"
-              className="inline-flex items-center gap-2 text-sm font-medium text-ink/65 hover:text-ink transition-colors px-4 py-3 cursor-pointer"
-            >
-              <span className="text-amber">★</span>
-              Star on GitHub
-              <span aria-hidden>→</span>
-            </Link>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.55 }}
-            className="mt-12 flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] uppercase tracking-[0.18em] text-ink/50"
-          >
-            <span>Free &amp; open source</span>
-            <span className="w-1 h-1 rounded-full bg-ink/20" />
-            <span>Chrome · Firefox</span>
-            <span className="w-1 h-1 rounded-full bg-ink/20" />
-            <span>GPL-3.0</span>
-          </motion.div>
+    <section className="px-6 pb-24 pt-[88px] lg:px-14 lg:pb-[96px]">
+      <div className="mx-auto max-w-page">
+        <div className="t-eyebrow mb-6 inline-flex items-center gap-[10px] !text-[--fg-2]">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber" />
+          Free · Open source · v2.4.0
         </div>
 
-        {/* Visual column */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.96, y: 30 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-          className="lg:col-span-6 relative z-10"
+        <h1
+          className="text-[64px] font-black leading-[0.92] tracking-[-0.045em] text-ink sm:text-[88px] lg:text-[132px]"
+          style={{ fontWeight: 900, textWrap: "balance" }}
         >
-          <PlayerMockup />
-        </motion.div>
+          Your YouTube,
+          <br />
+          your <span className="amber-underline">way</span>.
+        </h1>
+
+        <p className="mt-7 max-w-[620px] text-[19px] leading-[1.5] tracking-[-0.011em] text-[--fg-2]">
+          A free, open-source browser extension. Audio mode, custom playback
+          rates, looped segments, playlist runtimes, Shorts auto-scroll.
+          Small. Considered. Out of your way.
+        </p>
+
+        <div className="mt-10 flex flex-wrap items-center gap-3">
+          <InstallButton />
+          <Link
+            href="https://addons.mozilla.org/en-US/firefox/addon/toppings/"
+            target="_blank"
+            className="btn btn--ghost"
+          >
+            <Image src={firefoxIcon} alt="" width={18} height={18} />
+            Firefox
+          </Link>
+          <Link
+            href="https://github.com/enrych/toppings"
+            target="_blank"
+            className="btn btn--ghost"
+          >
+            <Image src={githubIcon} alt="" width={18} height={18} />
+            Source
+          </Link>
+        </div>
+
+        <div className="mt-9 flex flex-wrap gap-x-6 gap-y-2 text-[13px] text-[--fg-3]">
+          <span>
+            <strong className="font-semibold text-ink">0 trackers.</strong> No
+            data leaves your browser.
+          </span>
+          <span>
+            <strong className="font-semibold text-ink">GPL-3.0.</strong> Yours
+            to fork, modify, ship.
+          </span>
+        </div>
       </div>
     </section>
   );
