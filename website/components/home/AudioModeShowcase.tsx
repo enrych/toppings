@@ -2,7 +2,8 @@
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 
-// R3F + three are heavy — load only on client and only when the section mounts.
+// VinylScene uses `window` (for cursor tracking + DPR), so it must render
+// client-side only.
 const VinylScene = dynamic(() => import("./VinylScene"), {
   ssr: false,
 });
