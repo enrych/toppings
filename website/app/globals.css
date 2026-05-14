@@ -323,6 +323,15 @@
     width: 16px;
     height: 16px;
   }
+  /*
+   * Brand icons (firefox.svg, github.svg, chrome.svg) ship from the
+   * upstream codebase with hard-coded white fills. That works on inverse
+   * surfaces but vanishes on the cream ghost-button background. Invert
+   * them in cream contexts, and revert to as-is on inverse surfaces.
+   */
+  .btn--ghost img {
+    filter: brightness(0);
+  }
   .section--inverse .btn--ghost,
   .footer .btn--ghost {
     color: var(--fg-on-ink-1);
@@ -331,6 +340,10 @@
   .section--inverse .btn--ghost:hover,
   .footer .btn--ghost:hover {
     border-color: var(--fg-on-ink-1);
+  }
+  .section--inverse .btn--ghost img,
+  .footer .btn--ghost img {
+    filter: none;
   }
 
   /* ---------- Keyboard chip ---------- */
