@@ -12,6 +12,18 @@ export const WEBSITE_BRAND = {
   NAME: "Toppings",
 } as const;
 
+/**
+ * Internal route for the docs section. Replaced the legacy GitHub-hosted
+ * wiki (https://github.com/enrych/toppings/wiki) with on-site docs — the
+ * Next.js basePath ("/toppings") is applied automatically by <Link>.
+ */
+export const WEBSITE_INTERNAL_ROUTE = {
+  HOME: "/",
+  DOCS: "/docs",
+  DOCS_KEYBINDINGS: "/docs/keybindings",
+  DOCS_FAQ: "/docs/faq",
+} as const;
+
 export const WEBSITE_SCROLL = {
   NAVBAR_BORDER_THRESHOLD_PX: 8,
 } as const;
@@ -87,15 +99,15 @@ export const WEBSITE_FOOTER_LINK_GROUPS = [
     links: [
       {
         label: WEBSITE_FOOTER_LINK_LABEL.READ_WIKI,
-        href: EXTERNAL_URL.GITHUB_WIKI,
+        href: WEBSITE_INTERNAL_ROUTE.DOCS,
       },
       {
         label: WEBSITE_FOOTER_LINK_LABEL.KEYBINDINGS,
-        href: EXTERNAL_URL.GITHUB_WIKI_KEYBINDINGS,
+        href: WEBSITE_INTERNAL_ROUTE.DOCS_KEYBINDINGS,
       },
       {
         label: WEBSITE_FOOTER_LINK_LABEL.FAQ,
-        href: EXTERNAL_URL.GITHUB_WIKI,
+        href: WEBSITE_INTERNAL_ROUTE.DOCS_FAQ,
       },
     ],
   },

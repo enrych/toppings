@@ -1,16 +1,16 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import "./globals.css";
 import { WEBSITE_METADATA, WEBSITE_HTML_LANG } from "toppings-constants";
 
 /**
- * Self-host the Inter (400/500/600/700/900) + JetBrains Mono (400/500)
- * woff2 files that ship with the design-system handoff. We use
- * `next/font/local` (not raw @font-face in CSS) so the served URLs pick
- * up Next's `basePath` automatically — otherwise `/fonts/...` 404s in
- * any deployment that isn't mounted at the site root.
+ * Root layout. Sets HTML/body, loads self-hosted Inter + JetBrains Mono
+ * via `next/font/local` (so basePath rewriting works automatically).
+ *
+ * Navbar + Footer live in `(marketing)/layout.tsx`. The /docs/* surface
+ * provides its own chrome via `docs/layout.tsx`. This split keeps the
+ * docs section visually independent of the marketing site while still
+ * sharing tokens, fonts, and the global stylesheet.
  */
 const inter = localFont({
   variable: "--font-inter",
@@ -52,11 +52,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang={WEBSITE_HTML_LANG} className={`${inter.variable} ${jetbrainsMono.variable}`}>
+    <html
+      lang={WEBSITE_HTML_LANG}
+      className={`${inter.variable} ${jetbrainsMono.variable}`}
+    >
       <body className="min-h-screen bg-[--surface-page] text-[--fg-1] antialiased">
-        <Navbar />
         {children}
-        <Footer />
       </body>
     </html>
   );

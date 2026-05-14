@@ -8,6 +8,7 @@ import {
   BROWSER_TARGET,
   EXTERNAL_URL,
   WEBSITE_BRAND,
+  WEBSITE_INTERNAL_ROUTE,
   WEBSITE_NAV_LINK,
   WEBSITE_SCROLL,
 } from "toppings-constants";
@@ -60,7 +61,7 @@ export default function Navbar() {
         </Link>
         <div className="flex items-center gap-7">
           <Link
-            href={EXTERNAL_URL.GITHUB_WIKI}
+            href={WEBSITE_INTERNAL_ROUTE.DOCS}
             className="hidden text-sm font-medium text-[--fg-2] transition-colors duration-150 hover:text-flame lg:inline"
           >
             {WEBSITE_NAV_LINK.WIKI_LABEL}
