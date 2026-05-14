@@ -10,8 +10,14 @@ interface SwitchProps {
 }
 
 /**
- * Toggle switch row. Uses Field for layout/labelling, so styling stays
- * consistent with Input/Select/Slider/etc.
+ * Toggle switch row — matches the Claude Design handoff for the extension UI:
+ *   - 34×20px pill
+ *   - 16×16 round handle with 2px inset
+ *   - Off state: handle is `fg` color on a 10%-on-bg track
+ *   - On state: track is amber, handle becomes `on-accent` (ink) at +14px
+ *
+ * Composes Field so spacing/labels stay consistent with the rest of the
+ * form components.
  */
 export default function Switch({
   label,
@@ -37,14 +43,16 @@ export default function Switch({
         role="switch"
         aria-checked={checked}
         onClick={handleChange}
-        className={`tw-relative tw-inline-flex tw-h-6 tw-w-11 tw-flex-shrink-0 tw-cursor-pointer tw-rounded-full tw-border-2 tw-border-transparent tw-transition-colors tw-duration-200 focus-visible:tw-outline-none focus-visible:tw-ring-2 focus-visible:tw-ring-accent/50 focus-visible:tw-ring-offset-2 focus-visible:tw-ring-offset-bg ${
-          checked ? "tw-bg-accent" : "tw-bg-border-strong"
+        className={`tw-relative tw-inline-flex tw-h-5 tw-w-[34px] tw-flex-shrink-0 tw-cursor-pointer tw-rounded-full tw-transition-colors tw-duration-[240ms] tw-ease-out focus-visible:tw-outline-none focus-visible:tw-ring-2 focus-visible:tw-ring-accent/50 focus-visible:tw-ring-offset-2 focus-visible:tw-ring-offset-bg ${
+          checked
+            ? "tw-bg-accent"
+            : "tw-bg-surface-hover tw-border tw-border-border-default"
         }`}
       >
         <span
           aria-hidden="true"
-          className={`tw-pointer-events-none tw-inline-block tw-h-5 tw-w-5 tw-transform tw-rounded-full tw-bg-white tw-shadow tw-ring-0 tw-transition-transform tw-duration-200 ${
-            checked ? "tw-translate-x-5" : "tw-translate-x-0"
+          className={`tw-pointer-events-none tw-absolute tw-top-[2px] tw-left-[2px] tw-inline-block tw-h-4 tw-w-4 tw-transform tw-rounded-full tw-transition-transform tw-duration-[240ms] tw-ease-out ${
+            checked ? "tw-bg-[--color-accent-fg] tw-translate-x-[14px]" : "tw-bg-fg tw-translate-x-0"
           }`}
         />
       </button>

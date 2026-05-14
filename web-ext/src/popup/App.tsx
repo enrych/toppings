@@ -4,315 +4,387 @@ import StoreContext from "../shared/store";
 import { ToastProvider } from "../shared/components/feedback/ToastProvider";
 import { useTheme } from "../shared/hooks/useTheme";
 import { useStoreUpdater } from "../shared/hooks/useStoreUpdater";
-import { useChromeStorageLocalCount } from "../shared/hooks/useChromeStorageLocal";
-import Switch from "../shared/components/form/Switch";
-import Icon from "../shared/components/primitives/Icon";
-import IconButton from "../shared/components/primitives/IconButton";
-import Button from "../shared/components/primitives/Button";
-import Badge from "../shared/components/primitives/Badge";
+import { setExtensionIcon } from "../shared/utils/browser";
 import {
   CHROME_RUNTIME_PATH,
   CHROME_STORAGE_LOCAL_KEY,
   EXTERNAL_URL,
-  FEATURE_STATUS,
   BROWSER_TARGET,
-  POPUP_ARIA,
-  POPUP_BADGE_LABEL,
-  POPUP_BRAND,
-  POPUP_FOOTER,
-  POPUP_LAYOUT,
-  POPUP_MASTER_TOGGLE,
-  POPUP_SECTION_TITLE,
-  POPUP_STAT_LABEL,
-  POPUP_WHATS_NEW_PREVIEW_COUNT,
-  OPTIONS_ASSET_PATH,
 } from "toppings-constants";
-import { setExtensionIcon } from "../shared/utils/browser";
-import { FEATURES, WHATS_NEW, FeatureEntry } from "../shared/features";
+
+/**
+ * Popup — implements the Claude Design handoff for the extension UI.
+ *
+ * Layout (340 × 440):
+ *  - Brand head (logo + wordmark + version pill)
+ *  - Live status row (amber pulse dot + page context + URL)
+ *  - Feature toggle list wired to the store: Audio Mode, Loop, Auto-scroll
+ *    Shorts, Playback speed (the last one shows the current default rate
+ *    as a kbd-style chip rather than a toggle, mirroring the design)
+ *  - 4-button bottom nav (home / report bug / sponsor / open settings)
+ *
+ * The token system in shared/theme.css now matches the design's extension
+ * palette exactly, so this component never hardcodes hex values — every
+ * surface and text color references a CSS variable.
+ */
+
+const POPUP_W = 340;
+const POPUP_H = 440;
 
 function ThemeApplier({ children }: { children: React.ReactNode }) {
   useTheme();
   return <>{children}</>;
 }
 
-function openOptions(hash?: string) {
-  const base = chrome.runtime.getURL(CHROME_RUNTIME_PATH.OPTIONS_INDEX_HTML);
-  if (hash) {
-    chrome.storage.local.set(
-      { [CHROME_STORAGE_LOCAL_KEY.OPTIONS_PENDING_ROUTE]: hash },
-      () => {
-        window.open(base, BROWSER_TARGET.BLANK);
-      },
-    );
-  } else {
-    window.open(base, BROWSER_TARGET.BLANK);
-  }
+function openOptions() {
+  const url = chrome.runtime.getURL(CHROME_RUNTIME_PATH.OPTIONS_INDEX_HTML);
+  window.open(url, BROWSER_TARGET.BLANK);
 }
 
-function PopupShell() {
-  const { store, update } = useStoreUpdater();
-  const pinnedCount = useChromeStorageLocalCount(
-    CHROME_STORAGE_LOCAL_KEY.AUDIO_MODE_PIN_KEY_PREFIX,
-  );
-  const version = chrome.runtime.getManifest().version;
+/** Lightweight async hook: which tab is the popup attached to? */
+function useActiveTab() {
+  const [info, setInfo] = useState<{
+    url: string | null;
+    page: "watch" | "shorts" | "playlist" | "youtube-other" | "other";
+  }>({ url: null, page: "other" });
 
-  const setMasterEnabled = (isEnabled: boolean) => {
-    update((draft) => {
-      draft.isExtensionEnabled = isEnabled;
+  useEffect(() => {
+    chrome.tabs?.query?.({ active: true, currentWindow: true }, (tabs) => {
+      const url = tabs?.[0]?.url ?? null;
+      let page: typeof info.page = "other";
+      try {
+        const u = new URL(url ?? "");
+        if (u.hostname.endsWith("youtube.com")) {
+          if (u.pathname.startsWith("/watch")) page = "watch";
+          else if (u.pathname.startsWith("/shorts")) page = "shorts";
+          else if (u.pathname.startsWith("/playlist")) page = "playlist";
+          else page = "youtube-other";
+        }
+      } catch {}
+      setInfo({ url, page });
     });
-    setExtensionIcon(!isEnabled);
-  };
+  }, []);
 
-  return (
-    <div
-      className="tw-flex tw-flex-col tw-bg-bg tw-text-fg"
-      style={{
-        width: POPUP_LAYOUT.WIDTH_PX,
-        height: POPUP_LAYOUT.HEIGHT_PX,
-      }}
-    >
-      <PopupHeader version={version} />
-      <div className="tw-flex-1 tw-overflow-y-auto tw-px-4 tw-py-3 tw-flex tw-flex-col tw-gap-3">
-        <MasterToggleCard
-          enabled={store.isExtensionEnabled}
-          onToggle={setMasterEnabled}
-        />
-        <QuickStatsCard pinnedCount={pinnedCount} />
-        <FeaturesCard />
-        <WhatsNewCard />
-      </div>
-      <PopupFooter />
-    </div>
-  );
+  return info;
 }
 
-function PopupHeader({ version }: { version: string }) {
-  return (
-    <header className="tw-flex tw-items-center tw-gap-3 tw-px-4 tw-py-3 tw-border-b tw-border-border-default">
-      <img
-        src={OPTIONS_ASSET_PATH.ICON_48}
-        alt={POPUP_BRAND.ALT_ICON}
-        className="tw-w-8 tw-h-8 tw-flex-shrink-0"
-      />
-      <div className="tw-flex-1 tw-min-w-0">
-        <div className="tw-flex tw-items-baseline tw-gap-2">
-          <h1 className="tw-text-base tw-font-bold tw-text-fg">{POPUP_BRAND.TITLE}</h1>
-          <span className="tw-text-[10px] tw-text-fg-subtle tw-font-mono">
-            v{version}
-          </span>
-        </div>
-        <p className="tw-text-[11px] tw-text-fg-subtle">{POPUP_BRAND.TAGLINE}</p>
-      </div>
-      <IconButton
-        aria-label={POPUP_ARIA.OPEN_SETTINGS}
-        variant="ghost"
-        size="sm"
-        onClick={() => openOptions()}
-      >
-        <Icon name="settings" size={16} />
-      </IconButton>
-    </header>
-  );
-}
-
-function MasterToggleCard({
-  enabled,
-  onToggle,
+/** Minimal switch — matches the design's 34×20 pill exactly. */
+function TinySwitch({
+  on,
+  onClick,
 }: {
-  enabled: boolean;
-  onToggle: (v: boolean) => void;
+  on: boolean;
+  onClick: () => void;
 }) {
-  return (
-    <section className="tw-bg-surface tw-border tw-border-border-default tw-rounded-lg tw-px-3 tw-py-2">
-      <Switch
-        label={POPUP_MASTER_TOGGLE.LABEL}
-        description={POPUP_MASTER_TOGGLE.DESCRIPTION}
-        isEnabled={enabled}
-        onToggle={onToggle}
-      />
-    </section>
-  );
-}
-
-function QuickStatsCard({ pinnedCount }: { pinnedCount: number }) {
-  return (
-    <section className="tw-bg-surface tw-border tw-border-border-default tw-rounded-lg tw-px-3 tw-py-2.5">
-      <h2 className="tw-text-[11px] tw-uppercase tw-tracking-wider tw-text-fg-subtle tw-font-semibold tw-mb-2">
-        {POPUP_SECTION_TITLE.AT_A_GLANCE}
-      </h2>
-      <div className="tw-grid tw-grid-cols-2 tw-gap-2">
-        <StatCell
-          icon="audio"
-          label={POPUP_STAT_LABEL.PINNED_VIDEOS}
-          value={String(pinnedCount)}
-        />
-        <StatCell
-          icon="general"
-          label={POPUP_STAT_LABEL.FEATURES}
-          value={String(FEATURES.length)}
-        />
-      </div>
-    </section>
-  );
-}
-
-function StatCell({
-  icon,
-  label,
-  value,
-}: {
-  icon: Parameters<typeof Icon>[0]["name"];
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="tw-flex tw-items-center tw-gap-2.5 tw-bg-bg tw-border tw-border-border-subtle tw-rounded-md tw-px-2.5 tw-py-2">
-      <div className="tw-text-fg-muted">
-        <Icon name={icon} size={16} />
-      </div>
-      <div className="tw-min-w-0">
-        <div className="tw-text-base tw-font-semibold tw-text-fg tw-leading-tight">
-          {value}
-        </div>
-        <div className="tw-text-[10px] tw-text-fg-subtle tw-truncate">
-          {label}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function FeaturesCard() {
-  return (
-    <section className="tw-bg-surface tw-border tw-border-border-default tw-rounded-lg tw-px-3 tw-py-2.5">
-      <h2 className="tw-text-[11px] tw-uppercase tw-tracking-wider tw-text-fg-subtle tw-font-semibold tw-mb-2">
-        {POPUP_SECTION_TITLE.FEATURES}
-      </h2>
-      <div className="tw-flex tw-flex-col tw-gap-1">
-        {FEATURES.filter((f) => f.status !== FEATURE_STATUS.DEPRECATED).map(
-          (f) => (
-            <FeatureRow key={f.id} feature={f} />
-          ),
-        )}
-      </div>
-    </section>
-  );
-}
-
-function FeatureRow({ feature }: { feature: FeatureEntry }) {
   return (
     <button
-      onClick={() => openOptions(feature.route)}
-      className="tw-flex tw-items-center tw-gap-2.5 tw-px-2 tw-py-1.5 tw-rounded-md hover:tw-bg-surface-hover tw-text-left tw-transition-colors tw-group"
+      type="button"
+      role="switch"
+      aria-checked={on}
+      onClick={onClick}
+      className="tw-relative tw-inline-flex tw-h-5 tw-w-[34px] tw-flex-shrink-0 tw-cursor-pointer tw-rounded-full tw-transition-colors tw-duration-[240ms] tw-ease-out focus-visible:tw-outline-none focus-visible:tw-ring-2 focus-visible:tw-ring-accent/50 focus-visible:tw-ring-offset-2 focus-visible:tw-ring-offset-bg"
+      style={{
+        background: on
+          ? "var(--color-accent)"
+          : "var(--color-surface-hover)",
+        border: on ? "none" : "1px solid var(--color-border-default)",
+      }}
     >
-      <div className="tw-text-fg-muted group-hover:tw-text-fg tw-flex-shrink-0">
-        <Icon name={feature.icon} size={16} />
-      </div>
-      <div className="tw-flex-1 tw-min-w-0">
-        <div className="tw-flex tw-items-center tw-gap-1.5">
-          <span className="tw-text-sm tw-font-medium tw-text-fg">
-            {feature.name}
-          </span>
-          {feature.status === FEATURE_STATUS.NEW && (
-            <Badge tone="info" className="tw-text-[9px]">
-              {POPUP_BADGE_LABEL.NEW}
-            </Badge>
-          )}
-          {feature.status === FEATURE_STATUS.BETA && (
-            <Badge tone="warning" className="tw-text-[9px]">
-              {POPUP_BADGE_LABEL.BETA}
-            </Badge>
-          )}
-        </div>
-        <p className="tw-text-[11px] tw-text-fg-subtle tw-leading-snug tw-line-clamp-2">
-          {feature.description}
-        </p>
-      </div>
-      <Icon
-        name="chevron-right"
-        size={14}
-        className="tw-text-fg-subtle tw-flex-shrink-0"
+      <span
+        aria-hidden
+        className="tw-pointer-events-none tw-absolute tw-top-[2px] tw-left-[2px] tw-inline-block tw-h-4 tw-w-4 tw-rounded-full tw-transition-transform tw-duration-[240ms] tw-ease-out"
+        style={{
+          transform: on ? "translateX(14px)" : "translateX(0)",
+          background: on ? "var(--color-accent-fg)" : "var(--color-fg)",
+        }}
       />
     </button>
   );
 }
 
-function WhatsNewCard() {
-  const latest = WHATS_NEW[0];
-  if (!latest) return null;
-  return (
-    <section className="tw-bg-surface tw-border tw-border-border-default tw-rounded-lg tw-px-3 tw-py-2.5">
-      <div className="tw-flex tw-items-center tw-justify-between tw-mb-2">
-        <h2 className="tw-text-[11px] tw-uppercase tw-tracking-wider tw-text-fg-subtle tw-font-semibold">
-          {POPUP_SECTION_TITLE.WHATS_NEW}
-        </h2>
-        <Badge tone="info" className="tw-text-[9px]">
-          v{latest.version}
-        </Badge>
-      </div>
-      <ul className="tw-flex tw-flex-col tw-gap-1">
-        {latest.items.slice(0, POPUP_WHATS_NEW_PREVIEW_COUNT).map((item, i) => (
-          <li
-            key={i}
-            className="tw-flex tw-items-start tw-gap-1.5 tw-text-[12px] tw-text-fg-muted tw-leading-snug"
-          >
-            <span className="tw-mt-1.5 tw-w-1 tw-h-1 tw-rounded-full tw-bg-accent tw-flex-shrink-0" />
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}
+function PopupShell() {
+  const { store, update } = useStoreUpdater();
+  const version = chrome.runtime.getManifest().version;
+  const tab = useActiveTab();
 
-function PopupFooter() {
+  // Status row labels driven from the live tab context.
+  const statusLabel = (() => {
+    switch (tab.page) {
+      case "watch":
+        return "Watch page · active";
+      case "shorts":
+        return "Shorts · active";
+      case "playlist":
+        return "Playlist · active";
+      case "youtube-other":
+        return "YouTube · active";
+      default:
+        return "Open a YouTube video";
+    }
+  })();
+  const statusUrl = (() => {
+    if (!tab.url) return "—";
+    try {
+      const u = new URL(tab.url);
+      const path = u.pathname.length > 28 ? u.pathname.slice(0, 28) + "…" : u.pathname;
+      return `${u.hostname}${path}`;
+    } catch {
+      return tab.url;
+    }
+  })();
+
+  // Toggles wired to the store. We use the master `isExtensionEnabled`
+  // for the global on/off and individual feature flags for the rest.
+  const masterOn = store.isExtensionEnabled;
+  const audioOn = store.preferences.watch.audioMode?.isEnabled ?? false;
+  const loopOn = store.preferences.watch.isEnabled;
+  const shortsAuto = store.preferences.shorts.reelAutoScroll.value;
+  const defaultRate = store.preferences.watch.defaultPlaybackRate.value;
+
+  const toggleMaster = () => {
+    const next = !masterOn;
+    update((d) => {
+      d.isExtensionEnabled = next;
+    });
+    setExtensionIcon(!next);
+  };
+  const toggleAudio = () =>
+    update((d) => {
+      if (!d.preferences.watch.audioMode) return;
+      d.preferences.watch.audioMode.isEnabled =
+        !d.preferences.watch.audioMode.isEnabled;
+    });
+  const toggleLoop = () =>
+    update((d) => {
+      d.preferences.watch.isEnabled = !d.preferences.watch.isEnabled;
+    });
+  const toggleShorts = () =>
+    update((d) => {
+      d.preferences.shorts.reelAutoScroll.value =
+        !d.preferences.shorts.reelAutoScroll.value;
+    });
+
   return (
-    <footer className="tw-flex tw-items-center tw-justify-between tw-px-4 tw-py-2.5 tw-border-t tw-border-border-default tw-bg-surface">
-      <div className="tw-flex tw-items-center tw-gap-1">
-        <FooterAction
-          icon="external"
-          label={POPUP_FOOTER.GITHUB_BUTTON}
-          onClick={() =>
-            window.open(EXTERNAL_URL.GITHUB_REPO, BROWSER_TARGET.BLANK)
-          }
+    <div
+      className="tw-flex tw-flex-col tw-overflow-hidden tw-text-fg"
+      style={{
+        width: POPUP_W,
+        height: POPUP_H,
+        background: "var(--color-bg)",
+        borderRadius: 12,
+        border: "1px solid var(--color-border-default)",
+      }}
+    >
+      {/* Brand head */}
+      <header className="tw-flex tw-items-center tw-gap-2.5 tw-px-4 tw-py-3.5 tw-border-b tw-border-border-default">
+        <img
+          src="/assets/icons/icon48.png"
+          alt=""
+          className="tw-w-7 tw-h-7"
         />
-        <FooterAction
-          icon="alert"
-          label={POPUP_FOOTER.REPORT_BUG_BUTTON}
-          onClick={() =>
-            window.open(EXTERNAL_URL.GITHUB_ISSUES, BROWSER_TARGET.BLANK)
-          }
-        />
-      </div>
-      <Button
-        variant="primary"
-        size="sm"
-        leadingIcon={<Icon name="settings" size={12} />}
-        onClick={() => openOptions()}
+        <div
+          className="tw-flex-1 tw-text-[17px] tw-leading-none tw-font-black tw-tracking-[-0.03em]"
+          style={{ fontWeight: 900 }}
+        >
+          Toppings
+        </div>
+        <span
+          className="tw-font-mono tw-text-[10px] tw-leading-none tw-px-2 tw-py-1 tw-rounded-full tw-border tw-border-border-default tw-text-fg-subtle"
+        >
+          v{version}
+        </span>
+      </header>
+
+      {/* Status row */}
+      <div
+        className="tw-flex tw-items-center tw-gap-2.5 tw-px-4 tw-py-3.5 tw-border-b tw-border-border-default"
+        style={{ background: "var(--color-surface)" }}
       >
-        {POPUP_FOOTER.OPEN_SETTINGS_BUTTON}
-      </Button>
-    </footer>
+        <span
+          aria-hidden
+          className="tw-inline-block tw-w-2 tw-h-2 tw-rounded-full"
+          style={{
+            background: tab.page === "other" ? "var(--color-fg-subtle)" : "var(--color-accent)",
+            animation:
+              tab.page === "other" ? undefined : "pulseAmber 1.6s ease-out infinite",
+          }}
+        />
+        <div className="tw-min-w-0 tw-flex-1">
+          <div className="tw-text-[13px] tw-font-semibold tw-text-fg tw-truncate">
+            {statusLabel}
+          </div>
+          <div className="tw-font-mono tw-text-[11px] tw-text-fg-subtle tw-truncate tw-mt-0.5">
+            {statusUrl}
+          </div>
+        </div>
+      </div>
+
+      {/* Toggle list */}
+      <div className="tw-flex-1 tw-overflow-y-auto">
+        <PopupRow
+          title="Extension"
+          subtitle={masterOn ? "Running on every YouTube tab" : "Globally disabled"}
+          control={<TinySwitch on={masterOn} onClick={toggleMaster} />}
+          onActivate={toggleMaster}
+        />
+        <PopupRow
+          title="Audio mode"
+          subtitle="Strip the video"
+          control={<TinySwitch on={audioOn} onClick={toggleAudio} />}
+          onActivate={toggleAudio}
+          disabled={!masterOn}
+        />
+        <PopupRow
+          title="Watch features"
+          subtitle="Loop · rates · seek"
+          control={<TinySwitch on={loopOn} onClick={toggleLoop} />}
+          onActivate={toggleLoop}
+          disabled={!masterOn}
+        />
+        <PopupRow
+          title="Auto-scroll Shorts"
+          subtitle="Continue when one ends"
+          control={<TinySwitch on={shortsAuto} onClick={toggleShorts} />}
+          onActivate={toggleShorts}
+          disabled={!masterOn}
+        />
+        <PopupRow
+          title="Playback speed"
+          subtitle="Default for new videos"
+          control={
+            <span
+              className="tw-inline-flex tw-items-center tw-justify-center tw-min-w-[28px] tw-h-[22px] tw-px-2 tw-rounded tw-font-mono tw-text-[11px]"
+              style={{
+                background: "var(--color-surface-hover)",
+                color: "var(--color-fg-muted)",
+              }}
+            >
+              {defaultRate}x
+            </span>
+          }
+        />
+      </div>
+
+      {/* Bottom nav */}
+      <nav
+        className="tw-grid tw-grid-cols-4 tw-border-t tw-border-border-default"
+        style={{ background: "var(--color-surface-2)" }}
+      >
+        <NavBtn
+          label="Home"
+          active
+          onClick={() => undefined}
+          path="M3 11l9-8 9 8 M5 10v10h14V10"
+        />
+        <NavBtn
+          label="Report a bug"
+          onClick={() => window.open(EXTERNAL_URL.GITHUB_ISSUES, BROWSER_TARGET.BLANK)}
+          path="M8 2 H16 V22 H8z M3 7l4-1 M3 12l4-1 M3 17l4-1 M21 7l-4-1 M21 12l-4-1 M21 17l-4-1"
+        />
+        <NavBtn
+          label="Become a sponsor"
+          onClick={() => window.open(EXTERNAL_URL.SPONSOR, BROWSER_TARGET.BLANK)}
+          path="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+        />
+        <NavBtn
+          label="Open preferences"
+          onClick={openOptions}
+          path="M12 9 a3 3 0 1 0 0 6 a3 3 0 1 0 0-6z M19.4 15 a1.65 1.65 0 0 0 .33 1.82 a2 2 0 1 1-2.83 2.83 a1.65 1.65 0 0 0-1.82-.33 a1.65 1.65 0 0 0-1 1.51 V21 a2 2 0 1 1-4 0 a1.65 1.65 0 0 0-1-1.51 a1.65 1.65 0 0 0-1.82.33 a2 2 0 1 1-2.83-2.83 a1.65 1.65 0 0 0 .33-1.82 a1.65 1.65 0 0 0-1.51-1 H3 a2 2 0 1 1 0-4 h.09 a1.65 1.65 0 0 0 1.51-1 a1.65 1.65 0 0 0-.33-1.82 a2 2 0 1 1 2.83-2.83 a1.65 1.65 0 0 0 1.82.33 h.09 a1.65 1.65 0 0 0 1-1.51 V3 a2 2 0 1 1 4 0 v.09 a1.65 1.65 0 0 0 1 1.51 a1.65 1.65 0 0 0 1.82-.33 a2 2 0 1 1 2.83 2.83 a1.65 1.65 0 0 0-.33 1.82 V9 a1.65 1.65 0 0 0 1.51 1 H21 a2 2 0 1 1 0 4 h-.09 a1.65 1.65 0 0 0-1.51 1 z"
+        />
+      </nav>
+    </div>
   );
 }
 
-function FooterAction({
-  icon,
-  label,
-  onClick,
+/** A single row in the popup toggle list. Whole row is the hit target. */
+function PopupRow({
+  title,
+  subtitle,
+  control,
+  onActivate,
+  disabled,
 }: {
-  icon: Parameters<typeof Icon>[0]["name"];
+  title: string;
+  subtitle: string;
+  control: React.ReactNode;
+  onActivate?: () => void;
+  disabled?: boolean;
+}) {
+  const clickable = !!onActivate && !disabled;
+  return (
+    <div
+      role={clickable ? "button" : undefined}
+      tabIndex={clickable ? 0 : -1}
+      onClick={clickable ? onActivate : undefined}
+      onKeyDown={
+        clickable
+          ? (e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onActivate?.();
+              }
+            }
+          : undefined
+      }
+      className={`tw-grid tw-grid-cols-[1fr_auto] tw-items-center tw-gap-3 tw-px-4 tw-py-3 tw-border-b tw-border-border-default tw-transition-colors tw-duration-150 ${
+        clickable ? "tw-cursor-pointer hover:tw-bg-surface-hover" : ""
+      } ${disabled ? "tw-opacity-50 tw-pointer-events-none" : ""}`}
+    >
+      <div className="tw-min-w-0">
+        <div className="tw-text-[13.5px] tw-font-medium tw-text-fg tw-truncate">
+          {title}
+        </div>
+        <div className="tw-font-mono tw-text-[11px] tw-text-fg-subtle tw-truncate tw-mt-0.5">
+          {subtitle}
+        </div>
+      </div>
+      <div onClick={(e) => e.stopPropagation()}>{control}</div>
+    </div>
+  );
+}
+
+/** Bottom-nav icon button. Tiny SVG with stroke-only style. */
+function NavBtn({
+  label,
+  active,
+  onClick,
+  path,
+}: {
   label: string;
+  active?: boolean;
   onClick: () => void;
+  path: string;
 }) {
   return (
     <button
-      onClick={onClick}
+      type="button"
       title={label}
       aria-label={label}
-      className="tw-w-7 tw-h-7 tw-inline-flex tw-items-center tw-justify-center tw-rounded-md tw-text-fg-muted hover:tw-bg-surface-hover hover:tw-text-fg tw-transition-colors"
+      onClick={onClick}
+      className={`tw-relative tw-grid tw-place-items-center tw-py-3.5 tw-cursor-pointer tw-transition-colors tw-duration-150 hover:tw-bg-surface-hover ${
+        active ? "tw-text-fg" : "tw-text-fg-muted hover:tw-text-fg"
+      }`}
     >
-      <Icon name={icon} size={14} />
+      <svg
+        width={18}
+        height={18}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.75}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden
+      >
+        <path d={path} />
+      </svg>
+      {active && (
+        <span
+          aria-hidden
+          className="tw-absolute tw-bottom-1.5 tw-left-1/2 -tw-translate-x-1/2 tw-w-4 tw-h-0.5 tw-rounded-full"
+          style={{ background: "var(--color-accent)" }}
+        />
+      )}
     </button>
   );
 }
@@ -329,13 +401,12 @@ export default function App() {
   }, []);
 
   if (!loaded) {
-    // Skeleton — minimal flash, full layout already sized.
     return (
       <div
-        className="tw-bg-bg"
         style={{
-          width: POPUP_LAYOUT.WIDTH_PX,
-          height: POPUP_LAYOUT.HEIGHT_PX,
+          width: POPUP_W,
+          height: POPUP_H,
+          background: "var(--color-bg)",
         }}
       />
     );

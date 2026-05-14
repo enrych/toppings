@@ -1,72 +1,74 @@
 /* -------------------------------------------------------------------------
- * Theme tokens — shared between popup and options
+ * Toppings — Extension UI tokens
  *
- * All UI colors flow through these CSS variables. Components reference them
- * via semantic Tailwind utilities (tw-bg-surface, tw-text-fg, etc.).
- * A theme swap is purely a value change in one place.
+ * Implements the Claude Design handoff for the extension surface. Same
+ * four brand tokens as the marketing site (cream / ink / amber / flame),
+ * re-roled into dark and light themes via [data-theme].
  *
- * Theme is applied via a `data-theme="dark|light"` attribute on <html>.
- * Defaults to dark.
+ * Color values map exactly to the handoff's ui_kits/extension/extension.css
+ * (.themed and .themed[data-theme="light"] blocks), preserved here as the
+ * existing --color-* names so all consumers (tailwind utilities, component
+ * classes) keep working without a sweeping rename.
  * -------------------------------------------------------------------------*/
 
 :root,
 [data-theme="dark"] {
-  /* Surfaces */
-  --color-bg: #0f0f10;
-  --color-surface: #18181b;
-  --color-surface-2: #1a1a1f;
-  --color-surface-hover: rgba(255, 255, 255, 0.05);
+  /* Surfaces — ink scale */
+  --color-bg: #0a0a0a;
+  --color-surface: #161616;          /* "bg-raised" — cards, status bar */
+  --color-surface-2: #050505;        /* "bg-sunken" — sidebar, bottom nav */
+  --color-surface-hover: rgba(242, 239, 231, 0.06);
 
-  /* Text */
-  --color-fg: #f5f5f5;
-  --color-fg-muted: #a1a1aa;
-  --color-fg-subtle: #71717a;
+  /* Text — off-white on ink, never pure white */
+  --color-fg: #f2efe7;
+  --color-fg-muted: rgba(242, 239, 231, 0.62);
+  --color-fg-subtle: rgba(242, 239, 231, 0.38);
 
   /* Borders */
-  --color-border-subtle: rgba(255, 255, 255, 0.06);
-  --color-border-default: #27272a;
-  --color-border-strong: #3f3f46;
+  --color-border-subtle: rgba(242, 239, 231, 0.06);
+  --color-border-default: rgba(242, 239, 231, 0.1);
+  --color-border-strong: rgba(242, 239, 231, 0.2);
 
-  /* Accent (interactive primary) */
-  --color-accent: #3b82f6;
-  --color-accent-hover: #2563eb;
-  --color-accent-fg: #ffffff;
+  /* Accent — amber stays amber across themes; on-accent text is ink */
+  --color-accent: #fca929;
+  --color-accent-hover: #f57c20;
+  --color-accent-fg: #0a0a0a;
 
-  /* Tonal pairs (background + foreground) for status badges/toasts */
+  /* Tonal pairs for status (badges, toasts) */
   --color-danger-bg: rgba(239, 68, 68, 0.1);
   --color-danger-fg: #fca5a5;
   --color-success-bg: rgba(34, 197, 94, 0.1);
   --color-success-fg: #86efac;
-  --color-info-bg: rgba(59, 130, 246, 0.1);
-  --color-info-fg: #93c5fd;
+  --color-info-bg: rgba(252, 169, 41, 0.1);
+  --color-info-fg: #fca929;
   --color-warning-bg: rgba(234, 179, 8, 0.1);
   --color-warning-fg: #fde047;
 }
 
 [data-theme="light"] {
-  --color-bg: #fafafa;
-  --color-surface: #ffffff;
-  --color-surface-2: #ffffff;
-  --color-surface-hover: rgba(0, 0, 0, 0.04);
+  --color-bg: #fff9ef;                /* cream */
+  --color-surface: #fffcf6;           /* cream lifted 1% */
+  --color-surface-2: #f8f1e1;         /* cream sunk 3% */
+  --color-surface-hover: rgba(10, 10, 10, 0.05);
 
-  --color-fg: #18181b;
-  --color-fg-muted: #52525b;
-  --color-fg-subtle: #71717a;
+  --color-fg: #0a0a0a;
+  --color-fg-muted: rgba(10, 10, 10, 0.72);
+  --color-fg-subtle: rgba(10, 10, 10, 0.5);
 
-  --color-border-subtle: rgba(0, 0, 0, 0.06);
-  --color-border-default: #e4e4e7;
-  --color-border-strong: #d4d4d8;
+  --color-border-subtle: rgba(10, 10, 10, 0.06);
+  --color-border-default: rgba(10, 10, 10, 0.1);
+  --color-border-strong: rgba(10, 10, 10, 0.18);
 
-  --color-accent: #2563eb;
-  --color-accent-hover: #1d4ed8;
-  --color-accent-fg: #ffffff;
+  --color-accent: #fca929;
+  --color-accent-hover: #f57c20;
+  --color-accent-fg: #0a0a0a;
 
   --color-danger-bg: rgba(220, 38, 38, 0.08);
   --color-danger-fg: #b91c1c;
   --color-success-bg: rgba(22, 163, 74, 0.08);
   --color-success-fg: #15803d;
-  --color-info-bg: rgba(37, 99, 235, 0.08);
-  --color-info-fg: #1d4ed8;
+  --color-info-bg: rgba(252, 124, 32, 0.08);
+  --color-info-fg: #b34a0e;
   --color-warning-bg: rgba(202, 138, 4, 0.1);
   --color-warning-fg: #a16207;
 }
@@ -103,5 +105,15 @@
   to {
     opacity: 1;
     transform: translateX(0);
+  }
+}
+
+@keyframes pulseAmber {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(252, 169, 41, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(252, 169, 41, 0);
   }
 }
