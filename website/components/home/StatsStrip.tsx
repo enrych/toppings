@@ -1,11 +1,17 @@
 "use client";
-import { motion, useInView, useMotionValue, useTransform, animate } from "framer-motion";
+import {
+  motion,
+  useInView,
+  useMotionValue,
+  useTransform,
+  animate,
+} from "framer-motion";
 import { useEffect, useRef } from "react";
 
 const STATS = [
   { value: 7, suffix: "+", label: "Power features" },
   { value: 4.8, suffix: "★", label: "Avg user rating", decimals: 1 },
-  { value: 100, suffix: "% free", label: "No paywalls, ever" },
+  { value: 100, suffix: "%", label: "Free forever" },
   { value: 2, suffix: " min", label: "To install" },
 ];
 
@@ -42,9 +48,9 @@ function Counter({
 
 export default function StatsStrip() {
   return (
-    <section className="relative py-12 lg:py-16 border-y border-foreground/5">
+    <section className="relative py-16 lg:py-20 border-y border-ink/[0.07] bg-cream">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
           {STATS.map((s, i) => (
             <motion.div
               key={s.label}
@@ -54,14 +60,16 @@ export default function StatsStrip() {
               transition={{ duration: 0.5, delay: i * 0.08 }}
               className="text-center lg:text-left"
             >
-              <div className="text-4xl lg:text-5xl font-bold text-foreground tracking-tight">
+              <div className="text-5xl lg:text-6xl text-display text-ink leading-none">
                 <Counter
                   value={s.value}
                   suffix={s.suffix}
                   decimals={s.decimals}
                 />
               </div>
-              <div className="mt-2 text-sm text-foreground/55">{s.label}</div>
+              <div className="mt-3 text-xs uppercase tracking-[0.15em] text-ink/55">
+                {s.label}
+              </div>
             </motion.div>
           ))}
         </div>

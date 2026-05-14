@@ -25,20 +25,22 @@ const STORES = {
   },
 };
 
-interface MagneticCTAProps {
+interface Props {
   size?: "md" | "lg";
+  variant?: "solid" | "outline";
 }
 
 /**
- * Browser-aware install CTA with a magnetic hover effect — the button gently
- * leans toward the cursor when it enters the trigger area, then snaps back
- * on leave. Uses Framer Motion springs for smooth, physics-y motion.
+ * Browser-aware install CTA. Magnetic hover (button leans toward cursor),
+ * single brand accent. No rainbow — just amber on ink, or outline.
  */
-export default function MagneticCTA({ size = "lg" }: MagneticCTAProps) {
+export default function MagneticCTA({
+  size = "lg",
+  variant = "solid",
+}: Props) {
   const [agent, setAgent] = useState<keyof typeof STORES>("unknown");
   const ref = useRef<HTMLAnchorElement>(null);
 
-  // Translation values, smoothed with a spring for organic motion.
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   const springX = useSpring(x, { stiffness: 220, damping: 18 });
@@ -54,20 +56,20 @@ export default function MagneticCTA({ size = "lg" }: MagneticCTAProps) {
   const onMouseMove = (e: MouseEvent<HTMLAnchorElement>) => {
     const rect = ref.current?.getBoundingClientRect();
     if (!rect) return;
-    // Pull toward cursor, but only a fraction so it stays subtle.
-    const dx = (e.clientX - (rect.left + rect.width / 2)) * 0.25;
-    const dy = (e.clientY - (rect.top + rect.height / 2)) * 0.25;
-    x.set(dx);
-    y.set(dy);
+    x.set((e.clientX - (rect.left + rect.width / 2)) * 0.22);
+    y.set((e.clientY - (rect.top + rect.height / 2)) * 0.22);
   };
-
   const onMouseLeave = () => {
     x.set(0);
     y.set(0);
   };
 
-  const sizing =
-    size === "lg" ? "h-14 px-7 text-base" : "h-11 px-5 text-sm";
+  const sizing = size === "lg" ? "h-14 px-7 text-base" : "h-11 px-5 text-sm";
+
+  const styles =
+    variant === "solid"
+      ? "bg-ink text-cream hover:bg-ink/90"
+      : "bg-transparent text-ink border border-ink/15 hover:bg-ink/5";
 
   return (
     <motion.div style={{ x: springX, y: springY }} className="inline-block">
@@ -77,31 +79,19 @@ export default function MagneticCTA({ size = "lg" }: MagneticCTAProps) {
         target="_blank"
         onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}
-        className={`group relative inline-flex items-center gap-3 ${sizing} font-semibold rounded-full text-white overflow-hidden`}
-        style={{
-          background:
-            "linear-gradient(120deg, rgb(252,169,41), rgb(252,124,41) 40%, rgb(252,64,110))",
-          boxShadow:
-            "0 10px 30px -8px rgba(252,124,41,0.55), 0 1px 0 0 rgba(255,255,255,0.4) inset",
-        }}
+        className={`group relative inline-flex items-center gap-3 ${sizing} font-medium rounded-full overflow-hidden transition-colors duration-200 cursor-pointer ${styles}`}
       >
-        {/* Sheen sweep on hover */}
-        <span
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-          style={{
-            background:
-              "linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%)",
-            backgroundSize: "300% 100%",
-            animation: "shimmer 1.8s linear infinite",
-          }}
-        />
         <span className="relative z-10">{STORES[agent].label}</span>
+        {/* Amber dot — the single accent. */}
+        <span
+          className={`relative z-10 w-2 h-2 rounded-full bg-amber transition-transform duration-300 group-hover:scale-150`}
+        />
         <Image
           src={STORES[agent].icon}
           alt=""
-          width={size === "lg" ? 22 : 18}
-          height={size === "lg" ? 22 : 18}
-          className="relative z-10"
+          width={size === "lg" ? 20 : 16}
+          height={size === "lg" ? 20 : 16}
+          className={`relative z-10 ${variant === "solid" ? "invert" : ""}`}
         />
       </Link>
     </motion.div>

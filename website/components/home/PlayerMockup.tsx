@@ -12,31 +12,28 @@ const MODES: { id: Mode; label: string }[] = [
 ];
 
 /**
- * Interactive YouTube-style player mockup that cycles through audio-mode
- * states. The visualizer mode renders a synthesized AM-style waveform on a
- * canvas (no audio source — pure decorative animation). Auto-advances every
- * few seconds, but pauses when the user explicitly picks a mode.
+ * Interactive YouTube-style player mockup. Cycles through audio-mode states
+ * to demonstrate the feature. Restricted palette: ink (black surface),
+ * cream (text), amber (single accent on progress + active chip). No rainbow.
  */
 export default function PlayerMockup() {
   const [mode, setMode] = useState<Mode>("video");
-  const [autoMode, setAutoMode] = useState(true);
+  const [auto, setAuto] = useState(true);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const rafRef = useRef<number | null>(null);
 
-  // Auto-advance modes for the demo loop.
   useEffect(() => {
-    if (!autoMode) return;
+    if (!auto) return;
     const i = setInterval(() => {
       setMode((m) => {
         const idx = MODES.findIndex((mm) => mm.id === m);
         return MODES[(idx + 1) % MODES.length].id;
       });
-    }, 3500);
+    }, 3800);
     return () => clearInterval(i);
-  }, [autoMode]);
+  }, [auto]);
 
-  // Synthesized visualizer — looks like real audio reactive but is just
-  // a sum of slow sinusoids and a noise term.
+  // Synthesized AM-style waveform. Sum of sinusoids, bell envelope.
   useEffect(() => {
     if (mode !== "visualizer") {
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
@@ -57,7 +54,7 @@ export default function PlayerMockup() {
       const h = canvas.height;
       const cy = h / 2;
 
-      ctx.fillStyle = "#000";
+      ctx.fillStyle = "#0a0a0a";
       ctx.fillRect(0, 0, w, h);
 
       t += 0.018;
@@ -66,17 +63,14 @@ export default function PlayerMockup() {
       for (let i = 0; i <= N; i++) {
         const u = i / N;
         const x = u * w;
-        // Bell envelope so the wave is centered and tapers to the edges.
         const env = Math.sin(u * Math.PI) * Math.sin(u * Math.PI);
         const amp = h * 0.32 * env;
-        // Layered sinusoids of different frequencies — feels musical.
         const y =
           cy +
           Math.sin(u * Math.PI * 6 + t * 1.7) * amp * 0.55 +
           Math.sin(u * Math.PI * 11 + t * 2.6) * amp * 0.3 +
           Math.sin(u * Math.PI * 3 + t * 0.9) * amp * 0.7 +
-          // Tiny noise term for organic feel.
-          (Math.sin(u * Math.PI * 23 + t * 5) * amp * 0.08);
+          Math.sin(u * Math.PI * 23 + t * 5) * amp * 0.08;
         points.push({ x, y });
       }
 
@@ -88,13 +82,12 @@ export default function PlayerMockup() {
         ctx.quadraticCurveTo(points[i].x, points[i].y, cpx, cpy);
       }
       ctx.lineTo(w, cy);
-      ctx.strokeStyle = "#fff";
+      ctx.strokeStyle = "#ffffff";
       ctx.lineWidth = 2.5 * dpr;
       ctx.lineJoin = "round";
       ctx.lineCap = "round";
       ctx.stroke();
 
-      // Faint center axis line (AM aesthetic).
       ctx.beginPath();
       ctx.moveTo(0, cy);
       ctx.lineTo(w, cy);
@@ -109,15 +102,15 @@ export default function PlayerMockup() {
   }, [mode]);
 
   return (
-    <div className="w-full max-w-[640px] mx-auto">
-      {/* Browser chrome */}
+    <div className="w-full max-w-[620px] mx-auto">
       <div
-        className="rounded-2xl overflow-hidden shadow-2xl"
+        className="rounded-2xl overflow-hidden ring-1 ring-ink/10"
         style={{
           boxShadow:
-            "0 50px 100px -30px rgba(20,20,20,0.35), 0 30px 60px -25px rgba(252,124,41,0.25)",
+            "0 50px 100px -30px rgba(10,10,10,0.18), 0 25px 50px -25px rgba(252,169,41,0.12)",
         }}
       >
+        {/* Browser chrome */}
         <div className="bg-[#1d1d1f] px-4 py-2.5 flex items-center gap-2 border-b border-white/5">
           <div className="flex gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
@@ -125,12 +118,12 @@ export default function PlayerMockup() {
             <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
           </div>
           <div className="flex-1 mx-3 px-3 py-1 rounded-md bg-[#2a2a2c] text-[11px] text-white/50 font-mono">
-            youtube.com/watch?v=...
+            youtube.com/watch?v=…
           </div>
         </div>
 
         {/* Player viewport */}
-        <div className="relative aspect-video bg-black overflow-hidden">
+        <div className="relative aspect-video bg-ink overflow-hidden">
           <AnimatePresence mode="wait">
             {mode === "video" && (
               <motion.div
@@ -151,7 +144,7 @@ export default function PlayerMockup() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.4 }}
-                className="absolute inset-0 bg-black"
+                className="absolute inset-0 bg-ink"
               />
             )}
             {mode === "visualizer" && (
@@ -174,43 +167,41 @@ export default function PlayerMockup() {
                 transition={{ duration: 0.4 }}
                 className="absolute inset-0"
                 style={{
+                  // Tasteful single-tone custom background using brand amber.
                   background:
-                    "linear-gradient(135deg, #2b1055 0%, #7597de 50%, #ff7e5f 100%)",
+                    "radial-gradient(circle at 30% 30%, rgba(252,169,41,0.7), rgba(10,10,10,1) 70%)",
                 }}
-              >
-                {/* Subtle "sunset" overlay for the custom mode preview. */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-              </motion.div>
+              />
             )}
           </AnimatePresence>
 
-          {/* Audio-mode overlay text in non-video modes */}
+          {/* Centered Now-Playing text in audio modes */}
           {mode !== "video" && (
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.4 }}
-              className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center text-white pointer-events-none"
+              transition={{ delay: 0.15, duration: 0.4 }}
+              className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center text-cream pointer-events-none"
             >
-              <div className="text-xs uppercase tracking-widest text-white/60">
+              <div className="text-[10px] uppercase tracking-[0.25em] text-cream/55">
                 Now Playing
               </div>
               <div className="mt-2 text-lg font-semibold">
                 Your Favorite Track
               </div>
-              <div className="text-xs text-white/60">
-                The Arctic Monkeys · AM
+              <div className="text-xs text-cream/55">
+                Arctic Monkeys · AM
               </div>
             </motion.div>
           )}
 
-          {/* Top-right close button (only in audio modes) */}
+          {/* Exit affordance (only in audio modes) */}
           {mode !== "video" && (
             <button
               aria-label="Exit audio mode"
-              className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 border border-white/20 text-white flex items-center justify-center text-sm hover:bg-white/20 transition-colors"
+              className="absolute top-3 right-3 w-8 h-8 rounded-full bg-ink/40 border border-cream/20 text-cream flex items-center justify-center text-sm hover:bg-cream/20 transition-colors cursor-pointer"
               onClick={() => {
-                setAutoMode(false);
+                setAuto(false);
                 setMode("video");
               }}
             >
@@ -218,32 +209,28 @@ export default function PlayerMockup() {
             </button>
           )}
 
-          {/* Faux YouTube progress bar */}
+          {/* Progress bar (single amber accent) */}
           <div className="absolute inset-x-0 bottom-0 h-1 bg-white/10">
             <motion.div
-              className="h-full bg-[#ff0033]"
+              className="h-full bg-amber"
               animate={{ width: ["0%", "100%"] }}
-              transition={{
-                duration: 14,
-                repeat: Infinity,
-                ease: "linear",
-              }}
+              transition={{ duration: 14, repeat: Infinity, ease: "linear" }}
             />
           </div>
         </div>
 
-        {/* Inline mode switcher (mirrors the in-player UI) */}
+        {/* Inline mode switcher */}
         <div className="bg-[#0c0c0e] px-4 py-3 flex items-center justify-center gap-2">
           {MODES.map((m) => (
             <button
               key={m.id}
               onClick={() => {
-                setAutoMode(false);
+                setAuto(false);
                 setMode(m.id);
               }}
-              className={`px-3 py-1.5 text-xs rounded-full border transition-colors ${
+              className={`px-3 py-1.5 text-xs rounded-full border transition-colors cursor-pointer ${
                 mode === m.id
-                  ? "border-white/60 text-white bg-white/10"
+                  ? "border-amber/70 text-cream bg-amber/10"
                   : "border-white/15 text-white/60 hover:text-white hover:bg-white/5"
               }`}
             >
@@ -253,19 +240,17 @@ export default function PlayerMockup() {
         </div>
       </div>
 
-      {/* Caption underneath */}
-      <p className="text-center text-sm text-foreground/60 mt-4">
-        {autoMode
-          ? "Tap a mode to interact — or just watch."
-          : "Looking good. Try another mode."}
+      <p className="text-center text-sm text-ink/55 mt-4">
+        {auto ? "Tap a mode to interact — or watch it cycle." : "Try another mode."}
       </p>
     </div>
   );
 }
 
 /**
- * Decorative "video frame" — a stylized mock thumbnail so the Normal mode
- * doesn't look like an empty player. Animated for subtle life.
+ * Stylized "video frame" mock — soft warm gradient with a faux subject glow.
+ * Stays within brand tones (ink + amber) so the Normal mode doesn't feel
+ * disconnected from the rest of the page.
  */
 function FakeVideoFrame() {
   return (
@@ -274,25 +259,22 @@ function FakeVideoFrame() {
         className="absolute inset-0"
         style={{
           background:
-            "linear-gradient(135deg, #1a1a2e 0%, #16213e 35%, #0f3460 70%, #e94560 100%)",
+            "linear-gradient(140deg, #1a1a1f 0%, #2b1d10 45%, #1a1208 100%)",
         }}
-        animate={{
-          backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-        }}
+        animate={{ backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"] }}
         transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
       />
-      {/* Faux subject — a soft glow + silhouette circle. */}
       <motion.div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 rounded-full"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-44 h-44 rounded-full"
         style={{
           background:
-            "radial-gradient(closest-side, rgba(255,255,255,0.4), rgba(255,255,255,0) 70%)",
+            "radial-gradient(closest-side, rgba(252,169,41,0.35), rgba(252,169,41,0) 70%)",
         }}
-        animate={{ scale: [1, 1.15, 1] }}
+        animate={{ scale: [1, 1.12, 1] }}
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       />
-      <div className="absolute bottom-6 left-6 text-white">
-        <div className="text-[10px] uppercase tracking-widest opacity-70">
+      <div className="absolute bottom-6 left-6 text-cream">
+        <div className="text-[10px] uppercase tracking-widest text-cream/55">
           Watching
         </div>
         <div className="text-base font-semibold leading-snug">

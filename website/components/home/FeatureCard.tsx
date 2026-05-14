@@ -6,28 +6,15 @@ interface FeatureCardProps {
   title: string;
   description: string;
   icon: ReactNode;
-  /** Optional larger illustration / visual rendered to the right or below. */
   visual?: ReactNode;
-  /** Span: 1 (default) or 2 columns wide in the parent grid. */
   span?: 1 | 2;
-  /** Tone for the inner accent glow. */
-  tone?: "amber" | "rose" | "violet" | "blue" | "emerald";
 }
 
-const TONE_GLOW: Record<NonNullable<FeatureCardProps["tone"]>, string> = {
-  amber: "radial-gradient(closest-side, rgba(252,169,41,0.4), transparent)",
-  rose: "radial-gradient(closest-side, rgba(252,64,110,0.35), transparent)",
-  violet: "radial-gradient(closest-side, rgba(130,90,255,0.32), transparent)",
-  blue: "radial-gradient(closest-side, rgba(59,130,246,0.32), transparent)",
-  emerald:
-    "radial-gradient(closest-side, rgba(34,197,94,0.32), transparent)",
-};
-
 /**
- * Cursor-tilt card with a soft glow that follows the cursor. The tilt is
- * intentionally subtle (max ~8deg) to feel premium rather than gimmicky.
- * Uses motion springs so the response feels organic and the snap-back is
- * smooth on leave.
+ * Cursor-tilt card. The 3D effect is intentionally subtle (~5deg max) —
+ * just enough to feel alive. Single amber accent appears on hover via a
+ * soft radial that follows the cursor; the rest of the card stays
+ * monochrome so the grid reads as a coherent system, not a rainbow.
  */
 export default function FeatureCard({
   title,
@@ -35,25 +22,21 @@ export default function FeatureCard({
   icon,
   visual,
   span = 1,
-  tone = "amber",
 }: FeatureCardProps) {
   const ref = useRef<HTMLDivElement>(null);
 
-  // Normalized cursor coords (-0.5 to 0.5).
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
 
-  // Tilt is the inverse of the cursor position — leaning toward it.
-  const rotX = useSpring(useTransform(my, [-0.5, 0.5], [8, -8]), {
+  const rotX = useSpring(useTransform(my, [-0.5, 0.5], [5, -5]), {
     stiffness: 200,
     damping: 22,
   });
-  const rotY = useSpring(useTransform(mx, [-0.5, 0.5], [-10, 10]), {
+  const rotY = useSpring(useTransform(mx, [-0.5, 0.5], [-7, 7]), {
     stiffness: 200,
     damping: 22,
   });
 
-  // Glow position tracks the cursor.
   const glowX = useTransform(mx, [-0.5, 0.5], ["10%", "90%"]);
   const glowY = useTransform(my, [-0.5, 0.5], ["10%", "90%"]);
 
@@ -83,43 +66,31 @@ export default function FeatureCard({
         rotateY: rotY,
         transformStyle: "preserve-3d",
       }}
-      className={`relative group rounded-3xl bg-white border border-black/[0.06] overflow-hidden ${
+      className={`relative group rounded-3xl bg-white border border-ink/[0.07] overflow-hidden ${
         span === 2 ? "lg:col-span-2" : ""
       }`}
     >
-      {/* Cursor-following glow */}
+      {/* Single amber glow that follows the cursor. */}
       <motion.div
         aria-hidden
-        className="absolute pointer-events-none w-[420px] h-[420px] -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        className="absolute pointer-events-none w-[440px] h-[440px] -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
         style={{
           left: glowX,
           top: glowY,
-          background: TONE_GLOW[tone],
+          background:
+            "radial-gradient(closest-side, rgba(252,169,41,0.32), transparent)",
         }}
       />
 
-      <div className="relative p-6 lg:p-8 h-full flex flex-col">
-        <div
-          className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 text-white"
-          style={{
-            background:
-              tone === "amber"
-                ? "linear-gradient(135deg, rgb(252,169,41), rgb(252,124,41))"
-                : tone === "rose"
-                  ? "linear-gradient(135deg, rgb(252,64,110), rgb(180,40,90))"
-                  : tone === "violet"
-                    ? "linear-gradient(135deg, rgb(130,90,255), rgb(80,55,200))"
-                    : tone === "blue"
-                      ? "linear-gradient(135deg, rgb(59,130,246), rgb(37,99,235))"
-                      : "linear-gradient(135deg, rgb(34,197,94), rgb(22,163,74))",
-          }}
-        >
+      <div className="relative p-6 lg:p-7 h-full flex flex-col">
+        {/* Icon: black tile, amber on hover. Single-color system. */}
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-5 bg-ink text-cream group-hover:bg-amber group-hover:text-ink transition-colors duration-200">
           {icon}
         </div>
-        <h3 className="text-xl font-semibold text-foreground tracking-tight">
+        <h3 className="text-lg font-semibold text-ink tracking-tight">
           {title}
         </h3>
-        <p className="mt-2 text-sm text-foreground/65 leading-relaxed">
+        <p className="mt-2 text-sm text-ink/60 leading-relaxed">
           {description}
         </p>
         {visual && <div className="mt-6">{visual}</div>}

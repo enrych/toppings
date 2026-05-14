@@ -39,6 +39,14 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Direct brand tokens — use these in new components.
+        cream: "rgb(var(--cream) / <alpha-value>)",
+        ink: "rgb(var(--ink) / <alpha-value>)",
+        amber: "rgb(var(--amber) / <alpha-value>)",
+        flame: "rgb(var(--flame) / <alpha-value>)",
+      },
+      fontFamily: {
+        display: ["var(--font-display)", "Inter", "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
