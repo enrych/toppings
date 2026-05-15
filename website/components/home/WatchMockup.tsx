@@ -25,7 +25,11 @@ export default function WatchMockup() {
       style={{
         background: "#0f0f0f",
         borderColor: "rgba(255,255,255,0.06)",
-        boxShadow: "0 30px 80px -20px rgba(10,10,10,0.35)",
+        // Warm, layered shadow: a soft amber bloom around the frame
+        // plus a deeper ink shadow below. Bridges the cream→ink
+        // contrast instead of dropping a hard black halo on the page.
+        boxShadow:
+          "0 0 0 1px rgba(10,10,10,0.04), 0 40px 80px -20px rgba(10,10,10,0.28), 0 0 60px 10px rgba(252,169,41,0.10)",
         fontFamily: "var(--font-sans)",
       }}
     >
@@ -283,25 +287,17 @@ export default function WatchMockup() {
         </CtrlIconBtn>
       </div>
 
-      {/* Title + channel */}
-      <div
-        className="px-4 pt-4 pb-1 text-[18px] leading-[1.2] tracking-[-0.022em]"
-        style={{ fontWeight: 700 }}
-      >
-        Lex Fridman Podcast #420 — Three hours on focus, sleep, and recovery
-      </div>
-      <div
-        className="px-4 pb-3 text-[12.5px] flex gap-2"
-        style={{ color: "rgba(255,255,255,0.6)" }}
-      >
-        <span>Lex Clips</span>
-        <span>· 4.2M views</span>
-        <span>· 3 days ago</span>
-      </div>
+      {/*
+       * Title/channel rows from the original handoff are dropped here —
+       * the audio-mode veil above already names the podcast, and the
+       * YouTube-flavored metadata adds visual weight without
+       * Toppings-brand value. The playlist-runtime card below carries
+       * the "brand asserts itself" moment instead.
+       */}
 
       {/* Playlist runtime card — the brand asserts itself fully here */}
       <div
-        className="mx-4 mb-4 rounded-lg px-4 py-3.5"
+        className="mx-4 mb-4 mt-4 rounded-lg px-4 py-3.5"
         style={{ background: "#1a1a1a" }}
       >
         <div

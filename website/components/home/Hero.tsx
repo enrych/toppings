@@ -105,12 +105,34 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        {/* Product mockup — Toppings inside YouTube. */}
+        {/*
+         * Product mockup — Toppings inside YouTube.
+         *
+         * Wrapped in three pieces of brand polish so it doesn't read as
+         * a foreign black block dropped on the cream page:
+         *  - A soft amber wash behind the frame, blurred and oversized,
+         *    bridges the cream→ink contrast.
+         *  - A faint amber edge glow tints the immediate surround warm.
+         *  - The frame itself sits at -1.2° so the composition feels
+         *    captured rather than placed. (No springs, no hover wobble.)
+         */}
         <motion.div
           {...reveal(0.25, 1.2, 36)}
           className="relative w-full lg:max-w-none"
         >
-          <WatchMockup />
+          {/* Soft amber wash behind the frame. */}
+          <div
+            aria-hidden
+            className="absolute pointer-events-none -inset-12 -z-10"
+            style={{
+              background:
+                "radial-gradient(60% 55% at 50% 55%, rgba(252,169,41,0.22), rgba(252,169,41,0) 70%)",
+              filter: "blur(12px)",
+            }}
+          />
+          <div style={{ transform: "rotate(-1.2deg)" }}>
+            <WatchMockup />
+          </div>
         </motion.div>
       </div>
     </section>
