@@ -10,7 +10,7 @@ import {
   EXTERNAL_URL,
   WEBSITE_HOME_FINAL_CTA,
 } from "toppings-constants";
-import { fadeInUp, displayReveal } from "./motion";
+import { fadeInUp, displayReveal, MOTION_LAYER_STYLE } from "./motion";
 
 /**
  * Centered closing CTA. Cream ground (per design — final section does not
@@ -35,7 +35,7 @@ export default function FinalCTA() {
         <motion.h2
           {...displayReveal()}
           className="mx-auto mb-6 max-w-[18ch] text-[56px] font-black leading-[0.94] tracking-[-0.045em] text-ink sm:text-[80px] lg:text-[112px]"
-          style={{ fontWeight: 900, textWrap: "balance" }}
+          style={{ ...MOTION_LAYER_STYLE, fontWeight: 900, textWrap: "balance" }}
         >
           {HEADLINE_BEFORE}
           <span className="amber-underline">{HEADLINE_HIGHLIGHT}</span>

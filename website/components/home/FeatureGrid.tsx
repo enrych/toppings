@@ -2,7 +2,7 @@
 import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { WEBSITE_HOME_FEATURE_GRID } from "toppings-constants";
-import { fadeInUp, displayReveal } from "./motion";
+import { fadeInUp, displayReveal, MOTION_LAYER_STYLE } from "./motion";
 
 /**
  * FeatureGrid — four equal cells separated by hairline rules. No cards,
@@ -89,6 +89,7 @@ export function SectionHead({
         {...displayReveal()}
         className="m-0 max-w-[14ch] text-[40px] font-black leading-[0.98] tracking-[-0.04em] sm:text-[52px] lg:text-[72px]"
         style={{
+          ...MOTION_LAYER_STYLE,
           fontWeight: 900,
           color: inverse ? "var(--fg-on-ink-1)" : "var(--fg-1)",
           textWrap: "balance",
@@ -99,7 +100,10 @@ export function SectionHead({
       <motion.p
         {...fadeInUp({ delay: 0.25 })}
         className="m-0 text-[18px] leading-[1.55] tracking-[-0.011em]"
-        style={{ color: inverse ? "var(--fg-on-ink-2)" : "var(--fg-2)" }}
+        style={{
+          ...MOTION_LAYER_STYLE,
+          color: inverse ? "var(--fg-on-ink-2)" : "var(--fg-2)",
+        }}
       >
         {p}
       </motion.p>

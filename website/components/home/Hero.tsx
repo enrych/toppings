@@ -11,7 +11,7 @@ import {
   EXTERNAL_URL,
   WEBSITE_HERO,
 } from "toppings-constants";
-import { EASE_EXPO_OUT } from "./motion";
+import { EASE_EXPO_OUT, MOTION_LAYER_STYLE } from "./motion";
 
 /**
  * Hero — implements the design-system handoff with the watch-page
@@ -22,11 +22,15 @@ import { EASE_EXPO_OUT } from "./motion";
  * the editorial pace in components/home/motion.ts — body content
  * travels 24px over 900ms, display headlines 40px over 1100ms, with
  * 150–200ms gaps between siblings.
+ *
+ * MOTION_LAYER_STYLE keeps the GPU layer pinned so text doesn't
+ * subpixel-AA flicker when the transform ends. See motion.ts.
  */
 const reveal = (delay = 0, duration = 0.9, y = 24) => ({
   initial: { opacity: 0, y },
   animate: { opacity: 1, y: 0 },
   transition: { duration, ease: EASE_EXPO_OUT, delay },
+  style: MOTION_LAYER_STYLE,
 });
 
 export default function Hero() {
@@ -55,7 +59,14 @@ export default function Hero() {
           <motion.h1
             {...reveal(0.1, 1.1, 40)}
             className="text-[56px] font-black leading-[0.92] tracking-[-0.045em] text-ink sm:text-[72px] lg:text-[96px]"
-            style={{ fontWeight: 900, textWrap: "balance" }}
+            // Spread layer style first (from reveal()) so our explicit
+            // typographic style merges on top without dropping
+            // willChange / translateZ / antialias.
+            style={{
+              ...MOTION_LAYER_STYLE,
+              fontWeight: 900,
+              textWrap: "balance",
+            }}
           >
             {WEBSITE_HERO.HEADLINE_LINE_1}
             <br />
