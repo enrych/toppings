@@ -1,0 +1,1211 @@
+/* ============================================================
+ * RECLAIM — "Reclaim, enacted"
+ * Spine = the reclaim arc (noise → control → quiet).
+ * Destination = the quiet layer (every scene resolves calm).
+ * Texture = living interface (reactive micro-moments).
+ * All scoped under .reclaim so docs/farewell stay on the
+ * original cream system untouched.
+ * ============================================================ */
+.reclaim {
+  --ink: #0b0b0c;
+  --field: #121214;
+  --bone: #eae5d8;
+  --bone-dim: rgba(234, 229, 216, 0.6);
+  --bone-faint: rgba(234, 229, 216, 0.34);
+  --hair: rgba(234, 229, 216, 0.12);
+  --hair-strong: rgba(234, 229, 216, 0.22);
+  --noise-red: #ff2a1a;
+  --ember: #c2531e;
+  --ember-glow: #ea7b2c;
+
+  --display: var(--font-display), Georgia, serif;
+  --sans: var(--font-ui), system-ui, sans-serif;
+  --mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  --pad: clamp(24px, 5.5vw, 96px);
+  --maxw: 1480px;
+
+  background: var(--ink);
+  color: var(--bone);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+.reclaim * {
+  box-sizing: border-box;
+  margin: 0;
+}
+.reclaim ::selection {
+  background: var(--ember);
+  color: var(--bone);
+}
+
+/* ---- shared canvas + overlay ---- */
+.r-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  display: block;
+}
+/* A constant base veil so the shader never reads brighter between the
+ * hero and the Break than it does inside the hero. The Break timeline
+ * ramps this up further; the hero adds its own scrim on top. */
+.r-darken {
+  position: fixed;
+  inset: 0;
+  background: var(--ink);
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 1;
+}
+.r-flow {
+  position: relative;
+  z-index: 2;
+}
+
+/* ---- nav ---- */
+.r-nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px var(--pad);
+  mix-blend-mode: difference;
+}
+.r-wordmark {
+  font-family: var(--display);
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+.r-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fff;
+}
+.r-nav-right a {
+  color: inherit;
+  text-decoration: none;
+  opacity: 0.8;
+}
+.r-nav-right a:hover {
+  opacity: 1;
+}
+/* Mobile: drop the difference blend (it inverts weirdly over the
+ * scrolling content) and give the bar a clean ink fade so content
+ * passes under it intentionally instead of clashing. */
+@media (max-width: 820px) {
+  .r-nav {
+    mix-blend-mode: normal;
+    padding: 16px var(--pad);
+    background: linear-gradient(
+      180deg,
+      var(--ink) 0%,
+      rgba(11, 11, 12, 0.86) 55%,
+      rgba(11, 11, 12, 0) 100%
+    );
+  }
+  .r-wordmark,
+  .r-nav-right {
+    color: var(--bone);
+  }
+}
+
+/* ---- type primitives ---- */
+.r-eyebrow {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+.r-eyebrow::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  background: var(--noise-red);
+}
+.r-eyebrow.is-ember::before {
+  background: var(--ember-glow);
+}
+.r-display {
+  font-family: var(--display);
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: -0.018em;
+  font-size: clamp(56px, 10.5vw, 184px);
+  color: var(--bone);
+}
+.r-h2 {
+  font-family: var(--display);
+  font-weight: 400;
+  line-height: 0.94;
+  letter-spacing: -0.014em;
+  font-size: clamp(44px, 7vw, 124px);
+  color: var(--bone);
+}
+.r-h2 em,
+.r-display em {
+  font-style: normal;
+  color: var(--ember-glow);
+}
+.r-deck {
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(17px, 1.4vw, 21px);
+  line-height: 1.55;
+  color: var(--bone-dim);
+  max-width: 42ch;
+}
+.r-kicker {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
+}
+
+/* clip-reveal mask */
+.r-mask {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+}
+.r-line {
+  display: block;
+  will-change: transform;
+}
+
+/* Progressive enhancement: content is visible by default. The
+ * orchestrator sets the hidden start state in JS only once it's alive,
+ * so a JS failure can never leave the page blank. */
+[data-reveal] {
+  will-change: transform, opacity;
+}
+.r-parallax {
+  will-change: transform;
+}
+
+/* Scroll progress — a single earned ember hairline. */
+.r-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background: var(--ember-glow);
+  transform: scaleX(0);
+  transform-origin: left;
+  z-index: 30;
+  box-shadow: 0 0 16px 1px rgba(234, 123, 44, 0.5);
+}
+
+/* ---- scene shell ---- */
+.r-scene {
+  position: relative;
+  width: 100%;
+  padding: clamp(96px, 14vh, 200px) var(--pad);
+}
+.r-scene-inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+}
+
+/* === Scene 1 — Hero (the noise) === */
+/* Height is content + padding, NOT a forced 100vh. A centred 100vh
+ * hero leaves a dead empty lower half you must scroll past before the
+ * reclaim beat — exactly the "empty space" we don't want. Content-
+ * sized means the hero flows straight into the Break. The fixed shader
+ * canvas still fills the viewport, so it reads full-bleed regardless. */
+.r-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: clamp(140px, 22vh, 240px);
+  padding-bottom: clamp(80px, 12vh, 160px);
+}
+.r-hero-stack {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(22px, 2.6vw, 38px);
+  max-width: 1240px;
+}
+.r-hero .r-cue {
+  z-index: 3;
+}
+/* Editorial scrim — beds the type over the full-bleed distortion. The
+ * global .r-darken (0.5) already dims the plate; this shapes the
+ * darkness toward the left where the type sits. */
+.r-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      100deg,
+      var(--ink) 0%,
+      rgba(11, 11, 12, 0.78) 36%,
+      rgba(11, 11, 12, 0.32) 64%,
+      rgba(11, 11, 12, 0.04) 100%
+    ),
+    linear-gradient(0deg, rgba(11, 11, 12, 0.66), transparent 38%);
+}
+
+@media (max-width: 880px) {
+  .r-hero::before {
+    background: linear-gradient(
+      0deg,
+      var(--ink) 0%,
+      rgba(11, 11, 12, 0.82) 36%,
+      rgba(11, 11, 12, 0.3) 66%,
+      rgba(11, 11, 12, 0.06) 100%
+    );
+  }
+}
+.r-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.r-trust {
+  display: flex;
+  gap: 28px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--bone-faint);
+}
+.r-trust b {
+  color: var(--bone);
+  font-weight: 600;
+}
+.r-cue {
+  position: absolute;
+  left: var(--pad);
+  bottom: clamp(28px, 4vh, 56px);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+}
+
+/* === Scene 2 — The Break === */
+.r-break {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+.r-tag {
+  position: absolute;
+  top: var(--pad);
+  left: var(--pad);
+  z-index: 4;
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ember-glow);
+}
+.r-seam {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  z-index: 2;
+  background: var(--ember-glow);
+  box-shadow: 0 0 70px 14px rgba(234, 123, 44, 0.45);
+  transform: scaleY(0);
+  transform-origin: top;
+}
+/* Wrapper owns centering; gsap owns .r-panel's transform (slide-in). */
+.r-panel-wrap {
+  position: absolute;
+  display: flex;
+  z-index: 3;
+}
+/* Charcoal, not white — the reclaimed player belongs to the calm
+ * *dark* world, not a bright card stapled onto it. */
+.r-panel {
+  width: 100%;
+  background: #17171b;
+  border: 1px solid var(--hair-strong);
+  border-radius: 18px;
+  padding: 22px;
+  opacity: 0;
+  box-shadow:
+    0 1px 0 rgba(234, 229, 216, 0.05) inset,
+    0 40px 90px -34px rgba(0, 0, 0, 0.85);
+}
+.r-break-copy {
+  position: absolute;
+  z-index: 3;
+}
+
+/* — layout: split (full-bleed, copy left / clean player right) — */
+.r-break[data-layout="split"] .r-break-copy {
+  left: var(--pad);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42vw;
+  max-width: 560px;
+}
+.r-break[data-layout="split"] .r-panel-wrap {
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 50vw;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--pad);
+}
+.r-break[data-layout="split"] .r-panel {
+  max-width: 560px;
+}
+
+/* — layout: stack (centred single column) — */
+.r-break[data-layout="stack"] .r-seam {
+  display: none;
+}
+.r-break[data-layout="stack"] .r-break-copy {
+  left: 50%;
+  top: 13vh;
+  transform: translateX(-50%);
+  width: min(900px, 86vw);
+  text-align: center;
+}
+.r-break[data-layout="stack"] .r-panel-wrap {
+  left: 50%;
+  top: 40vh;
+  transform: translateX(-50%);
+  width: min(620px, 86vw);
+  justify-content: center;
+}
+
+/* — layout: tight (current composition, denser) — */
+.r-break[data-layout="tight"] .r-break-copy {
+  left: var(--pad);
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: min(560px, 40vw);
+}
+.r-break[data-layout="tight"] .r-panel-wrap {
+  right: var(--pad);
+  top: 0;
+  bottom: 0;
+  width: min(620px, 46vw);
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* Mobile: the Break is unpinned (see ReclaimHome) and stacks in normal
+ * flow — copy, then the player. No absolute overlap, no seam, no void. */
+@media (max-width: 820px) {
+  .r-break {
+    height: auto;
+    min-height: auto;
+    overflow: visible;
+    padding: clamp(80px, 14vh, 140px) var(--pad);
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  .r-break .r-seam {
+    display: none;
+  }
+  .r-break .r-tag {
+    position: static;
+  }
+  .r-break[data-layout] .r-break-copy {
+    position: static;
+    transform: none;
+    width: auto;
+    max-width: 100%;
+    order: 1;
+  }
+  .r-break[data-layout] .r-panel-wrap {
+    position: static;
+    transform: none;
+    width: 100%;
+    padding: 0;
+    order: 2;
+  }
+  .r-panel {
+    max-width: 100% !important;
+  }
+}
+.r-panel-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.r-panel-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--bone);
+}
+.r-panel-brand i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--ember);
+}
+.r-panel-mode {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
+  border: 1px solid var(--hair-strong);
+  padding: 5px 10px;
+  border-radius: 999px;
+}
+.r-panel-video {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  background: radial-gradient(120% 120% at 50% 30%, #0e0e12, #060608);
+  border: 1px solid rgba(234, 229, 216, 0.06);
+  display: grid;
+  place-items: center;
+}
+.r-play {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 1px solid rgba(234, 229, 216, 0.45);
+  color: rgba(234, 229, 216, 0.8);
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  padding-left: 3px;
+}
+.r-panel-scrub {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 18px 0;
+}
+.r-panel-time {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--bone-faint);
+}
+.r-panel-track {
+  position: relative;
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(234, 229, 216, 0.14);
+}
+.r-panel-track > i {
+  position: absolute;
+  inset: 0 58% 0 0;
+  border-radius: 2px;
+  background: var(--ember);
+}
+.r-panel-track > b {
+  position: absolute;
+  left: 42%;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--ember-glow);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 0 4px rgba(234, 123, 44, 0.18);
+}
+.r-keys {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--hair);
+  padding-top: 16px;
+}
+.r-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--bone-dim);
+  background: rgba(234, 229, 216, 0.06);
+  padding: 8px 11px;
+  border-radius: 8px;
+}
+.r-key em {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--bone);
+}
+.r-key:first-child em {
+  color: var(--ember);
+}
+.r-break-copy .r-deck {
+  margin-top: 22px;
+}
+
+/* Post-Break scenes are opaque so the fixed shader canvas never
+ * bleeds through the calm half of the page. */
+.r-solid,
+.r-quiet,
+.r-close {
+  background: var(--ink);
+}
+
+/* === Scene 3 — Features === */
+.r-section-head {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: clamp(28px, 5vw, 80px);
+  align-items: end;
+  margin-bottom: clamp(56px, 9vh, 128px);
+}
+@media (max-width: 880px) {
+  .r-section-head {
+    grid-template-columns: 1fr;
+  }
+}
+.r-features {
+  border-top: 1px solid var(--hair-strong);
+}
+.r-feature {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(150px, 0.5fr) 1.25fr 1fr;
+  gap: clamp(24px, 4vw, 72px);
+  align-items: start;
+  padding: clamp(40px, 7vh, 88px) 0 clamp(40px, 7vh, 88px)
+    clamp(0px, 2vw, 32px);
+  border-bottom: 1px solid var(--hair);
+}
+/* hover: an ember rule grows in from the left + accents light up */
+.r-feature::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--ember-glow);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.r-feature:hover::before {
+  transform: scaleY(1);
+}
+.r-feature-lead {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: flex-start;
+}
+.r-feature-idx {
+  font-family: var(--display);
+  font-size: clamp(40px, 4.8vw, 88px);
+  line-height: 0.8;
+  color: var(--bone-faint);
+  transition: color 0.3s ease;
+}
+.r-feature:hover .r-feature-idx {
+  color: var(--ember);
+}
+.r-feature-kbd {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--bone-dim);
+  border: 1px solid var(--hair-strong);
+  padding: 7px 11px;
+  border-radius: 7px;
+  white-space: nowrap;
+}
+.r-feature-title {
+  font-family: var(--display);
+  font-size: clamp(32px, 4.2vw, 66px);
+  line-height: 0.98;
+  letter-spacing: -0.012em;
+  color: var(--bone);
+  transition: color 0.3s ease;
+}
+.r-feature:hover .r-feature-title {
+  color: var(--ember-glow);
+}
+.r-feature-body {
+  font-size: clamp(15px, 1.15vw, 17px);
+  line-height: 1.6;
+  color: var(--bone-dim);
+  max-width: 42ch;
+  align-self: center;
+}
+@media (max-width: 980px) {
+  .r-feature {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .r-feature-lead {
+    flex-direction: row;
+    align-items: center;
+    gap: 22px;
+  }
+}
+
+/* === Scene 4 — Control (living interface) === */
+.r-control {
+  background: var(--field);
+}
+.r-control-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(40px, 6vw, 110px);
+  align-items: center;
+}
+@media (max-width: 980px) {
+  .r-control-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.r-keystage {
+  border: 1px solid var(--hair);
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.28);
+  padding: clamp(24px, 3vw, 40px);
+}
+.r-keyrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 6px;
+  border-bottom: 1px solid var(--hair);
+  transition:
+    color 0.18s ease,
+    transform 0.18s ease;
+}
+.r-keyrow:last-child {
+  border-bottom: 0;
+}
+.r-keyrow-label {
+  font-size: 15px;
+  color: var(--bone);
+}
+.r-keyrow-desc {
+  font-size: 12.5px;
+  color: var(--bone-faint);
+  margin-top: 3px;
+}
+.r-combo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.r-cap {
+  font-family: var(--mono);
+  font-size: 13px;
+  min-width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  border-radius: 7px;
+  background: rgba(234, 229, 216, 0.06);
+  border: 1px solid var(--hair-strong);
+  color: var(--bone);
+  transition:
+    background 0.12s ease,
+    transform 0.12s ease,
+    border-color 0.12s ease;
+}
+.r-keyrow.is-hit {
+  transform: translateX(6px);
+}
+.r-keyrow.is-hit .r-keyrow-label {
+  color: var(--ember-glow);
+}
+.r-keyrow.is-hit .r-cap {
+  background: var(--ember);
+  border-color: var(--ember-glow);
+  transform: translateY(2px);
+}
+.r-readout {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
+  margin-top: 22px;
+  min-height: 1.4em;
+}
+.r-readout b {
+  color: var(--ember-glow);
+  font-weight: 500;
+}
+
+/* === Scene 5 — Quiet (the destination) === */
+.r-quiet {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.r-rules {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(36px, 5vw, 96px);
+  margin-top: clamp(64px, 12vh, 160px);
+}
+@media (max-width: 980px) {
+  .r-rules {
+    grid-template-columns: 1fr;
+    gap: 56px;
+  }
+}
+.r-rule-num {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--hair);
+  margin-bottom: 24px;
+}
+.r-rule-title {
+  font-family: var(--display);
+  font-size: clamp(30px, 3.4vw, 52px);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--bone);
+  margin-bottom: 18px;
+}
+.r-rule-title em {
+  font-style: normal;
+  color: var(--ember-glow);
+}
+.r-rule-body {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--bone-dim);
+}
+
+/* === Scene 6 — Close === */
+.r-close {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+}
+.r-close .r-display {
+  max-width: 16ch;
+}
+.r-close-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 14px;
+}
+.r-meta {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
+  margin-top: 40px;
+}
+.r-foot {
+  width: 100%;
+  max-width: var(--maxw);
+  margin: clamp(80px, 14vh, 180px) auto 0;
+  padding-top: 28px;
+  border-top: 1px solid var(--hair);
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--bone-faint);
+}
+
+/* ---- buttons ---- */
+.r-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 52px;
+  padding: 0 26px;
+  border-radius: 10px;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition:
+    transform 0.16s ease,
+    background 0.2s ease;
+}
+.r-btn:active {
+  transform: translateY(1px);
+}
+.r-btn--solid {
+  background: var(--bone);
+  color: var(--ink);
+}
+.r-btn--solid .r-arrow {
+  color: var(--ember);
+}
+.r-btn--ghost {
+  border-color: var(--hair-strong);
+  color: var(--bone);
+}
+.r-btn--ghost:hover {
+  border-color: var(--bone);
+}
+
+/* === Audio Mode — the proof === */
+.r-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(32px, 5vw, 80px);
+  margin-top: clamp(48px, 8vh, 110px);
+}
+@media (max-width: 880px) {
+  .r-stats {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+}
+.r-stat-num {
+  font-family: var(--display);
+  font-size: clamp(60px, 8.5vw, 140px);
+  line-height: 0.86;
+  letter-spacing: -0.02em;
+  color: var(--bone);
+}
+.r-stat-num span {
+  color: var(--ember-glow);
+  margin-left: 0.04em;
+}
+.r-stat-label {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--hair);
+}
+
+/* === How it works === */
+.r-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(36px, 5vw, 90px);
+  border-top: 1px solid var(--hair);
+  padding-top: clamp(40px, 6vh, 72px);
+}
+@media (max-width: 880px) {
+  .r-steps {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+}
+.r-step-num {
+  font-family: var(--display);
+  font-size: clamp(52px, 6vw, 84px);
+  line-height: 1;
+  color: var(--bone);
+  margin-bottom: 22px;
+}
+.r-step-num span {
+  color: var(--ember-glow);
+}
+.r-step-title {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 20px;
+  letter-spacing: -0.012em;
+  color: var(--bone);
+  margin-bottom: 12px;
+}
+.r-step-body {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--bone-dim);
+  max-width: 34ch;
+}
+
+/* === Custom cursor === */
+.r-cursor-dot,
+.r-cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 40;
+  border-radius: 50%;
+}
+.r-cursor-dot {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  background: var(--ember-glow);
+}
+.r-cursor-ring {
+  width: 38px;
+  height: 38px;
+  margin: -19px 0 0 -19px;
+  border: 1px solid var(--hair-strong);
+  transition:
+    width 0.22s ease,
+    height 0.22s ease,
+    margin 0.22s ease,
+    background 0.22s ease,
+    border-color 0.22s ease,
+    opacity 0.22s ease;
+}
+.r-cursor-ring.is-hot {
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  border-color: var(--ember-glow);
+  background: rgba(234, 123, 44, 0.08);
+}
+.r-cursor-ring.is-hidden {
+  opacity: 0;
+}
+html.has-cursor,
+html.has-cursor * {
+  cursor: none !important;
+}
+
+/* === Trust strip — a quiet hairline band === */
+.r-trustband {
+  background: var(--ink);
+  border-top: 1px solid var(--hair);
+  border-bottom: 1px solid var(--hair);
+  padding: clamp(40px, 7vh, 80px) var(--pad);
+}
+.r-trustband .r-kicker {
+  display: block;
+  margin-bottom: clamp(28px, 4vh, 44px);
+}
+.r-trust-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(24px, 4vw, 64px);
+}
+@media (max-width: 720px) {
+  .r-trust-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px 24px;
+  }
+}
+.r-trust-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.r-trust-num {
+  font-family: var(--display);
+  font-size: clamp(38px, 4.4vw, 68px);
+  line-height: 0.9;
+  color: var(--bone);
+}
+.r-trust-num span {
+  color: var(--ember-glow);
+  margin-left: 0.04em;
+}
+.r-trust-label {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone-faint);
+}
+
+/* === Utility pages (greetings / farewell) === */
+.r-mini-root {
+  min-height: 100vh;
+}
+.r-mini {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.r-mini-inner {
+  max-width: 820px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.r-mini .r-display {
+  font-size: clamp(56px, 9vw, 150px);
+}
+.r-mini-actions {
+  margin-top: 44px;
+}
+.r-reveal {
+  animation: r-rise 0.95s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.r-mini-inner .r-reveal:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.r-mini-inner .r-reveal:nth-child(2) {
+  animation-delay: 0.18s;
+}
+.r-mini-inner .r-reveal:nth-child(3) {
+  animation-delay: 0.34s;
+}
+.r-mini-inner .r-reveal:nth-child(4) {
+  animation-delay: 0.5s;
+}
+@keyframes r-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .r-reveal {
+    animation: none;
+  }
+}
+
+/* === Dev variant switcher (stripped in production) === */
+.r-dev {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 35;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  background: rgba(10, 10, 12, 0.82);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--hair-strong);
+  border-radius: 12px;
+  font-family: var(--mono);
+}
+.r-dev-tag {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ember-glow);
+}
+.r-dev-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.r-dev-row b {
+  font-weight: 500;
+  font-size: 11px;
+  color: var(--bone-faint);
+  width: 44px;
+}
+.r-dev-row button {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--bone-dim);
+  background: rgba(234, 229, 216, 0.06);
+  border: 1px solid var(--hair);
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  text-transform: capitalize;
+}
+.r-dev-row button.is-on {
+  color: var(--ink);
+  background: var(--ember-glow);
+  border-color: var(--ember-glow);
+}
+
+/* === Reduced motion — present the resolved destination === */
+.reclaim.is-static .r-canvas,
+.reclaim.is-static .r-darken,
+.reclaim.is-static .r-progress,
+.reclaim.is-static .r-cursor-dot,
+.reclaim.is-static .r-cursor-ring,
+.reclaim.is-static .r-seam,
+.reclaim.is-static .r-cue {
+  display: none;
+}
+.reclaim.is-static .r-hero {
+  min-height: 86vh;
+}
+.reclaim.is-static .r-break {
+  position: static;
+  height: auto;
+  overflow: visible;
+  padding: clamp(96px, 14vh, 200px) var(--pad);
+}
+.reclaim.is-static .r-tag {
+  position: static;
+  display: block;
+  margin-bottom: 28px;
+}
+.reclaim.is-static .r-panel {
+  position: static;
+  transform: none;
+  opacity: 1;
+  width: 100%;
+  max-width: 620px;
+  margin: 0 0 40px;
+}
+.reclaim.is-static .r-break-copy {
+  position: static;
+  max-width: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal],
+  .r-line {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .r-panel {
+    opacity: 1 !important;
+  }
+  .r-seam {
+    transform: scaleY(1) !important;
+  }
+}

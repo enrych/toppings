@@ -30,3 +30,7 @@ build
 **/.next/
 **/out/
 next-env.d.ts
+
+# typescript incremental build cache
+**/tsconfig.tsbuildinfo
+*.tsbuildinfo

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Instrument_Serif, Geist } from "next/font/google";
 import "./globals.css";
 import { WEBSITE_METADATA, WEBSITE_HTML_LANG } from "toppings-constants";
 
@@ -41,6 +42,26 @@ const jetbrainsMono = localFont({
   ],
 });
 
+/**
+ * Rebrand display + UI faces (the "Reclaim, enacted" home). Instrument
+ * Serif is the editorial display voice (open stand-in for PP Editorial
+ * New); Geist is the grotesque UI face. JetBrains Mono above is reused
+ * as the "keyboard voice". next/font/google self-hosts at build time so
+ * basePath rewriting still works.
+ */
+const display = Instrument_Serif({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const ui = Geist({
+  subsets: ["latin"],
+  variable: "--font-ui",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: WEBSITE_METADATA.TITLE,
   description: WEBSITE_METADATA.DESCRIPTION,
@@ -54,7 +75,7 @@ export default function RootLayout({
   return (
     <html
       lang={WEBSITE_HTML_LANG}
-      className={`${inter.variable} ${jetbrainsMono.variable}`}
+      className={`${inter.variable} ${jetbrainsMono.variable} ${display.variable} ${ui.variable}`}
     >
       <body className="min-h-screen bg-[--surface-page] text-[--fg-1] antialiased">
         {children}
