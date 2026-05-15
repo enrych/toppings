@@ -35,7 +35,7 @@ export default function FeatureGrid() {
           {ROWS.map((f, i) => (
             <motion.div
               key={f.index}
-              {...fadeInUp({ delay: i * 0.05, y: 12 })}
+              {...fadeInUp({ delay: i * 0.12, y: 20 })}
               className="flex min-h-[220px] flex-col gap-3 bg-cream p-8 px-7"
             >
               <div className="font-mono text-xs font-medium uppercase tracking-[0.04em] text-[--fg-3]">
@@ -87,7 +87,7 @@ export function SectionHead({
         {h2}
       </motion.h2>
       <motion.p
-        {...fadeInUp({ delay: 0.15 })}
+        {...fadeInUp({ delay: 0.25 })}
         className="m-0 text-[18px] leading-[1.55] tracking-[-0.011em]"
         style={{ color: inverse ? "var(--fg-on-ink-2)" : "var(--fg-2)" }}
       >

@@ -11,29 +11,22 @@ import {
   EXTERNAL_URL,
   WEBSITE_HERO,
 } from "toppings-constants";
+import { EASE_EXPO_OUT } from "./motion";
 
 /**
  * Hero — implements the design-system handoff with the watch-page
  * product mockup as the right-column visual.
  *
- * Motion: a single staggered fade-up reveal on mount using the design
- * system's expo-out easing (cubic-bezier(0.22, 1, 0.36, 1)). Nothing
- * springs, bounces, or parallaxes — per the brand's motion rule. The
- * intent is "the page settles in" rather than "the page performs."
+ * Motion: a slow, generous staggered cascade on mount. Tone is "the
+ * page is settling in", not "the page is performing". Defaults match
+ * the editorial pace in components/home/motion.ts — body content
+ * travels 24px over 900ms, display headlines 40px over 1100ms, with
+ * 150–200ms gaps between siblings.
  */
-
-const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
-
-const reveal = (delay = 0) => ({
-  initial: { opacity: 0, y: 16 },
+const reveal = (delay = 0, duration = 0.9, y = 24) => ({
+  initial: { opacity: 0, y },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.55, ease: EASE, delay },
-});
-
-const revealBig = (delay = 0) => ({
-  initial: { opacity: 0, y: 30 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.7, ease: EASE, delay },
+  transition: { duration, ease: EASE_EXPO_OUT, delay },
 });
 
 export default function Hero() {
@@ -42,7 +35,7 @@ export default function Hero() {
       <div className="mx-auto grid max-w-page gap-12 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-16">
         <div>
           <motion.div
-            {...reveal(0)}
+            {...reveal(0, 0.8, 16)}
             className="t-eyebrow mb-6 inline-flex items-center gap-[10px] !text-[--fg-2]"
           >
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber" />
@@ -50,7 +43,7 @@ export default function Hero() {
           </motion.div>
 
           <motion.h1
-            {...revealBig(0.05)}
+            {...reveal(0.1, 1.1, 40)}
             className="text-[56px] font-black leading-[0.92] tracking-[-0.045em] text-ink sm:text-[72px] lg:text-[96px]"
             style={{ fontWeight: 900, textWrap: "balance" }}
           >
@@ -64,14 +57,14 @@ export default function Hero() {
           </motion.h1>
 
           <motion.p
-            {...reveal(0.2)}
+            {...reveal(0.35)}
             className="mt-7 max-w-[560px] text-[19px] leading-[1.5] tracking-[-0.011em] text-[--fg-2]"
           >
             {WEBSITE_HERO.LEDE}
           </motion.p>
 
           <motion.div
-            {...reveal(0.3)}
+            {...reveal(0.55)}
             className="mt-10 flex flex-wrap items-center gap-3"
           >
             <InstallButton />
@@ -94,7 +87,7 @@ export default function Hero() {
           </motion.div>
 
           <motion.div
-            {...reveal(0.4)}
+            {...reveal(0.75)}
             className="mt-9 flex flex-wrap gap-x-6 gap-y-2 text-[13px] text-[--fg-3]"
           >
             <span>
@@ -114,9 +107,7 @@ export default function Hero() {
 
         {/* Product mockup — Toppings inside YouTube. */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: EASE, delay: 0.15 }}
+          {...reveal(0.25, 1.2, 36)}
           className="relative w-full lg:max-w-none"
         >
           <WatchMockup />

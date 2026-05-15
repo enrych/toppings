@@ -17,7 +17,10 @@ export default function Principles() {
         <SectionHead h2={SECTION_HEADLINE} p={SECTION_LEDE} />
         <div className="grid grid-cols-1 gap-12 border-t border-[--border-1] pt-6 md:grid-cols-3">
           {CARDS.map((c, i) => (
-            <motion.div key={c.num} {...fadeInUp({ delay: i * 0.1, y: 16 })}>
+            <motion.div
+              key={c.num}
+              {...fadeInUp({ delay: i * 0.18, y: 28 })}
+            >
               <span className="mb-3 block font-mono text-xs font-medium uppercase tracking-[0.04em] text-[--fg-3]">
                 {c.num}
               </span>

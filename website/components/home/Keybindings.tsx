@@ -36,7 +36,7 @@ export default function Keybindings() {
           {ROWS.map((row, i) => (
             <motion.div
               key={i}
-              {...fadeInUp({ delay: (i % 3) * 0.05, y: 10 })}
+              {...fadeInUp({ delay: (i % 3) * 0.1, y: 16 })}
               className="grid grid-cols-[1fr_auto] items-center gap-4 border-b border-[--border-1] py-[18px]"
             >
               <div>

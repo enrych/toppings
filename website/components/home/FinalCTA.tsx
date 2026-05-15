@@ -42,13 +42,13 @@ export default function FinalCTA() {
           {HEADLINE_AFTER}
         </motion.h2>
         <motion.p
-          {...fadeInUp({ delay: 0.15 })}
+          {...fadeInUp({ delay: 0.25 })}
           className="mx-auto mb-10 max-w-[52ch] text-[18px] leading-[1.5] tracking-[-0.011em] text-[--fg-2]"
         >
           {LEDE}
         </motion.p>
         <motion.div
-          {...fadeInUp({ delay: 0.3 })}
+          {...fadeInUp({ delay: 0.45 })}
           className="flex flex-wrap justify-center gap-3"
         >
           <InstallButton />
@@ -70,7 +70,7 @@ export default function FinalCTA() {
           </Link>
         </motion.div>
         <motion.div
-          {...fadeInUp({ delay: 0.4 })}
+          {...fadeInUp({ delay: 0.6 })}
           className="mt-8 font-mono text-xs font-medium uppercase tracking-[0.04em] text-[--fg-3]"
         >
           {META}

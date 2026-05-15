@@ -44,7 +44,10 @@ export default function InverseSection() {
         />
         <div className="grid grid-cols-1 gap-x-14 gap-y-10 sm:grid-cols-3">
           {STATS.map((s, i) => (
-            <motion.div key={s.label} {...fadeInUp({ delay: i * 0.1, y: 20 })}>
+            <motion.div
+              key={s.label}
+              {...fadeInUp({ delay: i * 0.18, y: 28 })}
+            >
               <div
                 className="font-black leading-[0.94] tracking-[-0.04em] text-[--fg-on-ink-1]"
                 style={{
