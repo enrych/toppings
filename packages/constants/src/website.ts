@@ -180,6 +180,59 @@ export const WEBSITE_HOME_FEATURE_GRID = {
   ],
 } as const;
 
+export const WEBSITE_HOME_HOW_IT_WORKS = {
+  SECTION_HEADLINE: "Three steps. Zero friction.",
+  SECTION_LEDE:
+    "Install, open YouTube, make it yours. No accounts, no setup screens, no waiting for an onboarding wizard.",
+  STEPS: [
+    {
+      num: "01",
+      title: "Install in seconds",
+      body: "Add Toppings from the Chrome Web Store or Firefox Add-ons. No account, no setup.",
+    },
+    {
+      num: "02",
+      title: "Open YouTube",
+      body: "Visit any video. Toppings appears next to the native controls.",
+    },
+    {
+      num: "03",
+      title: "Make it yours",
+      body: "Pick your shortcuts, default speed, audio-mode background. Toppings remembers.",
+    },
+  ],
+} as const;
+
+export const WEBSITE_HOME_STATS_STRIP = {
+  EYEBROW: "Trusted by viewers",
+  ROWS: [
+    {
+      value: 7,
+      suffix: "+",
+      decimals: 0,
+      label: "Power features",
+    },
+    {
+      value: 4.8,
+      suffix: "★",
+      decimals: 1,
+      label: "Avg user rating",
+    },
+    {
+      value: 100,
+      suffix: "%",
+      decimals: 0,
+      label: "Free forever",
+    },
+    {
+      value: 2,
+      suffix: " min",
+      decimals: 0,
+      label: "To install",
+    },
+  ],
+} as const;
+
 export const WEBSITE_HOME_INVERSE = {
   SECTION_HEADLINE_BEFORE: "Listen, don’t ",
   SECTION_HEADLINE_HIGHLIGHT: "watch",

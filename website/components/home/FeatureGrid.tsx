@@ -30,12 +30,22 @@ export default function FeatureGrid() {
           }
         />
       </div>
-      <div className="mx-auto max-w-page px-6 lg:px-14">
+      {/*
+       * The whole grid reveals as one block. We deliberately do NOT
+       * animate individual cells — the hairline-grid pattern uses
+       * `bg-[--border-1]` on the wrapper and `gap-px` for the rules,
+       * so any per-cell opacity animation would expose the grey grid
+       * through transparent cards on the way in. Block-level reveal
+       * keeps the cells opaque from frame 1.
+       */}
+      <motion.div
+        {...fadeInUp({ delay: 0.1, y: 28 })}
+        className="mx-auto max-w-page px-6 lg:px-14"
+      >
         <div className="grid grid-cols-1 gap-px border-b border-t border-[--border-1] bg-[--border-1] sm:grid-cols-2 lg:grid-cols-4">
-          {ROWS.map((f, i) => (
-            <motion.div
+          {ROWS.map((f) => (
+            <div
               key={f.index}
-              {...fadeInUp({ delay: i * 0.12, y: 20 })}
               className="flex min-h-[220px] flex-col gap-3 bg-cream p-8 px-7"
             >
               <div className="font-mono text-xs font-medium uppercase tracking-[0.04em] text-[--fg-3]">
@@ -50,10 +60,10 @@ export default function FeatureGrid() {
                   {f.kbd}
                 </kbd>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }

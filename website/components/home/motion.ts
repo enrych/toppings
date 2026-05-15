@@ -30,6 +30,18 @@ interface RevealOpts {
   y?: number;
 }
 
+/**
+ * Viewport margin used by every whileInView trigger. POSITIVE margin
+ * means we expand the trigger box past the viewport — animations fire
+ * BEFORE the element scrolls in. That's the fix for the "render then
+ * flicker" feeling: by the time the user is looking at the element,
+ * it's already at its final state.
+ *
+ * Pre-fire by ~25% of viewport height for body content. Display
+ * elements (h2) match the same band for consistency.
+ */
+const PRE_FIRE_MARGIN = "200px 0px 200px 0px";
+
 /** Scroll-into-view fade-up. Use on body content and rows. */
 export function fadeInUp({
   delay = 0,
@@ -39,7 +51,7 @@ export function fadeInUp({
   return {
     initial: { opacity: 0, y },
     whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: "-80px" },
+    viewport: { once: true, margin: PRE_FIRE_MARGIN },
     transition: { duration, ease: EASE_EXPO_OUT, delay },
   };
 }
@@ -53,7 +65,7 @@ export function displayReveal({
   return {
     initial: { opacity: 0, y },
     whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: "-80px" },
+    viewport: { once: true, margin: PRE_FIRE_MARGIN },
     transition: { duration, ease: EASE_EXPO_OUT, delay },
   };
 }

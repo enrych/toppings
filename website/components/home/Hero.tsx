@@ -31,8 +31,18 @@ const reveal = (delay = 0, duration = 0.9, y = 24) => ({
 
 export default function Hero() {
   return (
-    <section className="px-6 pb-24 pt-[88px] lg:px-14 lg:pb-[96px]">
-      <div className="mx-auto grid max-w-page gap-12 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-16">
+    <section className="overflow-hidden px-6 pb-24 pt-[88px] lg:px-14 lg:pb-[96px]">
+      {/*
+       * Hero composition: tighter gap (gap-10 desktop, was gap-16) and a
+       * 1fr/1.1fr ratio that gives the mockup slightly more presence.
+       * The two halves now read as one composed unit rather than two
+       * stacked panels with negative space between them.
+       *
+       * `items-center` keeps the mockup vertically anchored against the
+       * center of the text block; the mockup is shorter after the
+       * title/channel trim, so the visual baseline lines up better.
+       */}
+      <div className="mx-auto grid max-w-page gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-center lg:gap-10">
         <div>
           <motion.div
             {...reveal(0, 0.8, 16)}
