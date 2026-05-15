@@ -20,10 +20,13 @@
  *   3. The newest non-"next" entry in RELEASES.version === EXTENSION_VERSION.
  *   4. /docs/keybindings includes a row for every keybinding default in
  *      EXTENSION_DEFAULT_STORE (warning, not hard fail).
- *   5. Every feature in EXTENSION_FEATURE_DEFINITIONS has a corresponding
- *      mention in either /docs or RELEASES (warning).
- *   6. Doc snapshots in website/app/docs/v<minor>/ are within the
+ *   5. Doc snapshots in website/app/docs/v<minor>/ are within the
  *      sliding window (warning if older than current - 2).
+ *
+ * Deliberately NOT checked: whether a feature's catalog name appears
+ * verbatim in docs / release notes. That's an editorial decision (voice,
+ * examples, narrative) — it belongs with the agent or maintainer writing
+ * the docs. See CLAUDE.md → "When you ship a feature".
  */
 import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { resolve, join } from "node:path";
@@ -31,12 +34,9 @@ import { resolve, join } from "node:path";
 const ROOT = resolve(import.meta.dir, "..");
 
 // Lazy imports so this script can run before bun install if needed.
-const {
-  EXTENSION_VERSION,
-  RELEASES,
-  EXTENSION_FEATURE_DEFINITIONS,
-  EXTENSION_DEFAULT_STORE,
-} = await import("../packages/constants/src/index");
+const { EXTENSION_VERSION, RELEASES, EXTENSION_DEFAULT_STORE } = await import(
+  "../packages/constants/src/index"
+);
 
 let hardFailures = 0;
 let warnings = 0;
@@ -141,29 +141,11 @@ if (missingKeys === 0) {
   ok(`Keybindings docs reference all ${expectedKeys.length} default keys`);
 }
 
-// 5 — every catalog feature has either a release item or a docs mention
-const docsFiles = [
-  "website/app/docs/page.tsx",
-  "website/app/docs/keybindings/page.tsx",
-  "website/app/docs/faq/page.tsx",
-  "website/app/docs/changelog/page.tsx",
-];
-const docsCorpus = docsFiles
-  .filter((p) => existsSync(join(ROOT, p)))
-  .map((p) => readFileSync(join(ROOT, p), "utf8"))
-  .join("\n")
-  .toLowerCase();
-const releaseCorpus = RELEASES.flatMap((r) => r.items.map((i) => i.text))
-  .join("\n")
-  .toLowerCase();
-for (const f of EXTENSION_FEATURE_DEFINITIONS) {
-  const needle = f.name.toLowerCase();
-  if (!docsCorpus.includes(needle) && !releaseCorpus.includes(needle)) {
-    warn(
-      `Feature "${f.name}" is in EXTENSION_FEATURE_DEFINITIONS but appears in neither docs nor releases — consider documenting.`,
-    );
-  }
-}
+// Note: we deliberately do NOT cross-check that every feature's catalog
+// name appears in docs/release-notes. That kind of "does the copy mention
+// this feature" check is a voice/editorial decision — it belongs with the
+// agent / maintainer writing the docs, not a string-matcher. See
+// CLAUDE.md → "When you ship a feature" for the checklist.
 
 // 6 — doc snapshot window (current - 2)
 console.log("\nDoc snapshots:");

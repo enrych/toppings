@@ -1,5 +1,7 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import firefoxIcon from "@/assets/icons/firefox.svg";
 import githubIcon from "@/assets/icons/github.svg";
 import InstallButton from "@/components/InstallButton";
@@ -11,35 +13,44 @@ import {
 } from "toppings-constants";
 
 /**
- * Hero — implements the design-system handoff.
+ * Hero — implements the design-system handoff with the watch-page
+ * product mockup as the right-column visual.
  *
- * The visual on the right is a product mockup of YouTube with Toppings
- * actually working inside it — Audio Mode veil over the player, amber
- * loop markers on the progress bar, amber Toppings buttons in the
- * controls, and the playlist-runtime card below. This is product-led
- * visual storytelling (per the design's principle of "the brand asserts
- * itself fully" in the playlist-runtime card area).
- *
- * The pizza-slice logo lives in the Navbar and Footer — it's a brand
- * mark for the nav lockup, not a decoration. The hero earns its visual
- * weight from the actual product.
- *
- *  - Left column (1.35fr): eyebrow, oversized headline with amber
- *    highlighter on "way", lede, three CTAs, trust meta
- *  - Right column (1fr): the watch-page mockup, sized to roughly 520px
- *    on desktop; stacks below the copy on mobile
+ * Motion: a single staggered fade-up reveal on mount using the design
+ * system's expo-out easing (cubic-bezier(0.22, 1, 0.36, 1)). Nothing
+ * springs, bounces, or parallaxes — per the brand's motion rule. The
+ * intent is "the page settles in" rather than "the page performs."
  */
+
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
+const reveal = (delay = 0) => ({
+  initial: { opacity: 0, y: 16 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.55, ease: EASE, delay },
+});
+
+const revealBig = (delay = 0) => ({
+  initial: { opacity: 0, y: 30 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.7, ease: EASE, delay },
+});
+
 export default function Hero() {
   return (
     <section className="px-6 pb-24 pt-[88px] lg:px-14 lg:pb-[96px]">
       <div className="mx-auto grid max-w-page gap-12 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-16">
         <div>
-          <div className="t-eyebrow mb-6 inline-flex items-center gap-[10px] !text-[--fg-2]">
+          <motion.div
+            {...reveal(0)}
+            className="t-eyebrow mb-6 inline-flex items-center gap-[10px] !text-[--fg-2]"
+          >
             <span className="inline-block h-1.5 w-1.5 rounded-full bg-amber" />
             {WEBSITE_HERO.EYEBROW}
-          </div>
+          </motion.div>
 
-          <h1
+          <motion.h1
+            {...revealBig(0.05)}
             className="text-[56px] font-black leading-[0.92] tracking-[-0.045em] text-ink sm:text-[72px] lg:text-[96px]"
             style={{ fontWeight: 900, textWrap: "balance" }}
           >
@@ -50,13 +61,19 @@ export default function Hero() {
               {WEBSITE_HERO.HEADLINE_LINE_2_HIGHLIGHT}
             </span>
             {WEBSITE_HERO.HEADLINE_LINE_2_AFTER}
-          </h1>
+          </motion.h1>
 
-          <p className="mt-7 max-w-[560px] text-[19px] leading-[1.5] tracking-[-0.011em] text-[--fg-2]">
+          <motion.p
+            {...reveal(0.2)}
+            className="mt-7 max-w-[560px] text-[19px] leading-[1.5] tracking-[-0.011em] text-[--fg-2]"
+          >
             {WEBSITE_HERO.LEDE}
-          </p>
+          </motion.p>
 
-          <div className="mt-10 flex flex-wrap items-center gap-3">
+          <motion.div
+            {...reveal(0.3)}
+            className="mt-10 flex flex-wrap items-center gap-3"
+          >
             <InstallButton />
             <Link
               href={EXTERNAL_URL.FIREFOX_AMO_TOPPINGS}
@@ -74,9 +91,12 @@ export default function Hero() {
               <Image src={githubIcon} alt="" width={18} height={18} />
               {WEBSITE_HERO.SOURCE_BUTTON}
             </Link>
-          </div>
+          </motion.div>
 
-          <div className="mt-9 flex flex-wrap gap-x-6 gap-y-2 text-[13px] text-[--fg-3]">
+          <motion.div
+            {...reveal(0.4)}
+            className="mt-9 flex flex-wrap gap-x-6 gap-y-2 text-[13px] text-[--fg-3]"
+          >
             <span>
               <strong className="font-semibold text-ink">
                 {WEBSITE_HERO.TRUST_TRACKERS_LEAD}
@@ -89,13 +109,18 @@ export default function Hero() {
               </strong>
               {WEBSITE_HERO.TRUST_LICENSE_REST}
             </span>
-          </div>
+          </motion.div>
         </div>
 
         {/* Product mockup — Toppings inside YouTube. */}
-        <div className="relative w-full lg:max-w-none">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: EASE, delay: 0.15 }}
+          className="relative w-full lg:max-w-none"
+        >
           <WatchMockup />
-        </div>
+        </motion.div>
       </div>
     </section>
   );

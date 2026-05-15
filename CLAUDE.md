@@ -62,8 +62,29 @@ If your PR adds user-visible behavior, also do:
 The PR template (`.github/pull_request_template.md`) carries this
 checklist. The CI workflow `.github/workflows/consistency.yml` enforces
 the **hard** invariants (version sync, RELEASES has a current entry,
-no TODO stubs left behind). It surfaces **warnings** for un-documented
-features and aging doc snapshots without blocking the merge.
+no TODO stubs left behind). It surfaces **warnings** for missing
+keybinding rows and aging doc snapshots without blocking the merge.
+
+### Docs ↔ features alignment is the agent's job, not a script's
+
+We **don't** have a CI check that says "feature `Loop Segments` appears
+in the docs corpus." Code can't judge whether a feature is described
+adequately — it can only string-match, which produces false positives
+("loop" is a common word) and false negatives (the docs say "loop a
+segment" but the catalog name is "Loop Segments").
+
+When you (human or agent) ship a feature, you are responsible for:
+
+1. Reading the catalog name in `EXTENSION_FEATURE_DEFINITIONS`.
+2. Deciding whether the docs (install guide, FAQ, keybindings,
+   changelog) explain that behavior to a user who has never seen the
+   product. If not, write the section.
+3. Picking an entry in `RELEASES` for the version this ships under,
+   and writing a `feat` / `fix` / `polish` item in user-facing English.
+
+If you're an LLM agent doing this work: don't trust a passing
+`bun run check` as evidence the docs are complete. Open the docs files
+and verify the new behavior is described there in the brand's voice.
 
 ## Docs versioning
 

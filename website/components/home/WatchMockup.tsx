@@ -40,13 +40,38 @@ export default function WatchMockup() {
         <div
           className="h-6 w-6 rounded-full"
           style={{ background: "rgba(255,255,255,0.10)" }}
+          aria-hidden
         />
+        {/*
+         * YouTube lockup — the red rounded-rectangle play button (the
+         * actual YouTube mark) followed by the wordmark. Drawn inline
+         * rather than imported so the mockup stays a single component.
+         */}
         <div
-          className="inline-flex items-baseline gap-1 text-[16px] tracking-[-0.04em]"
+          className="inline-flex items-center gap-1.5 text-[16px] leading-none tracking-[-0.04em]"
           style={{ fontWeight: 700 }}
         >
+          <span
+            aria-hidden
+            className="inline-flex items-center justify-center"
+            style={{
+              width: 24,
+              height: 17,
+              borderRadius: 4,
+              background: "#FF0033",
+            }}
+          >
+            <svg
+              width={9}
+              height={11}
+              viewBox="0 0 9 11"
+              aria-hidden
+              style={{ display: "block" }}
+            >
+              <path d="M0 0v11l8-5.5L0 0z" fill="#fff" />
+            </svg>
+          </span>
           <span>YouTube</span>
-          <span style={{ color: "#FF0033", fontSize: 12 }}>▶</span>
         </div>
         <div
           className="flex-1 max-w-[420px] flex items-center text-[13px]"

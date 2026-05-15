@@ -1,5 +1,8 @@
+"use client";
+import { motion } from "framer-motion";
 import { WEBSITE_HOME_PRINCIPLES } from "toppings-constants";
 import { SectionHead } from "./FeatureGrid";
+import { fadeInUp } from "./motion";
 
 /**
  * Three brand principles. Single amber accent appears on the highlighted
@@ -13,8 +16,8 @@ export default function Principles() {
       <div className="mx-auto max-w-page px-6 lg:px-14">
         <SectionHead h2={SECTION_HEADLINE} p={SECTION_LEDE} />
         <div className="grid grid-cols-1 gap-12 border-t border-[--border-1] pt-6 md:grid-cols-3">
-          {CARDS.map((c) => (
-            <div key={c.num}>
+          {CARDS.map((c, i) => (
+            <motion.div key={c.num} {...fadeInUp({ delay: i * 0.1, y: 16 })}>
               <span className="mb-3 block font-mono text-xs font-medium uppercase tracking-[0.04em] text-[--fg-3]">
                 {c.num}
               </span>
@@ -29,7 +32,7 @@ export default function Principles() {
               <p className="m-0 text-[14.5px] leading-[1.6] text-[--fg-2]">
                 {c.body}
               </p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>

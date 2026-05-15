@@ -1,5 +1,7 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import firefoxIcon from "@/assets/icons/firefox.svg";
 import githubIcon from "@/assets/icons/github.svg";
 import InstallButton from "@/components/InstallButton";
@@ -8,6 +10,7 @@ import {
   EXTERNAL_URL,
   WEBSITE_HOME_FINAL_CTA,
 } from "toppings-constants";
+import { fadeInUp, displayReveal } from "./motion";
 
 /**
  * Centered closing CTA. Cream ground (per design — final section does not
@@ -29,18 +32,25 @@ export default function FinalCTA() {
   return (
     <section className="px-6 pb-24 pt-32 text-center lg:px-14 lg:pb-[96px] lg:pt-[128px]">
       <div className="mx-auto max-w-page">
-        <h2
+        <motion.h2
+          {...displayReveal()}
           className="mx-auto mb-6 max-w-[18ch] text-[56px] font-black leading-[0.94] tracking-[-0.045em] text-ink sm:text-[80px] lg:text-[112px]"
           style={{ fontWeight: 900, textWrap: "balance" }}
         >
           {HEADLINE_BEFORE}
           <span className="amber-underline">{HEADLINE_HIGHLIGHT}</span>
           {HEADLINE_AFTER}
-        </h2>
-        <p className="mx-auto mb-10 max-w-[52ch] text-[18px] leading-[1.5] tracking-[-0.011em] text-[--fg-2]">
+        </motion.h2>
+        <motion.p
+          {...fadeInUp({ delay: 0.15 })}
+          className="mx-auto mb-10 max-w-[52ch] text-[18px] leading-[1.5] tracking-[-0.011em] text-[--fg-2]"
+        >
           {LEDE}
-        </p>
-        <div className="flex flex-wrap justify-center gap-3">
+        </motion.p>
+        <motion.div
+          {...fadeInUp({ delay: 0.3 })}
+          className="flex flex-wrap justify-center gap-3"
+        >
           <InstallButton />
           <Link
             href={EXTERNAL_URL.FIREFOX_AMO_TOPPINGS}
@@ -58,10 +68,13 @@ export default function FinalCTA() {
             <Image src={githubIcon} alt="" width={18} height={18} />
             {SOURCE_BUTTON}
           </Link>
-        </div>
-        <div className="mt-8 font-mono text-xs font-medium uppercase tracking-[0.04em] text-[--fg-3]">
+        </motion.div>
+        <motion.div
+          {...fadeInUp({ delay: 0.4 })}
+          className="mt-8 font-mono text-xs font-medium uppercase tracking-[0.04em] text-[--fg-3]"
+        >
           {META}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

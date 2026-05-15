@@ -1,5 +1,8 @@
+"use client";
+import { motion } from "framer-motion";
 import { WEBSITE_HOME_KEYBINDINGS } from "toppings-constants";
 import { SectionHead } from "./FeatureGrid";
+import { fadeInUp } from "./motion";
 
 /**
  * Keybindings section. Two-column hairline list of six shortcuts. Each row:
@@ -31,8 +34,9 @@ export default function Keybindings() {
 
         <div className="grid grid-cols-1 gap-x-16 border-t border-[--border-1] lg:grid-cols-2">
           {ROWS.map((row, i) => (
-            <div
+            <motion.div
               key={i}
+              {...fadeInUp({ delay: (i % 3) * 0.05, y: 10 })}
               className="grid grid-cols-[1fr_auto] items-center gap-4 border-b border-[--border-1] py-[18px]"
             >
               <div>
@@ -50,7 +54,7 @@ export default function Keybindings() {
                 </span>
                 <kbd className="kbd">{row.combo[1]}</kbd>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
