@@ -9,7 +9,6 @@ import NoiseCanvas, { type NoiseHandle } from "./NoiseCanvas";
 import Cursor from "./Cursor";
 import Nav from "./Nav";
 import SceneHero from "./SceneHero";
-import SceneReclaim from "./SceneReclaim";
 import DevToggle from "./DevToggle";
 import SceneFeatures from "./SceneFeatures";
 import SceneAudio from "./SceneAudio";
@@ -91,101 +90,32 @@ export default function ReclaimHome() {
       // the hero and the Break. The hero now scrolls straight into the
       // reclaim beat, which pins immediately (start: top top below).
 
-      // The reclaim beat — one continuous moment, no seam, no split.
-      // The headline is visible from the instant it enters (calm
-      // continuation of the hero over the still-noisy shader) so there
-      // is no dead/empty pre-pin screen. Scrub then strips the noise
-      // and the de-noised Toppings screen resolves beneath the line.
+      // No "reclaim" section anymore. The hero's noise simply resolves
+      // to calm as you scroll out of the hero into the real content —
+      // scroll-scrubbed, no pin, no dedicated screen. Less to maintain,
+      // and it removes a section that never quite worked.
       const proxy = { p: 0 };
-      const setP = () => noiseRef.current?.setProgress(proxy.p);
-      set(q(".r-reclaim-screen"), { autoAlpha: 0, y: 36, scale: 0.97 });
-      set(q(".r-reclaim-deck"), { autoAlpha: 0, y: 16 });
-      const desktop = window.matchMedia("(min-width: 821px)").matches;
-
-      if (desktop) {
-        // The headline ARRIVES as you scroll into the reclaim — a
-        // scroll-linked entrance that finishes before the pin starts,
-        // so it never shows while you're still on the hero and never
-        // sits there pre-rendered.
-        gsap.fromTo(
-          q(".r-reclaim-head"),
-          { autoAlpha: 0, y: 60 },
-          {
-            autoAlpha: 1,
-            y: 0,
-            ease: "none",
-            scrollTrigger: {
-              trigger: ".r-reclaim-stage",
-              start: "top 40%",
-              end: "top 6%",
-              scrub: 0.6,
-            },
-          },
-        );
-
-        gsap
-          .timeline({
-            scrollTrigger: {
-              trigger: ".r-reclaim-stage",
-              start: "top top",
-              end: "+=2000",
-              scrub: 0.7,
-              pin: true,
-              anticipatePin: 1,
-            },
-          })
-          .to(proxy, { p: 1, ease: "power2.inOut", duration: 0.5, onUpdate: setP }, 0)
-          .fromTo(
-            q(".r-darken"),
-            { opacity: 0.5 },
-            { opacity: 0.9, duration: 0.5 },
-            0,
-          )
-          .to(
-            q(".r-reclaim-screen"),
-            {
-              autoAlpha: 1,
-              y: 0,
-              scale: 1,
-              ease: "expo.out",
-              duration: 0.55,
-            },
-            0.34,
-          )
-          .to(
-            q(".r-reclaim-deck"),
-            { autoAlpha: 1, y: 0, ease: "expo.out", duration: 0.4 },
-            0.72,
-          );
-      } else {
-        ScrollTrigger.create({
-          trigger: ".r-reclaim",
-          start: "top 75%",
-          once: true,
-          onEnter: () => {
-            gsap
-              .timeline()
-              .to(proxy, { p: 1, duration: 1.1, ease: "power2.inOut", onUpdate: setP }, 0)
-              .to(q(".r-darken"), { opacity: 0.9, duration: 1.0 }, 0)
-              .to(
-                q(".r-reclaim-screen"),
-                {
-                  autoAlpha: 1,
-                  y: 0,
-                  scale: 1,
-                  duration: 0.8,
-                  ease: "expo.out",
-                },
-                0.2,
-              )
-              .to(
-                q(".r-reclaim-deck"),
-                { autoAlpha: 1, y: 0, duration: 0.5, ease: "expo.out" },
-                0.6,
-              );
-          },
-        });
-      }
+      const stripST = {
+        trigger: ".r-hero",
+        start: "top top",
+        end: "bottom top",
+        scrub: 0.7,
+      } as const;
+      gsap.fromTo(
+        proxy,
+        { p: 0 },
+        {
+          p: 1,
+          ease: "none",
+          onUpdate: () => noiseRef.current?.setProgress(proxy.p),
+          scrollTrigger: stripST,
+        },
+      );
+      gsap.fromTo(
+        q(".r-darken"),
+        { opacity: 0.5 },
+        { opacity: 0.92, ease: "none", scrollTrigger: stripST },
+      );
 
       // One quiet reveal per block (robust, progressive-enhanced).
       (q("[data-reveal]") as HTMLElement[]).forEach((el) => {
@@ -227,7 +157,6 @@ export default function ReclaimHome() {
       <Nav />
       <main className="r-flow">
         <SceneHero />
-        <SceneReclaim />
         <SceneFeatures />
         <SceneAudio />
         <SceneControl />

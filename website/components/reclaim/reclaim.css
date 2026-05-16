@@ -66,6 +66,9 @@
 }
 
 /* ---- nav ---- */
+/* A clean ink fade on every screen. The old mix-blend-mode:difference
+ * inverted unpredictably over the scrolling content and made the
+ * wordmark clash — content now passes under the bar intentionally. */
 .r-nav {
   position: fixed;
   inset: 0 0 auto 0;
@@ -73,14 +76,19 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 22px var(--pad);
-  mix-blend-mode: difference;
+  padding: 20px var(--pad);
+  background: linear-gradient(
+    180deg,
+    var(--ink) 0%,
+    rgba(11, 11, 12, 0.82) 52%,
+    rgba(11, 11, 12, 0) 100%
+  );
 }
 .r-wordmark {
   font-family: var(--display);
   font-size: 22px;
   letter-spacing: -0.01em;
-  color: #fff;
+  color: var(--bone);
 }
 .r-nav-right {
   display: flex;
@@ -90,7 +98,7 @@
   font-size: 12px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #fff;
+  color: var(--bone);
 }
 .r-nav-right a {
   color: inherit;
@@ -100,23 +108,9 @@
 .r-nav-right a:hover {
   opacity: 1;
 }
-/* Mobile: drop the difference blend (it inverts weirdly over the
- * scrolling content) and give the bar a clean ink fade so content
- * passes under it intentionally instead of clashing. */
 @media (max-width: 820px) {
   .r-nav {
-    mix-blend-mode: normal;
-    padding: 16px var(--pad);
-    background: linear-gradient(
-      180deg,
-      var(--ink) 0%,
-      rgba(11, 11, 12, 0.86) 55%,
-      rgba(11, 11, 12, 0) 100%
-    );
-  }
-  .r-wordmark,
-  .r-nav-right {
-    color: var(--bone);
+    padding: 14px var(--pad);
   }
 }
 
@@ -309,173 +303,6 @@
   color: var(--bone-dim);
 }
 
-/* === The reclaim beat — one centred moment, no seam, no split === */
-.r-reclaim {
-  position: relative;
-}
-.r-reclaim-stage {
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(110px, 16vh, 180px) var(--pad) clamp(80px, 12vh, 140px);
-  overflow: hidden;
-}
-.r-reclaim-inner {
-  width: 100%;
-  max-width: 920px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: clamp(26px, 4vh, 48px);
-}
-.r-reclaim-head {
-  font-family: var(--display);
-  font-weight: 400;
-  font-size: clamp(44px, 7vw, 116px);
-  line-height: 0.96;
-  letter-spacing: -0.014em;
-  color: var(--bone);
-}
-.r-reclaim-head em {
-  font-style: normal;
-  color: var(--ember-glow);
-}
-.r-reclaim-deck {
-  font-family: var(--sans);
-  font-weight: 500;
-  font-size: clamp(15px, 1.2vw, 18px);
-  line-height: 1.55;
-  color: var(--bone-dim);
-  max-width: 54ch;
-}
-
-/* The de-noised Toppings screen — the literal payoff of the line. */
-.r-reclaim-screen {
-  width: 100%;
-  max-width: 660px;
-  text-align: left;
-  background: #17171b;
-  border: 1px solid var(--hair-strong);
-  border-radius: 18px;
-  padding: 22px;
-  box-shadow:
-    0 1px 0 rgba(234, 229, 216, 0.05) inset,
-    0 44px 100px -42px rgba(0, 0, 0, 0.9);
-}
-.r-rs-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-.r-rs-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  font-family: var(--sans);
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--bone);
-}
-.r-rs-brand i {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--ember);
-}
-.r-rs-mode {
-  font-family: var(--mono);
-  font-size: 10.5px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--bone-faint);
-  border: 1px solid var(--hair-strong);
-  padding: 5px 10px;
-  border-radius: 999px;
-}
-.r-rs-video {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  border-radius: 12px;
-  background: radial-gradient(120% 120% at 50% 30%, #0e0e12, #060608);
-  border: 1px solid rgba(234, 229, 216, 0.06);
-}
-.r-rs-scrub {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin: 18px 0;
-}
-.r-rs-time {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--bone-faint);
-}
-.r-rs-track {
-  position: relative;
-  flex: 1;
-  height: 4px;
-  border-radius: 2px;
-  background: rgba(234, 229, 216, 0.14);
-}
-.r-rs-track > i {
-  position: absolute;
-  inset: 0 58% 0 0;
-  border-radius: 2px;
-  background: var(--ember);
-}
-.r-rs-track > b {
-  position: absolute;
-  left: 42%;
-  top: 50%;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--ember-glow);
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 0 4px rgba(234, 123, 44, 0.18);
-}
-.r-rs-keys {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  border-top: 1px solid var(--hair);
-  padding-top: 16px;
-}
-.r-rs-key {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--mono);
-  font-size: 11.5px;
-  color: var(--bone-dim);
-  background: rgba(234, 229, 216, 0.06);
-  padding: 8px 11px;
-  border-radius: 8px;
-}
-.r-rs-key em {
-  font-style: normal;
-  font-weight: 600;
-  color: var(--bone);
-}
-.r-rs-key:first-child em {
-  color: var(--ember);
-}
-
-/* Mobile: unpinned (see ReclaimHome), content-height, no overflow clip. */
-@media (max-width: 820px) {
-  .r-reclaim-stage {
-    height: auto;
-    min-height: auto;
-    overflow: visible;
-    padding: clamp(80px, 14vh, 130px) var(--pad);
-  }
-  .r-reclaim-head {
-    font-size: clamp(40px, 9vw, 64px);
-  }
-}
 
 /* Post-Break scenes are opaque so the fixed shader canvas never
  * bleeds through the calm half of the page. */
@@ -551,6 +378,16 @@
   padding: 7px 11px;
   border-radius: 7px;
   white-space: nowrap;
+}
+.r-feature-tag {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ember-glow);
+  border: 1px solid var(--ember);
+  padding: 5px 9px;
+  border-radius: 999px;
 }
 .r-feature-title {
   font-family: var(--display);
@@ -1079,11 +916,6 @@ html.has-cursor * {
 .reclaim.is-static .r-hero {
   min-height: 86vh;
 }
-.reclaim.is-static .r-reclaim-stage {
-  height: auto;
-  min-height: auto;
-  overflow: visible;
-}
 
 @media (prefers-reduced-motion: reduce) {
   [data-reveal],
@@ -1091,9 +923,34 @@ html.has-cursor * {
     opacity: 1 !important;
     transform: none !important;
   }
-  .r-reclaim-screen,
-  .r-reclaim-deck {
-    opacity: 1 !important;
-    transform: none !important;
-  }
+}
+
+/* === Dark document chrome for any Reclaim page (home / greetings /
+ * farewell). Scoped via :has so the cream /docs surface is untouched.
+ * Kills the white scrollbar + white overscroll/rubber-band area. === */
+html:has(.reclaim) {
+  color-scheme: dark;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(234, 229, 216, 0.18) transparent;
+  background: #0b0b0c;
+}
+html:has(.reclaim) body {
+  background: #0b0b0c;
+}
+html:has(.reclaim)::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+html:has(.reclaim)::-webkit-scrollbar-track {
+  background: transparent;
+}
+html:has(.reclaim)::-webkit-scrollbar-thumb {
+  background: rgba(234, 229, 216, 0.16);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+html:has(.reclaim)::-webkit-scrollbar-thumb:hover {
+  background: rgba(234, 229, 216, 0.3);
+  background-clip: content-box;
 }

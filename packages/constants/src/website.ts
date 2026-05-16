@@ -138,46 +138,25 @@ export const WEBSITE_HERO = {
   HEADLINE_LINE_2_HIGHLIGHT: "way",
   HEADLINE_LINE_2_AFTER: ".",
   LEDE:
-    "A free, open-source browser extension. Audio mode, custom playback rates, looped segments, playlist runtimes, Shorts auto-scroll. Small. Considered. Out of your way.",
+    "A free, open-source browser extension that fixes what YouTube forgot — and keeps finding more. Small. Considered. Out of your way.",
   FIREFOX_BUTTON: "Firefox",
   SOURCE_BUTTON: "Source",
   TRUST_TRACKERS_LEAD: "0 trackers.",
-  TRUST_TRACKERS_REST: " No data leaves your browser.",
+  TRUST_TRACKERS_REST: " No analytics, no accounts.",
   TRUST_LICENSE_LEAD: "GPL-3.0.",
   TRUST_LICENSE_REST: " Yours to fork, modify, ship.",
 } as const;
 
+/**
+ * Only the section framing lives here — the feature rows render from
+ * the canonical EXTENSION_FEATURE_DEFINITIONS catalog, so shipping a
+ * feature updates the website with zero copy edits. Keep this
+ * headline/lede count-agnostic on purpose.
+ */
 export const WEBSITE_HOME_FEATURE_GRID = {
-  SECTION_HEADLINE: "Four small superpowers.",
-  SECTION_LEDE_PART_1:
-    "We didn\u2019t redesign YouTube. We added the four buttons it",
-  SECTION_LEDE_PART_2: " forgot — nothing more, nothing less.",
-  ROWS: [
-    {
-      index: "01",
-      title: "Loop a segment",
-      body: "Pin a start and end point in any video and loop that section continuously.",
-      kbd: "Z",
-    },
-    {
-      index: "02",
-      title: "Custom playback",
-      body: "Add granular speeds beyond YouTube's defaults, then step or toggle them from the keyboard.",
-      kbd: "W · S",
-    },
-    {
-      index: "03",
-      title: "Auto-scroll Shorts",
-      body: "When a Short ends, jump to the next. No taps. No thumbs.",
-      kbd: "auto",
-    },
-    {
-      index: "04",
-      title: "Playlist runtimes",
-      body: "See exactly how long that 47-video binge will take. Before you start.",
-      kbd: "live",
-    },
-  ],
+  SECTION_HEADLINE: "The buttons YouTube forgot.",
+  SECTION_LEDE:
+    "Each one fixes something YouTube left broken — or never built at all. The list grows as we find more.",
 } as const;
 
 export const WEBSITE_HOME_HOW_IT_WORKS = {
@@ -204,32 +183,12 @@ export const WEBSITE_HOME_HOW_IT_WORKS = {
 } as const;
 
 export const WEBSITE_HOME_STATS_STRIP = {
-  EYEBROW: "Trusted by viewers",
+  EYEBROW: "Free, open, and growing",
   ROWS: [
-    {
-      value: 7,
-      suffix: "+",
-      decimals: 0,
-      label: "Power features",
-    },
-    {
-      value: 4.8,
-      suffix: "★",
-      decimals: 1,
-      label: "Avg user rating",
-    },
-    {
-      value: 100,
-      suffix: "%",
-      decimals: 0,
-      label: "Free forever",
-    },
-    {
-      value: 2,
-      suffix: " min",
-      decimals: 0,
-      label: "To install",
-    },
+    { value: 4.9, suffix: "★", decimals: 1, label: "Chrome Web Store rating" },
+    { value: 100, suffix: "%", decimals: 0, label: "Free & open source" },
+    { value: 0, suffix: "", decimals: 0, label: "Trackers, ever" },
+    { value: 0, suffix: "", decimals: 0, label: "Accounts to sign up" },
   ],
 } as const;
 
@@ -238,23 +197,11 @@ export const WEBSITE_HOME_INVERSE = {
   SECTION_HEADLINE_HIGHLIGHT: "watch",
   SECTION_HEADLINE_AFTER: ".",
   SECTION_LEDE:
-    "Audio Mode strips the video and keeps the controls. Same playback. Same chapters. A fraction of the battery. Perfect for podcasts and live sets you didn’t come for the picture.",
+    "Audio Mode hides the video and keeps every control — same playback, same chapters, same shortcuts. For the podcasts and live sets you never came to look at.",
   STATS: [
-    {
-      number: "−87",
-      unit: "%",
-      label: "Bandwidth used",
-    },
-    {
-      number: "2.4",
-      unit: "h",
-      label: "Extra battery, avg.",
-    },
-    {
-      number: "0",
-      unit: "",
-      label: "Bytes sent to us",
-    },
+    { number: "3", unit: "", label: "Backgrounds — black · visualizer · custom" },
+    { number: "1", unit: "", label: "Key to toggle it (B)" },
+    { number: "0", unit: "", label: "Accounts or setup" },
   ],
 } as const;
 
@@ -263,7 +210,7 @@ export const WEBSITE_HOME_KEYBINDINGS = {
   SECTION_HEADLINE_HIGHLIGHT: "yours",
   SECTION_HEADLINE_AFTER: " to remap.",
   SECTION_LEDE:
-    "Six single-key defaults, all rebindable. Toppings reads keystrokes only on YouTube tabs — nothing global, nothing surprising.",
+    "Single-key defaults on YouTube, plus a browser shortcut for the popup — all rebindable. Toppings reads keystrokes only on YouTube tabs; nothing global, nothing surprising.",
   ROWS: [
     {
       label: "Toggle Audio mode",
@@ -301,6 +248,12 @@ export const WEBSITE_HOME_KEYBINDINGS = {
       combo: ["X"],
       sep: "",
     },
+    {
+      label: "Open the popup",
+      desc: "From any page · rebindable in your browser",
+      combo: ["Ctrl / ⌘", "Shift", "Y"],
+      sep: " + ",
+    },
   ],
 } as const;
 
@@ -311,11 +264,11 @@ export const WEBSITE_HOME_PRINCIPLES = {
   CARDS: [
     {
       num: "01 · Private",
-      title_before: "Zero bytes ",
-      title_highlight: "leave",
-      title_after: ".",
+      title_before: "No one's ",
+      title_highlight: "watching",
+      title_after: " you.",
       body:
-        "Toppings never sees your watch history, your search, or your tabs. No analytics. No telemetry. No “anonymous usage.” Everything runs inside your browser and dies there.",
+        "No trackers. No analytics. No accounts. Ever. A feature may talk to our server to do its job — never to profile you, and never about who you are.",
     },
     {
       num: "02 · Open",
@@ -323,7 +276,7 @@ export const WEBSITE_HOME_PRINCIPLES = {
       title_highlight: "Read",
       title_after: " the source.",
       body:
-        "GPL-3.0, on GitHub, in 4,200 lines. Audit, fork, ship your own. We accept pull requests for features that fit the brief — “small superpowers that YouTube forgot.”",
+        "GPL-3.0, on GitHub. Audit it, fork it, ship your own. We take pull requests for anything that fits the brief: the things YouTube should have built.",
     },
     {
       num: "03 · Restrained",
@@ -331,7 +284,7 @@ export const WEBSITE_HOME_PRINCIPLES = {
       title_highlight: "job",
       title_after: " each.",
       body:
-        "Audio mode. Loop. Speed. Auto-scroll. Runtimes. We will say no to thousands of features before we say yes to the next one. The point of Toppings is what we left out.",
+        "Every addition does one thing, does it quietly, and earns its place. We keep hunting the gaps YouTube leaves — and fill them without becoming the bloat we set out to fix.",
     },
   ],
 } as const;
