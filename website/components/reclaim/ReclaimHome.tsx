@@ -9,7 +9,7 @@ import NoiseCanvas, { type NoiseHandle } from "./NoiseCanvas";
 import Cursor from "./Cursor";
 import Nav from "./Nav";
 import SceneHero from "./SceneHero";
-import SceneBreak from "./SceneBreak";
+import SceneReclaim from "./SceneReclaim";
 import DevToggle from "./DevToggle";
 import SceneFeatures from "./SceneFeatures";
 import SceneAudio from "./SceneAudio";
@@ -37,17 +37,14 @@ import SceneClose from "./SceneClose";
 export default function ReclaimHome() {
   const noiseRef = useRef<NoiseHandle>(null);
   const rootRef = useRef<HTMLDivElement>(null);
-  // Persistent dev toolbar gate. Shows on localhost, or anywhere with
-  // `?dev` — so the shipped site never renders it by default. Kept for
-  // testing future work. Gated behind effect-set state → no SSR
+  // Dev toolbar is off by default now (nothing to test). It's kept in
+  // the codebase and can be summoned anytime by appending `?dev` to the
+  // URL for future experiments. Gated behind effect-set state → no SSR
   // hydration mismatch.
   const [showDev, setShowDev] = useState(false);
 
   useEffect(() => {
-    const local = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(
-      window.location.hostname,
-    );
-    setShowDev(local || window.location.search.includes("dev"));
+    setShowDev(window.location.search.includes("dev"));
   }, []);
 
   useEffect(() => {
@@ -94,77 +91,98 @@ export default function ReclaimHome() {
       // the hero and the Break. The hero now scrolls straight into the
       // reclaim beat, which pins immediately (start: top top below).
 
-      // The Break — pinned cinematic scrub on desktop; on mobile a
-      // pinned tall stacked section janks, so there it's an unpinned
-      // reveal that still strips the noise (CSS stacks it legibly).
-      set(q(".r-break-copy .r-line"), { yPercent: 110 });
-      set(q(".r-panel"), { x: 44, opacity: 0 });
+      // The reclaim beat — one continuous moment, no seam, no split.
+      // The headline is visible from the instant it enters (calm
+      // continuation of the hero over the still-noisy shader) so there
+      // is no dead/empty pre-pin screen. Scrub then strips the noise
+      // and the de-noised Toppings screen resolves beneath the line.
       const proxy = { p: 0 };
       const setP = () => noiseRef.current?.setProgress(proxy.p);
+      set(q(".r-reclaim-screen"), { autoAlpha: 0, y: 36, scale: 0.97 });
+      set(q(".r-reclaim-deck"), { autoAlpha: 0, y: 16 });
       const desktop = window.matchMedia("(min-width: 821px)").matches;
 
       if (desktop) {
+        // The headline ARRIVES as you scroll into the reclaim — a
+        // scroll-linked entrance that finishes before the pin starts,
+        // so it never shows while you're still on the hero and never
+        // sits there pre-rendered.
+        gsap.fromTo(
+          q(".r-reclaim-head"),
+          { autoAlpha: 0, y: 60 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            ease: "none",
+            scrollTrigger: {
+              trigger: ".r-reclaim-stage",
+              start: "top 40%",
+              end: "top 6%",
+              scrub: 0.6,
+            },
+          },
+        );
+
         gsap
           .timeline({
             scrollTrigger: {
-              trigger: ".r-break",
+              trigger: ".r-reclaim-stage",
               start: "top top",
-              end: "+=2600",
+              end: "+=2000",
               scrub: 0.7,
               pin: true,
               anticipatePin: 1,
             },
           })
-          .to(proxy, { p: 1, ease: "power2.inOut", duration: 0.42, onUpdate: setP }, 0)
+          .to(proxy, { p: 1, ease: "power2.inOut", duration: 0.5, onUpdate: setP }, 0)
           .fromTo(
             q(".r-darken"),
             { opacity: 0.5 },
-            { opacity: 0.92, duration: 0.42 },
+            { opacity: 0.9, duration: 0.5 },
             0,
           )
-          .from(q(".r-tag"), { autoAlpha: 0, duration: 0.3 }, 0.3)
-          .to(q(".r-seam"), { scaleY: 1, ease: "expo.out", duration: 0.3 }, 0.34)
           .to(
-            q(".r-panel"),
-            { opacity: 1, x: 0, ease: "expo.out", duration: 0.42 },
-            0.52,
+            q(".r-reclaim-screen"),
+            {
+              autoAlpha: 1,
+              y: 0,
+              scale: 1,
+              ease: "expo.out",
+              duration: 0.55,
+            },
+            0.34,
           )
           .to(
-            q(".r-break-copy .r-line"),
-            { yPercent: 0, ease: "expo.out", duration: 0.7 },
-            0.58,
-          )
-          .from(
-            q(".r-break-copy .r-deck"),
-            { autoAlpha: 0, y: 18, duration: 0.5 },
-            0.8,
+            q(".r-reclaim-deck"),
+            { autoAlpha: 1, y: 0, ease: "expo.out", duration: 0.4 },
+            0.72,
           );
       } else {
         ScrollTrigger.create({
-          trigger: ".r-break",
-          start: "top 78%",
+          trigger: ".r-reclaim",
+          start: "top 75%",
           once: true,
           onEnter: () => {
             gsap
               .timeline()
               .to(proxy, { p: 1, duration: 1.1, ease: "power2.inOut", onUpdate: setP }, 0)
-              .to(q(".r-darken"), { opacity: 0.92, duration: 1.0 }, 0)
+              .to(q(".r-darken"), { opacity: 0.9, duration: 1.0 }, 0)
               .to(
-                q(".r-panel"),
-                { opacity: 1, x: 0, duration: 0.7, ease: "expo.out" },
-                0.15,
+                q(".r-reclaim-screen"),
+                {
+                  autoAlpha: 1,
+                  y: 0,
+                  scale: 1,
+                  duration: 0.8,
+                  ease: "expo.out",
+                },
+                0.2,
               )
               .to(
-                q(".r-break-copy .r-line"),
-                { yPercent: 0, duration: 0.7, ease: "expo.out" },
-                0.3,
-              )
-              .from(
-                q(".r-break-copy .r-deck"),
-                { autoAlpha: 0, y: 16, duration: 0.5 },
-                0.5,
-              )
-              .from(q(".r-tag"), { autoAlpha: 0, duration: 0.4 }, 0.05);
+                q(".r-reclaim-deck"),
+                { autoAlpha: 1, y: 0, duration: 0.5, ease: "expo.out" },
+                0.6,
+              );
           },
         });
       }
@@ -209,7 +227,7 @@ export default function ReclaimHome() {
       <Nav />
       <main className="r-flow">
         <SceneHero />
-        <SceneBreak layout="split" />
+        <SceneReclaim />
         <SceneFeatures />
         <SceneAudio />
         <SceneControl />

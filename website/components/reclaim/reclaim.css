@@ -224,18 +224,20 @@
 }
 
 /* === Scene 1 — Hero (the noise) === */
-/* Height is content + padding, NOT a forced 100vh. A centred 100vh
- * hero leaves a dead empty lower half you must scroll past before the
- * reclaim beat — exactly the "empty space" we don't want. Content-
- * sized means the hero flows straight into the Break. The fixed shader
- * canvas still fills the viewport, so it reads full-bleed regardless. */
+/* Full-screen hero so it has its own moment and the reclaim headline
+ * does NOT appear while you're still on the hero (it lives a full
+ * viewport below). The lower area is the noisy shader — that's the
+ * hero's intended visual, not dead space. Content is top-aligned; the
+ * reclaim follows right after, and its headline has its own scroll-in
+ * (see ReclaimHome) so it arrives as you enter that section. */
 .r-hero {
   position: relative;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   padding-top: clamp(140px, 22vh, 240px);
-  padding-bottom: clamp(80px, 12vh, 160px);
+  padding-bottom: clamp(60px, 9vh, 110px);
 }
 .r-hero-stack {
   position: relative;
@@ -307,158 +309,68 @@
   color: var(--bone-dim);
 }
 
-/* === Scene 2 — The Break === */
-.r-break {
+/* === The reclaim beat — one centred moment, no seam, no split === */
+.r-reclaim {
   position: relative;
+}
+.r-reclaim-stage {
   height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(110px, 16vh, 180px) var(--pad) clamp(80px, 12vh, 140px);
   overflow: hidden;
 }
-.r-tag {
-  position: absolute;
-  top: var(--pad);
-  left: var(--pad);
-  z-index: 4;
-  font-family: var(--mono);
-  font-size: 13px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+.r-reclaim-inner {
+  width: 100%;
+  max-width: 920px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: clamp(26px, 4vh, 48px);
+}
+.r-reclaim-head {
+  font-family: var(--display);
+  font-weight: 400;
+  font-size: clamp(44px, 7vw, 116px);
+  line-height: 0.96;
+  letter-spacing: -0.014em;
+  color: var(--bone);
+}
+.r-reclaim-head em {
+  font-style: normal;
   color: var(--ember-glow);
 }
-.r-seam {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
-  width: 2px;
-  z-index: 2;
-  background: var(--ember-glow);
-  box-shadow: 0 0 70px 14px rgba(234, 123, 44, 0.45);
-  transform: scaleY(0);
-  transform-origin: top;
+.r-reclaim-deck {
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(15px, 1.2vw, 18px);
+  line-height: 1.55;
+  color: var(--bone-dim);
+  max-width: 54ch;
 }
-/* Wrapper owns centering; gsap owns .r-panel's transform (slide-in). */
-.r-panel-wrap {
-  position: absolute;
-  display: flex;
-  z-index: 3;
-}
-/* Charcoal, not white — the reclaimed player belongs to the calm
- * *dark* world, not a bright card stapled onto it. */
-.r-panel {
+
+/* The de-noised Toppings screen — the literal payoff of the line. */
+.r-reclaim-screen {
   width: 100%;
+  max-width: 660px;
+  text-align: left;
   background: #17171b;
   border: 1px solid var(--hair-strong);
   border-radius: 18px;
   padding: 22px;
-  opacity: 0;
   box-shadow:
     0 1px 0 rgba(234, 229, 216, 0.05) inset,
-    0 40px 90px -34px rgba(0, 0, 0, 0.85);
+    0 44px 100px -42px rgba(0, 0, 0, 0.9);
 }
-.r-break-copy {
-  position: absolute;
-  z-index: 3;
-}
-
-/* — layout: split (full-bleed, copy left / clean player right) — */
-.r-break[data-layout="split"] .r-break-copy {
-  left: var(--pad);
-  top: 50%;
-  transform: translateY(-50%);
-  width: 42vw;
-  max-width: 560px;
-}
-.r-break[data-layout="split"] .r-panel-wrap {
-  right: 0;
-  top: 0;
-  bottom: 0;
-  width: 50vw;
-  align-items: center;
-  justify-content: center;
-  padding: 0 var(--pad);
-}
-.r-break[data-layout="split"] .r-panel {
-  max-width: 560px;
-}
-
-/* — layout: stack (centred single column) — */
-.r-break[data-layout="stack"] .r-seam {
-  display: none;
-}
-.r-break[data-layout="stack"] .r-break-copy {
-  left: 50%;
-  top: 13vh;
-  transform: translateX(-50%);
-  width: min(900px, 86vw);
-  text-align: center;
-}
-.r-break[data-layout="stack"] .r-panel-wrap {
-  left: 50%;
-  top: 40vh;
-  transform: translateX(-50%);
-  width: min(620px, 86vw);
-  justify-content: center;
-}
-
-/* — layout: tight (current composition, denser) — */
-.r-break[data-layout="tight"] .r-break-copy {
-  left: var(--pad);
-  top: 50%;
-  transform: translateY(-50%);
-  max-width: min(560px, 40vw);
-}
-.r-break[data-layout="tight"] .r-panel-wrap {
-  right: var(--pad);
-  top: 0;
-  bottom: 0;
-  width: min(620px, 46vw);
-  align-items: center;
-  justify-content: flex-end;
-}
-
-/* Mobile: the Break is unpinned (see ReclaimHome) and stacks in normal
- * flow — copy, then the player. No absolute overlap, no seam, no void. */
-@media (max-width: 820px) {
-  .r-break {
-    height: auto;
-    min-height: auto;
-    overflow: visible;
-    padding: clamp(80px, 14vh, 140px) var(--pad);
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-  }
-  .r-break .r-seam {
-    display: none;
-  }
-  .r-break .r-tag {
-    position: static;
-  }
-  .r-break[data-layout] .r-break-copy {
-    position: static;
-    transform: none;
-    width: auto;
-    max-width: 100%;
-    order: 1;
-  }
-  .r-break[data-layout] .r-panel-wrap {
-    position: static;
-    transform: none;
-    width: 100%;
-    padding: 0;
-    order: 2;
-  }
-  .r-panel {
-    max-width: 100% !important;
-  }
-}
-.r-panel-bar {
+.r-rs-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 16px;
 }
-.r-panel-brand {
+.r-rs-brand {
   display: inline-flex;
   align-items: center;
   gap: 9px;
@@ -467,13 +379,13 @@
   font-size: 14px;
   color: var(--bone);
 }
-.r-panel-brand i {
+.r-rs-brand i {
   width: 9px;
   height: 9px;
   border-radius: 50%;
   background: var(--ember);
 }
-.r-panel-mode {
+.r-rs-mode {
   font-family: var(--mono);
   font-size: 10.5px;
   letter-spacing: 0.12em;
@@ -483,52 +395,38 @@
   padding: 5px 10px;
   border-radius: 999px;
 }
-.r-panel-video {
-  position: relative;
+.r-rs-video {
   width: 100%;
   aspect-ratio: 16 / 9;
   border-radius: 12px;
   background: radial-gradient(120% 120% at 50% 30%, #0e0e12, #060608);
   border: 1px solid rgba(234, 229, 216, 0.06);
-  display: grid;
-  place-items: center;
 }
-.r-play {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  border: 1px solid rgba(234, 229, 216, 0.45);
-  color: rgba(234, 229, 216, 0.8);
-  display: grid;
-  place-items: center;
-  font-size: 15px;
-  padding-left: 3px;
-}
-.r-panel-scrub {
+.r-rs-scrub {
   display: flex;
   align-items: center;
   gap: 14px;
   margin: 18px 0;
 }
-.r-panel-time {
+.r-rs-time {
   font-family: var(--mono);
   font-size: 11px;
   color: var(--bone-faint);
 }
-.r-panel-track {
+.r-rs-track {
   position: relative;
   flex: 1;
   height: 4px;
   border-radius: 2px;
   background: rgba(234, 229, 216, 0.14);
 }
-.r-panel-track > i {
+.r-rs-track > i {
   position: absolute;
   inset: 0 58% 0 0;
   border-radius: 2px;
   background: var(--ember);
 }
-.r-panel-track > b {
+.r-rs-track > b {
   position: absolute;
   left: 42%;
   top: 50%;
@@ -539,14 +437,14 @@
   transform: translate(-50%, -50%);
   box-shadow: 0 0 0 4px rgba(234, 123, 44, 0.18);
 }
-.r-keys {
+.r-rs-keys {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
   border-top: 1px solid var(--hair);
   padding-top: 16px;
 }
-.r-key {
+.r-rs-key {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -557,16 +455,26 @@
   padding: 8px 11px;
   border-radius: 8px;
 }
-.r-key em {
+.r-rs-key em {
   font-style: normal;
   font-weight: 600;
   color: var(--bone);
 }
-.r-key:first-child em {
+.r-rs-key:first-child em {
   color: var(--ember);
 }
-.r-break-copy .r-deck {
-  margin-top: 22px;
+
+/* Mobile: unpinned (see ReclaimHome), content-height, no overflow clip. */
+@media (max-width: 820px) {
+  .r-reclaim-stage {
+    height: auto;
+    min-height: auto;
+    overflow: visible;
+    padding: clamp(80px, 14vh, 130px) var(--pad);
+  }
+  .r-reclaim-head {
+    font-size: clamp(40px, 9vw, 64px);
+  }
 }
 
 /* Post-Break scenes are opaque so the fixed shader canvas never
@@ -1165,35 +1073,16 @@ html.has-cursor * {
 .reclaim.is-static .r-progress,
 .reclaim.is-static .r-cursor-dot,
 .reclaim.is-static .r-cursor-ring,
-.reclaim.is-static .r-seam,
 .reclaim.is-static .r-cue {
   display: none;
 }
 .reclaim.is-static .r-hero {
   min-height: 86vh;
 }
-.reclaim.is-static .r-break {
-  position: static;
+.reclaim.is-static .r-reclaim-stage {
   height: auto;
+  min-height: auto;
   overflow: visible;
-  padding: clamp(96px, 14vh, 200px) var(--pad);
-}
-.reclaim.is-static .r-tag {
-  position: static;
-  display: block;
-  margin-bottom: 28px;
-}
-.reclaim.is-static .r-panel {
-  position: static;
-  transform: none;
-  opacity: 1;
-  width: 100%;
-  max-width: 620px;
-  margin: 0 0 40px;
-}
-.reclaim.is-static .r-break-copy {
-  position: static;
-  max-width: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1202,10 +1091,9 @@ html.has-cursor * {
     opacity: 1 !important;
     transform: none !important;
   }
-  .r-panel {
+  .r-reclaim-screen,
+  .r-reclaim-deck {
     opacity: 1 !important;
-  }
-  .r-seam {
-    transform: scaleY(1) !important;
+    transform: none !important;
   }
 }
