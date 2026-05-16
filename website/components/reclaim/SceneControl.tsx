@@ -8,16 +8,17 @@ import { WEBSITE_HOME_KEYBINDINGS } from "toppings-constants";
  * reacts. Press A / L / , . / ← → / I O / T and the matching binding
  * lights up. The medium demonstrates the message.
  */
+// Real default bindings (EXTENSION_DEFAULT_STORE) → row index.
 const KEYMAP: Record<string, number> = {
-  a: 0,
-  l: 1,
-  ",": 2,
-  ".": 2,
-  arrowleft: 3,
-  arrowright: 3,
-  i: 4,
-  o: 4,
-  t: 5,
+  b: 0,
+  z: 1,
+  q: 2,
+  e: 2,
+  s: 3,
+  w: 3,
+  a: 4,
+  d: 4,
+  x: 5,
 };
 
 export default function SceneControl() {
@@ -37,8 +38,6 @@ export default function SceneControl() {
     const onKey = (e: KeyboardEvent) => {
       const idx = KEYMAP[e.key.toLowerCase()];
       if (idx === undefined) return;
-      if (e.key.startsWith("Arrow") || e.key === "," || e.key === ".")
-        e.preventDefault();
       const row = ROWS[idx];
       setHit(idx);
       setReadout(`${row.combo.join(row.sep)} — ${row.label}`);
@@ -69,7 +68,7 @@ export default function SceneControl() {
                 <b>{readout.split(" — ")[0]}</b> — {readout.split(" — ")[1]}
               </>
             ) : (
-              "Press a key — A · L · , . · ← → · I O · T"
+              "Press a key — B · Z · Q E · S W · A D · X"
             )}
           </p>
         </div>
@@ -85,9 +84,16 @@ export default function SceneControl() {
                 <div className="r-keyrow-desc">{row.desc}</div>
               </div>
               <div className="r-combo">
-                <span className="r-cap">{row.combo[0]}</span>
-                <span style={{ opacity: 0.4, fontSize: 12 }}>{row.sep}</span>
-                <span className="r-cap">{row.combo[1]}</span>
+                {row.combo.map((k, ci) => (
+                  <span key={ci} style={{ display: "contents" }}>
+                    {ci > 0 && (
+                      <span style={{ opacity: 0.4, fontSize: 12 }}>
+                        {row.sep}
+                      </span>
+                    )}
+                    <span className="r-cap">{k}</span>
+                  </span>
+                ))}
               </div>
             </div>
           ))}
