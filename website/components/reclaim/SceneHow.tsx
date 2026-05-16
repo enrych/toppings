@@ -12,7 +12,7 @@ export default function SceneHow() {
       <div className="r-scene-inner">
         <div className="r-section-head">
           <div data-reveal>
-            <span className="r-kicker">06 — no friction</span>
+            <span className="r-kicker">no friction</span>
             <h2 className="r-h2" style={{ marginTop: 22 }}>
               {SECTION_HEADLINE}
             </h2>

@@ -635,41 +635,6 @@
   border-color: var(--bone);
 }
 
-/* === Audio Mode — the proof === */
-.r-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(32px, 5vw, 80px);
-  margin-top: clamp(48px, 8vh, 110px);
-}
-@media (max-width: 880px) {
-  .r-stats {
-    grid-template-columns: 1fr;
-    gap: 48px;
-  }
-}
-.r-stat-num {
-  font-family: var(--display);
-  font-size: clamp(60px, 8.5vw, 140px);
-  line-height: 0.86;
-  letter-spacing: -0.02em;
-  color: var(--bone);
-}
-.r-stat-num span {
-  color: var(--ember-glow);
-  margin-left: 0.04em;
-}
-.r-stat-label {
-  font-family: var(--mono);
-  font-size: 12px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--bone-faint);
-  margin-top: 18px;
-  padding-top: 18px;
-  border-top: 1px solid var(--hair);
-}
-
 /* === How it works === */
 .r-steps {
   display: grid;

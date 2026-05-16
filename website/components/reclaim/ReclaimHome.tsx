@@ -11,7 +11,6 @@ import Nav from "./Nav";
 import SceneHero from "./SceneHero";
 import DevToggle from "./DevToggle";
 import SceneFeatures from "./SceneFeatures";
-import SceneAudio from "./SceneAudio";
 import SceneControl from "./SceneControl";
 import SceneHow from "./SceneHow";
 import SceneQuiet from "./SceneQuiet";
@@ -158,7 +157,6 @@ export default function ReclaimHome() {
       <main className="r-flow">
         <SceneHero />
         <SceneFeatures />
-        <SceneAudio />
         <SceneControl />
         <SceneHow />
         <SceneQuiet />

@@ -55,7 +55,7 @@ export default function SceneControl() {
     <section className="r-scene r-control">
       <div className="r-scene-inner r-control-grid">
         <div data-reveal>
-          <span className="r-kicker">05 — the keyboard is the interface</span>
+          <span className="r-kicker">the keyboard is the interface</span>
           <h2 className="r-h2" style={{ margin: "22px 0 26px" }}>
             {SECTION_HEADLINE_BEFORE}
             <em>{SECTION_HEADLINE_HIGHLIGHT}</em>

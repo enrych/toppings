@@ -12,7 +12,7 @@ export default function SceneQuiet() {
       <div className="r-scene-inner">
         <div className="r-section-head">
           <div data-reveal>
-            <span className="r-kicker">07 — the quiet layer</span>
+            <span className="r-kicker">the quiet layer</span>
             <h2 className="r-h2" style={{ marginTop: 22 }}>
               {SECTION_HEADLINE}
             </h2>

@@ -154,15 +154,15 @@ export const WEBSITE_HERO = {
  * headline/lede count-agnostic on purpose.
  */
 export const WEBSITE_HOME_FEATURE_GRID = {
-  SECTION_HEADLINE: "The buttons YouTube forgot.",
+  SECTION_HEADLINE: "What YouTube left out.",
   SECTION_LEDE:
-    "Each one fixes something YouTube left broken — or never built at all. The list grows as we find more.",
+    "Small, sharp tools for the things YouTube never shipped — or shipped half-done. We keep finding more.",
 } as const;
 
 export const WEBSITE_HOME_HOW_IT_WORKS = {
-  SECTION_HEADLINE: "Three steps. Zero friction.",
+  SECTION_HEADLINE: "Install and forget it.",
   SECTION_LEDE:
-    "Install, open YouTube, make it yours. No accounts, no setup screens, no waiting for an onboarding wizard.",
+    "Add it, open YouTube, make it yours. No accounts, no setup screens, no onboarding wizard.",
   STEPS: [
     {
       num: "01",
@@ -189,19 +189,6 @@ export const WEBSITE_HOME_STATS_STRIP = {
     { value: 100, suffix: "%", decimals: 0, label: "Free & open source" },
     { value: 0, suffix: "", decimals: 0, label: "Trackers, ever" },
     { value: 0, suffix: "", decimals: 0, label: "Accounts to sign up" },
-  ],
-} as const;
-
-export const WEBSITE_HOME_INVERSE = {
-  SECTION_HEADLINE_BEFORE: "Listen, don’t ",
-  SECTION_HEADLINE_HIGHLIGHT: "watch",
-  SECTION_HEADLINE_AFTER: ".",
-  SECTION_LEDE:
-    "Audio Mode hides the video and keeps every control — same playback, same chapters, same shortcuts. For the podcasts and live sets you never came to look at.",
-  STATS: [
-    { number: "3", unit: "", label: "Backgrounds — black · visualizer · custom" },
-    { number: "1", unit: "", label: "Key to toggle it (B)" },
-    { number: "0", unit: "", label: "Accounts or setup" },
   ],
 } as const;
 
@@ -258,7 +245,7 @@ export const WEBSITE_HOME_KEYBINDINGS = {
 } as const;
 
 export const WEBSITE_HOME_PRINCIPLES = {
-  SECTION_HEADLINE: "Three rules.",
+  SECTION_HEADLINE: "The non-negotiables.",
   SECTION_LEDE:
     "What Toppings is, what it isn’t, and what it will never become.",
   CARDS: [

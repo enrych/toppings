@@ -27,7 +27,7 @@ export default function SceneClose() {
   return (
     <section className="r-scene r-close">
       <span className="r-kicker" data-reveal>
-        08 — take it back
+        take it back
       </span>
       <h2 className="r-display" style={{ margin: "26px 0 30px" }} data-reveal>
         {HEADLINE_BEFORE}
