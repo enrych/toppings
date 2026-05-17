@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { EXTERNAL_URL } from "../../packages/constants/src/links.ts";
 import { EXTENSION_VERSION } from "../../packages/constants/src/version.ts";
 import tailwindcss from "tailwindcss";
 import autoprefixer from "autoprefixer";
@@ -124,6 +125,7 @@ export default (env) => {
             transform(content) {
               const manifest = JSON.parse(content.toString());
               manifest.version = EXTENSION_VERSION;
+              manifest.homepage_url = EXTERNAL_URL.WEBSITE;
 
               const isFirefox = env.firefox ? "firefox" : false;
               if (isFirefox) {

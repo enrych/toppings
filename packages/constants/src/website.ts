@@ -1,4 +1,4 @@
-import { EXTERNAL_URL } from "./links";
+import { EXTERNAL_URL, SITE_PATH } from "./links";
 
 export const LABEL = {
   ADD_TO_CHROME: "Add to Chrome",
@@ -14,10 +14,12 @@ export const LABEL = {
 } as const;
 
 export const ROUTE = {
-  HOME: "/",
+  HOME: SITE_PATH.HOME,
   DOCS: "/docs",
   DOCS_KEYBINDINGS: "/docs/keybindings",
   DOCS_FAQ: "/docs/faq",
+  GREETINGS: SITE_PATH.GREETINGS,
+  FAREWELL: SITE_PATH.FAREWELL,
 } as const;
 
 export const METADATA = {

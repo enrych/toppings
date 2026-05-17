@@ -1,6 +1,8 @@
+import { EXTERNAL_URL } from "./links";
+
 export const BASE_URL = {
   LOCAL: "http://127.0.0.1:8787",
-  PRODUCTION: "https://toppings.enry.ch",
+  PRODUCTION: EXTERNAL_URL.WEBSITE,
 } as const;
 
 export const ENDPOINTS = {

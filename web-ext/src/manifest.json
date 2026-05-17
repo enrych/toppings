@@ -29,7 +29,6 @@
   ],
   "default_locale": "en",
   "description": "__MSG_description__",
-  "homepage_url": "https://enrych.github.io/toppings",
   "host_permissions": [
     "*://*.youtube.com/*"
   ],

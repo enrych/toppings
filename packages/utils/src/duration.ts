@@ -1,7 +1,7 @@
 import { ISO8601_DURATION_PATTERN, NUMBER } from "@toppings/constants";
-import { defaultTo } from "@toppings/utils";
+import { defaultTo } from "./access";
 
-const parseDuration = (duration: string): number => {
+export function parseDuration(duration: string): number {
   const match = ISO8601_DURATION_PATTERN.exec(duration);
   if (!match) return 0;
 
@@ -10,6 +10,4 @@ const parseDuration = (duration: string): number => {
   const seconds = Number.parseFloat(defaultTo(match[3], NUMBER.S0));
 
   return hours * 3600 + minutes * 60 + seconds;
-};
-
-export default parseDuration;
+}

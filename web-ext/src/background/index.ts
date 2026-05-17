@@ -23,8 +23,8 @@ function onInitialize({ reason }: InitializeDetails): void {
     reason === INSTALL_REASON.UPDATE
   ) {
     if (process.env.NODE_ENV === NODE_ENV.PRODUCTION) {
-      void chrome.tabs.create({ url: INSTALL_URL.WELCOME_TAB });
-      void chrome.runtime.setUninstallURL(INSTALL_URL.UNINSTALL);
+      void chrome.tabs.create({ url: INSTALL_URL.GREETINGS });
+      void chrome.runtime.setUninstallURL(INSTALL_URL.FAREWELL);
     }
     void syncStorageWithDefaults();
   }

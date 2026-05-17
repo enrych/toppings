@@ -1,4 +1,13 @@
+export const SITE_PATH = {
+  HOME: "/",
+  GREETINGS: "/greetings",
+  FAREWELL: "/farewell",
+} as const;
+
 export const EXTERNAL_URL = {
+  WEBSITE: "https://toppings.enry.ch",
+  WEBSITE_GREETINGS: "https://toppings.enry.ch/greetings",
+  WEBSITE_FAREWELL: "https://toppings.enry.ch/farewell",
   GITHUB_REPO: "https://github.com/enrych/toppings",
   GITHUB_ISSUES: "https://github.com/enrych/toppings/issues",
   GITHUB_RELEASES: "https://github.com/enrych/toppings/releases",
@@ -7,5 +16,4 @@ export const EXTERNAL_URL = {
   FIREFOX_AMO_TOPPINGS:
     "https://addons.mozilla.org/en-US/firefox/addon/toppings/",
   SPONSOR: "https://darhkvoyd.me/sponsor",
-  GITHUB_PAGES_TOPPINGS: "https://enrych.github.io/toppings",
 } as const;

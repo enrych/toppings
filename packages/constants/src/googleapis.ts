@@ -1,10 +1,6 @@
-export const GOOGLE_API_ORIGIN = "https://www.googleapis.com";
+export const GOOGLE_API_URL = "https://www.googleapis.com{{path}}";
 
-export const GOOGLE_API_URL = {
-  RESOURCE: "{{origin}}{{path}}",
-} as const;
-
-export const GOOGLE_API_QUERY = {
+export const GOOGLE_API_QUERY_PARAM = {
   PART: "part",
   MAX_RESULTS: "maxResults",
   FIELDS: "fields",
