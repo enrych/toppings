@@ -18,7 +18,6 @@ export default function SceneClose() {
     HEADLINE_HIGHLIGHT,
     HEADLINE_AFTER,
     LEDE,
-    FIREFOX_BUTTON,
     SOURCE_BUTTON,
     META,
   } = HOME.FINAL_CTA;
@@ -39,14 +38,6 @@ export default function SceneClose() {
 
       <div className="r-close-actions" data-reveal>
         <InstallCTA variant="solid" />
-        <a
-          href={EXTERNAL_URL.FIREFOX_AMO_TOPPINGS}
-          target={"_blank"}
-          rel="noopener noreferrer"
-          className="r-btn r-btn--ghost"
-        >
-          {FIREFOX_BUTTON}
-        </a>
         <a
           href={EXTERNAL_URL.GITHUB_REPO}
           target={"_blank"}

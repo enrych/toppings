@@ -40,14 +40,6 @@ export default function SceneHero() {
         <div className="r-hero-actions">
           <InstallCTA variant="solid" />
           <a
-            href={EXTERNAL_URL.FIREFOX_AMO_TOPPINGS}
-            target={"_blank"}
-            rel="noopener noreferrer"
-            className="r-btn r-btn--ghost"
-          >
-            {HERO.FIREFOX_BUTTON}
-          </a>
-          <a
             href={EXTERNAL_URL.GITHUB_REPO}
             target={"_blank"}
             rel="noopener noreferrer"

@@ -54,14 +54,13 @@ export const HERO = {
   HEADLINE_LINE_2_BEFORE: "your ",
   HEADLINE_LINE_2_HIGHLIGHT: "way",
   HEADLINE_LINE_2_AFTER: ".",
-  LEDE:
-    "A free, open-source browser extension that fixes what YouTube forgot — and keeps finding more. Small. Considered. Out of your way.",
+  LEDE: "The controls YouTube never gave you — done right.",
   FIREFOX_BUTTON: "Firefox",
   SOURCE_BUTTON: "Source",
   TRUST_TRACKERS_LEAD: "0 trackers.",
   TRUST_TRACKERS_REST: " No analytics, no accounts.",
   TRUST_LICENSE_LEAD: "GPL-3.0.",
-  TRUST_LICENSE_REST: " Yours to fork, modify, ship.",
+  TRUST_LICENSE_REST: " Fork it, modify it, ship it.",
 } as const;
 
 export const HOME = {
@@ -111,7 +110,7 @@ export const HOME = {
     SECTION_HEADLINE_HIGHLIGHT: "yours",
     SECTION_HEADLINE_AFTER: " to remap.",
     SECTION_LEDE:
-      "Single-key defaults on YouTube, plus a browser shortcut for the popup — all rebindable. Toppings reads keystrokes only on YouTube tabs; nothing global, nothing surprising.",
+      "Single-key defaults, all rebindable. Toppings reads keystrokes only on YouTube tabs; nothing global, nothing surprising.",
     ROWS: [
       {
         label: "Toggle Audio mode",
@@ -148,12 +147,6 @@ export const HOME = {
         desc: "Flip to your fast rate and back",
         combo: ["X"],
         sep: "",
-      },
-      {
-        label: "Open the popup",
-        desc: "From any page · rebindable in your browser",
-        combo: ["Ctrl / ⌘", "Shift", "Y"],
-        sep: " + ",
       },
     ],
   },
@@ -196,7 +189,7 @@ export const HOME = {
       "Free, forever. Open-source, forever. No account. No sign-up. Install once and forget the extension is there — the way good tools work.",
     FIREFOX_BUTTON: "Firefox",
     SOURCE_BUTTON: "Source code",
-    META: "Chrome · Firefox · Edge · Opera · Brave",
+    META: "Chrome · Firefox · and every Chromium browser",
   },
 } as const;
 

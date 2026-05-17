@@ -14,15 +14,7 @@
   "background": {
     "service_worker": "/background.js"
   },
-  "commands": {
-    "_execute_action": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+Y",
-        "mac": "Command+Shift+Y"
-      },
-      "description": "Open the Toppings popup"
-    }
-  },
+  "commands": {},
   "content_scripts": [
     {
       "all_frames": true,

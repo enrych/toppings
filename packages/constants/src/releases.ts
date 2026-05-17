@@ -26,17 +26,6 @@ export interface ReleaseEntry {
 
 export const RELEASES: ReleaseEntry[] = [
   {
-    version: RELEASE_VERSION.WIP,
-    date: "2026-05-16",
-    title: "Quality of life",
-    items: [
-      {
-        kind: RELEASE_ITEM_KIND.FEAT,
-        text: "Keyboard shortcut to open the Toppings popup (Ctrl/⌘+Shift+Y, rebindable in your browser)",
-      },
-    ],
-  },
-  {
     version: "3.0.3",
     date: "2026-05-15",
     title: "Audio Mode, full UI revamp, on-site docs",
