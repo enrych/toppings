@@ -3,11 +3,10 @@ import Pager from "@/components/docs/Pager";
 import {
   EXTENSION_VERSION,
   EXTERNAL_URL,
-  BROWSER_TARGET,
   RELEASES,
-  userFacingItems,
   type ReleaseItemKind,
-} from "toppings-constants";
+} from "@toppings/constants";
+import { userFacingItems } from "@toppings/utils";
 
 const KIND_TONE: Record<ReleaseItemKind, { label: string; bg: string; fg: string }> = {
   feat: { label: "New", bg: "rgba(252,169,41,0.12)", fg: "var(--ink)" },
@@ -57,7 +56,7 @@ export default function DocsChangelogPage() {
         . For commits and PRs see the{" "}
         <Link
           href={`${EXTERNAL_URL.GITHUB_REPO}/commits/main`}
-          target={BROWSER_TARGET.BLANK}
+          target={"_blank"}
         >
           GitHub history
         </Link>

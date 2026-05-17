@@ -4,22 +4,14 @@
  *
  *   bun run scripts/bump-version.ts <patch | minor | major | x.y.z>
  *
- * Updates the version across every file that references it. The version
- * source of truth is `packages/constants/src/version.ts`
- * (`EXTENSION_VERSION`); this script keeps everything else in sync so it
- * never drifts.
+ * Updates the version in the one place it lives:
+ * `packages/constants/src/version.ts` (`EXTENSION_VERSION`). Builds and
+ * UI import that constant; package.json / manifest.json do not carry
+ * version fields.
  *
  * What it touches:
  *
  *   • packages/constants/src/version.ts   ← single SemVer constant
- *   • web-ext/src/manifest.json           ← extension manifest version
- *   • web-ext/package.json                ← npm version (also read by the
- *                                            webpack build transform)
- *   • website/package.json                ← npm version
- *   • backend/package.json                ← npm version
- *   • packages/constants/package.json     ← npm version
- *   • package.json (root)                 ← npm version (workspace meta)
- *
  *   • packages/constants/src/releases.ts  ← if the topmost entry has
  *                                            version "next", it gets
  *                                            renamed to the new version
@@ -37,18 +29,17 @@
  */
 import { readFileSync, writeFileSync, existsSync, cpSync, rmSync, readdirSync } from "node:fs";
 import { resolve, join } from "node:path";
+import { RELEASE_ITEM_KIND, RELEASE_VERSION } from "@toppings/constants";
+import {
+  docsVersionTag,
+  formatIsoDate,
+  nowUtc,
+  parseSemver,
+} from "@toppings/utils";
 
 const ROOT = resolve(import.meta.dir, "..");
 const VERSION_TS = join(ROOT, "packages/constants/src/version.ts");
 const RELEASES_TS = join(ROOT, "packages/constants/src/releases.ts");
-const MANIFEST = join(ROOT, "web-ext/src/manifest.json");
-const PACKAGE_JSONS = [
-  join(ROOT, "package.json"),
-  join(ROOT, "web-ext/package.json"),
-  join(ROOT, "website/package.json"),
-  join(ROOT, "backend/package.json"),
-  join(ROOT, "packages/constants/package.json"),
-];
 const DOCS_DIR = join(ROOT, "website/app/docs");
 
 const SEMVER_RX = /^(\d+)\.(\d+)\.(\d+)(?:-(.+))?$/;
@@ -61,9 +52,8 @@ function readCurrentVersion(): string {
 }
 
 function parse(v: string) {
-  const m = v.match(SEMVER_RX);
-  if (!m) throw new Error(`Bad semver: ${v}`);
-  return { major: +m[1], minor: +m[2], patch: +m[3], pre: m[4] };
+  const { major, minor, patch, pre } = parseSemver(v);
+  return { major, minor, patch, pre };
 }
 
 function bump(current: string, kind: string): string {
@@ -82,8 +72,7 @@ function bump(current: string, kind: string): string {
 }
 
 function todayISO() {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  return formatIsoDate(nowUtc());
 }
 
 function updateVersionTs(next: string) {
@@ -93,19 +82,6 @@ function updateVersionTs(next: string) {
     `$1"${next}"`,
   );
   writeFileSync(VERSION_TS, patched);
-}
-
-function updateManifest(next: string) {
-  const j = JSON.parse(readFileSync(MANIFEST, "utf8"));
-  j.version = next;
-  writeFileSync(MANIFEST, JSON.stringify(j, null, 2) + "\n");
-}
-
-function updatePackageJson(path: string, next: string) {
-  if (!existsSync(path)) return;
-  const j = JSON.parse(readFileSync(path, "utf8"));
-  j.version = next;
-  writeFileSync(path, JSON.stringify(j, null, 2) + "\n");
 }
 
 /**
@@ -118,7 +94,10 @@ function updateReleasesTs(next: string) {
   const today = todayISO();
 
   // Try to find a "version: 'next'" entry to rename.
-  const nextEntryRx = /(version:\s*)"next"(\s*,\s*\n\s*date:\s*)"[^"]+"/;
+  const wip = RELEASE_VERSION.WIP;
+  const nextEntryRx = new RegExp(
+    `(version:\\s*)"${wip}"(\\s*,\\s*\\n\\s*date:\\s*)"[^"]+"`,
+  );
   if (nextEntryRx.test(src)) {
     src = src.replace(nextEntryRx, (_m, a, b) => `${a}"${next}"${b}"${today}"`);
     writeFileSync(RELEASES_TS, src);
@@ -131,7 +110,7 @@ function updateReleasesTs(next: string) {
     date: "${today}",
     title: "TODO: one-line tagline",
     items: [
-      { kind: "feat", text: "TODO: add release notes for ${next}" },
+      { kind: RELEASE_ITEM_KIND.FEAT, text: "TODO: add release notes for ${next}" },
     ],
   },
   `;
@@ -140,11 +119,6 @@ function updateReleasesTs(next: string) {
     `$1${insertion}`,
   );
   writeFileSync(RELEASES_TS, src);
-}
-
-function docsVersionTag(v: string) {
-  const [major, minor] = v.split(".");
-  return `v${major}.${minor}`;
 }
 
 /**
@@ -217,16 +191,6 @@ console.log(`Toppings version bump: ${current} → ${next}`);
 
 updateVersionTs(next);
 console.log("  ✓ packages/constants/src/version.ts");
-
-updateManifest(next);
-console.log("  ✓ web-ext/src/manifest.json");
-
-for (const p of PACKAGE_JSONS) {
-  if (existsSync(p)) {
-    updatePackageJson(p, next);
-    console.log(`  ✓ ${p.slice(ROOT.length + 1)}`);
-  }
-}
 
 updateReleasesTs(next);
 console.log("  ✓ packages/constants/src/releases.ts (renamed WIP / inserted stub)");

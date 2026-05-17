@@ -1,4 +1,4 @@
-import { WEBSITE_HOME_PRINCIPLES } from "toppings-constants";
+import { HOME } from "@toppings/constants";
 
 /**
  * Scene 5 — the quiet layer. The destination of the whole arc: maximum
@@ -6,7 +6,7 @@ import { WEBSITE_HOME_PRINCIPLES } from "toppings-constants";
  * product gives you, expressed as the page's calmest moment.
  */
 export default function SceneQuiet() {
-  const { SECTION_HEADLINE, SECTION_LEDE, CARDS } = WEBSITE_HOME_PRINCIPLES;
+  const { SECTION_HEADLINE, SECTION_LEDE, CARDS } = HOME.PRINCIPLES;
   return (
     <section className="r-scene r-quiet">
       <div className="r-scene-inner">

@@ -1,10 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import {
-  BROWSER_TARGET,
-  WEBSITE_INSTALL_DESTINATION,
-  WEBSITE_UA_PATTERN,
-} from "toppings-constants";
+import { INSTALL, UA_PATTERN } from "@toppings/constants";
 
 /**
  * Browser-aware primary CTA, restyled for the dark rebrand. Same
@@ -17,21 +13,21 @@ export default function InstallCTA({
   variant?: "solid" | "ghost";
 }) {
   const [agent, setAgent] =
-    useState<keyof typeof WEBSITE_INSTALL_DESTINATION>("unknown");
+    useState<keyof typeof INSTALL>("unknown");
 
   useEffect(() => {
     const ua = navigator.userAgent;
-    if (WEBSITE_UA_PATTERN.CHROMIUM_LIKE.test(ua)) setAgent("chrome");
-    else if (WEBSITE_UA_PATTERN.FIREFOX_LIKE.test(ua)) setAgent("firefox");
+    if (UA_PATTERN.CHROMIUM_LIKE.test(ua)) setAgent("chrome");
+    else if (UA_PATTERN.FIREFOX_LIKE.test(ua)) setAgent("firefox");
     else setAgent("unknown");
   }, []);
 
-  const store = WEBSITE_INSTALL_DESTINATION[agent];
+  const store = INSTALL[agent];
 
   return (
     <a
       href={store.url}
-      target={BROWSER_TARGET.BLANK}
+      target={"_blank"}
       rel="noopener noreferrer"
       className={`r-btn r-btn--${variant}`}
     >

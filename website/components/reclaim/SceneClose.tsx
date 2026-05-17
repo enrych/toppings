@@ -1,11 +1,10 @@
 import {
-  WEBSITE_HOME_FINAL_CTA,
-  WEBSITE_BRAND,
-  WEBSITE_VERSION_DISPLAY,
-  WEBSITE_INTERNAL_ROUTE,
+  BRAND,
+  EXTENSION_VERSION,
   EXTERNAL_URL,
-  BROWSER_TARGET,
-} from "toppings-constants";
+  HOME,
+  ROUTE,
+} from "@toppings/constants";
 import InstallCTA from "./InstallCTA";
 
 /**
@@ -22,7 +21,7 @@ export default function SceneClose() {
     FIREFOX_BUTTON,
     SOURCE_BUTTON,
     META,
-  } = WEBSITE_HOME_FINAL_CTA;
+  } = HOME.FINAL_CTA;
 
   return (
     <section className="r-scene r-close">
@@ -42,7 +41,7 @@ export default function SceneClose() {
         <InstallCTA variant="solid" />
         <a
           href={EXTERNAL_URL.FIREFOX_AMO_TOPPINGS}
-          target={BROWSER_TARGET.BLANK}
+          target={"_blank"}
           rel="noopener noreferrer"
           className="r-btn r-btn--ghost"
         >
@@ -50,7 +49,7 @@ export default function SceneClose() {
         </a>
         <a
           href={EXTERNAL_URL.GITHUB_REPO}
-          target={BROWSER_TARGET.BLANK}
+          target={"_blank"}
           rel="noopener noreferrer"
           className="r-btn r-btn--ghost"
         >
@@ -64,19 +63,19 @@ export default function SceneClose() {
 
       <footer className="r-foot">
         <span>
-          {WEBSITE_BRAND.NAME} · v{WEBSITE_VERSION_DISPLAY.FOOTER_FALLBACK} ·
+          {BRAND.NAME} · v{EXTENSION_VERSION} ·
           GPL-3.0
         </span>
         <span style={{ display: "flex", gap: 22 }}>
           <a
-            href={WEBSITE_INTERNAL_ROUTE.DOCS}
+            href={ROUTE.DOCS}
             style={{ color: "inherit", textDecoration: "none" }}
           >
             Docs
           </a>
           <a
             href={EXTERNAL_URL.GITHUB_REPO}
-            target={BROWSER_TARGET.BLANK}
+            target={"_blank"}
             rel="noopener noreferrer"
             style={{ color: "inherit", textDecoration: "none" }}
           >

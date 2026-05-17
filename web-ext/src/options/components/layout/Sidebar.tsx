@@ -6,12 +6,11 @@ import Tooltip from "../../../shared/components/primitives/Tooltip";
 import { useChromeStorageLocal } from "../../../shared/hooks/useChromeStorageLocal";
 import { useStoreUpdater } from "../../../shared/hooks/useStoreUpdater";
 import {
-  CHROME_STORAGE_LOCAL_KEY,
-  OPTIONS_ASSET_PATH,
-  OPTIONS_DOCUMENT_PATH,
-  OPTIONS_SIDEBAR_NAV_ITEM,
-  OPTIONS_SIDEBAR_UI,
-} from "toppings-constants";
+  OPTIONS_ICON_SRC,
+  STORAGE_KEY,
+  OPTIONS_PAGES,
+  BRAND,
+} from "@toppings/constants";
 import { ThemePreference } from "../../../shared/utils/theme";
 
 interface NavItem {
@@ -20,11 +19,14 @@ interface NavItem {
   icon: IconName;
 }
 
-const NAV_ITEMS: NavItem[] = OPTIONS_SIDEBAR_NAV_ITEM.map((item) => ({
-  to: item.documentPath,
-  label: item.label,
-  icon: item.icon as IconName,
+const NAV_ITEMS: NavItem[] = OPTIONS_PAGES.map((page) => ({
+  to: page.path,
+  label: page.label,
+  icon: page.icon as IconName,
 }));
+
+const COLLAPSE_LABEL_EXPAND = "Expand sidebar";
+const COLLAPSE_LABEL_COLLAPSE = "Collapse sidebar";
 
 /**
  * Sidebar — implements the Claude Design handoff for the extension options
@@ -43,7 +45,7 @@ const NAV_ITEMS: NavItem[] = OPTIONS_SIDEBAR_NAV_ITEM.map((item) => ({
 export default function Sidebar() {
   const version = chrome.runtime.getManifest().version;
   const [collapsed, setCollapsed] = useChromeStorageLocal<boolean>(
-    CHROME_STORAGE_LOCAL_KEY.OPTIONS_SIDEBAR_COLLAPSED,
+    STORAGE_KEY.OPTIONS_SIDEBAR_COLLAPSED,
     false,
   );
   const { store, update } = useStoreUpdater();
@@ -69,16 +71,16 @@ export default function Sidebar() {
         {collapsed ? (
           <div className="tw-flex tw-justify-center">
             <img
-              src={OPTIONS_ASSET_PATH.ICON_48}
-              alt={OPTIONS_SIDEBAR_UI.ALT_LOGO_COLLAPSED}
+              src={OPTIONS_ICON_SRC}
+              alt={BRAND.NAME}
               className="tw-w-7 tw-h-7"
             />
           </div>
         ) : (
           <div className="tw-flex tw-items-center tw-gap-2.5 tw-px-2">
             <img
-              src={OPTIONS_ASSET_PATH.ICON_48}
-              alt={OPTIONS_SIDEBAR_UI.ALT_LOGO}
+              src={OPTIONS_ICON_SRC}
+              alt=""
               className="tw-w-7 tw-h-7 tw-flex-shrink-0"
             />
             <div className="tw-min-w-0">
@@ -86,7 +88,7 @@ export default function Sidebar() {
                 className="tw-text-[17px] tw-leading-none tw-text-fg tw-truncate"
                 style={{ fontWeight: 900, letterSpacing: "-0.03em" }}
               >
-                {OPTIONS_SIDEBAR_UI.BRAND_NAME}
+                {BRAND.NAME}
               </div>
               <div className="tw-font-mono tw-text-[10px] tw-text-fg-subtle tw-mt-1">
                 v{version}
@@ -126,20 +128,14 @@ export default function Sidebar() {
           className={`tw-flex ${collapsed ? "tw-justify-center" : "tw-justify-end"}`}
         >
           <Tooltip
-            text={
-              collapsed
-                ? OPTIONS_SIDEBAR_UI.TOOLTIP_EXPAND
-                : OPTIONS_SIDEBAR_UI.TOOLTIP_COLLAPSE
-            }
+            text={collapsed ? COLLAPSE_LABEL_EXPAND : COLLAPSE_LABEL_COLLAPSE}
             side={collapsed ? "right" : "left"}
           >
             <IconButton
               size="sm"
               variant="ghost"
               aria-label={
-                collapsed
-                  ? OPTIONS_SIDEBAR_UI.ARIA_EXPAND
-                  : OPTIONS_SIDEBAR_UI.ARIA_COLLAPSE
+                collapsed ? COLLAPSE_LABEL_EXPAND : COLLAPSE_LABEL_COLLAPSE
               }
               onClick={() => setCollapsed(!collapsed)}
             >
@@ -208,7 +204,7 @@ function NavItemLink({ item, collapsed }: NavItemLinkProps) {
   return (
     <NavLink
       to={item.to}
-      end={item.to === OPTIONS_DOCUMENT_PATH.HOME}
+      end={item.to === OPTIONS_PAGES[0].path}
       className={({ isActive }) =>
         `tw-flex tw-items-center tw-rounded-md tw-transition-colors tw-text-sm ${
           collapsed

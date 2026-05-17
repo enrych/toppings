@@ -1,11 +1,10 @@
 import Link from "next/link";
 import {
-  WEBSITE_BRAND,
-  WEBSITE_VERSION_DISPLAY,
-  WEBSITE_INTERNAL_ROUTE,
+  BRAND,
+  EXTENSION_VERSION,
   EXTERNAL_URL,
-  BROWSER_TARGET,
-} from "toppings-constants";
+  ROUTE,
+} from "@toppings/constants";
 import "./reclaim.css";
 import Cursor from "./Cursor";
 import Nav from "./Nav";
@@ -66,7 +65,7 @@ export default function ReclaimMini({
             ) : (
               <a
                 href={cta.href}
-                target={BROWSER_TARGET.BLANK}
+                target={"_blank"}
                 rel="noopener noreferrer"
                 className="r-btn r-btn--solid"
               >
@@ -81,19 +80,19 @@ export default function ReclaimMini({
 
         <footer className="r-foot">
           <span>
-            {WEBSITE_BRAND.NAME} · v{WEBSITE_VERSION_DISPLAY.FOOTER_FALLBACK} ·
+            {BRAND.NAME} · v{EXTENSION_VERSION} ·
             GPL-3.0
           </span>
           <span style={{ display: "flex", gap: 22 }}>
             <Link
-              href={WEBSITE_INTERNAL_ROUTE.DOCS}
+              href={ROUTE.DOCS}
               style={{ color: "inherit", textDecoration: "none" }}
             >
               Docs
             </Link>
             <a
               href={EXTERNAL_URL.GITHUB_REPO}
-              target={BROWSER_TARGET.BLANK}
+              target={"_blank"}
               rel="noopener noreferrer"
               style={{ color: "inherit", textDecoration: "none" }}
             >

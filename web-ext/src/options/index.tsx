@@ -1,10 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
-import {
-  OPTIONS_MEMORY_ROUTER_ROOT_PATH,
-  OPTIONS_ROUTE_CHILD_PATH,
-} from "toppings-constants";
+import { OPTIONS_PAGES } from "@toppings/constants";
 import App from "./App";
 import General from "./routes/General";
 import Watch from "./routes/Watch";
@@ -16,20 +13,25 @@ import ErrorPage from "./routes/error-page";
 import "./index.css";
 import { getStorage } from "../background/store";
 
+const ROUTE_ELEMENT_BY_SEGMENT: Record<string, React.ReactElement> = {
+  "": <General />,
+  watch: <Watch />,
+  "audio-mode": <AudioMode />,
+  shorts: <Shorts />,
+  playlist: <Playlist />,
+  keybindings: <Keybindings />,
+};
+
 const router = createMemoryRouter([
   {
-    path: OPTIONS_MEMORY_ROUTER_ROOT_PATH,
+    path: OPTIONS_PAGES[0].path,
     element: <App />,
     loader: getStorage,
     errorElement: <ErrorPage />,
-    children: [
-      { path: OPTIONS_ROUTE_CHILD_PATH.EMPTY, element: <General /> },
-      { path: OPTIONS_ROUTE_CHILD_PATH.WATCH, element: <Watch /> },
-      { path: OPTIONS_ROUTE_CHILD_PATH.AUDIO_MODE, element: <AudioMode /> },
-      { path: OPTIONS_ROUTE_CHILD_PATH.SHORTS, element: <Shorts /> },
-      { path: OPTIONS_ROUTE_CHILD_PATH.PLAYLIST, element: <Playlist /> },
-      { path: OPTIONS_ROUTE_CHILD_PATH.KEYBINDINGS, element: <Keybindings /> },
-    ],
+    children: OPTIONS_PAGES.map((page) => ({
+      path: page.segment,
+      element: ROUTE_ELEMENT_BY_SEGMENT[page.segment],
+    })),
   },
 ]);
 

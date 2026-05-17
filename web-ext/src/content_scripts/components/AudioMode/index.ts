@@ -14,12 +14,8 @@ import {
   showAudioModeUI,
   hideAudioModeUI,
 } from "./AudioModeUI";
-import {
-  ARIA_PRESSED,
-  CHROME_STORAGE_LOCAL_KEY,
-  EXTENSION_AUDIO_MODE_DOM,
-  YOUTUBE_PAGE_DOM,
-} from "toppings-constants";
+import { STORAGE_KEY } from "@toppings/constants";
+import { interpolateTemplate } from "@toppings/utils";
 import { Storage } from "../../../background/store";
 
 let isAudioModeActive = false;
@@ -45,10 +41,13 @@ type PerVideoPin = {
 };
 
 const GLOBAL_CUSTOM_IMAGE_KEY =
-  CHROME_STORAGE_LOCAL_KEY.AUDIO_MODE_GLOBAL_CUSTOM_IMAGE;
+  STORAGE_KEY.AUDIO_MODE_GLOBAL_CUSTOM_IMAGE;
 
 function pinStorageKey(videoId: string): string {
-  return `${CHROME_STORAGE_LOCAL_KEY.AUDIO_MODE_PIN_KEY_PREFIX}${videoId}`;
+  return interpolateTemplate(STORAGE_KEY.AUDIO_MODE_PIN, {
+    prefix: STORAGE_KEY.AUDIO_MODE_PIN_PREFIX,
+    videoId,
+  });
 }
 
 function loadGlobalCustomImage(): Promise<string | null> {
@@ -93,7 +92,7 @@ export async function setupAudioMode(
   currentScreenMode = prefs.screenMode;
   currentCustomImageUrl = prefs.customBackground.globalImageUrl;
   videoPinned = false;
-  AudioModeButton.setAttribute("aria-pressed", ARIA_PRESSED.FALSE);
+  AudioModeButton.setAttribute("aria-pressed", "false");
   AudioModeOverlay.classList.add("tw-hidden");
   hideAudioModeUI();
   stopVisualizer();
@@ -109,11 +108,11 @@ export async function setupAudioMode(
   AudioModeButton.style.display = "";
   AudioModeButton.onclick = () => toggleAudioMode();
 
-  if (!moviePlayer.querySelector(`#${EXTENSION_AUDIO_MODE_DOM.OVERLAY_ELEMENT_ID}`)) {
+  if (!moviePlayer.querySelector("#tppng-audio-mode-overlay")) {
     moviePlayer.appendChild(AudioModeOverlay);
   }
 
-  if (!moviePlayer.querySelector(`#${EXTENSION_AUDIO_MODE_DOM.UI_CONTAINER_ELEMENT_ID}`)) {
+  if (!moviePlayer.querySelector("#tppng-audio-mode-ui")) {
     moviePlayer.appendChild(AudioModeUIContainer);
   }
 
@@ -170,9 +169,7 @@ function setupAdObserver(moviePlayer: HTMLElement) {
   }
 
   adObserver = new MutationObserver(() => {
-    const isAdPlaying = moviePlayer.classList.contains(
-      YOUTUBE_PAGE_DOM.AD_SHOWING_CLASS,
-    );
+    const isAdPlaying = moviePlayer.classList.contains("ad-showing");
 
     if (isAdPlaying && isAudioModeActive && !pausedForAd) {
       pausedForAd = true;
@@ -290,16 +287,12 @@ function applyScreenMode() {
 }
 
 function setYouTubeChromeHidden(hidden: boolean) {
-  const moviePlayer = document.getElementById(
-    YOUTUBE_PAGE_DOM.MOVIE_PLAYER_ELEMENT_ID,
-  );
+  const moviePlayer = document.getElementById("movie_player");
   if (!moviePlayer) return;
   if (hidden) {
-    moviePlayer.classList.add(EXTENSION_AUDIO_MODE_DOM.MOVIE_PLAYER_AUDIO_MODE_CLASS);
+    moviePlayer.classList.add("tppng-audio-mode-on");
   } else {
-    moviePlayer.classList.remove(
-      EXTENSION_AUDIO_MODE_DOM.MOVIE_PLAYER_AUDIO_MODE_CLASS,
-    );
+    moviePlayer.classList.remove("tppng-audio-mode-on");
   }
 }
 
@@ -312,7 +305,7 @@ export function toggleAudioMode() {
   userWantsAudioMode = isAudioModeActive;
   AudioModeButton.setAttribute(
     "aria-pressed",
-    isAudioModeActive ? ARIA_PRESSED.TRUE : ARIA_PRESSED.FALSE,
+    isAudioModeActive ? "true" : "false",
   );
 
   if (isAudioModeActive) {
@@ -345,7 +338,7 @@ export function teardownAudioMode() {
   isAudioModeActive = false;
   pausedForAd = false;
   videoPinned = false;
-  AudioModeButton.setAttribute("aria-pressed", ARIA_PRESSED.FALSE);
+  AudioModeButton.setAttribute("aria-pressed", "false");
   AudioModeOverlay.classList.add("tw-hidden");
   hideAudioModeUI();
   stopVisualizer();

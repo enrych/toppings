@@ -1,17 +1,15 @@
-import { DEFAULT_STORE } from "./store";
+import { syncStorageWithDefaults } from "./store";
 import { getContext } from "./context";
 import { dispatchContext } from "./utils/dispatchContext";
 import {
-  EVENT_TYPE,
   INSTALL_REASON,
   INSTALL_URL,
-  JSON_MESSAGE_FIELD,
+  MESSAGE_EVENT,
+  MESSAGE_FIELD,
   MESSAGE_TYPE,
   NODE_ENV,
-  UNINSTALL_URL,
-} from "toppings-constants";
+} from "@toppings/constants";
 
-// Handle Events
 chrome.runtime.onInstalled.addListener(onInitialize);
 chrome.runtime.onMessage.addListener(onConnected);
 chrome.webNavigation.onHistoryStateUpdated.addListener(onWebNavigation);
@@ -20,12 +18,15 @@ type InitializeDetails = Parameters<
   Parameters<typeof chrome.runtime.onInstalled.addListener>[0]
 >[0];
 function onInitialize({ reason }: InitializeDetails): void {
-  if (reason === INSTALL_REASON.INSTALL || reason === INSTALL_REASON.UPDATE) {
+  if (
+    reason === INSTALL_REASON.INSTALL ||
+    reason === INSTALL_REASON.UPDATE
+  ) {
     if (process.env.NODE_ENV === NODE_ENV.PRODUCTION) {
-      void chrome.tabs.create({ url: INSTALL_URL });
-      void chrome.runtime.setUninstallURL(UNINSTALL_URL);
+      void chrome.tabs.create({ url: INSTALL_URL.WELCOME_TAB });
+      void chrome.runtime.setUninstallURL(INSTALL_URL.UNINSTALL);
     }
-    void chrome.storage.sync.set(DEFAULT_STORE);
+    void syncStorageWithDefaults();
   }
 }
 
@@ -46,14 +47,13 @@ function onConnected(
   sendResponse: (response: any) => void,
 ) {
   (async () => {
-    // This function handles the initial handshake between the content script and the background script.
     const parsed = JSON.parse(message) as Record<string, unknown>;
-    const type = parsed[JSON_MESSAGE_FIELD.TYPE];
-    const payload = parsed[JSON_MESSAGE_FIELD.PAYLOAD];
+    const type = parsed[MESSAGE_FIELD.TYPE];
+    const payload = parsed[MESSAGE_FIELD.PAYLOAD];
     if (type !== MESSAGE_TYPE.EVENT) return;
 
     const event = payload;
-    if (event !== EVENT_TYPE.CONNECTED) return;
+    if (event !== MESSAGE_EVENT.CONNECTED) return;
 
     const tabId = sender.tab?.id;
     if (!tabId) return;
@@ -66,12 +66,11 @@ function onConnected(
 
     sendResponse(
       JSON.stringify({
-        [JSON_MESSAGE_FIELD.TYPE]: MESSAGE_TYPE.CONTEXT,
-        [JSON_MESSAGE_FIELD.PAYLOAD]: ctx,
+        [MESSAGE_FIELD.TYPE]: MESSAGE_TYPE.CONTEXT,
+        [MESSAGE_FIELD.PAYLOAD]: ctx,
       }),
     );
   })();
 
-  // Return true to indicate that sendResponse will be called asynchronously
   return true;
 }

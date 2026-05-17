@@ -1,0 +1,14 @@
+{
+  "name": "@toppings/utils",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@toppings/constants": "workspace:*",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.3.1"
+  }
+}

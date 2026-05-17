@@ -1,9 +1,4 @@
-import {
-  WEBSITE_BRAND,
-  WEBSITE_INTERNAL_ROUTE,
-  EXTERNAL_URL,
-  BROWSER_TARGET,
-} from "toppings-constants";
+import { BRAND, EXTERNAL_URL, ROUTE } from "@toppings/constants";
 
 /**
  * Minimal fixed nav. `mix-blend-mode: difference` keeps the wordmark
@@ -13,12 +8,12 @@ import {
 export default function Nav() {
   return (
     <nav className="r-nav">
-      <span className="r-wordmark">{WEBSITE_BRAND.NAME}</span>
+      <span className="r-wordmark">{BRAND.NAME}</span>
       <div className="r-nav-right">
-        <a href={WEBSITE_INTERNAL_ROUTE.DOCS}>Docs</a>
+        <a href={ROUTE.DOCS}>Docs</a>
         <a
           href={EXTERNAL_URL.GITHUB_REPO}
-          target={BROWSER_TARGET.BLANK}
+          target={"_blank"}
           rel="noopener noreferrer"
         >
           Source

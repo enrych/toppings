@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { EXTENSION_VERSION, docsVersionTag } from "toppings-constants";
+import { EXTENSION_VERSION } from "@toppings/constants";
+import { docsVersionTag } from "@toppings/utils";
 
 interface DocsVersionBannerProps {
   /** The version this archived snapshot was cut from (e.g. "3.0.3"). */

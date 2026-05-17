@@ -6,8 +6,9 @@ Top-level conventions for keeping the extension, website, and docs in sync.
 
 | Concern | Source file | Consumers |
 |---|---|---|
-| **Version number** | `packages/constants/src/version.ts` (`EXTENSION_VERSION`) | Every `package.json`, `web-ext/src/manifest.json`, website footer/eyebrow, popup version pill, changelog header |
+| **Version number** | `packages/constants/src/version.ts` (`EXTENSION_VERSION`) | Extension build (manifest), release zip name, website footer/eyebrow, popup version pill, changelog header |
 | **Release notes** | `packages/constants/src/releases.ts` (`RELEASES`) | Popup "What's new", website `/docs/changelog`, (future) GitHub Releases body |
+| **Release helpers** | `packages/utils/src/releases.ts` (`userFacingItems`, `getCurrentRelease`, …) | Changelog filtering, popup whats-new shaping |
 | **Feature catalog** | `packages/constants/src/extensionFeatureCatalog.ts` (`EXTENSION_FEATURE_DEFINITIONS`) | Popup features list, docs cross-references |
 | **Default keybindings** | `packages/constants/src/extensionDefaultStore.ts` | Extension defaults, `/docs/keybindings` page |
 | **Brand tokens** | `website/app/globals.css` + `web-ext/src/shared/theme.css` | Marketing site + extension UI |
@@ -26,12 +27,10 @@ bun run bump 3.5.0-rc.1   # explicit version (e.g. pre-release)
 What the script does:
 
 1. Updates `EXTENSION_VERSION` in `packages/constants/src/version.ts`.
-2. Stamps the new version into `web-ext/src/manifest.json` and every
-   `package.json` in the workspace.
-3. Renames the topmost `version: "next"` entry in
+2. Renames the topmost `version: "next"` entry in
    `packages/constants/src/releases.ts` to the new version (and dates it
    today), or injects a stub if there was no WIP entry.
-4. On minor/major with `--snapshot`, copies `website/app/docs/` →
+3. On minor/major with `--snapshot`, copies `website/app/docs/` →
    `website/app/docs/v<MAJOR>.<MINOR>/` (using the PREVIOUS version's
    tag) and prunes anything older than `current - 2`.
 
@@ -108,5 +107,4 @@ or similar via the Git tag.
 - Auto-derive doc copy from code. Code can't write voice or examples;
   the consistency check warns but doesn't write.
 - Sync versions to backend's deployed API. The backend has its own
-  release cadence; only its `package.json` `version` field tracks the
-  monorepo version (cosmetic, not enforced at runtime).
+  release cadence; the monorepo version lives only in `version.ts`.

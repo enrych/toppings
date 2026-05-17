@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Instrument_Serif, Geist } from "next/font/google";
 import "./globals.css";
-import { WEBSITE_METADATA, WEBSITE_HTML_LANG } from "toppings-constants";
+import { HTML_LANG, METADATA } from "@toppings/constants";
 
 /**
  * Root layout. Sets HTML/body, loads self-hosted Inter + JetBrains Mono
@@ -63,8 +63,8 @@ const ui = Geist({
 });
 
 export const metadata: Metadata = {
-  title: WEBSITE_METADATA.TITLE,
-  description: WEBSITE_METADATA.DESCRIPTION,
+  title: METADATA.TITLE,
+  description: METADATA.DESCRIPTION,
 };
 
 export default function RootLayout({
@@ -74,7 +74,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang={WEBSITE_HTML_LANG}
+      lang={HTML_LANG}
       className={`${inter.variable} ${jetbrainsMono.variable} ${display.variable} ${ui.variable}`}
     >
       <body className="min-h-screen bg-[--surface-page] text-[--fg-1] antialiased">

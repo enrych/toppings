@@ -1,3 +1,4 @@
+import { cn } from "@toppings/utils";
 import React, { forwardRef } from "react";
 
 type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
@@ -46,15 +47,13 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
     <button
       ref={ref}
       type={type}
-      className={[
+      className={cn(
         "tw-inline-flex tw-items-center tw-justify-center tw-gap-2 tw-rounded-md tw-font-medium tw-transition-colors tw-duration-150 focus-visible:tw-outline-none focus-visible:tw-ring-2 focus-visible:tw-ring-accent/50 focus-visible:tw-ring-offset-2 focus-visible:tw-ring-offset-bg",
         VARIANT_CLASSES[variant],
         SIZE_CLASSES[size],
-        fullWidth ? "tw-w-full" : "",
+        fullWidth && "tw-w-full",
         className,
-      ]
-        .filter(Boolean)
-        .join(" ")}
+      )}
       {...rest}
     >
       {leadingIcon && <span className="tw-flex">{leadingIcon}</span>}

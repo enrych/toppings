@@ -3,7 +3,7 @@ import {
   HTTP_HEADER,
   HTTP_STATUS,
   MIME_TYPE,
-} from "toppings-constants";
+} from "@toppings/constants";
 
 export default class ResponseEntity {
   static ok<T>(body: T): Response {

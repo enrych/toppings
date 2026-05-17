@@ -1,4 +1,4 @@
-import { WEBSITE_GREETINGS, WEBSITE_INTERNAL_ROUTE } from "toppings-constants";
+import { GREETINGS, LABEL, ROUTE } from "@toppings/constants";
 import ReclaimMini from "@/components/reclaim/ReclaimMini";
 
 /** Post-install page — rebranded onto the Reclaim system. */
@@ -9,10 +9,10 @@ export default function Greetings() {
       titleBefore="You’re all "
       titleEm="set"
       titleAfter="."
-      body={[WEBSITE_GREETINGS.BODY, WEBSITE_GREETINGS.BODY_LINE_2]}
+      body={[GREETINGS.BODY, GREETINGS.BODY_LINE_2]}
       cta={{
-        label: WEBSITE_GREETINGS.WIKI_BUTTON,
-        href: WEBSITE_INTERNAL_ROUTE.DOCS,
+        label: LABEL.READ_WIKI,
+        href: ROUTE.DOCS,
         internal: true,
       }}
     />

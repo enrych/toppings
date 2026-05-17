@@ -58,7 +58,6 @@
     "storage"
   ],
   "short_name": "Toppings",
-  "version": "3.0.3",
   "web_accessible_resources": [
     {
       "matches": [

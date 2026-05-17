@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import toppingsLogo from "@/assets/brand/toppings-logo-512.png";
-import { EXTERNAL_URL, BROWSER_TARGET } from "toppings-constants";
+import { EXTERNAL_URL } from "@toppings/constants";
 
 /**
  * Docs top bar — distinct from the marketing Navbar. Adds a "Docs" tag
@@ -38,14 +38,14 @@ export default function DocsTop() {
         </button>
         <Link
           href={EXTERNAL_URL.GITHUB_REPO}
-          target={BROWSER_TARGET.BLANK}
+          target={"_blank"}
           className="lnk"
         >
           Source
         </Link>
         <Link
           href={EXTERNAL_URL.SPONSOR}
-          target={BROWSER_TARGET.BLANK}
+          target={"_blank"}
           className="lnk"
         >
           Sponsor

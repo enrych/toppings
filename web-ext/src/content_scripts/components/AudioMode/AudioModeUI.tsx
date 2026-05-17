@@ -1,3 +1,4 @@
+import { defaultTo, isNull } from "@toppings/utils";
 import React from "dom-chef";
 
 type ScreenMode = "black" | "visualizer" | "custom";
@@ -337,8 +338,11 @@ function updateMetadata() {
     "ytd-channel-name yt-formatted-string a",
   ) as HTMLElement | null;
 
-  titleEl.textContent = titleElement?.textContent ?? "Unknown Title";
-  channelEl.textContent = channelElement?.textContent ?? "Unknown Channel";
+  titleEl.textContent = defaultTo(titleElement?.textContent, "Unknown Title");
+  channelEl.textContent = defaultTo(
+    channelElement?.textContent,
+    "Unknown Channel",
+  );
 }
 
 function startProgressUpdates() {
@@ -353,7 +357,7 @@ function startProgressUpdates() {
 }
 
 function stopProgressUpdates() {
-  if (progressInterval !== null) {
+  if (!isNull(progressInterval)) {
     clearInterval(progressInterval);
     progressInterval = null;
   }

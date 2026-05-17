@@ -1,8 +1,9 @@
 import {
-  WEBSITE_HERO,
+  EXTENSION_VERSION,
   EXTERNAL_URL,
-  BROWSER_TARGET,
-} from "toppings-constants";
+  HERO,
+} from "@toppings/constants";
+import { interpolateTemplate } from "@toppings/utils";
 import InstallCTA from "./InstallCTA";
 
 /**
@@ -12,54 +13,58 @@ import InstallCTA from "./InstallCTA";
  * concept explorations were dropped — editorial is the one.)
  */
 export default function SceneHero() {
+  const heroEyebrow = interpolateTemplate(HERO.EYEBROW, {
+    version: EXTENSION_VERSION,
+  });
+
   return (
     <section className="r-scene r-hero" data-hero data-comp="editorial">
       <div className="r-scene-inner r-hero-stack">
-        <span className="r-eyebrow">{WEBSITE_HERO.EYEBROW}</span>
+        <span className="r-eyebrow">{heroEyebrow}</span>
 
         <h1 className="r-display">
           <span className="r-mask">
-            <span className="r-line">{WEBSITE_HERO.HEADLINE_LINE_1}</span>
+            <span className="r-line">{HERO.HEADLINE_LINE_1}</span>
           </span>
           <span className="r-mask">
             <span className="r-line">
-              {WEBSITE_HERO.HEADLINE_LINE_2_BEFORE}
-              <em>{WEBSITE_HERO.HEADLINE_LINE_2_HIGHLIGHT}</em>
-              {WEBSITE_HERO.HEADLINE_LINE_2_AFTER}
+              {HERO.HEADLINE_LINE_2_BEFORE}
+              <em>{HERO.HEADLINE_LINE_2_HIGHLIGHT}</em>
+              {HERO.HEADLINE_LINE_2_AFTER}
             </span>
           </span>
         </h1>
 
-        <p className="r-deck">{WEBSITE_HERO.LEDE}</p>
+        <p className="r-deck">{HERO.LEDE}</p>
 
         <div className="r-hero-actions">
           <InstallCTA variant="solid" />
           <a
             href={EXTERNAL_URL.FIREFOX_AMO_TOPPINGS}
-            target={BROWSER_TARGET.BLANK}
+            target={"_blank"}
             rel="noopener noreferrer"
             className="r-btn r-btn--ghost"
           >
-            {WEBSITE_HERO.FIREFOX_BUTTON}
+            {HERO.FIREFOX_BUTTON}
           </a>
           <a
             href={EXTERNAL_URL.GITHUB_REPO}
-            target={BROWSER_TARGET.BLANK}
+            target={"_blank"}
             rel="noopener noreferrer"
             className="r-btn r-btn--ghost"
           >
-            {WEBSITE_HERO.SOURCE_BUTTON}
+            {HERO.SOURCE_BUTTON}
           </a>
         </div>
 
         <div className="r-trust">
           <span>
-            <b>{WEBSITE_HERO.TRUST_TRACKERS_LEAD}</b>
-            {WEBSITE_HERO.TRUST_TRACKERS_REST}
+            <b>{HERO.TRUST_TRACKERS_LEAD}</b>
+            {HERO.TRUST_TRACKERS_REST}
           </span>
           <span>
-            <b>{WEBSITE_HERO.TRUST_LICENSE_LEAD}</b>
-            {WEBSITE_HERO.TRUST_LICENSE_REST}
+            <b>{HERO.TRUST_LICENSE_LEAD}</b>
+            {HERO.TRUST_LICENSE_REST}
           </span>
         </div>
       </div>

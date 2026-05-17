@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Pager from "@/components/docs/Pager";
-import { EXTERNAL_URL, BROWSER_TARGET } from "toppings-constants";
+import { EXTERNAL_URL } from "@toppings/constants";
 
 /**
  * Docs · Getting Started · Install. Replaces the legacy GitHub-hosted
@@ -69,14 +69,14 @@ export default function DocsInstallPage() {
                 <p>
                   <Link
                     href={EXTERNAL_URL.CHROME_WEBSTORE_TOPPINGS}
-                    target={BROWSER_TARGET.BLANK}
+                    target={"_blank"}
                   >
                     Chrome Web Store
                   </Link>{" "}
                   for Chrome, Edge, Opera, Brave, Arc.{" "}
                   <Link
                     href={EXTERNAL_URL.FIREFOX_AMO_TOPPINGS}
-                    target={BROWSER_TARGET.BLANK}
+                    target={"_blank"}
                   >
                     Firefox Add-ons
                   </Link>{" "}
@@ -138,7 +138,7 @@ export default function DocsInstallPage() {
             source on{" "}
             <Link
               href={EXTERNAL_URL.GITHUB_REPO}
-              target={BROWSER_TARGET.BLANK}
+              target={"_blank"}
             >
               GitHub
             </Link>
@@ -160,7 +160,7 @@ export default function DocsInstallPage() {
               Found a bug or want a feature? Open a thread on{" "}
               <Link
                 href={EXTERNAL_URL.GITHUB_ISSUES}
-                target={BROWSER_TARGET.BLANK}
+                target={"_blank"}
               >
                 GitHub Issues
               </Link>{" "}
@@ -175,7 +175,7 @@ export default function DocsInstallPage() {
           <span>Last updated {currentReviewDate()}</span>
           <Link
             href={`${EXTERNAL_URL.GITHUB_REPO}/edit/main/website/app/docs/page.tsx`}
-            target={BROWSER_TARGET.BLANK}
+            target={"_blank"}
           >
             Edit this page on GitHub →
           </Link>

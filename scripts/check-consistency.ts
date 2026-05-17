@@ -15,8 +15,8 @@
  *
  * Checks:
  *
- *   1. EXTENSION_VERSION matches every package.json's `version` field.
- *   2. EXTENSION_VERSION matches web-ext/src/manifest.json's `version`.
+ *   1. No package.json carries a `version` field (only packages/constants/src/version.ts does).
+ *   2. web-ext/src/manifest.json has no `version` field (build stamps it).
  *   3. The newest non-"next" entry in RELEASES.version === EXTENSION_VERSION.
  *   4. /docs/keybindings includes a row for every keybinding default in
  *      EXTENSION_DEFAULT_STORE (warning, not hard fail).
@@ -30,13 +30,13 @@
  */
 import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { resolve, join } from "node:path";
+import { compact, hasValue, isNull } from "@toppings/utils";
 
 const ROOT = resolve(import.meta.dir, "..");
 
-// Lazy imports so this script can run before bun install if needed.
-const { EXTENSION_VERSION, RELEASES, EXTENSION_DEFAULT_STORE } = await import(
-  "../packages/constants/src/index"
-);
+const { EXTENSION_VERSION, EXTENSION_DEFAULT_STORE, RELEASE_VERSION } =
+  await import("../packages/constants/src/index");
+const { getLatestRelease } = await import("@toppings/utils");
 
 let hardFailures = 0;
 let warnings = 0;
@@ -54,50 +54,49 @@ const warn = (msg: string) => {
 console.log("\n— Toppings consistency check —\n");
 console.log(`EXTENSION_VERSION = ${EXTENSION_VERSION}`);
 
-// 1 & 2 — package.json + manifest.json version sync
+// 1 & 2 — no duplicate version fields anywhere except version.constants.ts
 const PACKAGE_JSONS = [
   "package.json",
   "web-ext/package.json",
   "website/package.json",
   "backend/package.json",
   "packages/constants/package.json",
+  "packages/utils/package.json",
 ];
-console.log("\nVersion sync:");
+console.log("\nSingle version source:");
 for (const rel of PACKAGE_JSONS) {
   const p = join(ROOT, rel);
   if (!existsSync(p)) continue;
   const j = JSON.parse(readFileSync(p, "utf8"));
-  if (j.version === EXTENSION_VERSION) {
-    ok(`${rel}@${j.version}`);
+  if (hasValue(j.version)) {
+    fail(
+      `${rel} has "version": "${j.version}" — remove it; bump only packages/constants/src/version.ts`,
+    );
   } else {
-    // Root package.json sometimes has no version (it's a workspace meta).
-    // Treat missing version as soft, mismatched version as hard.
-    if (j.version == null) {
-      ok(`${rel} (no version field, workspace root — fine)`);
-    } else {
-      fail(`${rel} version is "${j.version}", expected "${EXTENSION_VERSION}"`);
-    }
+    ok(`${rel} (no version field)`);
   }
 }
 const manifest = JSON.parse(
   readFileSync(join(ROOT, "web-ext/src/manifest.json"), "utf8"),
 );
-if (manifest.version === EXTENSION_VERSION) {
-  ok(`web-ext/src/manifest.json@${manifest.version}`);
-} else {
+if (hasValue(manifest.version)) {
   fail(
-    `manifest.json version is "${manifest.version}", expected "${EXTENSION_VERSION}"`,
+    `manifest.json has "version": "${manifest.version}" — remove it; the build stamps from EXTENSION_VERSION`,
   );
+} else {
+  ok("web-ext/src/manifest.json (no version field; build stamps it)");
 }
 
 // 3 — RELEASES topmost concrete entry matches EXTENSION_VERSION
 console.log("\nRelease notes:");
-const latest = RELEASES.find((r) => r.version !== "next");
-if (!latest) {
-  fail("No concrete release entry in RELEASES — only 'next' WIP found");
+const latest = getLatestRelease();
+if (isNull(latest)) {
+  fail(
+    `No concrete release entry in RELEASES — only "${RELEASE_VERSION.WIP}" WIP found`,
+  );
 } else if (latest.version !== EXTENSION_VERSION) {
   fail(
-    `Latest RELEASES entry is v${latest.version}, but EXTENSION_VERSION is ${EXTENSION_VERSION}. Update releases.ts.`,
+    `Latest RELEASES entry is v${latest.version}, but EXTENSION_VERSION is ${EXTENSION_VERSION}. Update releases.constants.ts.`,
   );
 } else {
   ok(`RELEASES[0] = v${latest.version} (${latest.date})`);
@@ -117,7 +116,7 @@ console.log("\nDocs cross-checks:");
 const kbPagePath = join(ROOT, "website/app/docs/keybindings/page.tsx");
 const kbSource = readFileSync(kbPagePath, "utf8");
 const w = EXTENSION_DEFAULT_STORE.preferences.watch as Record<string, any>;
-const expectedKeys = [
+const expectedKeys = compact([
   w.togglePlaybackRate?.key,
   w.seekBackward?.key,
   w.seekForward?.key,
@@ -127,7 +126,7 @@ const expectedKeys = [
   w.setLoopSegmentBegin?.key,
   w.setLoopSegmentEnd?.key,
   w.audioMode?.toggleAudioMode?.key,
-].filter(Boolean);
+]);
 let missingKeys = 0;
 for (const k of expectedKeys) {
   if (!kbSource.includes(`"${k}"`)) {

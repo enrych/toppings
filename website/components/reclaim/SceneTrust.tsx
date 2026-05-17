@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { WEBSITE_HOME_STATS_STRIP } from "toppings-constants";
+import { HOME } from "@toppings/constants";
 
 /**
  * Trust strip — a quiet hairline band, not a section. Four markers
@@ -56,7 +56,7 @@ function Count({
 }
 
 export default function SceneTrust() {
-  const { EYEBROW, ROWS } = WEBSITE_HOME_STATS_STRIP;
+  const { EYEBROW, ROWS } = HOME.STATS_STRIP;
   return (
     <section className="r-trustband" data-reveal>
       <div className="r-scene-inner">

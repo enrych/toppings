@@ -1,3 +1,4 @@
+import { cn } from "@toppings/utils";
 import React, { forwardRef } from "react";
 
 type IconButtonVariant = "default" | "ghost" | "danger";
@@ -41,14 +42,12 @@ const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
       <button
         ref={ref}
         type={type}
-        className={[
+        className={cn(
           "tw-inline-flex tw-items-center tw-justify-center tw-rounded-md tw-transition-colors tw-duration-150 focus-visible:tw-outline-none focus-visible:tw-ring-2 focus-visible:tw-ring-accent/50 focus-visible:tw-ring-offset-2 focus-visible:tw-ring-offset-bg disabled:tw-opacity-40 disabled:tw-cursor-not-allowed",
           VARIANT_CLASSES[variant],
           SIZE_CLASSES[size],
           className,
-        ]
-          .filter(Boolean)
-          .join(" ")}
+        )}
         {...rest}
       >
         {children}

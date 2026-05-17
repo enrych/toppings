@@ -1,6 +1,5 @@
 {
   "name": "toppings",
-  "version": "3.0.3",
   "private": true,
   "scripts": {
     "deploy": "wrangler deploy",
@@ -15,6 +14,7 @@
   },
   "dependencies": {
     "itty-router": "^5.0.18",
-    "toppings-constants": "workspace:*"
+    "@toppings/constants": "workspace:*",
+    "@toppings/utils": "workspace:*"
   }
 }

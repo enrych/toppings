@@ -1,6 +1,5 @@
 {
-  "name": "toppings-constants",
-  "version": "3.0.3",
+  "name": "@toppings/constants",
   "private": true,
   "type": "module",
   "exports": {

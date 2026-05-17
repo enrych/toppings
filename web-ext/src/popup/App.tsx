@@ -6,11 +6,10 @@ import { useTheme } from "../shared/hooks/useTheme";
 import { useStoreUpdater } from "../shared/hooks/useStoreUpdater";
 import { setExtensionIcon } from "../shared/utils/browser";
 import {
-  CHROME_RUNTIME_PATH,
-  CHROME_STORAGE_LOCAL_KEY,
   EXTERNAL_URL,
-  BROWSER_TARGET,
-} from "toppings-constants";
+  OPTIONS_HTML,
+  POPUP_SIZE,
+} from "@toppings/constants";
 
 /**
  * Popup — implements the Claude Design handoff for the extension UI.
@@ -28,17 +27,14 @@ import {
  * surface and text color references a CSS variable.
  */
 
-const POPUP_W = 340;
-const POPUP_H = 440;
-
 function ThemeApplier({ children }: { children: React.ReactNode }) {
   useTheme();
   return <>{children}</>;
 }
 
 function openOptions() {
-  const url = chrome.runtime.getURL(CHROME_RUNTIME_PATH.OPTIONS_INDEX_HTML);
-  window.open(url, BROWSER_TARGET.BLANK);
+  const url = chrome.runtime.getURL(OPTIONS_HTML);
+  window.open(url, "_blank");
 }
 
 /** Lightweight async hook: which tab is the popup attached to? */
@@ -168,8 +164,8 @@ function PopupShell() {
     <div
       className="tw-flex tw-flex-col tw-overflow-hidden tw-text-fg"
       style={{
-        width: POPUP_W,
-        height: POPUP_H,
+        width: POPUP_SIZE.WIDTH_PX,
+        height: POPUP_SIZE.HEIGHT_PX,
         background: "var(--color-bg)",
         borderRadius: 12,
         border: "1px solid var(--color-border-default)",
@@ -278,12 +274,12 @@ function PopupShell() {
         />
         <NavBtn
           label="Report a bug"
-          onClick={() => window.open(EXTERNAL_URL.GITHUB_ISSUES, BROWSER_TARGET.BLANK)}
+          onClick={() => window.open(EXTERNAL_URL.GITHUB_ISSUES, "_blank")}
           path="M8 2 H16 V22 H8z M3 7l4-1 M3 12l4-1 M3 17l4-1 M21 7l-4-1 M21 12l-4-1 M21 17l-4-1"
         />
         <NavBtn
           label="Become a sponsor"
-          onClick={() => window.open(EXTERNAL_URL.SPONSOR, BROWSER_TARGET.BLANK)}
+          onClick={() => window.open(EXTERNAL_URL.SPONSOR, "_blank")}
           path="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
         />
         <NavBtn
@@ -404,8 +400,8 @@ export default function App() {
     return (
       <div
         style={{
-          width: POPUP_W,
-          height: POPUP_H,
+          width: POPUP_SIZE.WIDTH_PX,
+          height: POPUP_SIZE.HEIGHT_PX,
           background: "var(--color-bg)",
         }}
       />

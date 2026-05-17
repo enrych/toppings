@@ -1,59 +1,55 @@
 import { StatusError } from "itty-router";
+import type { PlaylistResponse, VideoResponse } from "../types";
 import {
-  BACKEND_ERROR_MESSAGE,
-  FETCH_ERROR_TEMPLATE,
-  GOOGLEAPIS_HOST,
+  GOOGLE_API_ORIGIN,
+  GOOGLE_API_QUERY,
+  GOOGLE_API_URL,
   HTTP_STATUS,
-  PATHNAME,
-  YOUTUBE_API_FIELDS_VALUE,
-  YOUTUBE_API_MAX_RESULTS_DEFAULT,
-  YOUTUBE_API_PART_VALUE,
+  ERROR,
+  PAGE,
+  YOUTUBE_API_ENDPOINT,
+  YOUTUBE_API_PLAYLIST,
   YOUTUBE_API_QUERY,
-  YOUTUBE_DATA_API_PATH,
-} from "toppings-constants";
+  YOUTUBE_API_VIDEO,
+} from "@toppings/constants";
+import { interpolateTemplate } from "@toppings/utils";
 import parseDuration from "../utils/parseDuration";
+
+function buildResourceUrl(path: string): string {
+  return interpolateTemplate(GOOGLE_API_URL.RESOURCE, {
+    origin: GOOGLE_API_ORIGIN,
+    path,
+  });
+}
 
 function buildPlaylistItemsUrl(
   playlistId: string,
   apiKey: string,
   pageToken: string,
 ): string {
-  const url = new URL(
-    `${GOOGLEAPIS_HOST}${YOUTUBE_DATA_API_PATH.PLAYLIST_ITEMS}`,
-  );
+  const url = new URL(buildResourceUrl(YOUTUBE_API_ENDPOINT.PLAYLIST_ITEMS));
+  url.searchParams.set(GOOGLE_API_QUERY.PART, YOUTUBE_API_PLAYLIST.PART);
   url.searchParams.set(
-    YOUTUBE_API_QUERY.PART,
-    YOUTUBE_API_PART_VALUE.PLAYLIST_ITEMS,
+    GOOGLE_API_QUERY.MAX_RESULTS,
+    String(YOUTUBE_API_PLAYLIST.PAGE_SIZE),
   );
-  url.searchParams.set(
-    YOUTUBE_API_QUERY.MAX_RESULTS,
-    String(YOUTUBE_API_MAX_RESULTS_DEFAULT),
-  );
-  url.searchParams.set(
-    YOUTUBE_API_QUERY.FIELDS,
-    YOUTUBE_API_FIELDS_VALUE.PLAYLIST_ITEMS,
-  );
-  url.searchParams.set(YOUTUBE_API_QUERY.KEY, apiKey);
+  url.searchParams.set(GOOGLE_API_QUERY.FIELDS, YOUTUBE_API_PLAYLIST.FIELDS);
+  url.searchParams.set(GOOGLE_API_QUERY.KEY, apiKey);
   url.searchParams.set(YOUTUBE_API_QUERY.PLAYLIST_ID, playlistId);
   if (pageToken) {
-    url.searchParams.set(YOUTUBE_API_QUERY.PAGE_TOKEN, pageToken);
+    url.searchParams.set(GOOGLE_API_QUERY.PAGE_TOKEN, pageToken);
   }
   return url.toString();
 }
 
 function buildVideosUrl(videoIds: string[], apiKey: string): string {
-  const url = new URL(`${GOOGLEAPIS_HOST}${YOUTUBE_DATA_API_PATH.VIDEOS}`);
-  url.searchParams.set(YOUTUBE_API_QUERY.PART, YOUTUBE_API_PART_VALUE.VIDEOS);
-  url.searchParams.set(YOUTUBE_API_QUERY.ID, videoIds.join(","));
-  url.searchParams.set(YOUTUBE_API_QUERY.KEY, apiKey);
-  url.searchParams.set(
-    YOUTUBE_API_QUERY.FIELDS,
-    YOUTUBE_API_FIELDS_VALUE.VIDEOS_ITEMS_DURATION,
-  );
+  const url = new URL(buildResourceUrl(YOUTUBE_API_ENDPOINT.VIDEOS));
+  url.searchParams.set(GOOGLE_API_QUERY.PART, YOUTUBE_API_VIDEO.PART);
+  url.searchParams.set(GOOGLE_API_QUERY.ID, videoIds.join(","));
+  url.searchParams.set(GOOGLE_API_QUERY.KEY, apiKey);
+  url.searchParams.set(GOOGLE_API_QUERY.FIELDS, YOUTUBE_API_VIDEO.FIELDS);
   return url.toString();
 }
-
-import type { PlaylistResponse, VideoResponse } from "../types";
 
 class PlaylistService {
   static async getPlaylistMetadata(playlistId: string, env: Env) {
@@ -73,13 +69,15 @@ class PlaylistService {
       if (playlistResponse.status === HTTP_STATUS.NOT_FOUND) {
         throw new StatusError(
           HTTP_STATUS.NOT_FOUND,
-          BACKEND_ERROR_MESSAGE.PLAYLIST_NOT_FOUND_OR_PRIVATE,
+          ERROR.PLAYLIST_UNAVAILABLE,
         );
       }
       if (!playlistResponse.ok) {
         throw new StatusError(
           playlistResponse.status,
-          `${FETCH_ERROR_TEMPLATE.PLAYLIST_ITEMS} ${playlistResponse.statusText}`,
+          interpolateTemplate(ERROR.YOUTUBE_PLAYLIST_FETCH_FAILED, {
+            statusText: playlistResponse.statusText,
+          }),
         );
       }
 
@@ -97,7 +95,9 @@ class PlaylistService {
       if (!videoResponse.ok) {
         throw new StatusError(
           videoResponse.status,
-          `${FETCH_ERROR_TEMPLATE.VIDEO_DETAILS} ${videoResponse.statusText}`,
+          interpolateTemplate(ERROR.YOUTUBE_VIDEO_FETCH_FAILED, {
+            statusText: videoResponse.statusText,
+          }),
         );
       }
 
@@ -111,7 +111,7 @@ class PlaylistService {
     } while (nextPageToken);
 
     return {
-      pathname: PATHNAME.PLAYLIST,
+      pathname: PAGE.PLAYLIST,
       payload: {
         playlistId: playlistId,
         totalVideos: videoCount,

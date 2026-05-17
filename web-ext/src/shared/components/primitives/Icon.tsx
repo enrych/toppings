@@ -1,4 +1,3 @@
-import { XML_NAMESPACE } from "toppings-constants";
 import React from "react";
 
 /**
@@ -96,7 +95,7 @@ export default function Icon({
   const isFilled = FILLED.has(name);
   return (
     <svg
-      xmlns={XML_NAMESPACE.SVG}
+      xmlns="http://www.w3.org/2000/svg"
       width={size}
       height={size}
       viewBox="0 0 24 24"

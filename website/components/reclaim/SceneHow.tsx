@@ -1,4 +1,4 @@
-import { WEBSITE_HOME_HOW_IT_WORKS } from "toppings-constants";
+import { HOME } from "@toppings/constants";
 
 /**
  * Scene — How it works. Three frictionless steps. Sits just before the
@@ -6,7 +6,7 @@ import { WEBSITE_HOME_HOW_IT_WORKS } from "toppings-constants";
  * as calm as the product itself. (The cream site's HowItWorks, kept.)
  */
 export default function SceneHow() {
-  const { SECTION_HEADLINE, SECTION_LEDE, STEPS } = WEBSITE_HOME_HOW_IT_WORKS;
+  const { SECTION_HEADLINE, SECTION_LEDE, STEPS } = HOME.HOW_IT_WORKS;
   return (
     <section className="r-scene r-solid">
       <div className="r-scene-inner">

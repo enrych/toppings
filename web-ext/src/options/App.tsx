@@ -10,54 +10,49 @@ import { SectionsRail as WatchRail } from "./routes/Watch";
 import { SectionsRail as AudioModeRail } from "./routes/AudioMode";
 import { SectionsRail as KeybindingsRail } from "./routes/Keybindings";
 import {
-  CHROME_STORAGE_LOCAL_KEY,
-  OPTIONS_RAIL_PATH,
-  ROUTE_PATH_ABSOLUTE_PREFIX,
-} from "toppings-constants";
+  OPTIONS_PAGES,
+  STORAGE_KEY,
+} from "@toppings/constants";
 
 function ThemeApplier({ children }: { children: React.ReactNode }) {
   useTheme();
   return <>{children}</>;
 }
 
-/**
- * Map of routes that have a section anchor rail to the rail component.
- * Pages without an entry render with full width.
- */
-const RAILS: Partial<Record<string, React.ComponentType>> = {
-  [OPTIONS_RAIL_PATH.WATCH]: WatchRail,
-  [OPTIONS_RAIL_PATH.AUDIO_MODE]: AudioModeRail,
-  [OPTIONS_RAIL_PATH.KEYBINDINGS]: KeybindingsRail,
+const SECTION_NAV_BY_SEGMENT: Record<string, React.ComponentType> = {
+  watch: WatchRail,
+  "audio-mode": AudioModeRail,
+  keybindings: KeybindingsRail,
 };
 
-/**
- * Consume `options_pending_route` from chrome.storage.local and navigate
- * to it on mount. Used by the popup (and future surfaces) to deep-link
- * into specific options routes since the memory router can't read URL
- * hashes/paths. The pending key is cleared after consumption.
- */
+const RAILS = Object.fromEntries(
+  OPTIONS_PAGES.filter((page) => page.sectionNav).map((page) => [
+    page.path,
+    SECTION_NAV_BY_SEGMENT[page.segment],
+  ]),
+) as Partial<Record<string, React.ComponentType>>;
+
 function PendingRouteHandler() {
   const navigate = useNavigate();
   useEffect(() => {
     chrome.storage.local.get(
-      [CHROME_STORAGE_LOCAL_KEY.OPTIONS_PENDING_ROUTE],
+      [STORAGE_KEY.OPTIONS_PENDING_ROUTE],
       (result) => {
         const route = result[
-          CHROME_STORAGE_LOCAL_KEY.OPTIONS_PENDING_ROUTE
+          STORAGE_KEY.OPTIONS_PENDING_ROUTE
         ] as string | undefined;
         if (
           route &&
           typeof route === "string" &&
-          route.startsWith(ROUTE_PATH_ABSOLUTE_PREFIX)
+          route.startsWith("/")
         ) {
           navigate(route, { replace: true });
           chrome.storage.local.remove([
-            CHROME_STORAGE_LOCAL_KEY.OPTIONS_PENDING_ROUTE,
+            STORAGE_KEY.OPTIONS_PENDING_ROUTE,
           ]);
         }
       },
     );
-    // Run once on mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return null;

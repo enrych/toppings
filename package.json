@@ -1,7 +1,7 @@
 {
   "name": "toppings-monorepo",
   "private": true,
-  "workspaces": ["packages/constants", "web-ext", "website", "backend"],
+  "workspaces": ["packages/constants", "packages/utils", "web-ext", "website", "backend"],
   "scripts": {
     "check": "bun run scripts/check-consistency.ts",
     "bump:patch": "bun run scripts/bump-version.ts patch",

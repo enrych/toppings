@@ -2,7 +2,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Pager from "@/components/docs/Pager";
-import { EXTERNAL_URL, BROWSER_TARGET } from "toppings-constants";
+import { EXTERNAL_URL } from "@toppings/constants";
 
 type Cat = "All" | "Privacy" | "Features" | "Install" | "Troubleshooting";
 
@@ -28,7 +28,7 @@ const FAQ: FaqEntry[] = [
       </>,
       <>
         Don&rsquo;t trust us? Read the source — it&rsquo;s{" "}
-        <Link href={EXTERNAL_URL.GITHUB_REPO} target={BROWSER_TARGET.BLANK}>
+        <Link href={EXTERNAL_URL.GITHUB_REPO} target={"_blank"}>
           on GitHub
         </Link>{" "}
         under GPL-3.0, and your network panel will be empty while it runs.
@@ -186,7 +186,7 @@ export default function DocsFaqPage() {
         Discussions. If yours isn&rsquo;t here,{" "}
         <Link
           href={`${EXTERNAL_URL.GITHUB_REPO}/discussions`}
-          target={BROWSER_TARGET.BLANK}
+          target={"_blank"}
           style={{
             textDecoration: "underline",
             textDecorationColor: "rgba(10,10,10,.2)",

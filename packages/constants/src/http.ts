@@ -1,14 +1,5 @@
-export const NODE_ENV = {
-  DEVELOPMENT: "development",
-  PRODUCTION: "production",
-} as const;
-
 export const HTTP_METHOD = {
   GET: "GET",
-} as const;
-
-export const HTTP_ACCEPT = {
-  JSON: "application/json",
 } as const;
 
 export const HTTP_HEADER = {
@@ -18,6 +9,10 @@ export const HTTP_HEADER = {
 
 export const MIME_TYPE = {
   JSON: "application/json",
+} as const;
+
+export const HTTP_ACCEPT = {
+  JSON: MIME_TYPE.JSON,
 } as const;
 
 export const HTTP_STATUS = {

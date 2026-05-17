@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { EXTENSION_VERSION } from "../../packages/constants/src/version.ts";
 import tailwindcss from "tailwindcss";
 import autoprefixer from "autoprefixer";
 import CopyWebpackPlugin from "copy-webpack-plugin";
@@ -91,7 +92,7 @@ export default (env) => {
         },
         {
           test: /\.(ts|tsx)$/,
-          exclude: /node_modules\/(?!toppings-constants\/)/,
+          exclude: /node_modules\/(?!@toppings\/(constants|utils)\/)/,
           use: {
             loader: "babel-loader",
             options: {
@@ -121,11 +122,8 @@ export default (env) => {
             from: "src/manifest.json",
             to: "manifest.json",
             transform(content) {
-              const packageJson = JSON.parse(
-                fs.readFileSync("package.json", "utf-8"),
-              );
               const manifest = JSON.parse(content.toString());
-              manifest.version = packageJson.version;
+              manifest.version = EXTENSION_VERSION;
 
               const isFirefox = env.firefox ? "firefox" : false;
               if (isFirefox) {

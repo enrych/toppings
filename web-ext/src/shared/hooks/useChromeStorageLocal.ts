@@ -1,9 +1,6 @@
+import { defaultTo, isNull } from "@toppings/utils";
 import { useEffect, useState } from "react";
 
-/**
- * Reactively read a single key from chrome.storage.local. Re-renders when
- * the underlying storage entry changes (across tabs / programmatic writes).
- */
 export function useChromeStorageLocal<T>(
   key: string,
   fallback: T,
@@ -12,7 +9,7 @@ export function useChromeStorageLocal<T>(
 
   useEffect(() => {
     chrome.storage.local.get(key, (result) => {
-      if (result[key] !== undefined) setValue(result[key] as T);
+      if (!isNull(result[key])) setValue(result[key] as T);
     });
 
     const onChange = (
@@ -21,8 +18,8 @@ export function useChromeStorageLocal<T>(
     ) => {
       if (areaName !== "local") return;
       if (key in changes) {
-        const next = changes[key].newValue;
-        setValue(next === undefined ? fallback : (next as T));
+        const next = changes[key].newValue as T | undefined;
+        setValue(defaultTo(next, fallback));
       }
     };
     chrome.storage.onChanged.addListener(onChange);
@@ -38,10 +35,6 @@ export function useChromeStorageLocal<T>(
   return [value, update];
 }
 
-/**
- * Reactively read all keys matching a prefix and return a count. Useful for
- * "N pinned videos" displays.
- */
 export function useChromeStorageLocalCount(prefix: string): number {
   const [count, setCount] = useState(0);
 

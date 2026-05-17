@@ -14,6 +14,7 @@ import {
   AudioModeButton,
   toggleAudioMode,
 } from "../components/AudioMode";
+import { coalesce, defaultTo, isNull } from "@toppings/utils";
 import { WatchContext } from "../../background/context";
 import { Storage } from "../../background/store";
 
@@ -24,12 +25,12 @@ let preferences: Storage["preferences"]["watch"] | undefined;
 const onWatchPage = async (ctx: WatchContext) => {
   const { store } = ctx;
   preferences = store.preferences.watch;
-  if (preferences === undefined) return;
+  if (isNull(preferences)) return;
 
   player = await elementReady("video", {
     stopOnDomReady: false,
   });
-  if (player === null || player === undefined) return;
+  if (isNull(player)) return;
 
   // Reset Player
   player.playbackRate = parseFloat(preferences.defaultPlaybackRate.value);
@@ -65,20 +66,24 @@ const onWatchPage = async (ctx: WatchContext) => {
   // Audio Mode
   const moviePlayer = document.getElementById("movie_player");
   if (moviePlayer) {
-    await setupAudioMode(moviePlayer, ctx.payload.videoId ?? "", preferences.audioMode);
+    await setupAudioMode(
+      moviePlayer,
+      defaultTo(ctx.payload.videoId, ""),
+      preferences.audioMode,
+    );
   }
 
   const playerSettingsButton = await elementReady("button.ytp-settings-button");
-  if (playerSettingsButton === undefined) return;
+  if (isNull(playerSettingsButton)) return;
   playerSettingsButton.removeEventListener("click", onSettingsMenu);
   playerSettingsButton.addEventListener("click", onSettingsMenu);
 };
 
 const onSettingsMenu = async (): Promise<void> => {
-  if (player === null || player === undefined) return;
+  if (isNull(player)) return;
 
   const menuItemLabels = await elementReady(".ytp-menuitem-label");
-  if (menuItemLabels === undefined) return;
+  if (isNull(menuItemLabels)) return;
   const labels = document.querySelectorAll(".ytp-menuitem-label");
   if (labels.length === 0) return;
 
@@ -98,12 +103,12 @@ const onSettingsMenu = async (): Promise<void> => {
 };
 
 const onPlaybackRateMenu = async (): Promise<void> => {
-  if (player === undefined || player === null) return;
+  if (isNull(player) || isNull(preferences)) return;
+  if (preferences.customPlaybackRates.length === 0) return;
 
   const playbackRatePanel = await elementReady(".ytp-panel-animate-forward");
-  if (playbackRatePanel === undefined) return;
+  if (isNull(playbackRatePanel)) return;
 
-  // Disable Native Custom PlaybackRate Slider Option
   const menuPanelOptions = playbackRatePanel.querySelector(
     ".ytp-panel-options",
   ) as HTMLElement | null;
@@ -115,22 +120,23 @@ const onPlaybackRateMenu = async (): Promise<void> => {
 };
 
 const replacePlaybackItems = (playbackRatePanel: HTMLElement) => {
-  if (player === undefined || player === null) return;
-  if (preferences === undefined) return;
+  if (isNull(player)) return;
+  if (isNull(preferences)) return;
 
   // Replace Native PlaybackRate Items
   const panelMenu = playbackRatePanel.querySelector(".ytp-panel-menu");
-  if (panelMenu === null) return;
+  if (isNull(panelMenu)) return;
 
-  const currentRate = player.playbackRate.toFixed(2);
+  const currentRate = player.playbackRate;
   const isPresetRate = preferences.customPlaybackRates.some(
-    (rate) => rate === currentRate,
+    (rate) => parseFloat(rate) === currentRate,
   );
 
   const playbackRateItems = preferences.customPlaybackRates.map(
     (playbackRate) => {
-      const label = playbackRate === "1.00" ? "Normal" : Number(playbackRate);
-      const isAriaChecked = playbackRate === currentRate ? "true" : "false";
+      const label = parseFloat(playbackRate) === 1 ? "Normal" : Number(playbackRate);
+      const isAriaChecked =
+        parseFloat(playbackRate) === currentRate ? "true" : "false";
 
       return (
         <div
@@ -144,7 +150,7 @@ const replacePlaybackItems = (playbackRatePanel: HTMLElement) => {
             const panelBackButton = document.querySelector(
               ".ytp-panel-back-button",
             ) as HTMLElement | null;
-            if (panelBackButton !== null) {
+            if (!isNull(panelBackButton)) {
               panelBackButton.click();
             }
             setPlaybackRate(Number(playbackRate));
@@ -168,19 +174,23 @@ const replacePlaybackItems = (playbackRatePanel: HTMLElement) => {
         const panelBackButton = document.querySelector(
           ".ytp-panel-back-button",
         ) as HTMLElement | null;
-        if (panelBackButton !== null) {
+        if (!isNull(panelBackButton)) {
           panelBackButton.click();
         }
         setPlaybackRate(
-          Number(player!.getAttribute("data-tppng-playback-rate") ?? "1"),
+          Number(
+            defaultTo(player!.getAttribute("data-tppng-playback-rate"), "1"),
+          ),
         );
       }}
     >
       <div className="ytp-menuitem-label">
         Custom (
         {Number(
-          player!.getAttribute("data-tppng-playback-rate") ??
-            player!.playbackRate,
+          coalesce(
+            player!.getAttribute("data-tppng-playback-rate"),
+            String(player!.playbackRate),
+          ),
         )}
         )
       </div>
@@ -191,7 +201,7 @@ const replacePlaybackItems = (playbackRatePanel: HTMLElement) => {
 };
 
 const useShortcuts = (event: KeyboardEvent): void => {
-  if (!player || !preferences) return;
+  if (isNull(player) || isNull(preferences)) return;
 
   const target = event.target as HTMLElement;
   const tagName = target?.tagName;
@@ -271,25 +281,25 @@ const onDoubleTapSeek = (dataSide: "back" | "forward", time: number): void => {
   const doubleTapSeekElement = document.querySelector(
     ".ytp-doubletap-ui-legacy",
   ) as HTMLElement | null;
-  if (doubleTapSeekElement !== null) {
+  if (!isNull(doubleTapSeekElement)) {
     doubleTapSeekElement.setAttribute("data-side", dataSide);
     doubleTapSeekElement.style.display = "";
     const doubleTapSeekLabel = doubleTapSeekElement.querySelector(
       ".ytp-doubletap-tooltip-label",
     ) as HTMLElement;
-    if (doubleTapSeekLabel !== null) {
+    if (!isNull(doubleTapSeekLabel)) {
       doubleTapSeekLabel.textContent = `${time} seconds`;
     }
     const staticCircle = document.querySelector(
       ".ytp-doubletap-static-circle",
     ) as HTMLElement;
-    if (staticCircle !== null && dataSide === "back") {
+    if (!isNull(staticCircle) && dataSide === "back") {
       staticCircle.style.top = "50%";
       staticCircle.style.left = "10%";
       staticCircle.style.width = "110px";
       staticCircle.style.height = "110px";
       staticCircle.style.transform = "translate(-14px, -40px)";
-    } else if (staticCircle !== null && dataSide === "forward") {
+    } else if (!isNull(staticCircle) && dataSide === "forward") {
       staticCircle.style.top = "50%";
       staticCircle.style.left = "80%";
       staticCircle.style.width = "110px";
@@ -303,7 +313,7 @@ const onDoubleTapSeek = (dataSide: "back" | "forward", time: number): void => {
       const doubleTapLabel = (
         doubleTapSeekElement as HTMLElement
       ).querySelector(".ytp-doubletap-tooltip-label");
-      if (doubleTapLabel !== null) {
+      if (!isNull(doubleTapLabel)) {
         doubleTapLabel.textContent = "5 seconds";
       }
       staticCircle.style.cssText = "null";
@@ -312,7 +322,7 @@ const onDoubleTapSeek = (dataSide: "back" | "forward", time: number): void => {
 };
 
 const setPlaybackRate = (rate: number): void => {
-  if (player === null || player === undefined) return;
+  if (isNull(player)) return;
 
   const prevPlaybackRate = player.playbackRate.toFixed(2);
   const prevPlaybackMenuItem =
@@ -347,7 +357,7 @@ const setPlaybackRate = (rate: number): void => {
     }
   }
 
-  if (playbackMenuButton !== null && playbackMenuButton !== undefined) {
+  if (!isNull(playbackMenuButton)) {
     playbackMenuButton.children[2].textContent =
       player.playbackRate === 1
         ? "Normal"

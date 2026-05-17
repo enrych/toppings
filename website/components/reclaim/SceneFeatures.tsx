@@ -1,17 +1,10 @@
 import {
-  WEBSITE_HOME_FEATURE_GRID,
-  EXTENSION_FEATURE_DEFINITIONS,
-} from "toppings-constants";
+  FEATURES,
+  HOME,
+} from "@toppings/constants";
 
-/**
- * Scene 3 — what it does. Rows are rendered straight from the canonical
- * EXTENSION_FEATURE_DEFINITIONS catalog: ship a feature there and it
- * appears here automatically, in order, with its real name, real
- * description and a NEW/BETA tag — zero website edits, no count baked
- * into the copy. The growth IS the section.
- */
 export default function SceneFeatures() {
-  const { SECTION_HEADLINE, SECTION_LEDE } = WEBSITE_HOME_FEATURE_GRID;
+  const { SECTION_HEADLINE, SECTION_LEDE } = HOME.FEATURE_GRID;
   return (
     <section className="r-scene r-solid">
       <div className="r-scene-inner">
@@ -28,18 +21,18 @@ export default function SceneFeatures() {
         </div>
 
         <div className="r-features">
-          {EXTENSION_FEATURE_DEFINITIONS.map((f, i) => (
-            <article className="r-feature" key={f.id} data-reveal>
+          {FEATURES.map((feature, i) => (
+            <article className="r-feature" key={feature.name} data-reveal>
               <div className="r-feature-lead">
                 <span className="r-feature-idx">
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                {f.status !== "stable" && (
-                  <span className="r-feature-tag">{f.status}</span>
+                {feature.isNew && (
+                  <span className="r-feature-tag">new</span>
                 )}
               </div>
-              <h3 className="r-feature-title">{f.name}</h3>
-              <p className="r-feature-body">{f.description}</p>
+              <h3 className="r-feature-title">{feature.name}</h3>
+              <p className="r-feature-body">{feature.description}</p>
             </article>
           ))}
         </div>

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { WEBSITE_HOME_KEYBINDINGS } from "toppings-constants";
+import { HOME } from "@toppings/constants";
+import { isNull } from "@toppings/utils";
 
 /**
  * Scene 4 — the keyboard IS the interface. This is the living-interface
@@ -28,7 +29,7 @@ export default function SceneControl() {
     SECTION_HEADLINE_AFTER,
     SECTION_LEDE,
     ROWS,
-  } = WEBSITE_HOME_KEYBINDINGS;
+  } = HOME.KEYBINDINGS;
 
   const [hit, setHit] = useState(-1);
   const [readout, setReadout] = useState<string | null>(null);
@@ -37,7 +38,7 @@ export default function SceneControl() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const idx = KEYMAP[e.key.toLowerCase()];
-      if (idx === undefined) return;
+      if (isNull(idx)) return;
       const row = ROWS[idx];
       setHit(idx);
       setReadout(`${row.combo.join(row.sep)} — ${row.label}`);

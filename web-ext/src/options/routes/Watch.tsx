@@ -25,6 +25,7 @@ export default function Watch() {
   };
 
   const customPlaybackRatesValidator = (inValue: string) => {
+    if (inValue.trim() === "") return true;
     const regex = /^(\d+(\.\d+)?)(\s*,\s*\d+(\.\d+)?)*$/;
     const playbackRates = inValue.split(",").map((r) => r.trim());
     if (!regex.test(inValue) || playbackRates.length <= 1) return false;
@@ -52,7 +53,7 @@ export default function Watch() {
           <Card>
             <Input
               label="Default Playback Rate"
-              description="Rate applied to every video on load. 1.00 = Normal."
+              description="Rate applied to every video on load. 1 = Normal."
               initialValue={w.defaultPlaybackRate.value}
               validator={(v) => isValidNumeric(v, 0.0625, 16)}
               errorMessage="Must be between 0.0625 and 16"
@@ -64,16 +65,20 @@ export default function Watch() {
             />
             <Input
               label="Custom Playback Rates"
-              description="Comma-separated list of rates shown in the speed menu. Must include 1."
-              initialValue={w.customPlaybackRates.toString()}
+              description="Leave empty to use YouTube's speed menu. Or comma-separated rates (must include 1)."
+              initialValue={w.customPlaybackRates.join(", ")}
               validator={customPlaybackRatesValidator}
               errorMessage="Must include 1, separated by commas, between 0.0625 and 16"
               inputWidthClass="tw-w-72"
               onChange={(value) => {
                 update((draft) => {
-                  draft.preferences.watch.customPlaybackRates = value
-                    .split(",")
-                    .map((r) => Number(r.trim()).toFixed(2));
+                  const trimmed = value.trim();
+                  draft.preferences.watch.customPlaybackRates =
+                    trimmed === ""
+                      ? []
+                      : trimmed
+                          .split(",")
+                          .map((r) => Number(r.trim()).toFixed(2));
                 });
               }}
             />

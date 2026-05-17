@@ -1,3 +1,4 @@
+import { cn } from "@toppings/utils";
 import React from "react";
 
 type BadgeTone = "neutral" | "success" | "warning" | "danger" | "info";
@@ -26,13 +27,11 @@ export default function Badge({
 }: BadgeProps) {
   return (
     <span
-      className={[
+      className={cn(
         "tw-inline-flex tw-items-center tw-px-2 tw-py-0.5 tw-text-xs tw-font-medium tw-rounded-full",
         TONE_CLASSES[tone],
         className,
-      ]
-        .filter(Boolean)
-        .join(" ")}
+      )}
       {...rest}
     >
       {children}

@@ -1,7 +1,7 @@
 name: Consistency
 
 # Runs the cross-package consistency check on every PR. Hard failures
-# (version drift between manifest / package.json / EXTENSION_VERSION,
+# (stray version fields in manifest / package.json, RELEASES mismatch,
 # missing RELEASES entry, TODO placeholders, etc.) block the merge.
 # Soft warnings (un-documented features, aging doc snapshots) print to
 # the log but don't block.
@@ -11,6 +11,7 @@ on:
   pull_request:
     paths:
       - "packages/constants/**"
+      - "packages/utils/**"
       - "web-ext/src/manifest.json"
       - "web-ext/package.json"
       - "website/package.json"

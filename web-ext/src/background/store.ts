@@ -1,4 +1,4 @@
-import { EXTENSION_DEFAULT_STORE } from "toppings-constants";
+import { EXTENSION_DEFAULT_STORE } from "@toppings/constants";
 
 export const DEFAULT_STORE = EXTENSION_DEFAULT_STORE;
 
@@ -25,6 +25,16 @@ export const getStorage = async (): Promise<Storage> => {
   return new Promise((resolve) => {
     chrome.storage.sync.get(undefined, (storage) => {
       resolve(deepMerge(DEFAULT_STORE, storage) as Storage);
+    });
+  });
+};
+
+/** Add new default keys on install/update; never overwrite values the user already saved. */
+export const syncStorageWithDefaults = async (): Promise<void> => {
+  return new Promise((resolve) => {
+    chrome.storage.sync.get(undefined, (storage) => {
+      const merged = deepMerge(DEFAULT_STORE, storage);
+      void chrome.storage.sync.set(merged, () => resolve());
     });
   });
 };

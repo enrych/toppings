@@ -1,6 +1,5 @@
 {
   "name": "website",
-  "version": "3.0.3",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -15,7 +14,8 @@
     "next": "^15.1.0",
     "react": "^18",
     "react-dom": "^18",
-    "toppings-constants": "workspace:*"
+    "@toppings/constants": "workspace:*",
+    "@toppings/utils": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20",

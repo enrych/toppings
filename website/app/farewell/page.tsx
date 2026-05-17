@@ -1,21 +1,24 @@
-import {
-  WEBSITE_FAREWELL,
-  WEBSITE_FEEDBACK_MAILTO_HREF,
-} from "toppings-constants";
+import { FAREWELL, FEEDBACK_MAIL, MAILTO } from "@toppings/constants";
+import { interpolateTemplate } from "@toppings/utils";
 import ReclaimMini from "@/components/reclaim/ReclaimMini";
 
-/** Post-uninstall page — rebranded onto the Reclaim system. */
+const feedbackMailtoHref = interpolateTemplate(MAILTO.FEEDBACK, {
+  to: FEEDBACK_MAIL.TO,
+  encodedSubject: encodeURIComponent(FEEDBACK_MAIL.SUBJECT),
+});
+
+/** Uninstall page — same Reclaim shell as greetings. */
 export default function Farewell() {
   return (
     <ReclaimMini
-      kicker="Toppings removed"
-      titleBefore="We’ll "
-      titleEm="miss"
-      titleAfter=" you."
-      body={[WEBSITE_FAREWELL.BODY]}
+      kicker="Sorry to see you go"
+      titleBefore="We'll miss "
+      titleEm="you"
+      titleAfter="."
+      body={[FAREWELL.BODY]}
       cta={{
-        label: WEBSITE_FAREWELL.FEEDBACK_BUTTON,
-        href: WEBSITE_FEEDBACK_MAILTO_HREF,
+        label: FAREWELL.FEEDBACK_BUTTON,
+        href: feedbackMailtoHref,
       }}
     />
   );

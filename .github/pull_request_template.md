@@ -31,7 +31,7 @@ Tick what applies. Leave unchecked items as-is so reviewers see the full list.
 
 - [ ] **Docs** — `website/app/docs/*` (or other user-facing docs) updated if behavior changed.
 - [ ] **Release notes** — item added to the current entry in `packages/constants/src/releases.ts` (or `version: "next"` as appropriate).
-- [ ] **Feature catalog** — new top-level capability added to `EXTENSION_FEATURE_DEFINITIONS` in `packages/constants/src/extensionFeatureCatalog.ts`.
+- [ ] **Features list** — new capability added to `FEATURES` in `packages/constants/src/features.ts` (and release note in `releases.ts`).
 - [ ] **Version bump** — if this PR is the release, ran the repo bump script and `bun run check` is green (see `CLAUDE.md`).
 - [ ] **Doc snapshot** — for minor/major releases, bump included `--snapshot` per `CLAUDE.md`.
 
