@@ -23,6 +23,6 @@ export default class ResponseEntity {
   static badRequest(
     message: ConstructorParameters<typeof StatusError>[1],
   ): Response {
-    throw new StatusError(400, message);
+    throw new StatusError(HTTP_STATUS.BAD_REQUEST, message);
   }
 }

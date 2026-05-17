@@ -6,6 +6,6 @@ export const BASE_URL = {
 } as const;
 
 export const ENDPOINTS = {
-  PING: "/ping",
+  PING: "/api/ping",
   PLAYLIST: "/api/v1/playlist/{{playlistId}}",
 } as const;
