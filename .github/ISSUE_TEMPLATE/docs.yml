@@ -6,16 +6,14 @@ body:
   - type: markdown
     attributes:
       value: |
-        Use this for **documentation accuracy and discoverability** (README, wiki, website docs under `website/app/docs`, keybindings page, etc.).
-
-        For **product behavior** or **how-to** questions, [Discussions](https://github.com/enrych/toppings/discussions) is often a better first stop.
+        Use this for **documentation accuracy and discoverability** (README, website docs under `website/app/docs`, keybindings page, etc.).
 
   - type: textarea
     id: location
     attributes:
       label: Where is the issue?
-      description: File path in this repo, wiki page title, or public URL if applicable.
-      placeholder: e.g. website/app/docs/… or Wiki → …
+      description: File path in this repo, or public URL if applicable.
+      placeholder: e.g. website/app/docs/…
     validations:
       required: true
 

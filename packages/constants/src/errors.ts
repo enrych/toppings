@@ -10,4 +10,8 @@ export const ERROR = {
   MISSING_RELEASE_ENTRY:
     'No RELEASES entry for version "{{version}}". Update packages/constants/src/releases.ts.',
   BAD_SEMVER: "Bad semver: {{version}}",
+  UNKNOWN_BUMP_KIND:
+    'Unknown bump kind "{{kind}}" — use patch, minor, major, or an explicit x.y.z',
+  EXTENSION_VERSION_NOT_FOUND:
+    "Couldn't find EXTENSION_VERSION in packages/constants/src/version.ts",
 } as const;

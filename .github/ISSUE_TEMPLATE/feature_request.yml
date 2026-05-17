@@ -8,8 +8,6 @@ body:
       value: |
         Share what you want and why it matters. We prioritize requests that clearly describe user impact.
 
-        **Drafting with AI?** Keep the problem statement and constraints in your own words where possible so we understand your real workflow.
-
   - type: textarea
     id: problem
     attributes:
@@ -44,4 +42,4 @@ body:
     id: context
     attributes:
       label: Additional context
-      description: Links, related issues, or YouTube behavior that is relevant.
+      description: Links, related issues, or any other context that is relevant.

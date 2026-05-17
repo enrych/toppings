@@ -1,12 +1,5 @@
 name: Consistency
 
-# Runs the cross-package consistency check on every PR. Hard failures
-# (stray version fields in manifest / package.json, RELEASES mismatch,
-# missing RELEASES entry, TODO placeholders, etc.) block the merge.
-# Soft warnings (un-documented features, aging doc snapshots) print to
-# the log but don't block.
-#
-# Local equivalent: bun run scripts/check-consistency.ts
 on:
   pull_request:
     paths:
@@ -17,7 +10,7 @@ on:
       - "website/package.json"
       - "backend/package.json"
       - "package.json"
-      - "scripts/check-consistency.ts"
+      - "scripts/**"
       - "website/app/docs/**"
       - ".github/workflows/consistency.yml"
   push:

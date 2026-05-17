@@ -8,8 +8,6 @@ body:
       value: |
         Thanks for taking the time to report a problem. The more specific you are, the faster we can triage.
 
-        **Using AI or automation to draft this?** That is fine — please still verify reproduction steps yourself and fill in version / environment accurately.
-
   - type: textarea
     id: summary
     attributes:

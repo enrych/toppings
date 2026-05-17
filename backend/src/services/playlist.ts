@@ -1,13 +1,11 @@
 import { StatusError } from "itty-router";
 import type { PlaylistResponse, VideoResponse } from "../types";
-import {
-  ERROR,
-  HTTP_STATUS,
-  NUMBER,
-  PAGE,
-} from "@toppings/constants";
+import { ERROR, HTTP_STATUS, NUMBER, PAGE } from "@toppings/constants";
 import { interpolateTemplate, parseDuration, round } from "@toppings/utils";
-import { buildPlaylistItemsApiUrl, buildVideosApiUrl } from "../utils/googleapi";
+import {
+  buildPlaylistItemsApiUrl,
+  buildVideosApiUrl,
+} from "../utils/googleapi";
 
 async function requestPlaylistPage(
   apiKey: string,
@@ -37,9 +35,7 @@ async function requestVideoDurationsTotal(
   apiKey: string,
   videoIds: string[],
 ): Promise<number> {
-  const response = await fetch(
-    buildVideosApiUrl({ apiKey, videoIds }),
-  );
+  const response = await fetch(buildVideosApiUrl({ apiKey, videoIds }));
 
   if (!response.ok) {
     throw new StatusError(
@@ -59,7 +55,7 @@ async function requestVideoDurationsTotal(
 }
 
 export async function getPlaylistMetadata(playlistId: string, env: Env) {
-  const { YOUTUBE_API_KEY: apiKey } = env;
+  const { YOUTUBE_DATA_API_V3_KEY: apiKey } = env;
 
   let totalVideos = NUMBER.N0;
   let totalRuntime = NUMBER.N0;
