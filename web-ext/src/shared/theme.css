@@ -1,0 +1,119 @@
+/* -------------------------------------------------------------------------
+ * Toppings — Extension UI tokens
+ *
+ * Implements the Claude Design handoff for the extension surface. Same
+ * four brand tokens as the marketing site (cream / ink / amber / flame),
+ * re-roled into dark and light themes via [data-theme].
+ *
+ * Color values map exactly to the handoff's ui_kits/extension/extension.css
+ * (.themed and .themed[data-theme="light"] blocks), preserved here as the
+ * existing --color-* names so all consumers (tailwind utilities, component
+ * classes) keep working without a sweeping rename.
+ * -------------------------------------------------------------------------*/
+
+:root,
+[data-theme="dark"] {
+  /* Surfaces — ink scale */
+  --color-bg: #0a0a0a;
+  --color-surface: #161616;          /* "bg-raised" — cards, status bar */
+  --color-surface-2: #050505;        /* "bg-sunken" — sidebar, bottom nav */
+  --color-surface-hover: rgba(242, 239, 231, 0.06);
+
+  /* Text — off-white on ink, never pure white */
+  --color-fg: #f2efe7;
+  --color-fg-muted: rgba(242, 239, 231, 0.62);
+  --color-fg-subtle: rgba(242, 239, 231, 0.38);
+
+  /* Borders */
+  --color-border-subtle: rgba(242, 239, 231, 0.06);
+  --color-border-default: rgba(242, 239, 231, 0.1);
+  --color-border-strong: rgba(242, 239, 231, 0.2);
+
+  /* Accent — amber stays amber across themes; on-accent text is ink */
+  --color-accent: #fca929;
+  --color-accent-hover: #f57c20;
+  --color-accent-fg: #0a0a0a;
+
+  /* Tonal pairs for status (badges, toasts) */
+  --color-danger-bg: rgba(239, 68, 68, 0.1);
+  --color-danger-fg: #fca5a5;
+  --color-success-bg: rgba(34, 197, 94, 0.1);
+  --color-success-fg: #86efac;
+  --color-info-bg: rgba(252, 169, 41, 0.1);
+  --color-info-fg: #fca929;
+  --color-warning-bg: rgba(234, 179, 8, 0.1);
+  --color-warning-fg: #fde047;
+}
+
+[data-theme="light"] {
+  --color-bg: #fff9ef;                /* cream */
+  --color-surface: #fffcf6;           /* cream lifted 1% */
+  --color-surface-2: #f8f1e1;         /* cream sunk 3% */
+  --color-surface-hover: rgba(10, 10, 10, 0.05);
+
+  --color-fg: #0a0a0a;
+  --color-fg-muted: rgba(10, 10, 10, 0.72);
+  --color-fg-subtle: rgba(10, 10, 10, 0.5);
+
+  --color-border-subtle: rgba(10, 10, 10, 0.06);
+  --color-border-default: rgba(10, 10, 10, 0.1);
+  --color-border-strong: rgba(10, 10, 10, 0.18);
+
+  --color-accent: #fca929;
+  --color-accent-hover: #f57c20;
+  --color-accent-fg: #0a0a0a;
+
+  --color-danger-bg: rgba(220, 38, 38, 0.08);
+  --color-danger-fg: #b91c1c;
+  --color-success-bg: rgba(22, 163, 74, 0.08);
+  --color-success-fg: #15803d;
+  --color-info-bg: rgba(252, 124, 32, 0.08);
+  --color-info-fg: #b34a0e;
+  --color-warning-bg: rgba(202, 138, 4, 0.1);
+  --color-warning-fg: #a16207;
+}
+
+/*
+ * Keyframes referenced from arbitrary tailwind classes
+ * (e.g. `tw-animate-[fadeIn_150ms_ease-out]`).
+ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.96) translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulseAmber {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(252, 169, 41, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(252, 169, 41, 0);
+  }
+}

@@ -1,15 +1,70 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import localFont from "next/font/local";
+import { Instrument_Serif, Geist } from "next/font/google";
 import "./globals.css";
+import { HTML_LANG, METADATA } from "@toppings/constants";
 
-const inter = Inter({ subsets: ["latin"] });
+/**
+ * Root layout. Sets HTML/body, loads self-hosted Inter + JetBrains Mono
+ * via `next/font/local` (so basePath rewriting works automatically).
+ *
+ * Navbar + Footer live in `(marketing)/layout.tsx`. The /docs/* surface
+ * provides its own chrome via `docs/layout.tsx`. This split keeps the
+ * docs section visually independent of the marketing site while still
+ * sharing tokens, fonts, and the global stylesheet.
+ */
+const inter = localFont({
+  variable: "--font-inter",
+  display: "swap",
+  src: [
+    { path: "./_fonts/inter-400.woff2", weight: "400", style: "normal" },
+    { path: "./_fonts/inter-500.woff2", weight: "500", style: "normal" },
+    { path: "./_fonts/inter-600.woff2", weight: "600", style: "normal" },
+    { path: "./_fonts/inter-700.woff2", weight: "700", style: "normal" },
+    { path: "./_fonts/inter-900.woff2", weight: "900", style: "normal" },
+  ],
+});
+
+const jetbrainsMono = localFont({
+  variable: "--font-jetbrains-mono",
+  display: "swap",
+  src: [
+    {
+      path: "./_fonts/jetbrains-mono-400.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "./_fonts/jetbrains-mono-500.woff2",
+      weight: "500",
+      style: "normal",
+    },
+  ],
+});
+
+/**
+ * Rebrand display + UI faces (the "Reclaim, enacted" home). Instrument
+ * Serif is the editorial display voice (open stand-in for PP Editorial
+ * New); Geist is the grotesque UI face. JetBrains Mono above is reused
+ * as the "keyboard voice". next/font/google self-hosts at build time so
+ * basePath rewriting still works.
+ */
+const display = Instrument_Serif({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+const ui = Geist({
+  subsets: ["latin"],
+  variable: "--font-ui",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "Toppings: Your YouTube, Your Way",
-  description:
-    "A customizable browser extension that gives you total control over YouTube—track playlist runtimes, fine-tune playback speed, auto-scroll Shorts, set custom seek durations, and more. Take control of your YouTube like never before.",
+  title: METADATA.TITLE,
+  description: METADATA.DESCRIPTION,
 };
 
 export default function RootLayout({
@@ -18,13 +73,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`min-h-screen bg-background antialiased ${inter.className}`}
-      >
-        <Navbar />
+    <html
+      lang={HTML_LANG}
+      className={`${inter.variable} ${jetbrainsMono.variable} ${display.variable} ${ui.variable}`}
+    >
+      <body className="min-h-screen bg-[--surface-page] text-[--fg-1] antialiased">
         {children}
-        <Footer />
       </body>
     </html>
   );

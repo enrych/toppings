@@ -1,44 +1,45 @@
-name: Feature Request
-description: Suggest a new feature or improvement.
-title: "Feature: [Brief description of the feature]"
-labels: ["Status: Needs Investigation", "Type: Enhancement"]
+name: Feature request
+description: Suggest an improvement or new capability.
+title: "[Feature] "
+labels: ["enhancement"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for suggesting a feature! Please provide the necessary details below to help us evaluate the request.
+        Share what you want and why it matters. We prioritize requests that clearly describe user impact.
 
   - type: textarea
-    id: description
+    id: problem
     attributes:
-      label: Feature Description
-      description: "Provide a clear description of the feature."
-      placeholder: "Describe the feature you'd like to see implemented."
+      label: Problem or gap
+      description: What is hard, missing, or inconsistent today?
+      placeholder: When I … I can't …
+    validations:
+      required: true
 
   - type: textarea
-    id: use_case
+    id: proposal
     attributes:
-      label: Use Case
-      description: "Describe a scenario where this feature would be useful."
-      placeholder: "Explain how this feature would be valuable to users."
+      label: Proposed solution (optional)
+      description: How you imagine this could work in the product. Sketches, mockups, or prior art welcome.
+      placeholder: e.g. A toggle in … that …
 
   - type: textarea
-    id: possible_implementation
+    id: alternatives
     attributes:
-      label: Possible Implementation (Optional)
-      description: "If you have ideas on how this feature could be implemented, describe them here."
-      placeholder: "Provide ideas or code snippets (if any)."
+      label: Alternatives considered (optional)
+      description: Other tools, workarounds, or designs you have already tried.
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Optional — no obligation.
+      options:
+        - label: I am willing to open a PR for this (may need maintainer guidance)
 
   - type: textarea
-    id: alternatives_considered
+    id: context
     attributes:
-      label: Alternatives Considered
-      description: "Describe any alternative solutions you've considered."
-      placeholder: "Explain why the alternatives might not be sufficient."
-
-  - type: textarea
-    id: additional_context
-    attributes:
-      label: Additional Context
-      description: "Add any other relevant information, references, or links."
-      placeholder: "Include any related issues, links, or additional information."
+      label: Additional context
+      description: Links, related issues, or any other context that is relevant.

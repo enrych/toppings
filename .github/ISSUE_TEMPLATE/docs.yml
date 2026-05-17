@@ -1,30 +1,38 @@
 name: Documentation
-description: Request updates or additions to the documentation.
-title: "Docs: [Brief description of the request]"
-labels: ["Status: Needs Investigation", "Type: Documentation"]
+description: Something in docs or in-repo guidance is wrong, unclear, or missing.
+title: "[Docs] "
+labels: ["documentation"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for suggesting an update or addition to the documentation! Please fill out the details below.
+        Use this for **documentation accuracy and discoverability** (README, website docs under `website/app/docs`, keybindings page, etc.).
 
   - type: textarea
-    id: description
+    id: location
     attributes:
-      label: Description
-      description: "Describe the missing or unclear documentation."
-      placeholder: "Explain the specific area or topic that requires documentation."
+      label: Where is the issue?
+      description: File path in this repo, or public URL if applicable.
+      placeholder: e.g. website/app/docs/…
+    validations:
+      required: true
 
   - type: textarea
-    id: reason_for_update
+    id: problem
     attributes:
-      label: Reason for Update
-      description: "Why is this documentation update necessary?"
-      placeholder: "Explain why the current documentation is insufficient."
+      label: What is wrong or missing?
+      description: Quote outdated text if helpful.
+    validations:
+      required: true
 
   - type: textarea
-    id: additional_context
+    id: suggestion
     attributes:
-      label: Additional Context
-      description: "Add any other relevant information, like links or examples."
-      placeholder: "Include any additional context or related issues here."
+      label: Suggested improvement (optional)
+      description: Concrete wording or structure you would like to see.
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Related issues, screenshots, or version of the docs you read.

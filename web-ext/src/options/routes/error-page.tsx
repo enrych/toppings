@@ -1,5 +1,7 @@
 import React from "react";
 import { useRouteError } from "react-router-dom";
+import Button from "../../shared/components/primitives/Button";
+import Icon from "../../shared/components/primitives/Icon";
 
 type RouteError = {
   statusText?: string;
@@ -17,24 +19,28 @@ export default function ErrorPage() {
   return (
     <div
       id="error-page"
-      className="bg-[#0f0f10] text-[#e7e7e4] flex flex-col items-center justify-center min-h-screen"
+      className="tw-bg-bg tw-text-fg tw-flex tw-flex-col tw-items-center tw-justify-center tw-min-h-screen tw-p-8"
     >
-      <div className="tw-p-8 tw-rounded tw-shadow-md tw-text-center">
-        <h1 className="tw-text-4xl tw-font-bold tw-text-red-600 tw-mb-4">Oops!</h1>
-        <p className="tw-text-lg tw-mb-4">Sorry, an unexpected error has occurred.</p>
-        <p className="tw-text-sm tw-text-gray-500 tw-mb-4">
-          <i>{error.statusText || error.message}</i>
+      <div className="tw-bg-surface tw-border tw-border-border-default tw-rounded-xl tw-p-8 tw-text-center tw-max-w-md tw-shadow-xl">
+        <div className="tw-w-12 tw-h-12 tw-mx-auto tw-mb-4 tw-rounded-full tw-bg-danger-bg tw-text-danger-fg tw-flex tw-items-center tw-justify-center">
+          <Icon name="alert" size={24} />
+        </div>
+        <h1 className="tw-text-2xl tw-font-bold tw-text-fg tw-mb-2">
+          Something went wrong
+        </h1>
+        <p className="tw-text-sm tw-text-fg-muted tw-mb-1">
+          An unexpected error occurred.
         </p>
-        <p className="tw-text-sm tw-mb-4">
-          If you keep seeing this error, please{" "}
-          <button
-            onClick={handleFileIssue}
-            className="text-blue-600 underline focus:outline-none"
-          >
-            file an issue
-          </button>
-          .
+        <p className="tw-text-xs tw-text-fg-subtle tw-mb-6 tw-font-mono">
+          {error?.statusText || error?.message}
         </p>
+        <Button
+          variant="primary"
+          leadingIcon={<Icon name="external" size={14} />}
+          onClick={handleFileIssue}
+        >
+          Report this issue
+        </Button>
       </div>
     </div>
   );

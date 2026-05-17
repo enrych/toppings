@@ -1,22 +1,15 @@
 import {
-  LOCAL_SERVER_URL,
-  NODE_ENV,
-  PROD_SERVER_URL,
-  PATHNAME as YOUTUBE_PATHNAME,
-  WATCH_LATER_PLAYLIST_ID,
-  LIKED_VIDEOS_PLAYLIST_ID,
-  ERROR_MESSAGE,
-  YOUTUBE_SEARCH_PARAM,
+  ENDPOINTS,
+  ERROR,
   HTTP_METHOD,
-  HTTP_ACCEPT,
-  HTTP_STATUS,
-} from "../constants/global.constants";
+  PAGE,
+  SHORTS_ID_PATH_SEGMENT,
+  SYSTEM_PLAYLIST_ID,
+  URL_PATH,
+  URL_QUERY,
+} from "@toppings/constants";
+import { api } from "../shared/api";
 import { getStorage, Storage } from "./store";
-
-const SERVER_BASE_URL =
-  process.env.NODE_ENV === NODE_ENV.DEVELOPMENT
-    ? LOCAL_SERVER_URL
-    : PROD_SERVER_URL;
 
 export type Context = WatchContext | PlaylistContext | ShortsContext | null;
 
@@ -27,7 +20,7 @@ export interface BaseContext {
 }
 
 export type WatchContext = BaseContext & {
-  pathname: typeof YOUTUBE_PATHNAME.WATCH;
+  pathname: typeof PAGE.WATCH;
   payload: WatchPayload;
 };
 
@@ -36,7 +29,7 @@ export type WatchPayload = {
 };
 
 export type PlaylistContext = BaseContext & {
-  pathname: typeof YOUTUBE_PATHNAME.PLAYLIST;
+  pathname: typeof PAGE.PLAYLIST;
   payload: ValidPlaylistPayload | InvalidPlaylistPayload;
 };
 
@@ -49,8 +42,8 @@ export type ValidPlaylistPayload = {
 
 export type InvalidPlaylistPayload = {
   playlistId:
-    | typeof WATCH_LATER_PLAYLIST_ID
-    | typeof LIKED_VIDEOS_PLAYLIST_ID
+    | typeof SYSTEM_PLAYLIST_ID.WATCH_LATER
+    | typeof SYSTEM_PLAYLIST_ID.LIKED
     | string
     | null;
 };
@@ -58,7 +51,7 @@ export type InvalidPlaylistPayload = {
 export type PlaylistResponse = PlaylistContext;
 
 export type ShortsContext = BaseContext & {
-  pathname: typeof YOUTUBE_PATHNAME.SHORTS;
+  pathname: typeof PAGE.SHORTS;
   payload: ShortsPayload;
 };
 
@@ -71,44 +64,42 @@ export const getContext = async (rawURL: string): Promise<Context> => {
   const store = await getStorage();
 
   if (!store) {
-    throw new Error(ERROR_MESSAGE.STORE_NOT_FOUND);
+    throw new Error(ERROR.STORE_NOT_FOUND);
   }
 
-  if (url.pathname.startsWith("/watch")) {
-    const videoId = url.searchParams.get(YOUTUBE_SEARCH_PARAM.VIDEO_ID);
+  if (url.pathname.startsWith(URL_PATH.WATCH)) {
+    const videoId = url.searchParams.get(URL_QUERY.VIDEO_ID);
     if (!videoId) return null;
 
     return {
-      pathname: YOUTUBE_PATHNAME.WATCH,
+      pathname: PAGE.WATCH,
       payload: { videoId },
       store,
     } as const;
-  } else if (url.pathname.startsWith("/playlist")) {
-    const playlistId = url.searchParams.get(YOUTUBE_SEARCH_PARAM.PLAYLIST_ID);
+  } else if (url.pathname.startsWith(URL_PATH.PLAYLIST)) {
+    const playlistId = url.searchParams.get(URL_QUERY.PLAYLIST_ID);
 
     if (
       !playlistId ||
-      playlistId === WATCH_LATER_PLAYLIST_ID ||
-      playlistId === LIKED_VIDEOS_PLAYLIST_ID
+      playlistId === SYSTEM_PLAYLIST_ID.WATCH_LATER ||
+      playlistId === SYSTEM_PLAYLIST_ID.LIKED
     ) {
       return {
-        pathname: YOUTUBE_PATHNAME.PLAYLIST,
+        pathname: PAGE.PLAYLIST,
         payload: { playlistId },
         store,
       } as const;
     }
 
     try {
-      const response = await fetch(
-        `${SERVER_BASE_URL}/playlist/${playlistId}`,
-        {
-          method: HTTP_METHOD.GET,
-          headers: { Accept: HTTP_ACCEPT.JSON },
-        },
+      const response = await api.fetch(
+        ENDPOINTS.PLAYLIST,
+        { playlistId },
+        { method: HTTP_METHOD.GET },
       );
 
       if (!response.ok) {
-        throw new Error(ERROR_MESSAGE.FAILED_FETCHING_PLAYLIST_DATA);
+        throw new Error(ERROR.PLAYLIST_FETCH_FAILED);
       }
 
       const body = (await response.json()) as PlaylistResponse;
@@ -118,17 +109,18 @@ export const getContext = async (rawURL: string): Promise<Context> => {
         store,
       } as const;
     } catch (error) {
-      console.error(ERROR_MESSAGE.FAILED_FETCHING_PLAYLIST_DATA, error);
+      console.error(ERROR.PLAYLIST_FETCH_FAILED, error);
       return {
-        pathname: YOUTUBE_PATHNAME.PLAYLIST,
+        pathname: PAGE.PLAYLIST,
         payload: { playlistId },
         store,
       } as const;
     }
-  } else if (url.pathname.startsWith("/shorts")) {
-    const shortId = url.pathname.split("/")[2] || null;
+  } else if (url.pathname.startsWith(URL_PATH.SHORTS)) {
+    const shortId =
+      url.pathname.split("/")[SHORTS_ID_PATH_SEGMENT] || null;
     return {
-      pathname: YOUTUBE_PATHNAME.SHORTS,
+      pathname: PAGE.SHORTS,
       payload: { shortId },
       store,
     } as const;

@@ -6,10 +6,11 @@ import onShortsPage from "./pages/shorts";
 import onWatchPage from "./pages/watch";
 import "./index.css";
 import {
-  EVENT_TYPE,
+  ERROR,
+  MESSAGE_EVENT,
+  MESSAGE_FIELD,
   MESSAGE_TYPE,
-  WARNING_MESSAGE,
-} from "../constants/global.constants";
+} from "@toppings/constants";
 
 const pageHandlers: Record<keyof Storage["preferences"], Function> = {
   playlist: onPlaylistPage,
@@ -19,7 +20,9 @@ const pageHandlers: Record<keyof Storage["preferences"], Function> = {
 
 function runApp(message: any): undefined {
   (async () => {
-    const { type, payload } = JSON.parse(message);
+    const parsed = JSON.parse(message) as Record<string, unknown>;
+    const type = parsed[MESSAGE_FIELD.TYPE];
+    const payload = parsed[MESSAGE_FIELD.PAYLOAD];
 
     if (type !== MESSAGE_TYPE.CONTEXT) return;
     const ctx = payload as Exclude<Context, null>;
@@ -28,7 +31,7 @@ function runApp(message: any): undefined {
     const handler = pageHandlers[pathname];
 
     if (!handler) {
-      console.warn(WARNING_MESSAGE.NO_HANDLER_FOUND, pathname);
+      console.warn(ERROR.NO_CONTENT_HANDLER, pathname);
       return;
     }
 
@@ -39,10 +42,12 @@ function runApp(message: any): undefined {
   })();
 }
 
-// Handle Events
 chrome.runtime.sendMessage(
   chrome.runtime.id,
-  JSON.stringify({ type: MESSAGE_TYPE.EVENT, payload: EVENT_TYPE.CONNECTED }),
+  JSON.stringify({
+    [MESSAGE_FIELD.TYPE]: MESSAGE_TYPE.EVENT,
+    [MESSAGE_FIELD.PAYLOAD]: MESSAGE_EVENT.CONNECTED,
+  }),
   {},
   runApp,
 );

@@ -1,20 +1,20 @@
-interface PlaylistItem {
+export interface PlaylistItem {
 	contentDetails: {
 		videoId: string;
 	};
 }
 
-interface PlaylistResponse {
+export interface PlaylistResponse {
 	items: PlaylistItem[];
 	nextPageToken?: string;
 }
 
-interface VideoItem {
+export interface VideoItem {
 	contentDetails: {
 		duration: string;
 	};
 }
 
-interface VideoResponse {
+export interface VideoResponse {
 	items: VideoItem[];
 }

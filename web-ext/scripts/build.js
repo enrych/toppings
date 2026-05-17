@@ -1,5 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
+import { EXTERNAL_URL } from "../../packages/constants/src/links.ts";
+import { EXTENSION_VERSION } from "../../packages/constants/src/version.ts";
 import tailwindcss from "tailwindcss";
 import autoprefixer from "autoprefixer";
 import CopyWebpackPlugin from "copy-webpack-plugin";
@@ -49,6 +51,38 @@ export default (env) => {
                       },
                       content: ["./src/**/*.tsx"],
                       prefix: "tw-",
+                      darkMode: ["class", '[data-theme="dark"]'],
+                      theme: {
+                        extend: {
+                          // Semantic color tokens backed by CSS variables.
+                          // Values come from src/options/index.css (theme.css
+                          // section). Use these (e.g. tw-bg-surface) rather
+                          // than hardcoded hex values so themes can swap.
+                          colors: {
+                            bg: "var(--color-bg)",
+                            surface: "var(--color-surface)",
+                            "surface-2": "var(--color-surface-2)",
+                            "surface-hover": "var(--color-surface-hover)",
+                            fg: "var(--color-fg)",
+                            "fg-muted": "var(--color-fg-muted)",
+                            "fg-subtle": "var(--color-fg-subtle)",
+                            "border-subtle": "var(--color-border-subtle)",
+                            "border-default": "var(--color-border-default)",
+                            "border-strong": "var(--color-border-strong)",
+                            accent: "var(--color-accent)",
+                            "accent-hover": "var(--color-accent-hover)",
+                            "accent-fg": "var(--color-accent-fg)",
+                            "danger-bg": "var(--color-danger-bg)",
+                            "danger-fg": "var(--color-danger-fg)",
+                            "success-bg": "var(--color-success-bg)",
+                            "success-fg": "var(--color-success-fg)",
+                            "info-bg": "var(--color-info-bg)",
+                            "info-fg": "var(--color-info-fg)",
+                            "warning-bg": "var(--color-warning-bg)",
+                            "warning-fg": "var(--color-warning-fg)",
+                          },
+                        },
+                      },
                     }),
                     autoprefixer,
                   ],
@@ -59,7 +93,7 @@ export default (env) => {
         },
         {
           test: /\.(ts|tsx)$/,
-          exclude: /node_modules/,
+          exclude: /node_modules\/(?!@toppings\/(constants|utils)\/)/,
           use: {
             loader: "babel-loader",
             options: {
@@ -89,11 +123,9 @@ export default (env) => {
             from: "src/manifest.json",
             to: "manifest.json",
             transform(content) {
-              const packageJson = JSON.parse(
-                fs.readFileSync("package.json", "utf-8"),
-              );
               const manifest = JSON.parse(content.toString());
-              manifest.version = packageJson.version;
+              manifest.version = EXTENSION_VERSION;
+              manifest.homepage_url = EXTERNAL_URL.WEBSITE;
 
               const isFirefox = env.firefox ? "firefox" : false;
               if (isFirefox) {

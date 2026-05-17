@@ -2,9 +2,9 @@ import path from "node:path";
 import archiver from "archiver";
 import chalk from "chalk";
 import fs from "fs-extra";
+import { EXTENSION_VERSION } from "../../packages/constants/src/version.ts";
 
 const DIST_DIR = path.resolve("dist");
-const PACKAGE_FILE = path.resolve("package.json");
 const isFirefox = process.argv[2] === "firefox" ? "firefox" : "chrome";
 
 async function createArchive() {
@@ -14,14 +14,7 @@ async function createArchive() {
         `The 'dist' directory was not found at ${DIST_DIR}. Please ensure it exists before running this script.`,
       );
     }
-    if (!fs.existsSync(PACKAGE_FILE)) {
-      throw new Error(
-        `The 'package.json' file was not found at ${PACKAGE_FILE}. Please ensure it exists before running this script.`,
-      );
-    }
-
-    const packageJson = JSON.parse(fs.readFileSync(PACKAGE_FILE, "utf-8"));
-    const version = packageJson.version;
+    const version = EXTENSION_VERSION;
     const filename = `toppings_v${version}_${isFirefox}.zip`;
     const store = isFirefox ? "Mozilla Add-ons" : "Chrome Web Store";
 

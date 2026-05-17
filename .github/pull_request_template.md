@@ -1,27 +1,40 @@
-<!-- The title should briefly describe the type of change (e.g., Bugfix: Fix issue with user login, Feature: Add new reporting dashboard) -->
+<!--
+  Good titles: imperative, scoped, searchable.
+  Examples: "Fix seek overlay focus on Firefox", "Document bump workflow in README"
+-->
 
-**What does this PR do?**
+## Summary
 
-<!-- Explain the change, feature, or bugfix in clear terms. Focus on what has been changed or added. Provide enough context for someone unfamiliar with the issue to understand the scope. Write "NA" if not applicable. -->
+What does this change do, in plain language?
 
-**Why is this change necessary?**
+## Motivation
 
-<!-- Explain the reason for the change, whether it's to fix a bug, introduce a new feature, or improve performance. Highlight the value it brings and any pain points it solves. Write "NA" if not applicable. -->
+Why is it needed? Link issues when applicable (`Fixes #123`, `Closes #123`, or `Related to #123`).
 
-**How was this change implemented?**
+## Test plan
 
-<!-- Discuss the technical approach and reasoning behind the key decisions you made. Include any trade-offs, design considerations, or architectural changes that impacted the solution. If applicable, mention alternatives you considered. Write "NA" if not applicable. -->
+How did you verify it? (manual steps, `bun run check`, targeted tests, etc.)
 
-**Screenshots / Visual Changes**
+## Screenshots / recordings
 
-<!-- If applicable, include screenshots or GIFs that demonstrate visual changes, UI updates, or new features in action. Write "NA" if not applicable. -->
+Delete this section if there is no user-visible change.
 
-**Related Issues**
+## Notes for reviewers
 
-<!-- List the issues that this PR closes or relates to.
-Use closing keywords like "Closes #123", "Fixes #456", or mention "Related to #789" for partially addressed issues. Write "NA" if not applicable. -->
+Optional: trade-offs, follow-ups, or areas you want extra eyes on.
 
-**Additional Considerations**
+---
 
-<!-- Any additional information or considerations that the reviewer should be aware of.
-Mention anything that could impact other parts of the system, potential backward incompatibilities, or plans for future refactoring. Write "NA" if not applicable. -->
+### Release & docs (user-visible behavior only)
+
+Tick what applies. Leave unchecked items as-is so reviewers see the full list.
+
+- [ ] **Docs** — `website/app/docs/*` (or other user-facing docs) updated if behavior changed.
+- [ ] **Release notes** — item added to the current entry in `packages/constants/src/releases.ts` (or `version: "next"` as appropriate).
+- [ ] **Features list** — new capability added to `FEATURES` in `packages/constants/src/features.ts` (and release note in `releases.ts`).
+- [ ] **Version bump** — if this PR is the release, ran the repo bump script and `bun run check` is green (see `CLAUDE.md`).
+- [ ] **Doc snapshot** — for minor/major releases, bump included `--snapshot` per `CLAUDE.md`.
+
+### Assisted work (optional)
+
+If AI or other automation helped implement or write this PR, briefly say what you personally reviewed, tested, or changed so reviewers can calibrate risk.

@@ -22,8 +22,15 @@ build
 .env.local
 .env.*.local
 
+# Claude Code / local agent tooling (skills, settings — not part of the repo)
+.claude/
+
 # next.js
 .vercel
 **/.next/
 **/out/
 next-env.d.ts
+
+# typescript incremental build cache
+**/tsconfig.tsbuildinfo
+*.tsbuildinfo

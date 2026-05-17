@@ -1,6 +1,5 @@
 {
   "name": "Toppings",
-  "version": "3.0.3",
   "description": "Your YouTube, Your Way.",
   "private": "true",
   "type": "module",
@@ -54,6 +53,8 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "@toppings/constants": "workspace:*",
+    "@toppings/utils": "workspace:*",
     "element-ready": "^7.0.0",
     "immer": "^10.1.1",
     "react": "^18.3.1",
