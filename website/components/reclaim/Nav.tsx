@@ -1,6 +1,4 @@
-import { BRAND_METADATA } from "@/lib/brand";
-import { URLS } from "@/lib/urls";
-import { LABEL, ROUTE } from "@/lib/site.data";
+import { BRAND_METADATA, LABEL, ROUTE, URL } from "@/constants/site";
 
 export default function Nav() {
   return (
@@ -9,7 +7,7 @@ export default function Nav() {
       <div className="r-nav-right">
         <a href={ROUTE.DOCS}>{LABEL.DOCS}</a>
         <a
-          href={URLS.GITHUB_REPO}
+          href={URL.GITHUB_REPO}
           target={"_blank"}
           rel="noopener noreferrer"
         >

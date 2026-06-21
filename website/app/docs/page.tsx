@@ -1,58 +1,34 @@
+import type { Metadata } from "next";
 import Link from "next/link";
-import Pager from "@/components/docs/Pager";
-import { DocsInlineParts, DocsRichText } from "@/lib/docs-rich-text";
-import { URLS } from "@/lib/urls";
-import { FEATURES } from "@/lib/features.data";
-import { ROUTE } from "@/lib/site.data";
-import { DOCS_PAGE } from "./pages.data";
-import {
-  DOCS_INSTALL,
-  DOCS_INSTALL_EDIT_PATH,
-  DOCS_INSTALL_TOC,
-} from "./install/data";
-import { formatTodayReviewDate } from "@/lib/dates";
+import DocsPageHeader from "./components/DocsPageHeader";
+import Pager from "./components/Pager";
+import { FEATURES, ROUTE, URL } from "@/constants/site";
+import { EDIT_PATH, LAST_UPDATED, PAGE, TOC } from "./data";
+
+export const metadata: Metadata = {
+  title: "Toppings — Install",
+  description:
+    "Install Toppings from the Chrome Web Store or Firefox Add-ons in under a minute.",
+};
 
 export default function DocsInstallPage() {
-  const page = DOCS_PAGE.INSTALL;
-  const { WHAT, INSTALL, FIRST_RUN, PRIVACY, NEXT } = DOCS_INSTALL;
-
   return (
     <>
       <main className="docs-main">
-        <div className="docs-crumbs">
-          <Link href={ROUTE.DOCS}>Docs</Link>
-          <span className="sep">/</span>
-          <Link href={ROUTE.DOCS}>{page.CRUMB_GROUP}</Link>
-          <span className="sep">/</span>
-          <span className="current">{page.CRUMB_CURRENT}</span>
-        </div>
-
-        <div className="docs-eyebrow">
-          <span className="dot" />
-          {page.EYEBROW}
-        </div>
-
-        <h1 className="docs-title">
-          {page.TITLE_BEFORE}
-          <span className="amber-underline">{page.TITLE_HIGHLIGHT}</span>
-          {page.TITLE_AFTER}
-        </h1>
-
-        <p className="docs-lede">{page.LEDE}</p>
+        <DocsPageHeader {...PAGE} />
 
         <div className="docs-prose">
-          <h2 id="what">{WHAT.HEADING}</h2>
+          <h2 id="what">What it does, before you commit</h2>
           <p>
-            {WHAT.INTRO_PREFIX}{" "}
+            Toppings adds small, sharp tools to YouTube:{" "}
             {FEATURES.map((feature, i) => (
               <span key={feature.name}>
                 {i > 0 && (i === FEATURES.length - 1 ? ", and " : ", ")}
                 <strong>{feature.name}</strong>
               </span>
             ))}
-            {WHAT.INTRO_SUFFIX}
-            <DocsInlineParts parts={[WHAT.PRIVACY_LINK]} />
-            {WHAT.SUFFIX_AFTER_LINK}
+            . It adds nothing else. It removes nothing. It collects{" "}
+            <a href="#privacy">zero data</a>.
           </p>
 
           <div className="callout">
@@ -63,48 +39,114 @@ export default function DocsInstallPage() {
               </svg>
             </span>
             <p>
-              <DocsInlineParts parts={WHAT.CALLOUT} />
+              <strong>Heads up:</strong> Toppings only runs on{" "}
+              <code>youtube.com</code>. No data is collected, sent, or stored
+              outside your browser. Settings sync via your browser profile only
+              if you have profile sync turned on.
             </p>
           </div>
 
-          <h2 id="install">{INSTALL.HEADING}</h2>
+          <h2 id="install">Install</h2>
           <div className="docs-steps">
-            {INSTALL.STEPS.map((step) => (
-              <div className="docs-step" key={step.title}>
-                <div>
-                  <h4>{step.title}</h4>
-                  <p>
-                    <DocsInlineParts parts={step.body} />
-                  </p>
-                </div>
+            <div className="docs-step">
+              <div>
+                <h4>Open your browser&apos;s extension store</h4>
+                <p>
+                  <Link href={URL.CHROME_WEBSTORE_TOPPINGS} target="_blank">
+                    Chrome Web Store
+                  </Link>{" "}
+                  for Chrome, Edge, Opera, Brave, Arc.{" "}
+                  <Link href={URL.FIREFOX_AMO_TOPPINGS} target="_blank">
+                    Firefox Add-ons
+                  </Link>{" "}
+                  for Firefox and its forks.
+                </p>
               </div>
-            ))}
+            </div>
+            <div className="docs-step">
+              <div>
+                <h4>Click &ldquo;Add to Chrome&rdquo; or &ldquo;Add to Firefox&rdquo;</h4>
+                <p>
+                  The browser will ask for two permissions:{" "}
+                  <code>youtube.com</code> access (to inject the buttons) and{" "}
+                  <code>storage</code> (to remember your settings). That&apos;s
+                  the complete list of what Toppings ever asks for.
+                </p>
+              </div>
+            </div>
+            <div className="docs-step">
+              <div>
+                <h4>Pin the toolbar icon</h4>
+                <p>
+                  Click the puzzle-piece in your toolbar, find Toppings, and
+                  pin it. You&apos;ll want quick access to the popup for the
+                  Audio Mode toggle and per-tab status.
+                </p>
+              </div>
+            </div>
+            <div className="docs-step">
+              <div>
+                <h4>Open YouTube</h4>
+                <p>
+                  Any video page. You&apos;ll see two new amber buttons next to
+                  YouTube&apos;s native controls — that&apos;s Toppings. Press{" "}
+                  <code>B</code> to try Audio mode immediately.
+                </p>
+              </div>
+            </div>
           </div>
 
-          <h2 id="first">{FIRST_RUN.HEADING}</h2>
-          <DocsRichText paragraphs={FIRST_RUN.PARAGRAPHS} />
-
-          <h2 id="privacy">{PRIVACY.HEADING}</h2>
+          <h2 id="first">First run</h2>
           <p>
-            <DocsInlineParts parts={PRIVACY.BODY} />
+            On first run Toppings opens a welcome tab with sensible defaults:
+            Audio Mode <em>available but off</em>, Loop <em>off</em>, Shorts
+            auto-scroll <em>on</em>, default playback speed <em>1.0×</em>.
+            Override any of them from the options page — right-click the toolbar
+            icon → <strong>Options</strong>, or click the gear in the popup.
+          </p>
+          <p>
+            The options page is its own tab. You can change settings any time;
+            changes are saved automatically.
           </p>
 
-          <h2 id="next">{NEXT.HEADING}</h2>
+          <h2 id="privacy">Privacy model</h2>
+          <p>
+            Toppings has no analytics, no telemetry, and no remote calls.
+            Everything runs inside your browser and dies there. Read the source
+            on{" "}
+            <Link href={URL.GITHUB_REPO} target="_blank">
+              GitHub
+            </Link>
+            ; it&apos;s GPL-3.0 in roughly 4,200 lines.
+          </p>
+
+          <h2 id="next">What to do next</h2>
           <ul>
-            {NEXT.ITEMS.map((parts, i) => (
-              <li key={i}>
-                <DocsInlineParts parts={parts} />
-              </li>
-            ))}
+            <li>
+              See every shortcut Toppings ships with on the{" "}
+              <Link href={ROUTE.DOCS_KEYBINDINGS}>Keybindings</Link> page — all
+              of them are rebindable.
+            </li>
+            <li>
+              The most-asked questions, with answers, on the{" "}
+              <Link href={ROUTE.DOCS_FAQ}>FAQ</Link>.
+            </li>
+            <li>
+              Found a bug or want a feature?{" "}
+              <Link href={URL.GITHUB_ISSUES} target="_blank">
+                Open an issue on GitHub
+              </Link>{" "}
+              — we read all of them.
+            </li>
           </ul>
         </div>
 
         <Pager currentHref={ROUTE.DOCS} />
 
         <div className="docs-foot">
-          <span>Last updated {formatTodayReviewDate()}</span>
+          <span>Last updated {LAST_UPDATED}</span>
           <Link
-            href={`${URLS.GITHUB_REPO}/edit/main/${DOCS_INSTALL_EDIT_PATH}`}
+            href={`${URL.GITHUB_REPO}/edit/main/${EDIT_PATH}`}
             target="_blank"
           >
             Edit this page on GitHub →
@@ -115,13 +157,13 @@ export default function DocsInstallPage() {
       <aside className="docs-toc">
         <div className="docs-toc__title">On this page</div>
         <div className="docs-toc__list">
-          {DOCS_INSTALL_TOC.map((item, i) => (
+          {TOC.map((item, i) => (
             <a
-              key={item.id}
+              key={item.ID}
               className={"docs-toc__link" + (i === 0 ? " active" : "")}
-              href={`#${item.id}`}
+              href={`#${item.ID}`}
             >
-              {item.label}
+              {item.LABEL}
             </a>
           ))}
         </div>

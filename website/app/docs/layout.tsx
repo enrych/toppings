@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import DocsTop from "@/components/docs/DocsTop";
-import DocsNav from "@/components/docs/DocsNav";
+import DocsPageHeader from "./components/DocsPageHeader";
+import DocsTop from "./components/DocsTop";
+import DocsNav from "./components/DocsNav";
 import "./docs.css";
 
 export const metadata: Metadata = {

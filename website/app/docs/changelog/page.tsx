@@ -1,65 +1,60 @@
+import type { Metadata } from "next";
 import Link from "next/link";
-import Pager from "@/components/docs/Pager";
-import { EXTENSION_VERSION } from "@/lib/version";
-import { URLS } from "@/lib/urls";
-import { RELEASES } from "@/lib/releases.data";
-import { userFacingItems } from "@/lib/releases";
-import { ROUTE } from "@/lib/site.data";
-import { DOCS_PAGE } from "../pages.data";
-import { DOCS_CHANGELOG_KIND_TONE } from "./kind-tone.data";
-import { formatReleaseDate } from "@/lib/dates";
+import DocsPageHeader from "../components/DocsPageHeader";
+import Pager from "../components/Pager";
+import { EXTENSION_VERSION, ROUTE, URL } from "@/constants/site";
+import { KIND_TONE, PAGE, RELEASES } from "./data";
+
+export const metadata: Metadata = {
+  title: "Toppings — Changelog",
+  description: "Release history for Toppings in user-facing terms.",
+};
+
+function formatReleaseDate(iso: string): string {
+  const [y, m, d] = iso.split("-").map(Number);
+  if (!y || !m || !d) return iso;
+  return new Date(y, m - 1, d).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
 
 export default function DocsChangelogPage() {
-  const page = DOCS_PAGE.CHANGELOG;
-
   return (
     <main className="docs-main">
-      <div className="docs-crumbs">
-        <Link href={ROUTE.DOCS}>Docs</Link>
-        <span className="sep">/</span>
-        <span>{page.CRUMB_GROUP}</span>
-        <span className="sep">/</span>
-        <span className="current">{page.CRUMB_CURRENT}</span>
-      </div>
-
-      <div className="docs-eyebrow">
-        <span className="dot" />
-        {page.EYEBROW}
-      </div>
-
-      <h1 className="docs-title">
-        {page.TITLE_BEFORE}
-        <span className="amber-underline">{page.TITLE_HIGHLIGHT}</span>
-        {page.TITLE_AFTER}
-      </h1>
-
-      <p className="docs-lede">
-        {page.LEDE_BEFORE}
-        <code
-          style={{
-            font: "500 14px/1 var(--font-mono)",
-            background: "rgba(10,10,10,.06)",
-            padding: "2px 6px",
-            borderRadius: 4,
-          }}
-        >
-          v{EXTENSION_VERSION}
-        </code>
-        . For commits and PRs see the{" "}
-        <Link href={URLS.GITHUB_COMMITS_MAIN} target="_blank">
-          {page.LEDE_LINK_LABEL}
-        </Link>
-        .
-      </p>
+      <DocsPageHeader
+        {...PAGE}
+        LEDE={
+          <>
+            {PAGE.LEDE_BEFORE}
+            <code
+              style={{
+                font: "500 14px/1 var(--font-mono)",
+                background: "rgba(10,10,10,.06)",
+                padding: "2px 6px",
+                borderRadius: 4,
+              }}
+            >
+              v{EXTENSION_VERSION}
+            </code>
+            . For commits and PRs see the{" "}
+            <Link href={URL.GITHUB_COMMITS_MAIN} target="_blank">
+              {PAGE.LEDE_LINK_LABEL}
+            </Link>
+            .
+          </>
+        }
+      />
 
       <div className="changelog-list">
         {RELEASES.map((release) => {
-          const isCurrent = release.version === EXTENSION_VERSION;
-          const items = userFacingItems(release.items);
+          const isCurrent = release.VERSION === EXTENSION_VERSION;
+          const items = release.ITEMS.filter((i) => i.KIND !== "internal");
           return (
             <article
-              key={release.version}
-              id={`v${release.version}`}
+              key={release.VERSION}
+              id={`v${release.VERSION}`}
               className="changelog-entry"
             >
               <header className="changelog-entry__head">
@@ -70,17 +65,17 @@ export default function DocsChangelogPage() {
                       (isCurrent ? " changelog-entry__version--current" : "")
                     }
                   >
-                    v{release.version}
+                    v{release.VERSION}
                   </span>
                   <span className="changelog-entry__date">
-                    {formatReleaseDate(release.date)}
+                    {formatReleaseDate(release.DATE)}
                   </span>
                   {isCurrent && (
                     <span className="changelog-entry__chip">Current</span>
                   )}
                 </div>
-                {release.title && (
-                  <h2 className="changelog-entry__title">{release.title}</h2>
+                {release.TITLE && (
+                  <h2 className="changelog-entry__title">{release.TITLE}</h2>
                 )}
               </header>
               <ul className="changelog-entry__items">
@@ -89,13 +84,13 @@ export default function DocsChangelogPage() {
                     <span
                       className="changelog-entry__kind"
                       style={{
-                        background: DOCS_CHANGELOG_KIND_TONE[item.kind].bg,
-                        color: DOCS_CHANGELOG_KIND_TONE[item.kind].fg,
+                        background: KIND_TONE[item.KIND].BG,
+                        color: KIND_TONE[item.KIND].FG,
                       }}
                     >
-                      {DOCS_CHANGELOG_KIND_TONE[item.kind].label}
+                      {KIND_TONE[item.KIND].LABEL}
                     </span>
-                    <span className="changelog-entry__text">{item.text}</span>
+                    <span className="changelog-entry__text">{item.TEXT}</span>
                   </li>
                 ))}
               </ul>

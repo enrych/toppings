@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import { Instrument_Serif, Geist } from "next/font/google";
 import "./globals.css";
-import { HTML_LANG, METADATA } from "@/lib/site.data";
+import { HTML_LANG, METADATA } from "@/constants/site";
 
 const inter = localFont({
   variable: "--font-inter",
