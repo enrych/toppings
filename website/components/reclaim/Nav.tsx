@@ -1,4 +1,5 @@
-import { BRAND_METADATA, URLS } from "@toppings/constants";
+import { BRAND_METADATA } from "@/lib/brand";
+import { URLS } from "@/lib/urls";
 import { LABEL, ROUTE } from "@/lib/site.data";
 
 export default function Nav() {

@@ -1,4 +1,4 @@
-import { cn } from "@toppings/utils";
+import { cn } from "../../utils/cn";
 import React, { forwardRef } from "react";
 
 type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";

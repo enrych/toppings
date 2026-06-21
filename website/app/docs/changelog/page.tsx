@@ -1,12 +1,13 @@
 import Link from "next/link";
 import Pager from "@/components/docs/Pager";
-import { EXTENSION_VERSION, URLS } from "@toppings/constants";
+import { EXTENSION_VERSION } from "@/lib/version";
+import { URLS } from "@/lib/urls";
 import { RELEASES } from "@/lib/releases.data";
 import { userFacingItems } from "@/lib/releases";
 import { ROUTE } from "@/lib/site.data";
 import { DOCS_PAGE } from "../pages.data";
 import { DOCS_CHANGELOG_KIND_TONE } from "./kind-tone.data";
-import { formatReleaseDate } from "@toppings/utils";
+import { formatReleaseDate } from "@/lib/dates";
 
 export default function DocsChangelogPage() {
   const page = DOCS_PAGE.CHANGELOG;

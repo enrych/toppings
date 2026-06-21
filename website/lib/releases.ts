@@ -1,4 +1,4 @@
-import { EXTENSION_VERSION } from "@toppings/constants";
+import { EXTENSION_VERSION } from "./version";
 import {
   RELEASE_ITEM_KIND,
   RELEASE_VERSION,

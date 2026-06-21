@@ -1,4 +1,4 @@
-import { URLS } from "@toppings/constants";
+import { URLS } from "@/lib/urls";
 import type { ROUTE } from "@/lib/site.data";
 
 export type DocsLinkTarget = keyof typeof URLS;

@@ -8,7 +8,7 @@ import Select from "../../../components/form/Select";
 import CapabilityStatusRow from "../../../components/feedback/CapabilityStatusRow";
 import { useStoreUpdater } from "../../../hooks/useStoreUpdater";
 import { useCapabilityCache } from "../../../hooks/useCapabilityCache";
-import { isNumericInRange } from "@toppings/utils";
+import { isNumericInRange } from "../../../utils/validation";
 import { isCustomPlaybackRatesList } from "../utils/validators";
 import {
   getUndismissedRecovered,

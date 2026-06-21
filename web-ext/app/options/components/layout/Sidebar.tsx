@@ -4,7 +4,7 @@ import IconButton from "../../../../components/primitives/IconButton";
 import Tooltip from "../../../../components/primitives/Tooltip";
 import { useChromeStorageLocal } from "../../../../hooks/useChromeStorageLocal";
 import { useStoreUpdater } from "../../../../hooks/useStoreUpdater";
-import { BRAND_METADATA } from "@toppings/constants";
+import { BRAND_METADATA } from "../../../../data/brand";
 import { EXTENSION_LOCAL_STORAGE_KEY } from "../../../../data/extension.data";
 import { OPTIONS_ICON_SRC, OPTIONS_PAGES } from "../../data";
 import { ThemePreference } from "../../../../utils/theme";

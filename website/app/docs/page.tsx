@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Pager from "@/components/docs/Pager";
 import { DocsInlineParts, DocsRichText } from "@/lib/docs-rich-text";
-import { URLS } from "@toppings/constants";
+import { URLS } from "@/lib/urls";
 import { FEATURES } from "@/lib/features.data";
 import { ROUTE } from "@/lib/site.data";
 import { DOCS_PAGE } from "./pages.data";
@@ -10,7 +10,7 @@ import {
   DOCS_INSTALL_EDIT_PATH,
   DOCS_INSTALL_TOC,
 } from "./install/data";
-import { formatTodayReviewDate } from "@toppings/utils";
+import { formatTodayReviewDate } from "@/lib/dates";
 
 export default function DocsInstallPage() {
   const page = DOCS_PAGE.INSTALL;

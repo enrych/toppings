@@ -12,9 +12,7 @@
     "lenis": "^1.3.23",
     "next": "^15.1.0",
     "react": "^18",
-    "react-dom": "^18",
-    "@toppings/constants": "workspace:*",
-    "@toppings/utils": "workspace:*"
+    "react-dom": "^18"
   },
   "devDependencies": {
     "@types/node": "^20",

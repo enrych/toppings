@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { URLS } from "@toppings/constants";
+import { URLS } from "@/lib/urls";
 import { ROUTE } from "@/lib/site.data";
 import type { DocsPart } from "@/lib/docs-part";
 

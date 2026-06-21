@@ -1,4 +1,4 @@
-import { URLS } from "@toppings/constants";
+import { URLS } from "@/lib/urls";
 
 export const HTML_LANG = "en";
 

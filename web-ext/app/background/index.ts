@@ -8,7 +8,7 @@ import {
 import { getCapabilityStatus } from "../../utils/storage/capabilityCache";
 import { getContext } from "./context";
 import { dispatchContext } from "./utils/dispatchContext";
-import { URLS } from "@toppings/constants";
+import { URLS } from "../../data/urls";
 import {
   EXTENSION_INSTALL_REASON,
   EXTENSION_MESSAGE_BODY,

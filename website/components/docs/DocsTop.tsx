@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import toppingsLogo from "@/assets/brand/toppings-logo-512.png";
-import { BRAND_METADATA, URLS } from "@toppings/constants";
+import { BRAND_METADATA } from "@/lib/brand";
+import { URLS } from "@/lib/urls";
 import { LABEL } from "@/lib/site.data";
 
 export default function DocsTop() {

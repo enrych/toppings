@@ -1,4 +1,24 @@
-import { EXTENSION_CONTEXT_SCOPE, KEYBOARD_KEY, NUMBER } from "@toppings/constants";
+import { EXTENSION_CONTEXT_SCOPE } from "./contract";
+
+const KEYBOARD_KEY = {
+  A: "A",
+  B: "B",
+  D: "D",
+  E: "E",
+  Q: "Q",
+  S: "S",
+  W: "W",
+  X: "X",
+  Z: "Z",
+} as const;
+
+const NUMBER = {
+  S0_25: "0.25",
+  S1: "1",
+  S1_5: "1.5",
+  S5: "5",
+  S15: "15",
+} as const;
 
 export const DEFAULT_STORE = {
   isExtensionEnabled: true as boolean,

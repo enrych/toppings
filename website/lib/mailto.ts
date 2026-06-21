@@ -1,5 +1,5 @@
 import { FEEDBACK_MAIL, MAILTO } from "@/lib/feedback-mail.data";
-import { interpolateTemplate } from "@toppings/utils";
+import { interpolateTemplate } from "@/lib/interpolate";
 
 export function feedbackMailtoHref(): string {
   return interpolateTemplate(MAILTO.FEEDBACK, {

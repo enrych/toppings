@@ -1,4 +1,4 @@
-import { isNull } from "@toppings/utils";
+import { isNull } from "../../../utils/validation";
 import React from "dom-chef";
 import elementReady from "element-ready";
 import type { Storage } from "../../background/store";

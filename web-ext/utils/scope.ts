@@ -3,7 +3,7 @@ import {
   YOUTUBE_HOSTNAME_SUFFIX,
   YOUTUBE_URL_PATH,
   type ExtensionContextScope,
-} from "@toppings/constants";
+} from "../data/contract";
 
 export function resolveScope(url: string | null): ExtensionContextScope {
   if (!url) return EXTENSION_CONTEXT_SCOPE.UNSUPPORTED;

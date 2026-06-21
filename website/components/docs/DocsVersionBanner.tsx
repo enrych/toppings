@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { EXTENSION_VERSION } from "@toppings/constants";
-import { docsVersionTag } from "@toppings/utils";
+import { EXTENSION_VERSION } from "@/lib/version";
+import { docsVersionTag } from "@/lib/docs-version";
 
 interface DocsVersionBannerProps {
   viewing: string;

@@ -1,4 +1,4 @@
-import { formatDurationSeconds } from "@toppings/utils";
+import { formatDurationSeconds } from "../../../utils/duration";
 import React from "dom-chef";
 import elementReady from "element-ready";
 import {

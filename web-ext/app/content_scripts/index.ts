@@ -7,7 +7,8 @@ import onWatchPage from "./pages/watch";
 import onYoutubePage from "./pages/youtube";
 import { setupNativeSettings } from "./pages/nativeSettings";
 import "./index.css";
-import { ERROR, EXTENSION_CONTEXT_SCOPE } from "@toppings/constants";
+import { ERROR } from "../../data/errors";
+import { EXTENSION_CONTEXT_SCOPE } from "../../data/contract";
 import {
   EXTENSION_MESSAGE_BODY,
   EXTENSION_MESSAGE_EVENT,

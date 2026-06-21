@@ -15,7 +15,8 @@ import {
   getCachedNamedConfigs,
 } from "../components/Segments";
 import { matchesBinding } from "../../../utils/keybinding";
-import { coalesce, defaultTo, isNull } from "@toppings/utils";
+import { coalesce, defaultTo } from "../../../utils/access";
+import { isNull } from "../../../utils/validation";
 import { WatchContext } from "../../background/context";
 import { Storage } from "../../background/store";
 import { resolveTarget } from "../../../utils/primitive";
@@ -30,7 +31,7 @@ import { BUILT_IN_PRESETS } from "../../../data/profiles.data";
 import { showPageToast } from "../utils/pageToast";
 import { injectGearMenuEntry } from "../components/GearMenuPanel";
 import { getCachedPlaylist } from "../../../utils/storage/playlistCache";
-import { formatDurationSeconds } from "@toppings/utils";
+import { formatDurationSeconds } from "../../../utils/duration";
 
 // ---------------------------------------------------------------------------
 // Selector strategy registries

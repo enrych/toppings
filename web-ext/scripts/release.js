@@ -2,7 +2,7 @@ import path from "node:path";
 import archiver from "archiver";
 import chalk from "chalk";
 import fs from "fs-extra";
-import { EXTENSION_VERSION } from "../../packages/constants/src/version.ts";
+import { EXTENSION_VERSION } from "../data/version.ts";
 
 const DIST_DIR = path.resolve("dist");
 const isFirefox = process.argv[2] === "firefox" ? "firefox" : "chrome";

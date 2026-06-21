@@ -5,7 +5,7 @@ import Card from "../../../components/layout/Card";
 import Switch from "../../../components/form/Switch";
 import Input from "../../../components/form/Input";
 import { useStoreUpdater } from "../../../hooks/useStoreUpdater";
-import { isNumericInRange } from "@toppings/utils";
+import { isNumericInRange } from "../../../utils/validation";
 
 export default function Shorts() {
   const { store, update } = useStoreUpdater();

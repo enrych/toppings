@@ -1,8 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
-import { URLS } from "../../packages/constants/src/urls.ts";
-import { EXTENSION_VERSION } from "../../packages/constants/src/version.ts";
-import { BRAND_METADATA } from "../../packages/constants/src/brand.ts";
+import { URLS } from "./../data/urls.ts";
+import { EXTENSION_VERSION } from "./../data/version.ts";
+import { BRAND_METADATA } from "./../data/brand.ts";
 import tailwindcss from "tailwindcss";
 import autoprefixer from "autoprefixer";
 import CopyWebpackPlugin from "copy-webpack-plugin";
@@ -90,7 +90,7 @@ export default (env) => {
         },
         {
           test: /\.(ts|tsx)$/,
-          exclude: /node_modules\/(?!@toppings\/(constants|utils)\/)/,
+          exclude: /node_modules/,
           use: {
             loader: "babel-loader",
             options: {

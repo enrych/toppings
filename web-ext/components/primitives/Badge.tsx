@@ -1,4 +1,4 @@
-import { cn } from "@toppings/utils";
+import { cn } from "../../utils/cn";
 import React from "react";
 
 type BadgeTone = "neutral" | "success" | "warning" | "danger" | "info";

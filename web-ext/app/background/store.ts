@@ -1,4 +1,4 @@
-import { mergeDefaults } from "@toppings/utils";
+import { mergeDefaults } from "../../utils/access";
 import { DEFAULT_STORE } from "../../data/store.data";
 
 export { DEFAULT_STORE };

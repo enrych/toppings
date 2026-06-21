@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { BRAND_METADATA, EXTENSION_VERSION, URLS } from "@toppings/constants";
+import { BRAND_METADATA } from "@/lib/brand";
+import { EXTENSION_VERSION } from "@/lib/version";
+import { URLS } from "@/lib/urls";
 import { ROUTE } from "@/lib/site.data";
 import "./reclaim.css";
 import Cursor from "./Cursor";

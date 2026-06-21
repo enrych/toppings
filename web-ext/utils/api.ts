@@ -1,7 +1,7 @@
-import { HTTP_ACCEPT, HTTP_HEADER } from "@toppings/constants";
+import { HTTP_ACCEPT, HTTP_HEADER } from "../data/http";
 import { EXTENSION_API_BASE_URL } from "../data/api.data";
 import { NODE_ENV } from "../data/extension.data";
-import { interpolateTemplate } from "@toppings/utils";
+import { interpolateTemplate } from "./interpolate";
 
 function resolveBaseUrl(): string {
   return process.env.NODE_ENV === NODE_ENV.DEVELOPMENT

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { EXTENSION_VERSION } from "@toppings/constants";
+import { EXTENSION_VERSION } from "../../data/version";
 import type { CapabilityStatus } from "../../utils/storage/capabilityCache";
 import { addFeatureReport } from "../../utils/storage/featureReports";
 

@@ -24,7 +24,7 @@ export interface ReleaseEntry {
   items: ReleaseItem[];
 }
 
-/** Stub text inserted by `bun run bump` when no WIP entry exists. */
+/** Stub text inserted on release when no WIP entry exists. */
 export const RELEASE_STUB = {
   TITLE: "TODO: one-line tagline",
   ITEM_TEXT: "TODO: add release notes for {{version}}",

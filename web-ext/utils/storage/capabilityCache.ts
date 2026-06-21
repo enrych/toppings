@@ -1,4 +1,4 @@
-import { EXTENSION_VERSION } from "@toppings/constants";
+import { EXTENSION_VERSION } from "../../data/version";
 import { CAPABILITY_CACHE_STORE, withStore } from "./indexedDb";
 import type { PrimitiveResolution } from "../primitive";
 

@@ -15,7 +15,7 @@
  * menu open and will reuse existing injected nodes.
  */
 
-import { isNull } from "@toppings/utils";
+import { isNull } from "../../../../utils/validation";
 import {
   getAllProfiles,
   getActiveProfile,

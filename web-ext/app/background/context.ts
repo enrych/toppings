@@ -1,11 +1,11 @@
 import {
-  ERROR,
   EXTENSION_CONTEXT_SCOPE,
-  HTTP_METHOD,
   YOUTUBE_QUERY_PARAM,
   YOUTUBE_SYSTEM_PLAYLIST_ID,
   YOUTUBE_URL_PATH,
-} from "@toppings/constants";
+} from "../../data/contract";
+import { ERROR } from "../../data/errors";
+import { HTTP_METHOD } from "../../data/http";
 import { EXTENSION_API_ENDPOINT } from "../../data/api.data";
 import { api } from "../../utils/api";
 import { getStorage, Storage } from "./store";

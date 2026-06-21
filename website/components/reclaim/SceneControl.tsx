@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { HOME } from "@/components/reclaim/reclaim.data";
-import { isNull } from "@toppings/utils";
+import { isNull } from "@/lib/validation";
 import { KEYBINDING_ROW_INDEX_BY_KEY } from "@/lib/keybindings";
 
 export default function SceneControl() {

@@ -1,6 +1,7 @@
-import { EXTENSION_VERSION, URLS } from "@toppings/constants";
+import { EXTENSION_VERSION } from "@/lib/version";
+import { URLS } from "@/lib/urls";
 import { HERO } from "@/lib/site.data";
-import { interpolateTemplate } from "@toppings/utils";
+import { interpolateTemplate } from "@/lib/interpolate";
 import InstallCTA from "./InstallCTA";
 
 export default function SceneHero() {

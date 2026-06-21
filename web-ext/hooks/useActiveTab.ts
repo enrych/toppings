@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import {
   EXTENSION_CONTEXT_SCOPE,
   type ExtensionContextScope,
-} from "@toppings/constants";
+} from "../data/contract";
 import { resolveScope } from "../utils/scope";
 
 export function useActiveTab() {

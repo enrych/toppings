@@ -1,4 +1,5 @@
-import { defaultTo, isNull } from "@toppings/utils";
+import { defaultTo } from "../utils/access";
+import { isNull } from "../utils/validation";
 import { useEffect, useState } from "react";
 
 export function useChromeStorageLocal<T>(
