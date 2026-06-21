@@ -9,6 +9,9 @@ on:
       - "web-ext/**"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build_firefox:
     runs-on: ubuntu-latest
