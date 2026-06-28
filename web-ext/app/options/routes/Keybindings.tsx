@@ -4,10 +4,10 @@ import Section from "../../../components/layout/Section";
 import Card from "../../../components/layout/Card";
 import Keybinding from "../../../components/form/Keybinding";
 import Input from "../../../components/form/Input";
-import { useStoreUpdater } from "../../../hooks/useStoreUpdater";
+import { useSyncStore } from "../../../hooks/useSyncStore";
 
 export default function Keybindings() {
-  const { store, update } = useStoreUpdater();
+  const { store, update } = useSyncStore();
   const w = store.preferences.watch;
   const s = store.preferences.shorts;
   const nudge = w.nudgeLoopSegment;

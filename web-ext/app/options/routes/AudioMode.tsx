@@ -12,20 +12,20 @@ import Field from "../../../components/form/Field";
 import Button from "../../../components/primitives/Button";
 import Badge from "../../../components/primitives/Badge";
 import Icon from "../../../components/primitives/Icon";
-import { useStoreUpdater } from "../../../hooks/useStoreUpdater";
+import { useSyncStore } from "../../../hooks/useSyncStore";
 import { useToast } from "../../../components/feedback/ToastProvider";
 import { useConfirm } from "../../../components/feedback/ConfirmProvider";
-import { useChromeStorageLocal } from "../../../hooks/useChromeStorageLocal";
+import { useLocalStorage } from "../../../hooks/useLocalStorage";
 import { useVideoPreference } from "../../../hooks/useVideoPreference";
 import { clearAllAudioModePins } from "../../content_scripts/components/AudioMode/videoPreference";
 import { EXTENSION_LOCAL_STORAGE_KEY } from "../../../data/extension";
 
 export default function AudioMode() {
-  const { store, update } = useStoreUpdater();
+  const { store, update } = useSyncStore();
   const toast = useToast();
   const confirm = useConfirm();
   const am = store.preferences.watch.audioMode;
-  const [localImage, setLocalImage] = useChromeStorageLocal<string | null>(
+  const [localImage, setLocalImage] = useLocalStorage<string | null>(
     EXTENSION_LOCAL_STORAGE_KEY.AUDIO_MODE_GLOBAL_CUSTOM_IMAGE,
     null,
   );

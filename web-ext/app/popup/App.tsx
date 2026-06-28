@@ -3,7 +3,7 @@ import { Storage, DEFAULT_STORE, getStorage } from "../background/store";
 import StoreContext from "../../context/store";
 import ThemeApplier from "../../components/ThemeApplier";
 import { ToastProvider } from "../../components/feedback/ToastProvider";
-import { useStoreUpdater } from "../../hooks/useStoreUpdater";
+import { useSyncStore } from "../../hooks/useSyncStore";
 import { useScope } from "../../hooks/useScope";
 import { EXTENSION_CONTEXT_SCOPE } from "../../data/contract";
 import { URLS } from "../../data/urls";
@@ -58,7 +58,7 @@ function usePopupProfiles() {
 }
 
 function PopupShell() {
-  const { store, update } = useStoreUpdater();
+  const { store, update } = useSyncStore();
   const version = chrome.runtime.getManifest().version;
   const { url, scope } = useScope();
   const { profiles, activeProfileId, activate } = usePopupProfiles();

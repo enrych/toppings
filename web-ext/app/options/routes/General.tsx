@@ -4,14 +4,14 @@ import Section from "../../../components/layout/Section";
 import Card from "../../../components/layout/Card";
 import Switch from "../../../components/form/Switch";
 import Select from "../../../components/form/Select";
-import { useStoreUpdater } from "../../../hooks/useStoreUpdater";
+import { useSyncStore } from "../../../hooks/useSyncStore";
 import { useToast } from "../../../components/feedback/ToastProvider";
 import { useCapabilityCache } from "../../../hooks/useCapabilityCache";
 import { setExtensionIcon } from "../../../utils/browser";
 import { ThemePreference } from "../../../hooks/useTheme";
 
 export default function General() {
-  const { store, update } = useStoreUpdater();
+  const { store, update } = useSyncStore();
   const toast = useToast();
   const { rescan } = useCapabilityCache();
   const [isRescanning, setIsRescanning] = useState(false);

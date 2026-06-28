@@ -5,7 +5,7 @@ import { Storage } from "../app/background/store";
 
 type Recipe = (draft: Storage) => void;
 
-export function useStoreUpdater(): {
+export function useSyncStore(): {
   store: Storage;
   update: (recipe: Recipe) => void;
 } {
