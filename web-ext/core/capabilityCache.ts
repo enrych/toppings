@@ -1,6 +1,6 @@
-import { EXTENSION_VERSION } from "../../data/version";
-import { CAPABILITY_CACHE_STORE, withStore } from "./indexedDb";
-import type { PrimitiveResolution } from "../primitive";
+import { EXTENSION_VERSION } from "../data/version";
+import { CAPABILITY_CACHE_STORE, withStore } from "../utils/indexedDb";
+import type { PrimitiveResolution } from "../utils/primitive";
 
 // ---------------------------------------------------------------------------
 // Types

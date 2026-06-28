@@ -5,7 +5,7 @@
  */
 
 import { resolveTarget } from "../../../../utils/primitive";
-import { setCapabilityStatus } from "../../../../utils/storage/capabilityCache";
+import { setCapabilityStatus } from "../../../../core/capabilityCache";
 
 const STRATEGIES = [
   "ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-shorts])",

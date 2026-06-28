@@ -12,9 +12,9 @@ import {
   getAllProfiles,
   getActiveProfile,
   setActiveProfileId,
-} from "../../../utils/storage/profileStore";
+} from "../../../core/profileStore";
 import { applyWatchProfile } from "../primitives/applyProfile";
-import type { Profile } from "../../../data/profiles.data";
+import type { Profile } from "../../../data/profiles";
 
 // ---------------------------------------------------------------------------
 // IDs

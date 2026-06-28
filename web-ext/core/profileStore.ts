@@ -3,7 +3,7 @@ import {
   DEFAULT_PROFILE_STORE,
   type Profile,
   type ProfileStore,
-} from "../../data/profiles.data";
+} from "../data/profiles";
 
 // ---------------------------------------------------------------------------
 // Storage key

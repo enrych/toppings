@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { EXTENSION_VERSION } from "../../data/version";
-import type { CapabilityStatus } from "../../utils/storage/capabilityCache";
-import { addFeatureReport } from "../../utils/storage/featureReports";
+import type { CapabilityStatus } from "../../core/capabilityCache";
+import { addFeatureReport } from "../../core/featureReports";
 
 interface CapabilityStatusRowProps {
   /** Human-readable feature name, e.g. "Recommendations Sidebar" */

@@ -7,7 +7,7 @@
  * "recovered" flag is set that the options page reads to show a banner.
  */
 
-import { getCurrentVersion } from "../../utils/version";
+import { getCurrentVersion } from "../utils/version";
 
 const REPORT_STORE_KEY = "toppings:feature_reports";
 const RECOVERED_KEY = "toppings:feature_recovered";

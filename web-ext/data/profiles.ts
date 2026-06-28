@@ -1,4 +1,4 @@
-import type { PlayerLayout, PlayerVisuals } from "../utils/primitive";
+import type { PlayerLayout, PlayerVisuals } from "./player";
 
 // ---------------------------------------------------------------------------
 // Profile primitive config

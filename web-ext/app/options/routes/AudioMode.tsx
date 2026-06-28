@@ -17,8 +17,8 @@ import { useToast } from "../../../components/feedback/ToastProvider";
 import { useConfirm } from "../../../components/feedback/ConfirmProvider";
 import { useChromeStorageLocal } from "../../../hooks/useChromeStorageLocal";
 import { useVideoPreference } from "../../../hooks/useVideoPreference";
-import { clearAllAudioModePins } from "../../../utils/storage/videoPreference";
-import { EXTENSION_LOCAL_STORAGE_KEY } from "../../../data/extension.data";
+import { clearAllAudioModePins } from "../../content_scripts/components/AudioMode/videoPreference";
+import { EXTENSION_LOCAL_STORAGE_KEY } from "../../../data/extension";
 
 export default function AudioMode() {
   const { store, update } = useStoreUpdater();

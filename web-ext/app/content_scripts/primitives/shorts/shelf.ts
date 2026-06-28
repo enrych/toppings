@@ -7,7 +7,7 @@
  */
 
 import { resolveTarget } from "../../../../utils/primitive";
-import { setCapabilityStatus } from "../../../../utils/storage/capabilityCache";
+import { setCapabilityStatus } from "../../../../core/capabilityCache";
 
 /** Selectors that match the Shorts shelf in home + search. */
 const STRATEGIES = [

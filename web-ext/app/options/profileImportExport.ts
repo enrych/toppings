@@ -6,7 +6,7 @@
  *         a Profile object ready to be persisted via `createProfile`.
  */
 
-import type { Profile, ProfilePrimitiveConfig } from "../../data/profiles.data";
+import type { Profile, ProfilePrimitiveConfig } from "../../data/profiles";
 
 // ---------------------------------------------------------------------------
 // Export

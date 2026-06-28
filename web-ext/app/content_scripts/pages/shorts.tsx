@@ -1,4 +1,3 @@
-import { isNull } from "../../../utils/validation";
 import React from "dom-chef";
 import elementReady from "element-ready";
 import type { Storage } from "../../background/store";
@@ -11,12 +10,12 @@ let preferences: Storage["preferences"]["shorts"] | undefined;
 const onShortsPage = async (ctx: ShortsContext) => {
   const { store } = ctx;
   preferences = store.preferences.shorts;
-  if (isNull(preferences)) return;
+  if (!preferences) return;
 
   player = await elementReady("ytd-reel-video-renderer[is-active] video", {
     stopOnDomReady: false,
   });
-  if (isNull(player)) return;
+  if (!player) return;
 
   const playerActions = player
     .closest("ytd-reel-video-renderer[is-active]")
@@ -63,8 +62,8 @@ const onShortsPage = async (ctx: ShortsContext) => {
 };
 
 function useShortcuts(event: KeyboardEvent) {
-  if (isNull(player)) return;
-  if (isNull(preferences)) return;
+  if (!player) return;
+  if (!preferences) return;
 
   const target = event.target as HTMLElement;
   if (
@@ -85,7 +84,7 @@ function useShortcuts(event: KeyboardEvent) {
 
 let setupTimeoutId: ReturnType<typeof setTimeout>;
 function setupAutoScroll() {
-  if (isNull(player)) return;
+  if (!player) return;
   if (!preferences?.reelAutoScroll.value) return;
   clearTimeout(setupTimeoutId);
   setupTimeoutId = setTimeout(() => {
@@ -94,8 +93,8 @@ function setupAutoScroll() {
 }
 
 function scrollToNextReel() {
-  if (isNull(player)) return;
-  if (isNull(preferences)) return;
+  if (!player) return;
+  if (!preferences) return;
   if (!preferences.reelAutoScroll.value) {
     player.play();
     return;
@@ -136,14 +135,14 @@ const TogglePlaybackRateButton = (
 );
 
 function togglePlaybackRate() {
-  if (isNull(player)) return;
+  if (!player) return;
   player.playbackRate = player.playbackRate === 1 ? 2 : 1;
   TogglePlaybackRateButton.classList.toggle("tw-bg-white/10");
   TogglePlaybackRateButton.classList.toggle("tw-bg-white/20");
 }
 
 function enableAutoScroll() {
-  if (isNull(preferences)) return;
+  if (!preferences) return;
   preferences.reelAutoScroll.value = !preferences.reelAutoScroll.value;
   AutoScrollButton.classList.toggle("tw-bg-white/10");
   AutoScrollButton.classList.toggle("tw-bg-white/20");

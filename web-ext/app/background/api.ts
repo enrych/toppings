@@ -1,12 +1,11 @@
-import { HTTP_ACCEPT, HTTP_HEADER } from "../data/http";
-import { EXTENSION_API_BASE_URL } from "../data/api.data";
-import { NODE_ENV } from "../data/extension.data";
-import { interpolateTemplate } from "./interpolate";
+import { HTTP_ACCEPT, HTTP_HEADER } from "../../data/http";
+import { NODE_ENV } from "../../data/extension";
+import { interpolateTemplate } from "../../utils/interpolate";
 
 function resolveBaseUrl(): string {
   return process.env.NODE_ENV === NODE_ENV.DEVELOPMENT
-    ? EXTENSION_API_BASE_URL.LOCAL
-    : EXTENSION_API_BASE_URL.PRODUCTION;
+    ? "http://127.0.0.1:8787/api{{endpoint}}"
+    : "https://toppings.enry.ch/api{{endpoint}}";
 }
 
 export const api = {

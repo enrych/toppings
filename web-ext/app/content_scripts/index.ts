@@ -13,7 +13,7 @@ import {
   EXTENSION_MESSAGE_BODY,
   EXTENSION_MESSAGE_EVENT,
   EXTENSION_MESSAGE_TYPE,
-} from "../../data/extension.data";
+} from "../../data/extension";
 
 const scopeHandlers: Record<string, Function> = {
   [EXTENSION_CONTEXT_SCOPE.PLAYLIST]: onPlaylistPage,

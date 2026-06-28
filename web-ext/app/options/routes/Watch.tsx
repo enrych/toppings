@@ -8,13 +8,12 @@ import Select from "../../../components/form/Select";
 import CapabilityStatusRow from "../../../components/feedback/CapabilityStatusRow";
 import { useStoreUpdater } from "../../../hooks/useStoreUpdater";
 import { useCapabilityCache } from "../../../hooks/useCapabilityCache";
-import { isNumericInRange } from "../../../utils/validation";
 import { isCustomPlaybackRatesList } from "../utils/validators";
 import {
   getUndismissedRecovered,
   dismissRecovered,
   type RecoveredFeature,
-} from "../../../utils/storage/featureReports";
+} from "../../../core/featureReports";
 
 // All watch-page primitives the extension currently supports.
 // When a new primitive is added, append an entry here.
@@ -94,7 +93,10 @@ export default function Watch() {
               label="Default Playback Rate"
               description="Rate applied to every video on load. 1 = Normal."
               initialValue={w.defaultPlaybackRate.value}
-              validator={(v) => isNumericInRange(v, 0.0625, 16)}
+              validator={(v) => {
+                const n = parseFloat(v);
+                return Number.isFinite(n) && n >= 0.0625 && n <= 16;
+              }}
               errorMessage="Must be between 0.0625 and 16"
               onChange={(value) => {
                 update((draft) => {
@@ -125,7 +127,10 @@ export default function Watch() {
               label="Toggle Playback Rate"
               description="Rate to switch to when pressing the toggle shortcut."
               initialValue={w.togglePlaybackRate.value}
-              validator={(v) => isNumericInRange(v, 0.0625, 16)}
+              validator={(v) => {
+                const n = parseFloat(v);
+                return Number.isFinite(n) && n >= 0.0625 && n <= 16;
+              }}
               errorMessage="Must be between 0.0625 and 16"
               onChange={(value) => {
                 update((draft) => {
@@ -137,7 +142,10 @@ export default function Watch() {
               label="Increase Playback Rate Step"
               description="Amount the rate goes up when pressing the increase shortcut."
               initialValue={w.increasePlaybackRate.value}
-              validator={(v) => isNumericInRange(v, 0, 16)}
+              validator={(v) => {
+                const n = parseFloat(v);
+                return Number.isFinite(n) && n >= 0 && n <= 16;
+              }}
               onChange={(value) => {
                 update((draft) => {
                   draft.preferences.watch.increasePlaybackRate.value = value;
@@ -148,7 +156,10 @@ export default function Watch() {
               label="Decrease Playback Rate Step"
               description="Amount the rate goes down when pressing the decrease shortcut."
               initialValue={w.decreasePlaybackRate.value}
-              validator={(v) => isNumericInRange(v, 0, 16)}
+              validator={(v) => {
+                const n = parseFloat(v);
+                return Number.isFinite(n) && n >= 0 && n <= 16;
+              }}
               onChange={(value) => {
                 update((draft) => {
                   draft.preferences.watch.decreasePlaybackRate.value = value;
@@ -168,7 +179,10 @@ export default function Watch() {
               label="Seek Backward"
               description="Seconds to seek backward."
               initialValue={w.seekBackward.value}
-              validator={(v) => isNumericInRange(v, 0, Infinity)}
+              validator={(v) => {
+                const n = parseFloat(v);
+                return Number.isFinite(n) && n >= 0;
+              }}
               onChange={(value) => {
                 update((draft) => {
                   draft.preferences.watch.seekBackward.value = value;
@@ -179,7 +193,10 @@ export default function Watch() {
               label="Seek Forward"
               description="Seconds to seek forward."
               initialValue={w.seekForward.value}
-              validator={(v) => isNumericInRange(v, 0, Infinity)}
+              validator={(v) => {
+                const n = parseFloat(v);
+                return Number.isFinite(n) && n >= 0;
+              }}
               onChange={(value) => {
                 update((draft) => {
                   draft.preferences.watch.seekForward.value = value;

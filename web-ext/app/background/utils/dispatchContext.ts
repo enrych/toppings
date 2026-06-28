@@ -1,7 +1,7 @@
 import {
   EXTENSION_MESSAGE_BODY,
   EXTENSION_MESSAGE_TYPE,
-} from "../../../data/extension.data";
+} from "../../../data/extension";
 import type { Context } from "../context";
 
 export async function dispatchContext(

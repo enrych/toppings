@@ -1,10 +1,26 @@
 import { useContext, useEffect } from "react";
 import StoreContext from "../context/store";
-import {
-  ThemePreference,
-  resolveTheme,
-  applyTheme,
-} from "../utils/theme";
+
+export type ThemePreference = "system" | "dark" | "light";
+type ResolvedTheme = "dark" | "light";
+
+function resolveTheme(pref: ThemePreference): ResolvedTheme {
+  if (pref === "system") {
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-color-scheme: light)").matches
+    ) {
+      return "light";
+    }
+    return "dark";
+  }
+  return pref;
+}
+
+function applyTheme(theme: ResolvedTheme) {
+  if (typeof document === "undefined") return;
+  document.documentElement.setAttribute("data-theme", theme);
+}
 
 export function useTheme() {
   const ctx = useContext(StoreContext)!;

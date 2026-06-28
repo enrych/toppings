@@ -1,13 +1,13 @@
 import elementReady from "element-ready";
-import { SegmentEngine } from "../../../utils/segments/engine";
-import { SegmentMarkersController } from "../../../utils/segments/markers";
-import { createFreshConfig, removeSegmentFromConfig, updateSegmentTimes } from "../../../utils/segments/factories";
+import { SegmentEngine } from "../segments/engine";
+import { SegmentMarkersController } from "../segments/markers";
+import { createFreshConfig, removeSegmentFromConfig, updateSegmentTimes } from "../segments/factories";
 import {
   getLastUsed,
   setLastUsed,
   getAutoloadConfig,
-} from "../../../utils/storage/segmentStore";
-import type { SegmentConfig, SegmentId } from "../../../utils/segments/types";
+} from "../segments/segmentStore";
+import type { SegmentConfig, SegmentId } from "../segments/types";
 import {
   SegmentPanel,
   setupSegmentPanel,
@@ -430,7 +430,7 @@ export async function saveSegmentsShortcut(): Promise<void> {
 
   if (isActive && activeConfig) {
     const { saveNamedConfig, setDefaultConfig } = await import(
-      "../../../utils/storage/segmentStore"
+      "../segments/segmentStore"
     );
     const named = { ...activeConfig, updatedAt: Date.now() };
     await saveNamedConfig(currentVideoId, named);

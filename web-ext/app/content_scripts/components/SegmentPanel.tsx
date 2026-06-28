@@ -5,14 +5,14 @@ import type {
   PlayStep,
   SegmentId,
   StepId,
-} from "../../../utils/segments/types";
+} from "../segments/types";
 import {
   addSegmentToConfig,
   removeSegmentFromConfig,
   generateConfigLabel,
   splitSegmentAtTime,
-} from "../../../utils/segments/factories";
-import type { SegmentAutoLoadPin } from "../../../utils/segments/types";
+} from "../segments/factories";
+import type { SegmentAutoLoadPin } from "../segments/types";
 import {
   saveNamedConfig,
   deleteNamedConfig,
@@ -22,7 +22,7 @@ import {
   getVideoSegmentData,
   setAutoLoadPin,
   getAutoLoadPin,
-} from "../../../utils/storage/segmentStore";
+} from "../segments/segmentStore";
 import { setSegmentButtonSaved } from "./SegmentButton";
 
 // ---------------------------------------------------------------------------

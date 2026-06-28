@@ -8,7 +8,7 @@ import { useStoreUpdater } from "../../../hooks/useStoreUpdater";
 import { useToast } from "../../../components/feedback/ToastProvider";
 import { useCapabilityCache } from "../../../hooks/useCapabilityCache";
 import { setExtensionIcon } from "../../../utils/browser";
-import { ThemePreference } from "../../../utils/theme";
+import { ThemePreference } from "../../../hooks/useTheme";
 
 export default function General() {
   const { store, update } = useStoreUpdater();

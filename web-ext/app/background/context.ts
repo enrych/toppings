@@ -6,13 +6,13 @@ import {
 } from "../../data/contract";
 import { ERROR } from "../../data/errors";
 import { HTTP_METHOD } from "../../data/http";
-import { EXTENSION_API_ENDPOINT } from "../../data/api.data";
-import { api } from "../../utils/api";
+import { EXTENSION_API_ENDPOINT } from "../../data/api";
+import { api } from "./api";
 import { getStorage, Storage } from "./store";
 import {
   getCachedPlaylist,
   setCachedPlaylist,
-} from "../../utils/storage/playlistCache";
+} from "../../content_scripts/pages/playlistCache";
 
 export type YoutubeContext = BaseContext & {
   scope: typeof EXTENSION_CONTEXT_SCOPE.YOUTUBE;

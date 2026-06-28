@@ -6,8 +6,8 @@
  */
 
 import { resolveTarget } from "../../../../utils/primitive";
-import { setCapabilityStatus } from "../../../../utils/storage/capabilityCache";
-import type { ThumbnailMode } from "../../../../data/profiles.data";
+import { setCapabilityStatus } from "../../../../core/capabilityCache";
+import type { ThumbnailMode } from "../../../../data/profiles";
 
 const STRATEGIES = [
   "ytd-search ytd-video-renderer ytd-thumbnail img#img",

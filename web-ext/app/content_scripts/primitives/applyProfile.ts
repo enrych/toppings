@@ -1,5 +1,5 @@
-import { getActiveProfile } from "../../../utils/storage/profileStore";
-import type { ProfilePrimitiveConfig } from "../../../data/profiles.data";
+import { getActiveProfile } from "../../../core/profileStore";
+import type { ProfilePrimitiveConfig } from "../../../data/profiles";
 import {
   setSidebarVisible,
   setCommentsVisible,

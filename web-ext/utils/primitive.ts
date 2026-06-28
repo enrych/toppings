@@ -1,9 +1,5 @@
 import elementReady from "element-ready";
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
 /**
  * The outcome of attempting to resolve a primitive's DOM target.
  *
@@ -33,37 +29,6 @@ export interface ResolveOptions {
   stopOnDomReady?: boolean;
   timeout?: number;
 }
-
-// ---------------------------------------------------------------------------
-// Watch-page primitive value types
-//
-// These represent the possible states for each composable watch-page
-// primitive. Profiles (Phase 2) will store these values per-primitive and
-// apply them on navigation.
-// ---------------------------------------------------------------------------
-
-/**
- * How the player area is laid out on the watch page.
- *
- * - `"default"`   — YouTube's standard layout (no change)
- * - `"theatre"`   — YouTube's theatre mode (wider video, narrower sidebar)
- * - `"no-video"`  — Toppings feature: player area collapsed/hidden entirely
- */
-export type PlayerLayout = "default" | "theatre" | "no-video";
-
-/**
- * What fills the video slot when the player is visible.
- *
- * - `"video"`       — the real video stream (no change)
- * - `"black"`       — solid black overlay (current Audio Mode default)
- * - `"visualizer"`  — audio visualizer canvas overlay
- * - `"custom"`      — user-supplied image or video overlay
- */
-export type PlayerVisuals = "video" | "black" | "visualizer" | "custom";
-
-// ---------------------------------------------------------------------------
-// Core resolver
-// ---------------------------------------------------------------------------
 
 /**
  * Try each CSS selector strategy in order, returning the first element found.

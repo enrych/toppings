@@ -15,12 +15,11 @@
  * menu open and will reuse existing injected nodes.
  */
 
-import { isNull } from "../../../../utils/validation";
 import {
   getAllProfiles,
   getActiveProfile,
   setActiveProfileId,
-} from "../../../../utils/storage/profileStore";
+} from "../../../../core/profileStore";
 import {
   setSidebarVisible,
   setCommentsVisible,
@@ -30,7 +29,7 @@ import {
   resetEndCards,
 } from "../../primitives/watch";
 import { applyWatchProfile } from "../../primitives/applyProfile";
-import type { Profile } from "../../../../data/profiles.data";
+import type { Profile } from "../../../../data/profiles";
 
 // ---------------------------------------------------------------------------
 // IDs for injected elements
@@ -220,9 +219,9 @@ export async function injectGearMenuEntry(
 ): Promise<void> {
   // Find the main panel and its menu list.
   const mainPanel = settingsMenu.querySelector(".ytp-panel");
-  if (isNull(mainPanel)) return;
+  if (!mainPanel) return;
   const mainPanelMenu = mainPanel.querySelector(".ytp-panel-menu");
-  if (isNull(mainPanelMenu)) return;
+  if (!mainPanelMenu) return;
 
   // --- Inject the "Toppings" entry in the main menu (idempotent) ---
   let tppngMenuItem = settingsMenu.querySelector(
@@ -298,7 +297,7 @@ export async function injectGearMenuEntry(
   const panelMenu = tppngPanel.querySelector(
     ".ytp-panel-menu",
   ) as HTMLElement | null;
-  if (isNull(panelMenu)) return;
+  if (!panelMenu) return;
 
   // --- Wire the entry click to show Toppings panel ---
   tppngMenuItem.onclick = async () => {

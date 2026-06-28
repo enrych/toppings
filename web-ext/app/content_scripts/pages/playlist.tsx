@@ -1,4 +1,4 @@
-import { formatDurationSeconds } from "../../../utils/duration";
+import { formatDuration } from "../../../utils/duration";
 import React from "dom-chef";
 import elementReady from "element-ready";
 import {
@@ -6,7 +6,7 @@ import {
   PlaylistContext,
   ValidPlaylistPayload,
 } from "../../background/context";
-import { invalidateCachedPlaylist } from "../../../utils/storage/playlistCache";
+import { invalidateCachedPlaylist } from "./playlistCache";
 
 const onPlaylistPage = async (ctx: PlaylistContext): Promise<void> => {
   const { payload } = ctx;
@@ -81,13 +81,13 @@ const onPlaylistPage = async (ctx: PlaylistContext): Promise<void> => {
           <div>
             <span>Average Runtime: </span>
             <span id="tppng-ytp-average-runtime">
-              {formatDurationSeconds(averageRuntime)}
+              {formatDuration(averageRuntime)}
             </span>
           </div>
           <div>
             <span>Total Runtime: </span>
             <span id="tppng-ytp-total-runtime">
-              {formatDurationSeconds(totalRuntime)}
+              {formatDuration(totalRuntime)}
             </span>
           </div>
         </div>
@@ -111,8 +111,8 @@ const onPlaylistPage = async (ctx: PlaylistContext): Promise<void> => {
 
     if (averageRuntimeElement && totalRuntimeElement) {
       averageRuntimeElement.textContent =
-        formatDurationSeconds(averageRuntime);
-      totalRuntimeElement.textContent = formatDurationSeconds(totalRuntime);
+        formatDuration(averageRuntime);
+      totalRuntimeElement.textContent = formatDuration(totalRuntime);
     }
   }
 };

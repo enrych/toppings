@@ -1,5 +1,5 @@
 import React from "react";
-import { ThemePreference } from "../../../../utils/theme";
+import { ThemePreference } from "../../../../hooks/useTheme";
 
 const THEME_OPTIONS: { id: ThemePreference; label: string }[] = [
   { id: "system", label: "System" },

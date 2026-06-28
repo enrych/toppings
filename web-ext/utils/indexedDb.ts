@@ -1,5 +1,5 @@
 const DB_NAME = "toppings";
-const DB_VERSION = 4;
+const DB_VERSION = 1;
 
 export const VIDEO_PREFERENCE_STORE = "video_preference";
 const VIDEO_PREFERENCE_KEY_PATH = "videoId";

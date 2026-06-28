@@ -1,5 +1,5 @@
 import { resolveTarget } from "../../../../utils/primitive";
-import { setCapabilityStatus } from "../../../../utils/storage/capabilityCache";
+import { setCapabilityStatus } from "../../../../core/capabilityCache";
 
 // ---------------------------------------------------------------------------
 // Comments section primitive

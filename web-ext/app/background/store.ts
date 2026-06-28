@@ -1,5 +1,5 @@
-import { mergeDefaults } from "../../utils/access";
-import { DEFAULT_STORE } from "../../data/store.data";
+import { DEFAULT_STORE } from "../../data/store";
+import { mergeDefaults } from "../../utils/object";
 
 export { DEFAULT_STORE };
 

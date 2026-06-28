@@ -10,7 +10,7 @@
  * Clear — user presses the save shortcut while loop is inactive.
  */
 
-import { LOOP_SEGMENT_STORE, withStore } from "./indexedDb";
+import { LOOP_SEGMENT_STORE, withStore } from "../../../utils/indexedDb";
 
 export interface SavedLoopSegment {
   /** IDB key path — matches the videoId query param. */

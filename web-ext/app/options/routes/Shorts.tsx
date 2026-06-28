@@ -5,7 +5,6 @@ import Card from "../../../components/layout/Card";
 import Switch from "../../../components/form/Switch";
 import Input from "../../../components/form/Input";
 import { useStoreUpdater } from "../../../hooks/useStoreUpdater";
-import { isNumericInRange } from "../../../utils/validation";
 
 export default function Shorts() {
   const { store, update } = useStoreUpdater();
@@ -43,7 +42,10 @@ export default function Shorts() {
               label="Toggle Playback Rate"
               description="Rate to switch to when pressing the toggle shortcut."
               initialValue={s.togglePlaybackRate.value}
-              validator={(v) => isNumericInRange(v, 0.0625, 16)}
+              validator={(v) => {
+                const n = parseFloat(v);
+                return Number.isFinite(n) && n >= 0.0625 && n <= 16;
+              }}
               errorMessage="Must be between 0.0625 and 16"
               onChange={(value) => {
                 update((draft) => {
@@ -60,7 +62,10 @@ export default function Shorts() {
               label="Seek Backward"
               description="Seconds to seek backward."
               initialValue={s.seekBackward.value}
-              validator={(v) => isNumericInRange(v, 0, Infinity)}
+              validator={(v) => {
+                const n = parseFloat(v);
+                return Number.isFinite(n) && n >= 0;
+              }}
               onChange={(value) => {
                 update((draft) => {
                   draft.preferences.shorts.seekBackward.value = value;
@@ -71,7 +76,10 @@ export default function Shorts() {
               label="Seek Forward"
               description="Seconds to seek forward."
               initialValue={s.seekForward.value}
-              validator={(v) => isNumericInRange(v, 0, Infinity)}
+              validator={(v) => {
+                const n = parseFloat(v);
+                return Number.isFinite(n) && n >= 0;
+              }}
               onChange={(value) => {
                 update((draft) => {
                   draft.preferences.shorts.seekForward.value = value;

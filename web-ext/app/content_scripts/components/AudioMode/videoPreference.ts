@@ -1,7 +1,7 @@
 import {
   VIDEO_PREFERENCE_STORE,
   withStore,
-} from "./indexedDb";
+} from "../../../../utils/indexedDb";
 
 const STORE = VIDEO_PREFERENCE_STORE;
 
@@ -55,11 +55,6 @@ export async function removeAudioModePin(videoId: string): Promise<void> {
 
 export async function countAudioModePins(): Promise<number> {
   return withStore(STORE, "readonly", (store) => store.count());
-}
-
-export async function loadVideoPreferenceSnapshot(): Promise<VideoPreferenceSnapshot> {
-  const pinCount = await countAudioModePins();
-  return { audioMode: { pinCount } };
 }
 
 export async function clearAllAudioModePins(): Promise<number> {

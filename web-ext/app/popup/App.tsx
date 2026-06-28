@@ -4,7 +4,7 @@ import StoreContext from "../../context/store";
 import ThemeApplier from "../../components/ThemeApplier";
 import { ToastProvider } from "../../components/feedback/ToastProvider";
 import { useStoreUpdater } from "../../hooks/useStoreUpdater";
-import { useActiveTab } from "../../hooks/useActiveTab";
+import { useScope } from "../../hooks/useScope";
 import { EXTENSION_CONTEXT_SCOPE } from "../../data/contract";
 import { URLS } from "../../data/urls";
 import { setExtensionIcon } from "../../utils/browser";
@@ -14,12 +14,12 @@ import TinySwitch from "./components/TinySwitch";
 import PopupRow from "./components/PopupRow";
 import NavBtn from "./components/NavBtn";
 import { openOptionsPage } from "./utils/openOptions";
-import type { Profile } from "../../data/profiles.data";
-import { BUILT_IN_PRESETS } from "../../data/profiles.data";
+import type { Profile } from "../../data/profiles";
+import { BUILT_IN_PRESETS } from "../../data/profiles";
 import {
   getCustomProfiles,
   setActiveProfileId,
-} from "../../utils/storage/profileStore";
+} from "../../core/profileStore";
 
 function usePopupProfiles() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -60,7 +60,7 @@ function usePopupProfiles() {
 function PopupShell() {
   const { store, update } = useStoreUpdater();
   const version = chrome.runtime.getManifest().version;
-  const tab = useActiveTab();
+  const { url, scope } = useScope();
   const { profiles, activeProfileId, activate } = usePopupProfiles();
 
   const masterOn = store.isExtensionEnabled;
@@ -110,21 +110,21 @@ function PopupShell() {
           className="tw-inline-block tw-w-2 tw-h-2 tw-rounded-full"
           style={{
             background:
-              tab.scope === EXTENSION_CONTEXT_SCOPE.UNSUPPORTED
+              scope === EXTENSION_CONTEXT_SCOPE.UNSUPPORTED
                 ? "var(--color-fg-subtle)"
                 : "var(--color-accent)",
             animation:
-              tab.scope === EXTENSION_CONTEXT_SCOPE.UNSUPPORTED
+              scope === EXTENSION_CONTEXT_SCOPE.UNSUPPORTED
                 ? undefined
                 : "pulseAmber 1.6s ease-out infinite",
           }}
         />
         <div className="tw-min-w-0 tw-flex-1">
           <div className="tw-text-[13px] tw-font-semibold tw-text-fg tw-truncate">
-            {POPUP_TAB_SCOPE_LABEL[tab.scope]}
+            {POPUP_TAB_SCOPE_LABEL[scope]}
           </div>
           <div className="tw-font-mono tw-text-[11px] tw-text-fg-subtle tw-truncate tw-mt-0.5">
-            {formatTabUrlShort(tab.url)}
+            {formatTabUrlShort(url)}
           </div>
         </div>
       </div>

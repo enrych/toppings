@@ -3,7 +3,7 @@
  */
 
 import { resolveTarget } from "../../../../utils/primitive";
-import { setCapabilityStatus } from "../../../../utils/storage/capabilityCache";
+import { setCapabilityStatus } from "../../../../core/capabilityCache";
 
 const STRATEGIES = [
   "ytd-search ytd-reel-shelf-renderer",

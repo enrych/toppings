@@ -1,5 +1,3 @@
-import { defaultTo } from "../utils/access";
-import { isNull } from "../utils/validation";
 import { useEffect, useState } from "react";
 
 export function useChromeStorageLocal<T>(
@@ -10,7 +8,7 @@ export function useChromeStorageLocal<T>(
 
   useEffect(() => {
     chrome.storage.local.get(key, (result) => {
-      if (!isNull(result[key])) setValue(result[key] as T);
+      if (result[key] != null) setValue(result[key] as T);
     });
 
     const onChange = (
@@ -20,7 +18,7 @@ export function useChromeStorageLocal<T>(
       if (areaName !== "local") return;
       if (key in changes) {
         const next = changes[key].newValue as T | undefined;
-        setValue(defaultTo(next, fallback));
+        setValue(next ?? fallback);
       }
     };
     chrome.storage.onChanged.addListener(onChange);

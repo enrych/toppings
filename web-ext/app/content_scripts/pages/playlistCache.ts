@@ -9,7 +9,7 @@
  * playlist UI, which clears the entry and forces a fresh call.
  */
 
-import type { ValidPlaylistPayload } from "../../app/background/context";
+import type { ValidPlaylistPayload } from "../../background/context";
 
 const CACHE_KEY_PREFIX = "toppings:playlist_cache:";
 /** Cache TTL in milliseconds. */

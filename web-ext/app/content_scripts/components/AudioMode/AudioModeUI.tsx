@@ -1,5 +1,3 @@
-import { defaultTo } from "../../../../utils/access";
-import { isNull } from "../../../../utils/validation";
 import React from "dom-chef";
 
 type ScreenMode = "black" | "visualizer" | "custom";
@@ -348,11 +346,8 @@ function updateMetadata() {
     .map((s) => document.querySelector<HTMLElement>(s))
     .find(Boolean) ?? null;
 
-  titleEl.textContent = defaultTo(titleElement?.textContent, "Unknown Title");
-  channelEl.textContent = defaultTo(
-    channelElement?.textContent,
-    "Unknown Channel",
-  );
+  titleEl.textContent = titleElement?.textContent ?? "Unknown Title";
+  channelEl.textContent = channelElement?.textContent ?? "Unknown Channel";
 }
 
 function startProgressUpdates() {
@@ -367,7 +362,7 @@ function startProgressUpdates() {
 }
 
 function stopProgressUpdates() {
-  if (!isNull(progressInterval)) {
+  if (progressInterval) {
     clearInterval(progressInterval);
     progressInterval = null;
   }

@@ -13,18 +13,18 @@ import {
   createProfile,
   updateProfile,
   deleteProfile,
-} from "../../../utils/storage/profileStore";
+} from "../../../core/profileStore";
 import {
   exportProfile,
   importProfileFromFile,
-} from "../../../utils/storage/profileImportExport";
+} from "../profileImportExport";
 import {
   BUILT_IN_PRESETS,
   type Profile,
   type ProfilePrimitiveConfig,
   type ThumbnailMode,
-} from "../../../data/profiles.data";
-import type { PlayerLayout, PlayerVisuals } from "../../../utils/primitive";
+} from "../../../data/profiles";
+import type { PlayerLayout, PlayerVisuals } from "../../../data/player";
 
 // ---------------------------------------------------------------------------
 // Blank profile template

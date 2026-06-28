@@ -2,9 +2,9 @@ import {
   SEGMENT_DATA_STORE,
   LOOP_SEGMENT_STORE,
   withStore,
-} from "./indexedDb";
-import type { VideoSegmentData, SegmentConfig, SegmentAutoLoadPin } from "../segments/types";
-import { createFreshConfig } from "../segments/factories";
+} from "../../../utils/indexedDb";
+import type { VideoSegmentData, SegmentConfig, SegmentAutoLoadPin } from "./types";
+import { createFreshConfig } from "./factories";
 
 // ---------------------------------------------------------------------------
 // Legacy loop segment type (for migration only)
