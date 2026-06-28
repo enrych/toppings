@@ -15,7 +15,7 @@ import {
   EXTENSION_MESSAGE_EVENT,
   EXTENSION_MESSAGE_TYPE,
   NODE_ENV,
-} from "../../data/extension";
+} from "../../data/core";
 
 chrome.runtime.onInstalled.addListener(onInitialize);
 chrome.runtime.onMessage.addListener(onConnected);

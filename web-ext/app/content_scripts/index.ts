@@ -8,12 +8,12 @@ import onYoutubePage from "./pages/youtube";
 import { setupNativeSettings } from "./pages/nativeSettings";
 import "./index.css";
 import { ERROR } from "../../data/errors";
-import { EXTENSION_CONTEXT_SCOPE } from "../../data/contract";
+import { EXTENSION_CONTEXT_SCOPE } from "../../data/core";
 import {
   EXTENSION_MESSAGE_BODY,
   EXTENSION_MESSAGE_EVENT,
   EXTENSION_MESSAGE_TYPE,
-} from "../../data/extension";
+} from "../../data/core";
 
 const scopeHandlers: Record<string, Function> = {
   [EXTENSION_CONTEXT_SCOPE.PLAYLIST]: onPlaylistPage,

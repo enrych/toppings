@@ -6,8 +6,8 @@ import Card from "../../../components/layout/Card";
 import Input from "../../../components/form/Input";
 import Select from "../../../components/form/Select";
 import CapabilityStatusRow from "../../../components/feedback/CapabilityStatusRow";
-import { useSyncStore } from "../../../hooks/useSyncStore";
-import { useCapabilityCache } from "../../../hooks/useCapabilityCache";
+import { useSyncStore } from "../../../core/useSyncStore";
+import { useCapabilityCache } from "../../../core/useCapabilityCache";
 import { isCustomPlaybackRatesList } from "../utils/validators";
 import {
   getUndismissedRecovered,

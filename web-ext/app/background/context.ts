@@ -3,7 +3,7 @@ import {
   YOUTUBE_QUERY_PARAM,
   YOUTUBE_SYSTEM_PLAYLIST_ID,
   YOUTUBE_URL_PATH,
-} from "../../data/contract";
+} from "../../data/core";
 import { ERROR } from "../../data/errors";
 import { HTTP_METHOD } from "../../data/http";
 import { EXTENSION_API_ENDPOINT } from "../../data/api";

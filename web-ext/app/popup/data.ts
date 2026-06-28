@@ -1,7 +1,7 @@
 import {
   EXTENSION_CONTEXT_SCOPE,
   type ExtensionContextScope,
-} from "../../data/contract";
+} from "../../data/core";
 
 export const POPUP_SIZE = {
   WIDTH_PX: 340,

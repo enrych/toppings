@@ -4,7 +4,7 @@ import {
   YOUTUBE_HOSTNAME_SUFFIX,
   YOUTUBE_URL_PATH,
   type ExtensionContextScope,
-} from "../data/contract";
+} from "../data/core";
 
 export function useScope() {
   const [url, setUrl] = useState<string | null>(null);

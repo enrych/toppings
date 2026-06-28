@@ -4,7 +4,7 @@ import Section from "../../../components/layout/Section";
 import Card from "../../../components/layout/Card";
 import Switch from "../../../components/form/Switch";
 import Input from "../../../components/form/Input";
-import { useSyncStore } from "../../../hooks/useSyncStore";
+import { useSyncStore } from "../../../core/useSyncStore";
 
 export default function Shorts() {
   const { store, update } = useSyncStore();

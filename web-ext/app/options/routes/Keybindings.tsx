@@ -4,7 +4,7 @@ import Section from "../../../components/layout/Section";
 import Card from "../../../components/layout/Card";
 import Keybinding from "../../../components/form/Keybinding";
 import Input from "../../../components/form/Input";
-import { useSyncStore } from "../../../hooks/useSyncStore";
+import { useSyncStore } from "../../../core/useSyncStore";
 
 export default function Keybindings() {
   const { store, update } = useSyncStore();

@@ -1,5 +1,5 @@
 import { HTTP_ACCEPT, HTTP_HEADER } from "../../data/http";
-import { NODE_ENV } from "../../data/extension";
+import { NODE_ENV } from "../../data/core";
 import { interpolateTemplate } from "../../utils/interpolate";
 
 function resolveBaseUrl(): string {

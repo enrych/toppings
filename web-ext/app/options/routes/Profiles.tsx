@@ -5,7 +5,7 @@ import Card from "../../../components/layout/Card";
 import Switch from "../../../components/form/Switch";
 import Select from "../../../components/form/Select";
 import { useToast } from "../../../components/feedback/ToastProvider";
-import { useCapabilityCache } from "../../../hooks/useCapabilityCache";
+import { useCapabilityCache } from "../../../core/useCapabilityCache";
 import {
   getAllProfiles,
   getActiveProfile,
@@ -24,7 +24,7 @@ import {
   type ProfilePrimitiveConfig,
   type ThumbnailMode,
 } from "../../../data/profiles";
-import type { PlayerLayout, PlayerVisuals } from "../../../data/player";
+import type { PlayerLayout, PlayerVisuals } from "../../../data/profiles";
 
 // ---------------------------------------------------------------------------
 // Blank profile template

@@ -14,14 +14,14 @@ import {
   showAudioModeUI,
   hideAudioModeUI,
 } from "./AudioModeUI";
-import { EXTENSION_LOCAL_STORAGE_KEY } from "../../../../data/extension";
+import { EXTENSION_LOCAL_STORAGE_KEY } from "../../../../data/core";
 import {
   getAudioModePin,
   removeAudioModePin,
   setAudioModePin,
 } from "./videoPreference";
 import { Storage } from "../../../background/store";
-import type { PlayerLayout, PlayerVisuals } from "../../../../data/player";
+import type { PlayerLayout, PlayerVisuals } from "../../../../data/profiles";
 
 let isAudioModeActive = false;
 let currentScreenMode: "black" | "visualizer" | "custom" = "black";

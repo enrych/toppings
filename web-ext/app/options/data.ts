@@ -1,4 +1,4 @@
-import { EXTENSION_CONTEXT_SCOPE } from "../../data/contract";
+import { EXTENSION_CONTEXT_SCOPE } from "../../data/core";
 
 export const OPTIONS_HTML = "options/index.html";
 

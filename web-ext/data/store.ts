@@ -1,4 +1,4 @@
-import { EXTENSION_CONTEXT_SCOPE } from "./contract";
+import { EXTENSION_CONTEXT_SCOPE } from "./core";
 
 const KEYBOARD_KEY = {
   A: "A",

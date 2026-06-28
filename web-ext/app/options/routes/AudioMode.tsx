@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import PageHeader from "../../../components/layout/PageHeader";
 import Section from "../../../components/layout/Section";
 import Card from "../../../components/layout/Card";
@@ -12,13 +12,15 @@ import Field from "../../../components/form/Field";
 import Button from "../../../components/primitives/Button";
 import Badge from "../../../components/primitives/Badge";
 import Icon from "../../../components/primitives/Icon";
-import { useSyncStore } from "../../../hooks/useSyncStore";
+import { useSyncStore } from "../../../core/useSyncStore";
 import { useToast } from "../../../components/feedback/ToastProvider";
 import { useConfirm } from "../../../components/feedback/ConfirmProvider";
-import { useLocalStorage } from "../../../hooks/useLocalStorage";
-import { useVideoPreference } from "../../../hooks/useVideoPreference";
-import { clearAllAudioModePins } from "../../content_scripts/components/AudioMode/videoPreference";
-import { EXTENSION_LOCAL_STORAGE_KEY } from "../../../data/extension";
+import { useLocalStorage } from "../../../core/useLocalStorage";
+import {
+  clearAllAudioModePins,
+  countAudioModePins,
+} from "../../content_scripts/components/AudioMode/videoPreference";
+import { EXTENSION_LOCAL_STORAGE_KEY } from "../../../data/core";
 
 export default function AudioMode() {
   const { store, update } = useSyncStore();
@@ -29,9 +31,15 @@ export default function AudioMode() {
     EXTENSION_LOCAL_STORAGE_KEY.AUDIO_MODE_GLOBAL_CUSTOM_IMAGE,
     null,
   );
-  const { preferences: videoPreferences, refresh: refreshVideoPreferences } =
-    useVideoPreference();
-  const pinnedCount = videoPreferences.audioMode.pinCount;
+  const [pinnedCount, setPinnedCount] = useState(0);
+  const refreshVideoPreferences = useCallback(() => {
+    countAudioModePins().then(setPinnedCount);
+  }, []);
+  useEffect(() => {
+    refreshVideoPreferences();
+    window.addEventListener("focus", refreshVideoPreferences);
+    return () => window.removeEventListener("focus", refreshVideoPreferences);
+  }, [refreshVideoPreferences]);
 
   const handlePickImage = (file: File) => {
     const reader = new FileReader();
