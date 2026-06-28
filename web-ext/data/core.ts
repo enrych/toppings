@@ -51,7 +51,7 @@ export const EXTENSION_MESSAGE_EVENT = {
   CONNECTED: "connected",
 } as const;
 
-export const CHROME_STORAGE_LOCAL = {
+export const CHROME_STORAGE_LOCAL_KEY = {
   OPTIONS_SIDEBAR_COLLAPSED: "toppings:options_sidebar_collapsed",
   AUDIO_MODE_GLOBAL_CUSTOM_IMAGE: "toppings:audio_mode_global_custom_image",
   PROFILE_STORE: "toppings:profile_store",
@@ -60,7 +60,7 @@ export const CHROME_STORAGE_LOCAL = {
   PLAYLIST_CACHE_PREFIX: "toppings:playlist_cache:",
 } as const;
 
-export const BROWSER_STORAGE_IDB = {
+export const BROWSER_STORAGE_IDB_STORE = {
   VIDEO_PREFERENCE: "video_preference",
   CAPABILITY_CACHE: "capability_cache",
   LOOP_SEGMENT: "loop_segment",

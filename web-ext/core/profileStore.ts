@@ -4,9 +4,9 @@ import {
   type Profile,
   type ProfileStore,
 } from "../data/profiles";
-import { CHROME_STORAGE_LOCAL } from "../data/core";
+import { CHROME_STORAGE_LOCAL_KEY } from "../data/core";
 
-const PROFILE_STORE_KEY = CHROME_STORAGE_LOCAL.PROFILE_STORE;
+const PROFILE_STORE_KEY = CHROME_STORAGE_LOCAL_KEY.PROFILE_STORE;
 
 // ---------------------------------------------------------------------------
 // Low-level read / write

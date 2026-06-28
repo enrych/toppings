@@ -1,5 +1,5 @@
 import { withStore } from "../../../utils/indexedDb";
-import { BROWSER_STORAGE_IDB } from "../../../data/core";
+import { BROWSER_STORAGE_IDB_STORE } from "../../../data/core";
 import type { VideoSegmentData, SegmentConfig, SegmentAutoLoadPin } from "./types";
 import { createFreshConfig } from "./factories";
 
@@ -27,7 +27,7 @@ async function migrateLegacyLoopSegment(
   let legacy: LegacyLoopSegment | null = null;
   try {
     legacy = await withStore<LegacyLoopSegment | undefined>(
-      BROWSER_STORAGE_IDB.LOOP_SEGMENT,
+      BROWSER_STORAGE_IDB_STORE.LOOP_SEGMENT,
       "readonly",
       (store) => store.get(videoId),
     ).then((r) => r ?? null);
@@ -68,7 +68,7 @@ async function migrateLegacyLoopSegment(
   };
 
   // Persist migrated data so we don't re-migrate on next load.
-  await withStore(BROWSER_STORAGE_IDB.SEGMENT_DATA, "readwrite", (store) =>
+  await withStore(BROWSER_STORAGE_IDB_STORE.SEGMENT_DATA, "readwrite", (store) =>
     store.put(data),
   );
   return data;
@@ -86,7 +86,7 @@ export async function getVideoSegmentData(
   videoId: string,
 ): Promise<VideoSegmentData | null> {
   const existing = await withStore<VideoSegmentData | undefined>(
-    BROWSER_STORAGE_IDB.SEGMENT_DATA,
+    BROWSER_STORAGE_IDB_STORE.SEGMENT_DATA,
     "readonly",
     (store) => store.get(videoId),
   ).then((r) => r ?? null);
@@ -101,7 +101,7 @@ export async function getVideoSegmentData(
 export async function saveVideoSegmentData(
   data: VideoSegmentData,
 ): Promise<void> {
-  await withStore(BROWSER_STORAGE_IDB.SEGMENT_DATA, "readwrite", (store) =>
+  await withStore(BROWSER_STORAGE_IDB_STORE.SEGMENT_DATA, "readwrite", (store) =>
     store.put({ ...data, savedAt: Date.now() }),
   );
 }

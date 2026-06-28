@@ -26,7 +26,7 @@ import {
   setActiveProfileId,
 } from "../../../core/profileStore";
 import { BUILT_IN_PRESETS } from "../../../data/profiles";
-import { CHROME_STORAGE_LOCAL } from "../../../data/core";
+import { CHROME_STORAGE_LOCAL_KEY } from "../../../data/core";
 import { showPageToast } from "../utils/pageToast";
 import { injectGearMenuEntry } from "../components/GearMenuPanel";
 import { getCachedPlaylist } from "./playlistCache";
@@ -241,7 +241,7 @@ const onProfileStoreChanged = (
   area: string,
 ): void => {
   if (area !== "local") return;
-  if (!(CHROME_STORAGE_LOCAL.PROFILE_STORE in changes)) return;
+  if (!(CHROME_STORAGE_LOCAL_KEY.PROFILE_STORE in changes)) return;
   void applyWatchProfile();
 };
 

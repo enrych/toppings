@@ -20,7 +20,7 @@ import {
   clearAllAudioModePins,
   countAudioModePins,
 } from "../../content_scripts/components/AudioMode/videoPreference";
-import { CHROME_STORAGE_LOCAL } from "../../../data/core";
+import { CHROME_STORAGE_LOCAL_KEY } from "../../../data/core";
 
 export default function AudioMode() {
   const { store, update } = useChromeStorageSync();
@@ -28,7 +28,7 @@ export default function AudioMode() {
   const confirm = useConfirm();
   const am = store.preferences.watch.audioMode;
   const [localImage, setLocalImage] = useChromeStorageLocal<string | null>(
-    CHROME_STORAGE_LOCAL.AUDIO_MODE_GLOBAL_CUSTOM_IMAGE,
+    CHROME_STORAGE_LOCAL_KEY.AUDIO_MODE_GLOBAL_CUSTOM_IMAGE,
     null,
   );
   const [pinnedCount, setPinnedCount] = useState(0);

@@ -5,7 +5,7 @@ import Tooltip from "../../../../components/primitives/Tooltip";
 import { useChromeStorageLocal } from "../../../../core/useChromeStorageLocal";
 import { useChromeStorageSync } from "../../../../core/useChromeStorageSync";
 import { BRAND_METADATA } from "../../../../data/brand";
-import { CHROME_STORAGE_LOCAL } from "../../../../data/core";
+import { CHROME_STORAGE_LOCAL_KEY } from "../../../../data/core";
 import { OPTIONS_ICON_SRC, OPTIONS_PAGES } from "../../data";
 import { ThemePreference } from "../../../../core/useTheme";
 import SidebarNavLink, { SidebarNavItem } from "./SidebarNavLink";
@@ -24,7 +24,7 @@ const COLLAPSE_LABEL_COLLAPSE = "Collapse sidebar";
 export default function Sidebar() {
   const version = chrome.runtime.getManifest().version;
   const [collapsed, setCollapsed] = useChromeStorageLocal<boolean>(
-    CHROME_STORAGE_LOCAL.OPTIONS_SIDEBAR_COLLAPSED,
+    CHROME_STORAGE_LOCAL_KEY.OPTIONS_SIDEBAR_COLLAPSED,
     false,
   );
   const { store, update } = useChromeStorageSync();

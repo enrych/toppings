@@ -8,10 +8,10 @@
  */
 
 import { getCurrentVersion } from "../utils/version";
-import { CHROME_STORAGE_LOCAL } from "../data/core";
+import { CHROME_STORAGE_LOCAL_KEY } from "../data/core";
 
-const REPORT_STORE_KEY = CHROME_STORAGE_LOCAL.FEATURE_REPORTS;
-const RECOVERED_KEY = CHROME_STORAGE_LOCAL.FEATURE_RECOVERED;
+const REPORT_STORE_KEY = CHROME_STORAGE_LOCAL_KEY.FEATURE_REPORTS;
+const RECOVERED_KEY = CHROME_STORAGE_LOCAL_KEY.FEATURE_RECOVERED;
 
 export interface FeatureReport {
   primitiveId: string;

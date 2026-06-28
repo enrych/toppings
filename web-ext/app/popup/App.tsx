@@ -15,7 +15,7 @@ import PopupRow from "./components/PopupRow";
 import NavBtn from "./components/NavBtn";
 import { openOptionsPage } from "./utils/openOptions";
 import type { Profile } from "../../data/profiles";
-import { CHROME_STORAGE_LOCAL } from "../../data/core";
+import { CHROME_STORAGE_LOCAL_KEY } from "../../data/core";
 import {
   getAllProfiles,
   getActiveProfile,
@@ -35,7 +35,7 @@ function usePopupProfiles() {
   useEffect(() => {
     void load();
     const listener = (changes: Record<string, chrome.storage.StorageChange>) => {
-      if (CHROME_STORAGE_LOCAL.PROFILE_STORE in changes) void load();
+      if (CHROME_STORAGE_LOCAL_KEY.PROFILE_STORE in changes) void load();
     };
     chrome.storage.onChanged.addListener(listener);
     return () => chrome.storage.onChanged.removeListener(listener);

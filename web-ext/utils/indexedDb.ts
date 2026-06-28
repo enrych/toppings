@@ -1,4 +1,4 @@
-import { BROWSER_STORAGE_IDB } from "../data/core";
+import { BROWSER_STORAGE_IDB_STORE } from "../data/core";
 
 const DB_NAME = "toppings";
 const DB_VERSION = 1;
@@ -6,17 +6,17 @@ const DB_VERSION = 1;
 let dbPromise: Promise<IDBDatabase> | null = null;
 
 function upgradeDatabase(db: IDBDatabase): void {
-  if (!db.objectStoreNames.contains(BROWSER_STORAGE_IDB.VIDEO_PREFERENCE)) {
-    db.createObjectStore(BROWSER_STORAGE_IDB.VIDEO_PREFERENCE, { keyPath: "videoId" });
+  if (!db.objectStoreNames.contains(BROWSER_STORAGE_IDB_STORE.VIDEO_PREFERENCE)) {
+    db.createObjectStore(BROWSER_STORAGE_IDB_STORE.VIDEO_PREFERENCE, { keyPath: "videoId" });
   }
-  if (!db.objectStoreNames.contains(BROWSER_STORAGE_IDB.CAPABILITY_CACHE)) {
-    db.createObjectStore(BROWSER_STORAGE_IDB.CAPABILITY_CACHE, { keyPath: "primitiveId" });
+  if (!db.objectStoreNames.contains(BROWSER_STORAGE_IDB_STORE.CAPABILITY_CACHE)) {
+    db.createObjectStore(BROWSER_STORAGE_IDB_STORE.CAPABILITY_CACHE, { keyPath: "primitiveId" });
   }
-  if (!db.objectStoreNames.contains(BROWSER_STORAGE_IDB.LOOP_SEGMENT)) {
-    db.createObjectStore(BROWSER_STORAGE_IDB.LOOP_SEGMENT, { keyPath: "videoId" });
+  if (!db.objectStoreNames.contains(BROWSER_STORAGE_IDB_STORE.LOOP_SEGMENT)) {
+    db.createObjectStore(BROWSER_STORAGE_IDB_STORE.LOOP_SEGMENT, { keyPath: "videoId" });
   }
-  if (!db.objectStoreNames.contains(BROWSER_STORAGE_IDB.SEGMENT_DATA)) {
-    db.createObjectStore(BROWSER_STORAGE_IDB.SEGMENT_DATA, { keyPath: "videoId" });
+  if (!db.objectStoreNames.contains(BROWSER_STORAGE_IDB_STORE.SEGMENT_DATA)) {
+    db.createObjectStore(BROWSER_STORAGE_IDB_STORE.SEGMENT_DATA, { keyPath: "videoId" });
   }
 }
 
