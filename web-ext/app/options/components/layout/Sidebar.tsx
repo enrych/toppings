@@ -2,10 +2,10 @@ import React from "react";
 import Icon, { IconName } from "../../../../components/primitives/Icon";
 import IconButton from "../../../../components/primitives/IconButton";
 import Tooltip from "../../../../components/primitives/Tooltip";
-import { useLocalStorage } from "../../../../core/useLocalStorage";
-import { useSyncStore } from "../../../../core/useSyncStore";
+import { useChromeStorageLocal } from "../../../../core/useChromeStorageLocal";
+import { useChromeStorageSync } from "../../../../core/useChromeStorageSync";
 import { BRAND_METADATA } from "../../../../data/brand";
-import { EXTENSION_LOCAL_STORAGE_KEY } from "../../../../data/core";
+import { CHROME_STORAGE_LOCAL } from "../../../../data/core";
 import { OPTIONS_ICON_SRC, OPTIONS_PAGES } from "../../data";
 import { ThemePreference } from "../../../../core/useTheme";
 import SidebarNavLink, { SidebarNavItem } from "./SidebarNavLink";
@@ -23,11 +23,11 @@ const COLLAPSE_LABEL_COLLAPSE = "Collapse sidebar";
 
 export default function Sidebar() {
   const version = chrome.runtime.getManifest().version;
-  const [collapsed, setCollapsed] = useLocalStorage<boolean>(
-    EXTENSION_LOCAL_STORAGE_KEY.OPTIONS_SIDEBAR_COLLAPSED,
+  const [collapsed, setCollapsed] = useChromeStorageLocal<boolean>(
+    CHROME_STORAGE_LOCAL.OPTIONS_SIDEBAR_COLLAPSED,
     false,
   );
-  const { store, update } = useSyncStore();
+  const { store, update } = useChromeStorageSync();
   const themePref: ThemePreference = store.ui?.theme ?? "system";
 
   const setTheme = (next: ThemePreference) => {

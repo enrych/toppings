@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export function useLocalStorage<T>(
+export function useChromeStorageLocal<T>(
   key: string,
   fallback: T,
 ): [T, (value: T) => void] {

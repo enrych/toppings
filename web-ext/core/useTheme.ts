@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import StoreContext from "../context/store";
+import StoreContext from "./storeContext";
 
 export type ThemePreference = "system" | "dark" | "light";
 type ResolvedTheme = "dark" | "light";

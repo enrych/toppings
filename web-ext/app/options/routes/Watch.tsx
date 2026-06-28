@@ -6,7 +6,7 @@ import Card from "../../../components/layout/Card";
 import Input from "../../../components/form/Input";
 import Select from "../../../components/form/Select";
 import CapabilityStatusRow from "../../../components/feedback/CapabilityStatusRow";
-import { useSyncStore } from "../../../core/useSyncStore";
+import { useChromeStorageSync } from "../../../core/useChromeStorageSync";
 import { useCapabilityCache } from "../../../core/useCapabilityCache";
 import { isCustomPlaybackRatesList } from "../utils/validators";
 import {
@@ -44,7 +44,7 @@ function useRecoveredFeatures() {
 }
 
 export default function Watch() {
-  const { store, update } = useSyncStore();
+  const { store, update } = useChromeStorageSync();
   const { getStatus, isLoading } = useCapabilityCache();
   const { recovered, dismiss } = useRecoveredFeatures();
   const w = store.preferences.watch;

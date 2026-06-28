@@ -10,8 +10,9 @@
  */
 
 import type { ValidPlaylistPayload } from "../../background/context";
+import { CHROME_STORAGE_LOCAL } from "../../../data/core";
 
-const CACHE_KEY_PREFIX = "toppings:playlist_cache:";
+const CACHE_KEY_PREFIX = CHROME_STORAGE_LOCAL.PLAYLIST_CACHE_PREFIX;
 /** Cache TTL in milliseconds. */
 const CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
 

@@ -1,9 +1,7 @@
-import {
-  VIDEO_PREFERENCE_STORE,
-  withStore,
-} from "../../../../utils/indexedDb";
+import { withStore } from "../../../../utils/indexedDb";
+import { BROWSER_STORAGE_IDB } from "../../../../data/core";
 
-const STORE = VIDEO_PREFERENCE_STORE;
+const STORE = BROWSER_STORAGE_IDB.VIDEO_PREFERENCE;
 
 export type AudioModePin = {
   enabled: boolean;

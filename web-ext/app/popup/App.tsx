@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Storage, DEFAULT_STORE, getStorage } from "../background/store";
-import StoreContext from "../../context/store";
+import StoreContext from "../../core/storeContext";
 import ThemeApplier from "../../components/ThemeApplier";
 import { ToastProvider } from "../../components/feedback/ToastProvider";
-import { useSyncStore } from "../../core/useSyncStore";
+import { useChromeStorageSync } from "../../core/useChromeStorageSync";
 import { useScope } from "../../core/useScope";
 import { EXTENSION_CONTEXT_SCOPE } from "../../data/core";
 import { URLS } from "../../data/urls";
@@ -15,9 +15,10 @@ import PopupRow from "./components/PopupRow";
 import NavBtn from "./components/NavBtn";
 import { openOptionsPage } from "./utils/openOptions";
 import type { Profile } from "../../data/profiles";
-import { BUILT_IN_PRESETS } from "../../data/profiles";
+import { CHROME_STORAGE_LOCAL } from "../../data/core";
 import {
-  getCustomProfiles,
+  getAllProfiles,
+  getActiveProfile,
   setActiveProfileId,
 } from "../../core/profileStore";
 
@@ -25,25 +26,16 @@ function usePopupProfiles() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [activeProfileId, setActiveId] = useState<string | null>(null);
 
-  const load = () => {
-    chrome.storage.local.get("toppings:profile_store", (result) => {
-      const stored = result["toppings:profile_store"] as
-        | { activeProfileId: string | null; profiles: Profile[] }
-        | undefined;
-      setActiveId(stored?.activeProfileId ?? null);
-      const custom: Profile[] = Array.isArray(stored?.profiles)
-        ? stored!.profiles.sort((a, b) => a.createdAt - b.createdAt)
-        : [];
-      setProfiles([...BUILT_IN_PRESETS, ...custom]);
-    });
+  const load = async () => {
+    const [all, active] = await Promise.all([getAllProfiles(), getActiveProfile()]);
+    setProfiles(all);
+    setActiveId(active?.id ?? null);
   };
 
   useEffect(() => {
-    load();
-    const listener = (
-      changes: Record<string, chrome.storage.StorageChange>,
-    ) => {
-      if ("toppings:profile_store" in changes) load();
+    void load();
+    const listener = (changes: Record<string, chrome.storage.StorageChange>) => {
+      if (CHROME_STORAGE_LOCAL.PROFILE_STORE in changes) void load();
     };
     chrome.storage.onChanged.addListener(listener);
     return () => chrome.storage.onChanged.removeListener(listener);
@@ -58,7 +50,7 @@ function usePopupProfiles() {
 }
 
 function PopupShell() {
-  const { store, update } = useSyncStore();
+  const { store, update } = useChromeStorageSync();
   const version = chrome.runtime.getManifest().version;
   const { url, scope } = useScope();
   const { profiles, activeProfileId, activate } = usePopupProfiles();

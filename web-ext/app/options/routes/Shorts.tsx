@@ -4,10 +4,10 @@ import Section from "../../../components/layout/Section";
 import Card from "../../../components/layout/Card";
 import Switch from "../../../components/form/Switch";
 import Input from "../../../components/form/Input";
-import { useSyncStore } from "../../../core/useSyncStore";
+import { useChromeStorageSync } from "../../../core/useChromeStorageSync";
 
 export default function Shorts() {
-  const { store, update } = useSyncStore();
+  const { store, update } = useChromeStorageSync();
   const s = store.preferences.shorts;
 
   return (

@@ -10,13 +10,14 @@
 
 import type { YoutubeContext } from "../../background/context";
 import { applyWatchProfile } from "../primitives/applyProfile";
+import { CHROME_STORAGE_LOCAL } from "../../../data/core";
 
 const onProfileStoreChangedYoutube = (
   changes: Record<string, chrome.storage.StorageChange>,
   area: string,
 ): void => {
   if (area !== "local") return;
-  if (!("toppings:profile_store" in changes)) return;
+  if (!(CHROME_STORAGE_LOCAL.PROFILE_STORE in changes)) return;
   void applyWatchProfile();
 };
 

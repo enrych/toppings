@@ -1,5 +1,6 @@
 import { EXTENSION_VERSION } from "../data/version";
-import { CAPABILITY_CACHE_STORE, withStore } from "../utils/indexedDb";
+import { withStore } from "../utils/indexedDb";
+import { BROWSER_STORAGE_IDB } from "../data/core";
 import type { PrimitiveResolution } from "../utils/primitive";
 
 // ---------------------------------------------------------------------------
@@ -57,7 +58,7 @@ export async function getCapabilityStatus(
 ): Promise<CapabilityStatus> {
   try {
     const entry = await withStore<CapabilityCacheEntry | undefined>(
-      CAPABILITY_CACHE_STORE,
+      BROWSER_STORAGE_IDB.CAPABILITY_CACHE,
       "readonly",
       (store) => store.get(primitiveId),
     );
@@ -93,7 +94,7 @@ export async function setCapabilityStatus(
   };
   try {
     await withStore<IDBValidKey>(
-      CAPABILITY_CACHE_STORE,
+      BROWSER_STORAGE_IDB.CAPABILITY_CACHE,
       "readwrite",
       (store) => store.put(entry),
     );
@@ -112,7 +113,7 @@ export async function getAllCapabilityEntries(): Promise<
 > {
   try {
     return await withStore<CapabilityCacheEntry[]>(
-      CAPABILITY_CACHE_STORE,
+      BROWSER_STORAGE_IDB.CAPABILITY_CACHE,
       "readonly",
       (store) => store.getAll(),
     );
@@ -129,7 +130,7 @@ export async function getAllCapabilityEntries(): Promise<
  */
 export async function clearCapabilityCache(): Promise<void> {
   try {
-    await withStore<undefined>(CAPABILITY_CACHE_STORE, "readwrite", (store) =>
+    await withStore<undefined>(BROWSER_STORAGE_IDB.CAPABILITY_CACHE, "readwrite", (store) =>
       store.clear(),
     );
   } catch {

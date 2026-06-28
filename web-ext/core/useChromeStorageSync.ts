@@ -1,11 +1,11 @@
 import { useContext } from "react";
 import { produce } from "immer";
-import StoreContext from "../context/store";
+import StoreContext from "./storeContext";
 import { Storage } from "../app/background/store";
 
 type Recipe = (draft: Storage) => void;
 
-export function useSyncStore(): {
+export function useChromeStorageSync(): {
   store: Storage;
   update: (recipe: Recipe) => void;
 } {

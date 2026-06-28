@@ -1,40 +1,22 @@
+import { BROWSER_STORAGE_IDB } from "../data/core";
+
 const DB_NAME = "toppings";
 const DB_VERSION = 1;
-
-export const VIDEO_PREFERENCE_STORE = "video_preference";
-const VIDEO_PREFERENCE_KEY_PATH = "videoId";
-
-export const CAPABILITY_CACHE_STORE = "capability_cache";
-const CAPABILITY_CACHE_KEY_PATH = "primitiveId";
-
-export const LOOP_SEGMENT_STORE = "loop_segment";
-const LOOP_SEGMENT_KEY_PATH = "videoId";
-
-export const SEGMENT_DATA_STORE = "segment_data";
-const SEGMENT_DATA_KEY_PATH = "videoId";
 
 let dbPromise: Promise<IDBDatabase> | null = null;
 
 function upgradeDatabase(db: IDBDatabase): void {
-  if (!db.objectStoreNames.contains(VIDEO_PREFERENCE_STORE)) {
-    db.createObjectStore(VIDEO_PREFERENCE_STORE, {
-      keyPath: VIDEO_PREFERENCE_KEY_PATH,
-    });
+  if (!db.objectStoreNames.contains(BROWSER_STORAGE_IDB.VIDEO_PREFERENCE)) {
+    db.createObjectStore(BROWSER_STORAGE_IDB.VIDEO_PREFERENCE, { keyPath: "videoId" });
   }
-  if (!db.objectStoreNames.contains(CAPABILITY_CACHE_STORE)) {
-    db.createObjectStore(CAPABILITY_CACHE_STORE, {
-      keyPath: CAPABILITY_CACHE_KEY_PATH,
-    });
+  if (!db.objectStoreNames.contains(BROWSER_STORAGE_IDB.CAPABILITY_CACHE)) {
+    db.createObjectStore(BROWSER_STORAGE_IDB.CAPABILITY_CACHE, { keyPath: "primitiveId" });
   }
-  if (!db.objectStoreNames.contains(LOOP_SEGMENT_STORE)) {
-    db.createObjectStore(LOOP_SEGMENT_STORE, {
-      keyPath: LOOP_SEGMENT_KEY_PATH,
-    });
+  if (!db.objectStoreNames.contains(BROWSER_STORAGE_IDB.LOOP_SEGMENT)) {
+    db.createObjectStore(BROWSER_STORAGE_IDB.LOOP_SEGMENT, { keyPath: "videoId" });
   }
-  if (!db.objectStoreNames.contains(SEGMENT_DATA_STORE)) {
-    db.createObjectStore(SEGMENT_DATA_STORE, {
-      keyPath: SEGMENT_DATA_KEY_PATH,
-    });
+  if (!db.objectStoreNames.contains(BROWSER_STORAGE_IDB.SEGMENT_DATA)) {
+    db.createObjectStore(BROWSER_STORAGE_IDB.SEGMENT_DATA, { keyPath: "videoId" });
   }
 }
 

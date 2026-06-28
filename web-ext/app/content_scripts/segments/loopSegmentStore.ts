@@ -10,7 +10,8 @@
  * Clear — user presses the save shortcut while loop is inactive.
  */
 
-import { LOOP_SEGMENT_STORE, withStore } from "../../../utils/indexedDb";
+import { withStore } from "../../../utils/indexedDb";
+import { BROWSER_STORAGE_IDB } from "../../../data/core";
 
 export interface SavedLoopSegment {
   /** IDB key path — matches the videoId query param. */
@@ -32,7 +33,7 @@ export async function getSavedLoopSegment(
   videoId: string,
 ): Promise<SavedLoopSegment | null> {
   const result = await withStore<SavedLoopSegment | undefined>(
-    LOOP_SEGMENT_STORE,
+    BROWSER_STORAGE_IDB.LOOP_SEGMENT,
     "readonly",
     (store) => store.get(videoId),
   );
@@ -52,7 +53,7 @@ export async function saveLoopSegment(
     savedAt: Date.now(),
   };
   await withStore<SavedLoopSegment>(
-    LOOP_SEGMENT_STORE,
+    BROWSER_STORAGE_IDB.LOOP_SEGMENT,
     "readwrite",
     (store) => store.put(entry),
   );
@@ -61,7 +62,7 @@ export async function saveLoopSegment(
 /** Remove the saved loop segment for a video. */
 export async function deleteSavedLoopSegment(videoId: string): Promise<void> {
   await withStore<undefined>(
-    LOOP_SEGMENT_STORE,
+    BROWSER_STORAGE_IDB.LOOP_SEGMENT,
     "readwrite",
     (store) => store.delete(videoId),
   );
@@ -70,7 +71,7 @@ export async function deleteSavedLoopSegment(videoId: string): Promise<void> {
 /** Return all saved loop segments (e.g. for a management UI). */
 export async function getAllSavedLoopSegments(): Promise<SavedLoopSegment[]> {
   return withStore<SavedLoopSegment[]>(
-    LOOP_SEGMENT_STORE,
+    BROWSER_STORAGE_IDB.LOOP_SEGMENT,
     "readonly",
     (store) => store.getAll(),
   );
@@ -79,7 +80,7 @@ export async function getAllSavedLoopSegments(): Promise<SavedLoopSegment[]> {
 /** Remove every saved loop segment. */
 export async function clearAllSavedLoopSegments(): Promise<void> {
   await withStore<undefined>(
-    LOOP_SEGMENT_STORE,
+    BROWSER_STORAGE_IDB.LOOP_SEGMENT,
     "readwrite",
     (store) => store.clear(),
   );

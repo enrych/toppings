@@ -14,7 +14,7 @@ import {
   showAudioModeUI,
   hideAudioModeUI,
 } from "./AudioModeUI";
-import { EXTENSION_LOCAL_STORAGE_KEY } from "../../../../data/core";
+import { CHROME_STORAGE_LOCAL } from "../../../../data/core";
 import {
   getAudioModePin,
   removeAudioModePin,
@@ -44,7 +44,7 @@ let profileActivatedAudioMode = false;
 type AudioModePrefs = Storage["preferences"]["watch"]["audioMode"];
 
 const GLOBAL_CUSTOM_IMAGE_KEY =
-  EXTENSION_LOCAL_STORAGE_KEY.AUDIO_MODE_GLOBAL_CUSTOM_IMAGE;
+  CHROME_STORAGE_LOCAL.AUDIO_MODE_GLOBAL_CUSTOM_IMAGE;
 
 function loadGlobalCustomImage(): Promise<string | null> {
   return new Promise((resolve) => {

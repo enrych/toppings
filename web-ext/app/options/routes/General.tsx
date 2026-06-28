@@ -4,14 +4,14 @@ import Section from "../../../components/layout/Section";
 import Card from "../../../components/layout/Card";
 import Switch from "../../../components/form/Switch";
 import Select from "../../../components/form/Select";
-import { useSyncStore } from "../../../core/useSyncStore";
+import { useChromeStorageSync } from "../../../core/useChromeStorageSync";
 import { useToast } from "../../../components/feedback/ToastProvider";
 import { useCapabilityCache } from "../../../core/useCapabilityCache";
 import { setExtensionIcon } from "../../../utils/browser";
 import { ThemePreference } from "../../../core/useTheme";
 
 export default function General() {
-  const { store, update } = useSyncStore();
+  const { store, update } = useChromeStorageSync();
   const toast = useToast();
   const { rescan } = useCapabilityCache();
   const [isRescanning, setIsRescanning] = useState(false);

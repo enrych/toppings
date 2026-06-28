@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Outlet, useLoaderData, useLocation } from "react-router-dom";
-import StoreContext from "../../context/store";
+import StoreContext from "../../core/storeContext";
 import { Storage } from "../background/store";
 import ThemeApplier from "../../components/ThemeApplier";
 import AppLayout from "./components/layout/AppLayout";

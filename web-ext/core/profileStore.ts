@@ -4,12 +4,9 @@ import {
   type Profile,
   type ProfileStore,
 } from "../data/profiles";
+import { CHROME_STORAGE_LOCAL } from "../data/core";
 
-// ---------------------------------------------------------------------------
-// Storage key
-// ---------------------------------------------------------------------------
-
-const PROFILE_STORE_KEY = "toppings:profile_store";
+const PROFILE_STORE_KEY = CHROME_STORAGE_LOCAL.PROFILE_STORE;
 
 // ---------------------------------------------------------------------------
 // Low-level read / write

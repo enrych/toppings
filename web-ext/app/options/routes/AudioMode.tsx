@@ -12,23 +12,23 @@ import Field from "../../../components/form/Field";
 import Button from "../../../components/primitives/Button";
 import Badge from "../../../components/primitives/Badge";
 import Icon from "../../../components/primitives/Icon";
-import { useSyncStore } from "../../../core/useSyncStore";
+import { useChromeStorageSync } from "../../../core/useChromeStorageSync";
 import { useToast } from "../../../components/feedback/ToastProvider";
 import { useConfirm } from "../../../components/feedback/ConfirmProvider";
-import { useLocalStorage } from "../../../core/useLocalStorage";
+import { useChromeStorageLocal } from "../../../core/useChromeStorageLocal";
 import {
   clearAllAudioModePins,
   countAudioModePins,
 } from "../../content_scripts/components/AudioMode/videoPreference";
-import { EXTENSION_LOCAL_STORAGE_KEY } from "../../../data/core";
+import { CHROME_STORAGE_LOCAL } from "../../../data/core";
 
 export default function AudioMode() {
-  const { store, update } = useSyncStore();
+  const { store, update } = useChromeStorageSync();
   const toast = useToast();
   const confirm = useConfirm();
   const am = store.preferences.watch.audioMode;
-  const [localImage, setLocalImage] = useLocalStorage<string | null>(
-    EXTENSION_LOCAL_STORAGE_KEY.AUDIO_MODE_GLOBAL_CUSTOM_IMAGE,
+  const [localImage, setLocalImage] = useChromeStorageLocal<string | null>(
+    CHROME_STORAGE_LOCAL.AUDIO_MODE_GLOBAL_CUSTOM_IMAGE,
     null,
   );
   const [pinnedCount, setPinnedCount] = useState(0);
