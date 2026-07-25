@@ -4,11 +4,8 @@ import type { CapabilityStatus } from "../../core/capabilityCache";
 import { addFeatureReport } from "../../core/featureReports";
 
 interface CapabilityStatusRowProps {
-  /** Human-readable feature name, e.g. "Recommendations Sidebar" */
   label: string;
-  /** Internal primitive ID, e.g. "watch.sidebar" */
-  primitiveId: string;
-  /** Current cached status */
+  primitiveId: string; // e.g. "watch.sidebar"
   status: CapabilityStatus;
 }
 
@@ -33,11 +30,6 @@ const STATUS_CONFIG: Record<
   },
 };
 
-/**
- * Renders a single row showing the capability status of a watch-page
- * primitive. Unsupported primitives include a Report button that opens a
- * pre-filled GitHub issue so the developer can add a new selector strategy.
- */
 export default function CapabilityStatusRow({
   label,
   primitiveId,
@@ -47,11 +39,11 @@ export default function CapabilityStatusRow({
   const [reported, setReported] = useState(false);
 
   const handleReport = async () => {
-    // 1. Store the report locally so we can notify the user when it's fixed.
+    // Stored before the issue is opened so the next update can tell the user
+    // their report started working, whether or not they submit the issue.
     await addFeatureReport(primitiveId);
     setReported(true);
 
-    // 2. Open a pre-filled GitHub issue for the developer.
     const title = encodeURIComponent(
       `[Report] Feature unavailable: ${label} (${primitiveId})`,
     );

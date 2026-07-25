@@ -1,14 +1,7 @@
 import React from "dom-chef";
 
-// ---------------------------------------------------------------------------
-// SegmentButton — control bar button for the Segments feature
-//
-// Icon states communicate the feature state clearly without relying on colour:
-//   Inactive  → segment bars are outlined (hollow) — "idle / off"
-//   Active    → segment bars are filled (solid) — "playing segments"
-//
-// This mirrors how YouTube's own buttons work (CC, subtitles, etc.).
-// ---------------------------------------------------------------------------
+// State is shown by fill, never by colour — the same way YouTube signals its own
+// control-bar toggles, and the only cue that survives a colour-blind viewer.
 
 export const SegmentButton = (
   <button
@@ -48,12 +41,6 @@ export const SegmentButton = (
   </button>
 ) as HTMLButtonElement;
 
-/**
- * Toggle the visual active/inactive state.
- *
- * Active   → filled segment bars, full opacity, subtle background (YouTube press style)
- * Inactive → outlined segment bars, dimmed opacity
- */
 export function setSegmentButtonActive(active: boolean): void {
   SegmentButton.setAttribute("aria-pressed", active ? "true" : "false");
 
@@ -77,11 +64,6 @@ export function setSegmentButtonActive(active: boolean): void {
   }
 }
 
-/**
- * Update the button tooltip to show the loaded config name.
- * No colour change — state is communicated by fill/outline only.
- * Pass null to reset to the default tooltip.
- */
 export function setSegmentButtonSaved(configLabel: string | null): void {
   SegmentButton.title = configLabel ? `Segments — ${configLabel}` : "Segments";
 }

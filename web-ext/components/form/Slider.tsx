@@ -13,11 +13,8 @@ interface SliderProps {
   format?: (value: number) => string;
 }
 
-/**
- * Range slider with a live-updating value badge. Calls onChange continuously
- * during drag — debounce on the consumer side if storage writes are
- * expensive.
- */
+// Fires onChange on every drag frame; debounce at the call site before writing
+// to storage.
 export default function Slider({
   label,
   description,

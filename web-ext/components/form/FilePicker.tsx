@@ -7,19 +7,12 @@ interface FilePickerProps {
   label: string;
   description?: string;
   hint?: string;
-  /** Data URL of the currently selected image, if any. */
-  value: string | null;
-  /** Called with the picked File. Consumer is responsible for converting/saving. */
-  onPick: (file: File) => void;
+  value: string | null; // data URL
+  onPick: (file: File) => void; // caller converts and persists
   onClear?: () => void;
   accept?: string;
 }
 
-/**
- * Image-aware file picker with thumbnail preview, choose/replace/clear
- * buttons. Renders nothing visually for the file input itself — clicks
- * are forwarded from the styled buttons.
- */
 export default function FilePicker({
   label,
   description,
@@ -35,7 +28,7 @@ export default function FilePicker({
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) onPick(file);
-    // Reset so picking the same file again still triggers onChange
+    // Cleared so re-picking the same file still fires onChange.
     e.target.value = "";
   };
 

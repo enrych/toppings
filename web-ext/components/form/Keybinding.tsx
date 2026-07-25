@@ -21,7 +21,6 @@ export default function Keybinding({
   const [recording, setRecording] = useState(false);
 
   useEffect(() => {
-    // value is the source of truth — no internal shadow needed.
   }, [value]);
 
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -40,7 +39,7 @@ export default function Keybinding({
       onChange(combo);
       setRecording(false);
     }
-    // If combo is null (modifier-only press), stay in recording mode.
+    // A modifier-only press keeps recording rather than committing.
   };
 
   const displayValue = formatBindingDisplay(value);

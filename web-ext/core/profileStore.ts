@@ -8,10 +8,6 @@ import { CHROME_STORAGE_LOCAL_KEY } from "../data/core";
 
 const PROFILE_STORE_KEY = CHROME_STORAGE_LOCAL_KEY.PROFILE_STORE;
 
-// ---------------------------------------------------------------------------
-// Low-level read / write
-// ---------------------------------------------------------------------------
-
 async function readProfileStore(): Promise<ProfileStore> {
   return new Promise((resolve) => {
     chrome.storage.local.get(PROFILE_STORE_KEY, (result) => {
@@ -20,7 +16,8 @@ async function readProfileStore(): Promise<ProfileStore> {
         resolve({ ...DEFAULT_PROFILE_STORE });
         return;
       }
-      // Ensure shape is complete — defensive merge with defaults.
+      // Rebuilt field by field rather than spread: a record written by an older
+      // version may be missing keys the callers below index into unconditionally.
       resolve({
         activeProfileId: stored.activeProfileId ?? null,
         profiles: Array.isArray(stored.profiles) ? stored.profiles : [],
@@ -35,14 +32,8 @@ async function writeProfileStore(store: ProfileStore): Promise<void> {
   });
 }
 
-// ---------------------------------------------------------------------------
-// Public helpers
-// ---------------------------------------------------------------------------
-
-/**
- * Return all profiles: built-in presets first, then user-created profiles
- * sorted by creation date (newest last).
- */
+// Includes the built-in presets. Callers that want only the user's own profiles
+// want getCustomProfiles instead.
 export async function getAllProfiles(): Promise<Profile[]> {
   const { profiles } = await readProfileStore();
   return [
@@ -51,18 +42,11 @@ export async function getAllProfiles(): Promise<Profile[]> {
   ];
 }
 
-/**
- * Return only user-created (non-preset) profiles.
- */
 export async function getCustomProfiles(): Promise<Profile[]> {
   const { profiles } = await readProfileStore();
   return profiles.sort((a, b) => a.createdAt - b.createdAt);
 }
 
-/**
- * Look up a profile by ID. Checks presets first, then custom profiles.
- * Returns undefined if no match.
- */
 export async function getProfileById(
   id: string,
 ): Promise<Profile | undefined> {
@@ -72,27 +56,19 @@ export async function getProfileById(
   return profiles.find((p) => p.id === id);
 }
 
-/**
- * Get the currently active profile, or null if no profile is active.
- */
 export async function getActiveProfile(): Promise<Profile | null> {
   const { activeProfileId } = await readProfileStore();
   if (!activeProfileId) return null;
   return (await getProfileById(activeProfileId)) ?? null;
 }
 
-/**
- * Set the active profile by ID. Pass null to deactivate all profiles
- * (extension falls back to individual preferences).
- */
+// null means no profile is active, which falls back to individual preferences
+// rather than to a default profile.
 export async function setActiveProfileId(id: string | null): Promise<void> {
   const store = await readProfileStore();
   await writeProfileStore({ ...store, activeProfileId: id });
 }
 
-/**
- * Create a new custom profile. Returns the created profile.
- */
 export async function createProfile(
   data: Omit<Profile, "id" | "isPreset" | "createdAt">,
 ): Promise<Profile> {
@@ -110,10 +86,8 @@ export async function createProfile(
   return profile;
 }
 
-/**
- * Update an existing custom profile. Silently ignores attempts to update
- * built-in presets.
- */
+// Presets are read-only, and a write targeting one is ignored rather than
+// throwing — the options UI relies on that to keep its edit path uniform.
 export async function updateProfile(
   id: string,
   patch: Partial<Omit<Profile, "id" | "isPreset" | "createdAt">>,
@@ -128,10 +102,8 @@ export async function updateProfile(
   });
 }
 
-/**
- * Delete a custom profile. If the deleted profile was active, deactivates it.
- * Silently ignores attempts to delete built-in presets.
- */
+// Deleting the active profile also clears the active id, so nothing is left
+// pointing at a profile that no longer exists.
 export async function deleteProfile(id: string): Promise<void> {
   if (BUILT_IN_PRESETS.some((p) => p.id === id)) return;
   const store = await readProfileStore();

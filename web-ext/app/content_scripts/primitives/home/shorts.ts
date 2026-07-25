@@ -1,9 +1,3 @@
-/**
- * Home scope — Shorts shelf visibility primitive.
- *
- * Hides the Shorts row that appears in the YouTube home feed.
- */
-
 import { resolveTarget } from "../../../../utils/primitive";
 import { setCapabilityStatus } from "../../../../core/capabilityCache";
 

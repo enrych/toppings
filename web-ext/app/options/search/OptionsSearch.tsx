@@ -2,11 +2,6 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { fuzzySearch, type SearchResult } from "./searchIndex";
 
-// ---------------------------------------------------------------------------
-// Highlight helpers
-// ---------------------------------------------------------------------------
-
-/** Render `text` with characters at `indices` wrapped in <mark> runs. */
 function HighlightedLabel({
   text,
   indices,
@@ -22,7 +17,6 @@ function HighlightedLabel({
 
   while (i < text.length) {
     if (indexSet.has(i)) {
-      // Collect a consecutive run of matched chars.
       let run = "";
       while (i < text.length && indexSet.has(i)) {
         run += text[i];
@@ -46,33 +40,22 @@ function HighlightedLabel({
   return <>{nodes}</>;
 }
 
-// ---------------------------------------------------------------------------
-// DOM targeting — find and flash the specific row for an entry
-// ---------------------------------------------------------------------------
-
-/**
- * Walks the rendered page DOM to find the element whose visible text matches
- * `labelText`. Searches <label> elements first (Field-based components), then
- * <h2> headings (Section titles), then any <span> leaf (PresetCard, etc.).
- *
- * Returns the element and the best ancestor "row" container to flash.
- */
+// Matches on rendered text because the search index stores UI labels, not ids.
+// Ordered most specific first: a Field's <label>, then a Section <h2>, then any
+// leaf <span> — so a row wins over the section that contains it.
 function findRowByLabel(labelText: string): HTMLElement | null {
-  // 1. <label> — rendered by Field, used by Input / Select / Switch / Keybinding
   for (const el of document.querySelectorAll<HTMLElement>("label")) {
     if (el.textContent?.trim() === labelText) {
       return closestRow(el) ?? el;
     }
   }
 
-  // 2. <h2> — Section title
   for (const el of document.querySelectorAll<HTMLElement>("h2")) {
     if (el.textContent?.trim() === labelText) {
       return el.closest("section") as HTMLElement ?? el;
     }
   }
 
-  // 3. Leaf <span> — PresetCard profile name, etc.
   for (const el of document.querySelectorAll<HTMLElement>("span")) {
     if (el.children.length === 0 && el.textContent?.trim() === labelText) {
       return closestRow(el) ?? el;
@@ -82,7 +65,6 @@ function findRowByLabel(labelText: string): HTMLElement | null {
   return null;
 }
 
-/** Walk up ancestors looking for a row container (tw-py-* child of a Card). */
 function closestRow(el: HTMLElement): HTMLElement | null {
   let node: HTMLElement | null = el.parentElement;
   while (node && node !== document.body) {
@@ -116,10 +98,6 @@ function flashSectionById(id: string): void {
   setTimeout(() => el.classList.remove("tppng-section-flash"), 1000);
 }
 
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
-
 export default function OptionsSearch() {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
@@ -138,8 +116,7 @@ export default function OptionsSearch() {
       setActiveIdx(0);
       navigate(entry.path);
 
-      // After React renders the new page, try to find and flash the specific row.
-      // If not found, fall back to section scroll.
+      // Deferred a tick: the row only exists once React has rendered the new page.
       setTimeout(() => {
         const row = findRowByLabel(entry.label);
         if (row) {
@@ -170,7 +147,6 @@ export default function OptionsSearch() {
     }
   };
 
-  // Close on outside click.
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (!containerRef.current?.contains(e.target as Node)) setOpen(false);
@@ -179,7 +155,6 @@ export default function OptionsSearch() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Reset active index when results change.
   useEffect(() => {
     setActiveIdx(0);
   }, [query]);

@@ -1,13 +1,6 @@
 import { resolveTarget } from "../../../../utils/primitive";
 import { setCapabilityStatus } from "../../../../core/capabilityCache";
 
-// ---------------------------------------------------------------------------
-// End screen cards primitive
-//
-// Controls the clickable overlay cards that appear in the final seconds
-// of a YouTube video (subscribe prompts, related video cards, etc.).
-// ---------------------------------------------------------------------------
-
 const STRATEGIES = [
   ".ytp-ce-element",
   ".ytp-endscreen-element",
@@ -15,19 +8,11 @@ const STRATEGIES = [
   ".ytp-player-content .ytp-ce-element",
 ] as const;
 
-/**
- * Whether end cards are currently suppressed by Toppings.
- * We use CSS visibility rather than display:none to preserve layout flow.
- */
+// Tracked so reset only touches what this file hid, never YouTube's own state.
 let suppressedByToppings = false;
 
-/**
- * Hide or show end screen cards.
- * Writes the resolution result to the capability cache.
- *
- * Note: we target the container rather than individual cards so that
- * cards injected dynamically (e.g. mid-video) are also covered.
- */
+// Targets the container, not the cards: YouTube injects cards mid-video, and
+// anything hidden per-element would miss the ones that appear later.
 export async function setEndCardsVisible(visible: boolean): Promise<void> {
   const resolution = await resolveTarget(STRATEGIES);
   void setCapabilityStatus("watch.endCards", "watch", resolution);
@@ -46,7 +31,6 @@ export async function setEndCardsVisible(visible: boolean): Promise<void> {
   }
 }
 
-/** Restore end cards to their original state (called on navigation / teardown). */
 export function resetEndCards(): void {
   if (!suppressedByToppings) return;
   const el = STRATEGIES

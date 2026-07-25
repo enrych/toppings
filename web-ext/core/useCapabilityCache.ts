@@ -15,11 +15,8 @@ interface UseCapabilityCacheResult {
   rescan: () => Promise<void>;
 }
 
-/**
- * Read the capability cache and expose per-primitive support status to the
- * options UI. Provides a `rescan` function that clears the cache and triggers
- * a re-read (the actual re-probe happens on the next YouTube page navigation).
- */
+// rescan only clears the cache — the actual re-probe happens on the next
+// YouTube navigation, so the UI cannot show fresh results immediately.
 export function useCapabilityCache(): UseCapabilityCacheResult {
   const [capabilities, setCapabilities] = useState<CapabilityMap>(new Map());
   const [isLoading, setIsLoading] = useState(true);

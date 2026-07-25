@@ -1,10 +1,3 @@
-/**
- * Search scope — search result thumbnail visibility/blur primitive.
- *
- * Hiding thumbnails turns search results into a plain text list,
- * ideal for distraction-free / SFW profiles.
- */
-
 import { resolveTarget } from "../../../../utils/primitive";
 import { setCapabilityStatus } from "../../../../core/capabilityCache";
 import type { ThumbnailMode } from "../../../../data/profiles";

@@ -458,7 +458,6 @@ const useShortcuts = (event: KeyboardEvent): void => {
 };
 
 async function cycleProfilesShortcut(): Promise<void> {
-  // getAllProfiles returns only custom profiles, so the presets are prepended here.
   const customProfiles = await getAllProfiles();
   const cycle: Array<{ id: string | null; name: string }> = [
     { id: null, name: "Default" },

@@ -15,8 +15,8 @@ import {
   type RecoveredFeature,
 } from "../../../core/featureReports";
 
-// All watch-page primitives the extension currently supports.
-// When a new primitive is added, append an entry here.
+// Adding a watch-page primitive means appending an entry here; nothing
+// discovers them automatically.
 const WATCH_PRIMITIVES: { id: string; label: string }[] = [
   { id: "watch.player",        label: "Video Player" },
   { id: "watch.rightControls", label: "Player Controls Bar" },

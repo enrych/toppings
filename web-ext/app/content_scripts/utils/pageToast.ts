@@ -1,10 +1,5 @@
-/**
- * Lightweight DOM toast for on-page feedback in content scripts.
- *
- * Creates a single shared toast element (TPPNG_TOAST_ID) and reuses it
- * across calls, so rapid successive calls replace the current message rather
- * than stacking. Auto-dismisses after `duration` ms.
- */
+// One shared element, reused: rapid calls replace the current message instead of
+// stacking toasts over the player.
 
 const TPPNG_TOAST_ID = "tppng-page-toast";
 let dismissTimer: ReturnType<typeof setTimeout> | null = null;
@@ -16,7 +11,7 @@ export function showPageToast(message: string, duration = 2000): void {
     el = document.createElement("div");
     el.id = TPPNG_TOAST_ID;
 
-    // Inline styles — no class dependency on YouTube's stylesheet.
+    // Inline rather than a class, so nothing here depends on YouTube's stylesheet.
     Object.assign(el.style, {
       position: "fixed",
       bottom: "80px",
@@ -44,10 +39,10 @@ export function showPageToast(message: string, duration = 2000): void {
     document.body.appendChild(el);
   }
 
-  // Update text and reset timer.
   el.textContent = message;
 
-  // Force reflow so the transition fires even if opacity was already 1.
+  // Reading offsetHeight forces a reflow, without which re-showing an already
+  // visible toast skips the transition entirely.
   void (el as HTMLElement).offsetHeight;
   el.style.opacity = "1";
 

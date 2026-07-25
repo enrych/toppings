@@ -1,12 +1,6 @@
 import { resolveTarget } from "../../../../utils/primitive";
 import { setCapabilityStatus } from "../../../../core/capabilityCache";
 
-// ---------------------------------------------------------------------------
-// Comments section primitive
-//
-// Controls the comments section below the video on the watch page.
-// ---------------------------------------------------------------------------
-
 const STRATEGIES = [
   "ytd-comments#comments",
   "#comments",
@@ -16,10 +10,6 @@ const STRATEGIES = [
 
 let hiddenByToppings = false;
 
-/**
- * Hide or show the comments section.
- * Writes the resolution result to the capability cache.
- */
 export async function setCommentsVisible(visible: boolean): Promise<void> {
   const resolution = await resolveTarget(STRATEGIES);
   void setCapabilityStatus("watch.comments", "watch", resolution);
@@ -38,7 +28,6 @@ export async function setCommentsVisible(visible: boolean): Promise<void> {
   }
 }
 
-/** Restore comments to their original state (called on navigation / teardown). */
 export function resetComments(): void {
   if (!hiddenByToppings) return;
   const el = STRATEGIES

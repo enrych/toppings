@@ -9,8 +9,6 @@ let connectedVideo: HTMLVideoElement | null = null;
 const SMOOTHING = 0.82;
 const FFT_SIZE = 512;
 
-// Multiplier on the rendered wave amplitude. 1.0 = default. Tweak from the
-// options page; passed in via setVisualizerSensitivity.
 let sensitivity = 1.0;
 
 export function setVisualizerSensitivity(value: number) {
@@ -26,13 +24,9 @@ export const AudioModeCanvas = (
   />
 ) as unknown as HTMLCanvasElement;
 
-/**
- * Ensures the video's audio is routed through the AudioContext to the
- * destination (speakers). Once createMediaElementSource is called, the video
- * no longer outputs audio directly — it must go through the graph. We keep
- * `source -> destination` connected at all times so audio plays in every
- * screen mode, and only attach/detach the analyser side-branch.
- */
+// createMediaElementSource permanently diverts the element's audio into the
+// graph, so source -> destination stays connected in every screen mode and only
+// the analyser branch is attached and detached. Skipping that silences the video.
 export function ensureAudioRouting(video: HTMLVideoElement) {
   try {
     if (!audioContext) {
@@ -54,8 +48,8 @@ export function ensureAudioRouting(video: HTMLVideoElement) {
       audioContext.resume();
     }
   } catch (_e) {
-    // If we can't create the source (e.g. it was created elsewhere), the
-    // video keeps its native audio output and the visualizer falls back.
+    // Swallowed: a source can only be created once per element, so a second
+    // attempt throws and the video simply keeps its own audio output.
   }
 }
 
@@ -123,10 +117,8 @@ function renderWaveform() {
     analyser!.getByteFrequencyData(freqData);
     analyser!.getByteTimeDomainData(timeData);
 
-    // Use peak loudness across the lower spectrum (where most music energy
-    // lives) instead of the flat average, which dilutes amplitude across the
-    // many quiet high-frequency bins. Then apply a sqrt curve so quieter
-    // sounds still produce a visible wave.
+    // Weighted to the lower spectrum and curved with sqrt: a flat average over
+    // all bins is dominated by quiet high frequencies and barely moves the wave.
     let peak = 0;
     const halfLen = Math.floor(freqLength * 0.6);
     let sumLow = 0;
@@ -137,7 +129,6 @@ function renderWaveform() {
     }
     const peakNorm = peak / 255;
     const avgLowNorm = sumLow / halfLen / 255;
-    // Blend peak and avg, then apply perceptual sqrt curve.
     const loudness = Math.sqrt(peakNorm * 0.7 + avgLowNorm * 0.3);
 
     const amplitude = Math.max(0.05, loudness) * h * 0.45 * sensitivity;

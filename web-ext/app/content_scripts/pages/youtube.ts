@@ -1,12 +1,6 @@
-/**
- * Generic YouTube page handler (home, search, channel, etc.)
- *
- * Runs `applyWatchProfile` so that home/search/shorts profile primitives
- * take effect on every YouTube navigation — not just the watch page.
- *
- * Also re-applies primitives when the profile store changes (popup or options
- * page interaction while browsing YouTube).
- */
+// Handles every YouTube page that is not watch, playlist or shorts, which is why
+// it applies the profile too: home and search primitives would otherwise only
+// take effect once the user opened a video.
 
 import type { YoutubeContext } from "../../background/context";
 import { applyWatchProfile } from "../primitives/applyProfile";
@@ -22,10 +16,8 @@ const onProfileStoreChangedYoutube = (
 };
 
 const onYoutubePage = async (_ctx: YoutubeContext): Promise<void> => {
-  // Apply active profile's home/search/shorts primitives.
   void applyWatchProfile();
 
-  // Keep in sync with profile store changes from other surfaces.
   chrome.storage.onChanged.removeListener(onProfileStoreChangedYoutube);
   chrome.storage.onChanged.addListener(onProfileStoreChangedYoutube);
 };

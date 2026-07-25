@@ -1,10 +1,3 @@
-/**
- * Home scope — feed thumbnail visibility/blur primitive.
- *
- * Strategy arrays cover the main thumbnail image elements inside the home
- * feed, ordered by the most common YouTube DOM variant first.
- */
-
 import { resolveTarget } from "../../../../utils/primitive";
 import { setCapabilityStatus } from "../../../../core/capabilityCache";
 import type { ThumbnailMode } from "../../../../data/profiles";
@@ -15,7 +8,6 @@ const STRATEGIES = [
   "#contents ytd-rich-item-renderer yt-image img",
 ] as const;
 
-/** CSS filter applied for blur mode. */
 const BLUR_FILTER = "blur(12px)";
 
 let lastMode: ThumbnailMode = "show";
@@ -23,17 +15,14 @@ let lastMode: ThumbnailMode = "show";
 export async function setHomeThumbnailMode(mode: ThumbnailMode): Promise<void> {
   lastMode = mode;
 
-  // Capability probe — just resolve the container once.
   const resolution = await resolveTarget(STRATEGIES);
   void setCapabilityStatus("home.thumbnails", "home", resolution);
 
   applyHomeThumbnailMode(mode);
 }
 
-/**
- * Apply the thumbnail mode synchronously to all current thumbnails in the DOM.
- * Safe to call at any time — operates on the live DOM without async.
- */
+// Synchronous by design: the feed re-renders constantly, so this is called
+// repeatedly and cannot afford to await a resolveTarget on each pass.
 export function applyHomeThumbnailMode(mode: ThumbnailMode): void {
   const selector = [
     "ytd-rich-grid-renderer ytd-rich-item-renderer img#img",

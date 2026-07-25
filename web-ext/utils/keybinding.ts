@@ -13,7 +13,6 @@ const MODIFIER_SYMBOLS: Record<ModifierKey, string> = {
   Meta: "⌘",
 };
 
-/** "Shift+Q" → "⇧Q", "Ctrl+Shift+A" → "⌃⇧A" */
 export function formatBindingDisplay(combo: string): string {
   if (!combo) return "";
   return combo
@@ -22,7 +21,8 @@ export function formatBindingDisplay(combo: string): string {
     .join("");
 }
 
-/** Returns the canonical combo string for a keydown event, or null for modifier-only/non-alphanumeric presses. */
+// null for a modifier-only or non-alphanumeric press, which callers treat as
+// "keep listening" rather than as a binding.
 export function recordBinding(e: KeyboardEvent): string | null {
   if (MODIFIER_KEY_VALUES.has(e.key)) return null;
   const baseKey = e.key.toUpperCase();
@@ -40,7 +40,8 @@ export function recordBinding(e: KeyboardEvent): string | null {
   return parts.join("+");
 }
 
-/** Returns true when a KeyboardEvent matches a stored combo string. Modifiers are checked exactly — "Q" won't fire when Shift is held. */
+// Modifiers must match exactly, so a binding of "Q" deliberately does not fire
+// while Shift is held — that combo belongs to "Shift+Q".
 export function matchesBinding(event: KeyboardEvent, binding: string): boolean {
   if (!binding) return false;
 

@@ -24,9 +24,7 @@ export const DEFAULT_STORE = {
   isExtensionEnabled: true as boolean,
   ui: {
     theme: "system" as "system" | "dark" | "light",
-    /** Inject a Toppings section into YouTube's player gear (⚙) menu. */
     gearMenuEnabled: false as boolean,
-    /** Inject a Toppings entry into YouTube's left sidebar + native settings page. */
     nativeSettingsEnabled: false as boolean,
   },
   preferences: {
@@ -65,8 +63,7 @@ export const DEFAULT_STORE = {
         key: KEYBOARD_KEY.E as string,
       },
       saveLoopSegment: {
-        /** Save current loop (loop active) or clear saved loop (loop inactive). */
-        key: "" as string, // unset by default — user assigns e.g. "Shift+Z"
+        key: "" as string, // "" = unbound
       },
       audioMode: {
         isEnabled: true as boolean,
@@ -81,38 +78,20 @@ export const DEFAULT_STORE = {
       },
       customPlaybackRates: [] as Array<string>,
       cycleProfiles: {
-        // Empty string = unset; user must configure.
-        key: "" as string,
+        key: "" as string, // "" = unbound
       },
       nudgeLoopSegment: {
-        /** Combo that nudges the start marker backward (default: Shift+Q). */
         startBackwardKey: `Shift+${KEYBOARD_KEY.Q}` as string,
-        /** Combo that nudges the start marker forward. Empty = unset. */
-        startForwardKey: "" as string,
-        /** Combo that nudges the end marker forward (default: Shift+E). */
+        startForwardKey: "" as string, // "" = unbound
         endForwardKey: `Shift+${KEYBOARD_KEY.E}` as string,
-        /** Combo that nudges the end marker backward. Empty = unset. */
-        endBackwardKey: "" as string,
-        /** First-press nudge size in seconds. */
-        baseStep: "1" as string,
-        /** Step multiplier for rapid consecutive presses (1 = no acceleration). */
-        multiplier: "2" as string,
-        /** Maximum nudge step ceiling in seconds. */
-        maxStep: "16" as string,
+        endBackwardKey: "" as string, // "" = unbound
+        baseStep: "1" as string, // seconds, first press
+        multiplier: "2" as string, // per rapid repeat; 1 disables acceleration
+        maxStep: "16" as string, // seconds
       },
       segments: {
-        /**
-         * Key combo that always starts a fresh-slate segment config
-         * (1 segment, full video, infinite loop). Defaults to Shift+Z.
-         */
         freshSlateKey: `Shift+${KEYBOARD_KEY.Z}` as string,
-        /**
-         * Default auto-load behaviour on each video page open.
-         *   "off"       → manual only; segments never auto-enable
-         *   "last-used" → restore the volatile last-used snapshot if present
-         *   "default"   → restore the default saved config if one is set
-         * Per-video pins (stored in VideoSegmentData.autoLoadPin) override this.
-         */
+        // Overridden per video by VideoSegmentData.autoLoadPin.
         autoLoad: "off" as "off" | "last-used" | "default",
       },
     },

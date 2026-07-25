@@ -1,34 +1,16 @@
-/**
- * Per-video loop segment persistence backed by IndexedDB.
- *
- * Records are stored in the `loop_segment` object store, keyed by `videoId`.
- * This is the right storage tier for structured per-entity data — no quota
- * worries, no key-prefix scanning, and it sits naturally alongside
- * `video_preference` which follows the same pattern.
- *
- * Save  — user presses the save shortcut while loop is active.
- * Clear — user presses the save shortcut while loop is inactive.
- */
+// IndexedDB rather than chrome.storage: per-video records need neither a quota
+// budget nor key-prefix scanning, and video_preference is stored the same way.
 
 import { withStore } from "../../../utils/indexedDb";
 import { BROWSER_STORAGE_IDB_STORE } from "../../../data/core";
 
 export interface SavedLoopSegment {
-  /** IDB key path — matches the videoId query param. */
-  videoId: string;
-  /** Loop start in seconds from the beginning of the video. */
-  startTime: number;
-  /** Loop end in seconds from the beginning of the video. */
-  endTime: number;
-  /** Unix timestamp (ms) when the segment was last saved. */
-  savedAt: number;
+  videoId: string; // the IDB key path
+  startTime: number; // seconds
+  endTime: number; // seconds
+  savedAt: number; // unix ms
 }
 
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
-
-/** Retrieve the saved loop segment for a video, or null if none exists. */
 export async function getSavedLoopSegment(
   videoId: string,
 ): Promise<SavedLoopSegment | null> {
@@ -40,7 +22,6 @@ export async function getSavedLoopSegment(
   return result ?? null;
 }
 
-/** Persist the current loop segment positions for a video. */
 export async function saveLoopSegment(
   videoId: string,
   startTime: number,
@@ -59,7 +40,6 @@ export async function saveLoopSegment(
   );
 }
 
-/** Remove the saved loop segment for a video. */
 export async function deleteSavedLoopSegment(videoId: string): Promise<void> {
   await withStore<undefined>(
     BROWSER_STORAGE_IDB_STORE.LOOP_SEGMENT,
@@ -68,7 +48,6 @@ export async function deleteSavedLoopSegment(videoId: string): Promise<void> {
   );
 }
 
-/** Return all saved loop segments (e.g. for a management UI). */
 export async function getAllSavedLoopSegments(): Promise<SavedLoopSegment[]> {
   return withStore<SavedLoopSegment[]>(
     BROWSER_STORAGE_IDB_STORE.LOOP_SEGMENT,
@@ -77,7 +56,6 @@ export async function getAllSavedLoopSegments(): Promise<SavedLoopSegment[]> {
   );
 }
 
-/** Remove every saved loop segment. */
 export async function clearAllSavedLoopSegments(): Promise<void> {
   await withStore<undefined>(
     BROWSER_STORAGE_IDB_STORE.LOOP_SEGMENT,

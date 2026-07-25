@@ -34,29 +34,23 @@ function onInitialize({ reason }: InitializeDetails): void {
       void chrome.runtime.setUninstallURL(URLS.FAREWELL);
     }
     void syncStorageWithDefaults();
-    // Touch the profile store so it initialises with defaults for new
-    // installs and returns gracefully for existing users (no-op on update).
+    // Read purely for its side effect: this is what writes the default profile
+    // store on a fresh install.
     void getActiveProfile();
-    // On update: check whether any reported-unsupported primitives are now
-    // resolved in the capability cache (user may have re-scanned on prior run).
     if (reason === EXTENSION_INSTALL_REASON.UPDATE) {
       void checkRecoveredFeatures();
     }
   }
 }
 
-/**
- * On extension update: compare reported-unsupported features against the
- * capability cache. If any were "unsupported" when reported but are now
- * "supported", mark them as recovered so the options page can show a banner.
- */
+// An update can add selector strategies that fix a primitive the user reported,
+// so anything now resolving is marked recovered for the options page to surface.
 async function checkRecoveredFeatures(): Promise<void> {
   const reports = await getFeatureReports();
   for (const report of reports) {
     const status = await getCapabilityStatus(report.primitiveId);
     if (status === "supported") {
       await markRecovered(report.primitiveId);
-      // Remove the report — the user has been notified.
       await removeFeatureReport(report.primitiveId);
     }
   }

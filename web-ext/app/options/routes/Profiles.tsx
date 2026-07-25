@@ -26,10 +26,6 @@ import {
 } from "../../../data/profiles";
 import type { PlayerLayout, PlayerVisuals } from "../../../data/profiles";
 
-// ---------------------------------------------------------------------------
-// Blank profile template
-// ---------------------------------------------------------------------------
-
 function blankPrimitives(): ProfilePrimitiveConfig {
   return {
     "watch.sidebar": { visible: true },
@@ -39,10 +35,6 @@ function blankPrimitives(): ProfilePrimitiveConfig {
     "watch.visuals": { value: "video" },
   };
 }
-
-// ---------------------------------------------------------------------------
-// Profile editor (inline)
-// ---------------------------------------------------------------------------
 
 interface ProfileEditorProps {
   initial: Partial<Profile>;
@@ -316,10 +308,6 @@ function ProfileEditor({
   );
 }
 
-// ---------------------------------------------------------------------------
-// Preset card (read-only)
-// ---------------------------------------------------------------------------
-
 interface PresetCardProps {
   profile: Profile;
   isActive: boolean;
@@ -384,10 +372,6 @@ function PresetCard({ profile, isActive, onActivate }: PresetCardProps) {
     </div>
   );
 }
-
-// ---------------------------------------------------------------------------
-// Custom profile card
-// ---------------------------------------------------------------------------
 
 interface CustomProfileCardProps {
   profile: Profile;
@@ -460,10 +444,6 @@ function CustomProfileCard({
     </div>
   );
 }
-
-// ---------------------------------------------------------------------------
-// Main Profiles page
-// ---------------------------------------------------------------------------
 
 type EditorMode =
   | { type: "closed" }

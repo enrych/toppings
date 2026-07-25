@@ -1,7 +1,3 @@
-/**
- * Search scope — Shorts shelf visibility in search results.
- */
-
 import { resolveTarget } from "../../../../utils/primitive";
 import { setCapabilityStatus } from "../../../../core/capabilityCache";
 

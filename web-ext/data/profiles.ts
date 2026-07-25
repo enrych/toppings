@@ -1,13 +1,9 @@
 export type PlayerLayout = "default" | "theatre" | "no-video";
 export type PlayerVisuals = "video" | "black" | "visualizer" | "custom";
 
-// ---------------------------------------------------------------------------
-// Profile primitive config
-//
-// Each key maps to a primitiveId. The value is that primitive's desired
-// state when the profile is active. Absent keys mean "use default / no
-// change from YouTube's own behaviour".
-// ---------------------------------------------------------------------------
+// Every key is a primitiveId and its value is that primitive's state while the
+// profile is active. An absent key means "leave YouTube alone" — which is not the
+// same as a false value, and is what lets profiles compose without fighting.
 
 export interface WatchPrimitiveConfig {
   "watch.layout"?: { value: PlayerLayout };
@@ -17,8 +13,7 @@ export interface WatchPrimitiveConfig {
   "watch.endCards"?: { visible: boolean };
 }
 
-/** Feed thumbnail display mode. blur uses CSS filter; hide removes from view. */
-export type ThumbnailMode = "show" | "hide" | "blur";
+export type ThumbnailMode = "show" | "hide" | "blur"; // blur is a CSS filter, hide removes
 
 export interface HomePrimitiveConfig {
   "home.thumbnails"?: { mode: ThumbnailMode };
@@ -36,44 +31,22 @@ export interface ShortsPrimitiveConfig {
   "shorts.shelf"?: { visible: boolean };
 }
 
-// Union of all scope configs — extends naturally as new scopes are added.
 export type ProfilePrimitiveConfig = WatchPrimitiveConfig &
   HomePrimitiveConfig &
   SearchPrimitiveConfig &
   ShortsPrimitiveConfig;
 
-// ---------------------------------------------------------------------------
-// Profile type
-// ---------------------------------------------------------------------------
-
 export interface Profile {
-  /** Stable unique identifier. Presets use "preset:<name>", custom use uuid. */
-  id: string;
-  /** Display name shown in UI. */
+  id: string; // "preset:<name>" for presets, uuid for custom
   name: string;
-  /**
-   * True for Toppings-shipped presets. Preset profiles are not editable or
-   * deletable by the user — they are derived from constants, not stored.
-   */
   isPreset: boolean;
-  /** Unix timestamp (ms) of creation. 0 for presets. */
-  createdAt: number;
-  /** Primitive states to apply when this profile is active. */
+  createdAt: number; // unix ms; 0 for presets, which are never created
   primitives: ProfilePrimitiveConfig;
 }
 
-// ---------------------------------------------------------------------------
-// Profile storage shape (chrome.storage.local)
-// ---------------------------------------------------------------------------
-
 export interface ProfileStore {
-  /**
-   * ID of the currently active profile, or null if no profile is active
-   * (extension runs using individual preferences from chrome.storage.sync).
-   */
-  activeProfileId: string | null;
-  /** User-created custom profiles. Presets are not stored here. */
-  profiles: Profile[];
+  activeProfileId: string | null; // null runs on individual preferences instead
+  profiles: Profile[]; // custom only; presets are constants, not stored
 }
 
 export const DEFAULT_PROFILE_STORE: ProfileStore = {
@@ -81,13 +54,9 @@ export const DEFAULT_PROFILE_STORE: ProfileStore = {
   profiles: [],
 };
 
-// ---------------------------------------------------------------------------
-// Built-in presets
-//
-// Presets are constants — never written to storage, always derived at
-// runtime. This means preset definitions update automatically when the
-// extension updates, without any migration.
-// ---------------------------------------------------------------------------
+// Presets are derived at runtime and never written to storage, so editing a
+// definition here reaches existing users on update with no migration. That is
+// also why they cannot be edited or deleted from the UI.
 
 export const PRESET_AUDIO: Profile = {
   id: "preset:audio",
@@ -113,7 +82,7 @@ export const PRESET_FOCUS: Profile = {
   },
 };
 
-/** All built-in presets in display order. */
+// Order here is the order the UI displays them in.
 export const BUILT_IN_PRESETS: readonly Profile[] = [
   PRESET_AUDIO,
   PRESET_FOCUS,

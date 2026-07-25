@@ -1,12 +1,6 @@
 import { resolveTarget } from "../../../../utils/primitive";
 import { setCapabilityStatus } from "../../../../core/capabilityCache";
 
-// ---------------------------------------------------------------------------
-// Recommendations sidebar primitive
-//
-// Controls the "Up next" / related videos panel on the watch page.
-// ---------------------------------------------------------------------------
-
 const STRATEGIES = [
   "#secondary",
   "ytd-watch-next-secondary-results-renderer",
@@ -16,11 +10,6 @@ const STRATEGIES = [
 
 let hiddenByToppings = false;
 
-/**
- * Hide or show the recommendations sidebar.
- * Writes the resolution result to the capability cache so the options UI
- * can surface this primitive as supported or unsupported.
- */
 export async function setSidebarVisible(visible: boolean): Promise<void> {
   const resolution = await resolveTarget(STRATEGIES);
   void setCapabilityStatus("watch.sidebar", "watch", resolution);
@@ -39,7 +28,6 @@ export async function setSidebarVisible(visible: boolean): Promise<void> {
   }
 }
 
-/** Restore sidebar to its original state (called on navigation / teardown). */
 export function resetSidebar(): void {
   if (!hiddenByToppings) return;
   const el = STRATEGIES

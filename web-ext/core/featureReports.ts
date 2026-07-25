@@ -1,11 +1,6 @@
-/**
- * Feature report storage.
- *
- * When a user taps "Report" on an unsupported primitive, we store a record
- * locally. On each extension update, the background re-scans capabilities
- * and checks whether any reported primitives are now supported. If so, a
- * "recovered" flag is set that the options page reads to show a banner.
- */
+// Reports are kept locally and never sent anywhere. Their only consumer is the
+// post-update re-scan, which flags a reported primitive that now resolves so the
+// options page can tell the user it started working.
 
 import { getCurrentVersion } from "../utils/version";
 import { CHROME_STORAGE_LOCAL_KEY } from "../data/core";
@@ -25,10 +20,6 @@ export interface RecoveredFeature {
   dismissedAt: number | null;
 }
 
-// ---------------------------------------------------------------------------
-// Reports
-// ---------------------------------------------------------------------------
-
 export async function getFeatureReports(): Promise<FeatureReport[]> {
   return new Promise((resolve) => {
     chrome.storage.local.get(REPORT_STORE_KEY, (result) => {
@@ -40,7 +31,7 @@ export async function getFeatureReports(): Promise<FeatureReport[]> {
 
 export async function addFeatureReport(primitiveId: string): Promise<void> {
   const reports = await getFeatureReports();
-  // Idempotent — don't add duplicate reports for the same primitive.
+  // One report per primitive: the button stays tappable and must not stack.
   if (reports.some((r) => r.primitiveId === primitiveId)) return;
 
   const version = await getCurrentVersion();

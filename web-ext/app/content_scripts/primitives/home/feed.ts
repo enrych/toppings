@@ -1,9 +1,3 @@
-/**
- * Home scope — entire feed visibility primitive.
- *
- * Hides/shows the main content area of the YouTube home page.
- */
-
 import { resolveTarget } from "../../../../utils/primitive";
 import { setCapabilityStatus } from "../../../../core/capabilityCache";
 

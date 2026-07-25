@@ -22,11 +22,9 @@ const onShortsPage = async (ctx: ShortsContext) => {
     ?.querySelector("#actions");
   if (!playerActions) return;
 
-  // Keyboard Shortcuts
   document.body.removeEventListener("keydown", useShortcuts);
   document.body.addEventListener("keydown", useShortcuts);
 
-  // Auto Scroll
   setupAutoScroll();
   player.removeEventListener("playing", setupAutoScroll);
   player.addEventListener("playing", setupAutoScroll);
@@ -45,7 +43,6 @@ const onShortsPage = async (ctx: ShortsContext) => {
     }
   }
 
-  // Toggle Playback Rate
   const togglePlaybackRateButton = playerActions.querySelector(
     "#tppng-toggle-playback-rate",
   );

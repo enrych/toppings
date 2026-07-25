@@ -1,9 +1,3 @@
-/**
- * Search scope — video metadata (view count, date) visibility primitive.
- *
- * Hides metadata lines below the title in search results.
- */
-
 import { resolveTarget } from "../../../../utils/primitive";
 import { setCapabilityStatus } from "../../../../core/capabilityCache";
 

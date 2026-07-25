@@ -1,15 +1,8 @@
-/**
- * Shorts scope — Shorts shelf visibility primitive.
- *
- * Hides the Shorts shelf from both the home page and search results.
- * Uses a broad strategy list since the Shorts shelf appears in multiple
- * YouTube page contexts.
- */
-
 import { resolveTarget } from "../../../../utils/primitive";
 import { setCapabilityStatus } from "../../../../core/capabilityCache";
 
-/** Selectors that match the Shorts shelf in home + search. */
+// Deliberately broad: the same shelf renders under different tags on home and
+// on search results.
 const STRATEGIES = [
   "ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-shorts])",
   "ytd-reel-shelf-renderer",
@@ -22,7 +15,7 @@ export async function setShortsShelfVisible(visible: boolean): Promise<void> {
   const resolution = await resolveTarget(STRATEGIES);
   void setCapabilityStatus("shorts.shelf", "shorts", resolution);
 
-  // Apply to all matching elements (shelf can appear multiple times on page).
+  // Every match, not just the first: a feed can render several shelves.
   applyShortsShelfVisible(visible);
 }
 

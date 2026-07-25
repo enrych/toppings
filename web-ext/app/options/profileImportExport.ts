@@ -1,21 +1,5 @@
-/**
- * Profile import/export utilities.
- *
- * Export: serialises a Profile to JSON and triggers a browser download.
- * Import: reads a JSON file, validates the primitive schema, and returns
- *         a Profile object ready to be persisted via `createProfile`.
- */
-
 import type { Profile, ProfilePrimitiveConfig } from "../../data/profiles";
 
-// ---------------------------------------------------------------------------
-// Export
-// ---------------------------------------------------------------------------
-
-/**
- * Trigger a browser download of the profile as a JSON file.
- * Filename: `toppings-profile-<slugified-name>.json`
- */
 export function exportProfile(profile: Profile): void {
   const exportData = {
     $schema:
@@ -36,10 +20,6 @@ export function exportProfile(profile: Profile): void {
   URL.revokeObjectURL(url);
 }
 
-// ---------------------------------------------------------------------------
-// Import
-// ---------------------------------------------------------------------------
-
 export interface ImportResult {
   ok: true;
   name: string;
@@ -51,10 +31,6 @@ export interface ImportError {
   message: string;
 }
 
-/**
- * Read and validate a JSON file from a file input.
- * Returns a discriminated union — check `.ok` before using the result.
- */
 export async function importProfileFromFile(
   file: File,
 ): Promise<ImportResult | ImportError> {
@@ -79,15 +55,8 @@ export async function importProfileFromFile(
   return validateProfileJson(parsed);
 }
 
-// ---------------------------------------------------------------------------
-// Validation
-// ---------------------------------------------------------------------------
-
-/**
- * Validate an unknown JSON value against the ProfilePrimitiveConfig schema.
- * Accepts both the full export format (with `$schema`, `exportedAt`) and a
- * bare `{ name, primitives }` object for simple hand-crafted configs.
- */
+// Accepts both a full export and a bare { name, primitives } object, so a
+// hand-written config is importable without the $schema wrapper.
 function validateProfileJson(data: unknown): ImportResult | ImportError {
   if (typeof data !== "object" || data === null || Array.isArray(data)) {
     return { ok: false, message: "Expected a JSON object at the top level." };
@@ -95,7 +64,6 @@ function validateProfileJson(data: unknown): ImportResult | ImportError {
 
   const obj = data as Record<string, unknown>;
 
-  // Name
   const name =
     typeof obj.name === "string" && obj.name.trim()
       ? obj.name.trim()
@@ -110,7 +78,6 @@ function validateProfileJson(data: unknown): ImportResult | ImportError {
     return { ok: false, message: "Profile name must be 40 characters or fewer." };
   }
 
-  // Primitives
   if (
     typeof obj.primitives !== "object" ||
     obj.primitives === null ||
@@ -193,14 +160,11 @@ function validatePrimitiveEntry(
       return null;
 
     default:
-      // Unknown key — silently skip rather than reject the whole file.
+      // Skipped rather than rejected: a file written by a newer version must
+      // still import on an older one, minus the keys it does not know.
       return null;
   }
 }
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 
 function slugify(str: string): string {
   return str
