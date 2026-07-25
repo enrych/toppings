@@ -21,7 +21,7 @@ import { resolveTarget } from "../../../utils/primitive";
 import { setCapabilityStatus } from "../../../core/capabilityCache";
 import { applyWatchProfile } from "../primitives/applyProfile";
 import {
-  getAllProfiles,
+  getCustomProfiles,
   getActiveProfile,
   setActiveProfileId,
 } from "../../../core/profileStore";
@@ -458,7 +458,9 @@ const useShortcuts = (event: KeyboardEvent): void => {
 };
 
 async function cycleProfilesShortcut(): Promise<void> {
-  const customProfiles = await getAllProfiles();
+  // getCustomProfiles, not getAllProfiles: the presets are prepended below, and
+  // getAllProfiles already includes them.
+  const customProfiles = await getCustomProfiles();
   const cycle: Array<{ id: string | null; name: string }> = [
     { id: null, name: "Default" },
     ...BUILT_IN_PRESETS.map((p) => ({ id: p.id, name: p.name })),
