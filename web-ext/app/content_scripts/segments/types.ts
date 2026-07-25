@@ -1,72 +1,38 @@
-// ---------------------------------------------------------------------------
-// Segments — core data types
-// All segment-related logic depends on these; keep this file logic-free.
-// ---------------------------------------------------------------------------
-
 export type SegmentId = string;
 export type StepId = string;
 export type ConfigId = string;
 
-/** A single named time-range within a video. */
 export interface Segment {
   id: SegmentId;
-  startTime: number; // seconds ≥ 0
-  endTime: number;   // seconds > startTime
+  startTime: number; // seconds
+  endTime: number; // seconds
   label?: string;
 }
 
-/**
- * One unit in a playback sequence.
- *
- * `segmentIds` is an ordered list of segment references — the playback engine
- * plays them in exactly that order. Duplicates are intentional: [seg3, seg3,
- * seg1] plays seg3 twice then seg1 once. This is the primary way to express
- * custom playback arrangements without needing a separate count-per-reference
- * field.
- *
- * `count` governs how many times the whole `segmentIds` list is played through:
- *   0  = loop forever
- *   1+ = play that many full cycles, then advance to the next step
- *
- * `perIterationRates` overrides `playbackRate` on a per-cycle basis.
- * Index 0 = first cycle, index 1 = second cycle, etc. The last entry repeats
- * for any cycle beyond the array length. An empty array means `playbackRate`
- * is used for every cycle.
- */
+// Repeats in `segmentIds` are intentional and are the only way to express an
+// arrangement like "seg3 twice, then seg1" — there is no count-per-reference field.
 export interface PlayStep {
   id: StepId;
   segmentIds: SegmentId[];
-  count: number;
-  playbackRate: number | null;  // null = keep current video rate
-  perIterationRates: number[];
+  count: number; // full cycles through segmentIds; 0 loops forever
+  playbackRate: number | null; // null keeps the video's current rate
+  perIterationRates: number[]; // per cycle; last entry repeats, empty falls back to playbackRate
 }
 
-/**
- * A complete, saveable playback configuration for a video.
- *
- * `sequence` is an ordered list of steps. When the last step finishes
- * (count ≠ 0), the engine wraps back to step 0 for a global infinite loop.
- * Set the last step's count = 0 if you want that step to loop forever.
- */
+// The engine wraps from the last step back to step 0, so a sequence loops
+// globally unless its final step sets count = 0 and loops on its own.
 export interface SegmentConfig {
   id: ConfigId;
-  label: string;          // required; auto-generated if user leaves blank
+  label: string; // auto-generated when the user leaves it blank
   segments: Segment[];
   sequence: PlayStep[];
-  shortcutKey: string;    // "" = no shortcut; e.g. "Ctrl+1"
-  createdAt: number;      // unix ms
+  shortcutKey: string; // "" = unbound, e.g. "Ctrl+1"
+  createdAt: number; // unix ms
   updatedAt: number;
 }
 
-/**
- * Per-video auto-load override.
- *
- *   null              → no pin; fall back to the global preference
- *   "off"             → always skip auto-load for this video
- *   "last-used"       → always restore the volatile last-used snapshot
- *   "default"         → always restore the default saved config
- *   { configId }      → always restore a specific named config
- */
+// null defers to the global preference; "off" actively suppresses auto-load for
+// this one video. The two are not interchangeable.
 export type SegmentAutoLoadPin =
   | null
   | "off"
@@ -74,20 +40,9 @@ export type SegmentAutoLoadPin =
   | "default"
   | { configId: string };
 
-/**
- * Per-video persistence record stored in IndexedDB.
- *
- * Three tiers:
- *   lastUsed      — auto-updated volatile snapshot; never requires explicit save
- *   configs       — explicitly saved named configurations
- *   defaultConfigId — which of configs[] is the "default" quick-save slot
- *
- * autoLoadPin overrides the global "segments.autoLoad" preference for this
- * specific video. Undefined / null = honour the global preference.
- */
 export interface VideoSegmentData {
   videoId: string;
-  lastUsed: SegmentConfig | null;
+  lastUsed: SegmentConfig | null; // volatile snapshot, written without an explicit save
   configs: SegmentConfig[];
   defaultConfigId: string | null;
   autoLoadPin?: SegmentAutoLoadPin;

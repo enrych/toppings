@@ -3,9 +3,7 @@ import { BROWSER_STORAGE_IDB_STORE } from "../../../data/core";
 import type { VideoSegmentData, SegmentConfig, SegmentAutoLoadPin } from "./types";
 import { createFreshConfig } from "./factories";
 
-// ---------------------------------------------------------------------------
-// Legacy loop segment type (for migration only)
-// ---------------------------------------------------------------------------
+// Retained only to read records written before segments replaced loop segments.
 interface LegacyLoopSegment {
   videoId: string;
   startTime: number;
@@ -13,14 +11,6 @@ interface LegacyLoopSegment {
   savedAt: number;
 }
 
-// ---------------------------------------------------------------------------
-// Migration helper
-// ---------------------------------------------------------------------------
-
-/**
- * Attempt to migrate a legacy `SavedLoopSegment` record into `VideoSegmentData`.
- * Returns migrated data or null if no legacy record exists.
- */
 async function migrateLegacyLoopSegment(
   videoId: string,
 ): Promise<VideoSegmentData | null> {
@@ -36,7 +26,6 @@ async function migrateLegacyLoopSegment(
   }
   if (!legacy) return null;
 
-  // Convert to a single-segment config with infinite loop.
   const segId = crypto.randomUUID();
   const stepId = crypto.randomUUID();
   const config: SegmentConfig = {
@@ -67,21 +56,15 @@ async function migrateLegacyLoopSegment(
     savedAt: legacy.savedAt,
   };
 
-  // Persist migrated data so we don't re-migrate on next load.
+  // Written back immediately so the legacy record is converted once, not on every load.
   await withStore(BROWSER_STORAGE_IDB_STORE.SEGMENT_DATA, "readwrite", (store) =>
     store.put(data),
   );
   return data;
 }
 
-// ---------------------------------------------------------------------------
-// Public CRUD API
-// ---------------------------------------------------------------------------
-
-/**
- * Retrieve all segment data for a video.
- * On first access, transparently migrates any legacy loop segment record.
- */
+// Reading also migrates: a video last touched by an older version has no
+// new-format record until this runs.
 export async function getVideoSegmentData(
   videoId: string,
 ): Promise<VideoSegmentData | null> {
@@ -93,11 +76,9 @@ export async function getVideoSegmentData(
 
   if (existing) return existing;
 
-  // No new-format record — try to migrate from old loop segment store.
   return migrateLegacyLoopSegment(videoId);
 }
 
-/** Persist (upsert) the full data record for a video. */
 export async function saveVideoSegmentData(
   data: VideoSegmentData,
 ): Promise<void> {
@@ -106,11 +87,6 @@ export async function saveVideoSegmentData(
   );
 }
 
-// ---------------------------------------------------------------------------
-// Convenience helpers
-// ---------------------------------------------------------------------------
-
-/** Get the last-used (volatile) config for a video. */
 export async function getLastUsed(
   videoId: string,
 ): Promise<SegmentConfig | null> {
@@ -118,10 +94,6 @@ export async function getLastUsed(
   return data?.lastUsed ?? null;
 }
 
-/**
- * Update the last-used slot. Creates a new VideoSegmentData record if needed.
- * Pass `null` to clear the last-used slot.
- */
 export async function setLastUsed(
   videoId: string,
   config: SegmentConfig | null,
@@ -136,7 +108,6 @@ export async function setLastUsed(
   await saveVideoSegmentData({ ...data, lastUsed: config });
 }
 
-/** Get all explicitly saved named configs for a video. */
 export async function getSavedConfigs(
   videoId: string,
 ): Promise<SegmentConfig[]> {
@@ -144,10 +115,6 @@ export async function getSavedConfigs(
   return data?.configs ?? [];
 }
 
-/**
- * Save (upsert) a named config. If a config with the same ID already exists,
- * it is replaced. Otherwise it is appended.
- */
 export async function saveNamedConfig(
   videoId: string,
   config: SegmentConfig,
@@ -167,7 +134,6 @@ export async function saveNamedConfig(
   await saveVideoSegmentData({ ...data, configs: newConfigs });
 }
 
-/** Delete a named config by ID. Clears defaultConfigId if it pointed to it. */
 export async function deleteNamedConfig(
   videoId: string,
   configId: string,
@@ -184,7 +150,6 @@ export async function deleteNamedConfig(
   });
 }
 
-/** Mark one of the saved configs as the "default" slot. Pass null to unset. */
 export async function setDefaultConfig(
   videoId: string,
   configId: string | null,
@@ -194,7 +159,6 @@ export async function setDefaultConfig(
   await saveVideoSegmentData({ ...data, defaultConfigId: configId });
 }
 
-/** Get the config designated as the default slot, or null. */
 export async function getDefaultConfig(
   videoId: string,
 ): Promise<SegmentConfig | null> {
@@ -203,16 +167,8 @@ export async function getDefaultConfig(
   return data.configs.find((c) => c.id === data.defaultConfigId) ?? null;
 }
 
-/**
- * Determine which config (if any) to auto-load on page open.
- *
- * Resolution order:
- *   1. Per-video `autoLoadPin` (stored in VideoSegmentData) — overrides global
- *   2. `globalAutoLoad` argument — from the user's watch-page preference
- *
- * Returns `null` when the effective setting is "off" or no matching config
- * exists (caller should keep segments disabled rather than creating a fresh one).
- */
+// A per-video pin outranks the global preference. Returning null means "leave
+// segments off" — callers must not substitute a fresh config for it.
 export async function getAutoloadConfig(
   videoId: string,
   _videoDuration: number,
@@ -220,7 +176,6 @@ export async function getAutoloadConfig(
 ): Promise<SegmentConfig | null> {
   const data = await getVideoSegmentData(videoId);
 
-  // Effective setting: per-video pin wins over global.
   const pin: SegmentAutoLoadPin = data?.autoLoadPin ?? null;
   const effective: "off" | "last-used" | "default" | { configId: string } =
     pin !== null ? pin : globalAutoLoad;
@@ -242,7 +197,6 @@ export async function getAutoloadConfig(
   return null;
 }
 
-/** Set or clear the per-video auto-load pin. */
 export async function setAutoLoadPin(
   videoId: string,
   pin: SegmentAutoLoadPin,
@@ -257,7 +211,6 @@ export async function setAutoLoadPin(
   await saveVideoSegmentData({ ...data, autoLoadPin: pin });
 }
 
-/** Get the current per-video auto-load pin. */
 export async function getAutoLoadPin(
   videoId: string,
 ): Promise<SegmentAutoLoadPin> {

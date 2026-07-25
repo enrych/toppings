@@ -26,51 +26,29 @@ import {
 } from "./SegmentButton";
 import { showPageToast } from "../utils/pageToast";
 
-// ---------------------------------------------------------------------------
-// Module-level state
-// ---------------------------------------------------------------------------
-
 let engine: SegmentEngine | null = null;
 let markersCtrl: SegmentMarkersController | null = null;
 let currentVideoId: string | null = null;
 let video: HTMLVideoElement | null = null;
 let isActive = false;
 
-// Track the current button click handler so SPA navigation doesn't stack listeners.
+// Retained so SPA navigation can detach the previous listener; the button element is a singleton.
 let segButtonClickHandler: (() => void) | null = null;
 
-/**
- * Holds the latest config produced by dragging a marker.
- * We do NOT call applyConfig during drag (that would destroy marker DOM),
- * so we buffer here and flush in the onDragEnd handler.
- */
+// Buffered rather than applied during drag: applying a config rebuilds the marker DOM
+// the user is still holding. Flushed on drag end.
 let latestDragConfig: SegmentConfig | null = null;
 
-// Nudge acceleration state
 let lastNudgeMarker: "start" | "end" | null = null;
 let lastNudgeDirection: "forward" | "backward" | null = null;
 let currentNudgeStep = 1;
 let lastNudgeTime = 0;
 const NUDGE_RESET_GAP_MS = 600;
 
-// ---------------------------------------------------------------------------
-// Public re-exports
-// ---------------------------------------------------------------------------
-
 export { SegmentButton, SegmentPanel, getCachedNamedConfigs, refreshNamedConfigsCache };
 
-// ---------------------------------------------------------------------------
-// Setup
-// ---------------------------------------------------------------------------
-
-/**
- * Initialise the segments system for a new watch page.
- *
- * @param videoId       The YouTube video ID.
- * @param autoLoad      Global auto-load preference. Per-video pins override this.
- *                      Defaults to "off" so segments never auto-enable unless
- *                      the user has configured otherwise.
- */
+// autoLoad is the global preference; a per-video pin overrides it. Defaults to "off"
+// so segments never auto-enable for a user who has not opted in.
 export async function setupSegments(
   videoId?: string,
   autoLoad: "off" | "last-used" | "default" = "off",
@@ -78,41 +56,30 @@ export async function setupSegments(
   currentVideoId = videoId ?? null;
   video = (await elementReady("video")) as HTMLVideoElement | null;
 
-  // Tear down any previous session.
   teardown();
 
   if (!currentVideoId || !video) return;
 
   await setupSegmentPanel(currentVideoId);
 
-  // Wire panel config-change → engine + markers update.
-  // This fires when the user changes something via the panel UI.
   setOnConfigChange((config) => {
     if (config) {
-      // Do NOT rebuild markers here — applyConfig triggers a full marker rebuild
-      // which would interfere if the panel change happens during drag.
-      // The panel itself is already re-rendered by the mutation helpers.
       applyConfig(config, /* skipMarkerRebuild */ false);
     }
   });
 
-  // Button click → toggle. Remove previous handler first so SPA navigation
-  // doesn't accumulate duplicate listeners (the button element is a singleton).
   if (segButtonClickHandler) {
     SegmentButton.removeEventListener("click", segButtonClickHandler);
   }
   segButtonClickHandler = () => void toggleSegmentsLastUsed();
   SegmentButton.addEventListener("click", segButtonClickHandler);
 
-  // Restore saved state once video metadata is available.
   const restore = async () => {
     if (!video || !currentVideoId) return;
     const dur = video.duration || 0;
 
-    // getAutoloadConfig returns null when the effective setting is "off"
-    // or no config exists for the chosen mode.
     const config = await getAutoloadConfig(currentVideoId, dur, autoLoad);
-    if (!config) return; // auto-load is disabled; wait for user to press Z
+    if (!config) return;
 
     const clamped = clampConfigToDuration(config, dur);
     enableSegments(clamped, /* showToast */ true);
@@ -124,10 +91,6 @@ export async function setupSegments(
     video.addEventListener("loadedmetadata", () => void restore(), { once: true });
   }
 }
-
-// ---------------------------------------------------------------------------
-// Enable / disable
-// ---------------------------------------------------------------------------
 
 function enableSegments(config: SegmentConfig, toast = false): void {
   if (!video) return;
@@ -171,13 +134,8 @@ function disableSegments(): void {
   }
 }
 
-/**
- * Apply a config update.
- *
- * @param skipMarkerRebuild  When true, the engine is updated but markers are
- *                           NOT rebuilt.  Pass true during drag operations so
- *                           the marker DOM elements aren't destroyed mid-drag.
- */
+// Pass skipMarkerRebuild during a drag: rebuilding replaces the marker elements
+// the pointer is currently bound to.
 function applyConfig(config: SegmentConfig, skipMarkerRebuild = false): void {
   if (!video) return;
   if (engine) {
@@ -208,10 +166,6 @@ function teardown(): void {
   hideSegmentPanel();
 }
 
-// ---------------------------------------------------------------------------
-// Marker controller wiring (called from watch.tsx after DOM is ready)
-// ---------------------------------------------------------------------------
-
 export function initMarkers(
   progressBarContainer: HTMLElement,
   videoEl: HTMLVideoElement,
@@ -219,8 +173,6 @@ export function initMarkers(
   if (markersCtrl) markersCtrl.destroy();
   markersCtrl = new SegmentMarkersController(progressBarContainer, videoEl);
 
-  // During drag: update only the engine — no marker rebuild, no panel re-render.
-  // Buffering the latest config in `latestDragConfig` for the onDragEnd flush.
   markersCtrl.onSegmentsChanged((segs) => {
     if (!activeConfig) return;
     const updated: SegmentConfig = {
@@ -228,19 +180,14 @@ export function initMarkers(
       segments: segs,
       updatedAt: Date.now(),
     };
-    // Engine update only — skipMarkerRebuild = true prevents destroying markers
-    // while the user is still dragging them.
     applyConfig(updated, /* skipMarkerRebuild */ true);
     latestDragConfig = updated;
   });
 
-  // After drag ends: flush — rebuild markers with final positions, update panel,
-  // and persist the last-used snapshot.
   markersCtrl.onDragEnd(() => {
     const cfg = latestDragConfig;
     latestDragConfig = null;
     if (!cfg) return;
-    // Full applyConfig: marker rebuild now safe (drag is done).
     applyConfig(cfg, /* skipMarkerRebuild */ false);
     renderSegmentPanel(cfg);
     if (currentVideoId) void setLastUsed(currentVideoId, cfg);
@@ -272,13 +219,6 @@ export function initMarkers(
   }
 }
 
-// ---------------------------------------------------------------------------
-// Keyboard shortcut handlers (called from watch.tsx useShortcuts)
-// ---------------------------------------------------------------------------
-
-/**
- * Z key: if active → toggle off; if inactive → load last-used (or fresh).
- */
 export async function toggleSegmentsLastUsed(): Promise<void> {
   if (isActive) {
     disableSegments();
@@ -299,9 +239,6 @@ export async function toggleSegmentsLastUsed(): Promise<void> {
   enableSegments(config);
 }
 
-/**
- * Shift+Z: always start a fresh slate (full video, 1 segment, infinite loop).
- */
 export function activateFreshSegments(): void {
   if (!video) return;
   const dur = video.duration || 0;
@@ -310,9 +247,6 @@ export function activateFreshSegments(): void {
   showPageToast("Fresh segments slate");
 }
 
-/**
- * Q key: set the start boundary of the active segment to the current playhead.
- */
 export function setActiveSegmentStart(): void {
   if (!isActive || !video || !engine || !activeConfig) return;
   const seg = engine.getSegmentAt(video.currentTime);
@@ -326,9 +260,6 @@ export function setActiveSegmentStart(): void {
   if (currentVideoId) void setLastUsed(currentVideoId, updated);
 }
 
-/**
- * E key: set the end boundary of the active segment to the current playhead.
- */
 export function setActiveSegmentEnd(): void {
   if (!isActive || !video || !engine || !activeConfig) return;
   const seg = engine.getSegmentAt(video.currentTime);
@@ -342,10 +273,6 @@ export function setActiveSegmentEnd(): void {
   if (markersCtrl) markersCtrl.updateSegmentPosition(seg.id, "end", newEnd);
   if (currentVideoId) void setLastUsed(currentVideoId, updated);
 }
-
-// ---------------------------------------------------------------------------
-// Nudge — accelerating marker movement
-// ---------------------------------------------------------------------------
 
 function computeNudgeStep(
   marker: "start" | "end",
@@ -421,10 +348,6 @@ export function nudgeActiveSegmentEnd(
   if (currentVideoId) void setLastUsed(currentVideoId, updated);
 }
 
-// ---------------------------------------------------------------------------
-// Save / clear shortcut
-// ---------------------------------------------------------------------------
-
 export async function saveSegmentsShortcut(): Promise<void> {
   if (!currentVideoId) return;
 
@@ -444,10 +367,6 @@ export async function saveSegmentsShortcut(): Promise<void> {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Named config shortcut
-// ---------------------------------------------------------------------------
-
 export async function activateNamedConfig(config: SegmentConfig): Promise<void> {
   if (!video) return;
   const dur = video.duration || 0;
@@ -456,10 +375,6 @@ export async function activateNamedConfig(config: SegmentConfig): Promise<void> 
   showPageToast(`Segments: ${clamped.label}`);
   setSegmentButtonSaved(clamped.label);
 }
-
-// ---------------------------------------------------------------------------
-// Utility
-// ---------------------------------------------------------------------------
 
 function clampConfigToDuration(
   config: SegmentConfig,

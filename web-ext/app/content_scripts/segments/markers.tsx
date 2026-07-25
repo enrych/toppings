@@ -1,58 +1,33 @@
 import React from "dom-chef";
 import type { Segment, SegmentId } from "./types";
 
-// ---------------------------------------------------------------------------
-// SegmentMarkersController
-//
-// Single responsibility: manage the N pairs of DOM marker elements that sit
-// on the YouTube progress bar. No playback logic, no storage.
-// ---------------------------------------------------------------------------
+// Owns the marker elements on YouTube's progress bar and nothing else:
+// no playback logic, no storage.
 
-// Per-segment colors — YouTube palette.
 const SEGMENT_COLORS = [
-  "#ff3333", // YouTube red
-  "#3ea6ff", // YouTube blue
-  "#4caf50", // green
-  "#ff9800", // orange
-  "#9c27b0", // purple
-  "#00bcd4", // cyan
-  "#f5c518", // amber
+  "#ff3333",
+  "#3ea6ff",
+  "#4caf50",
+  "#ff9800",
+  "#9c27b0",
+  "#00bcd4",
+  "#f5c518",
 ];
 
 function colorForSegment(index: number): string {
   return SEGMENT_COLORS[index % SEGMENT_COLORS.length];
 }
 
-// ---------------------------------------------------------------------------
-// Marker SVG — NLE-style right-trapezoid trim handles.
-//
-// Shape: right trapezoid — one tall flat vertical edge (the inward face,
-// toward the segment) and one diagonal edge (the outward face, at the cut).
-// The bottom-corner tip marks the exact cut position on the bar.
-//
-// Dimensions: 14 wide × 26 tall, viewBox "0 0 14 26".
-//
-//   START (in-point):
-//     Long flat RIGHT edge (x=14, 26 px tall) faces inward toward segment.
-//     Diagonal left edge runs from top-left (5,0) to tip (0,26).
-//     Tip at (0,26) — bottom-left corner sits on the cut line.
-//     translateX(0): left edge of element (x=0) lands at left: X%.
-//     Path: M 0,26  L 5,0  L 14,0  L 14,26  Z
-//
-//   END (out-point):
-//     Long flat LEFT edge (x=0, 26 px tall) faces inward toward segment.
-//     Diagonal right edge runs from top-right (9,0) to tip (14,26).
-//     Tip at (14,26) — bottom-right corner sits on the cut line.
-//     translateX(-100%): right edge of element (x=14) lands at left: X%.
-//     Path: M 14,26  L 9,0  L 0,0  L 0,26  Z
-// ---------------------------------------------------------------------------
-
+// Right-trapezoid trim handles in a 14×26 viewBox, NLE-style. The flat vertical
+// edge faces inward toward the segment and the bottom tip marks the exact cut,
+// so the tip must land on `left: X%` — which is what the transform in
+// buildMarkerElement compensates for.
 function makeMarkerSVG(color: string, segNumber: number, role: "start" | "end"): SVGElement {
   const d = role === "start"
-    ? "M 0,26 L 5,0 L 14,0 L 14,26 Z"   // tip bottom-left,  long right edge (inward)
-    : "M 14,26 L 9,0 L 0,0 L 0,26 Z";   // tip bottom-right, long left  edge (inward)
+    ? "M 0,26 L 5,0 L 14,0 L 14,26 Z"   // tip bottom-left
+    : "M 14,26 L 9,0 L 0,0 L 0,26 Z";   // tip bottom-right
 
-  // Number centered in the body — right-of-center for start, left-of-center for end.
+  // Offset into the wide half of the trapezoid, away from the diagonal.
   const tx = role === "start" ? "10" : "4";
 
   return (
@@ -63,7 +38,6 @@ function makeMarkerSVG(color: string, segNumber: number, role: "start" | "end"):
       xmlns="http://www.w3.org/2000/svg"
       style={{ pointerEvents: "none", display: "block" }}
     >
-      {/* Body fill */}
       <path
         d={d}
         fill={color}
@@ -71,7 +45,6 @@ function makeMarkerSVG(color: string, segNumber: number, role: "start" | "end"):
         strokeWidth="0.75"
         strokeLinejoin="miter"
       />
-      {/* Segment number centered in the rectangular grip area */}
       <text
         x={tx}
         y="11"
@@ -88,19 +61,11 @@ function makeMarkerSVG(color: string, segNumber: number, role: "start" | "end"):
   ) as unknown as SVGElement;
 }
 
-// ---------------------------------------------------------------------------
-// Internal marker record
-// ---------------------------------------------------------------------------
-
 interface MarkerRecord {
   segmentId: SegmentId;
   role: "start" | "end";
   element: HTMLElement;
 }
-
-// ---------------------------------------------------------------------------
-// Controller class
-// ---------------------------------------------------------------------------
 
 export class SegmentMarkersController {
   private container: HTMLElement;
@@ -124,15 +89,10 @@ export class SegmentMarkersController {
   constructor(container: HTMLElement, video: HTMLVideoElement) {
     this.container = container;
     this.video = video;
-    // Allow markers to overflow upward without affecting container layout.
-    // We intentionally do NOT set position here — YouTube's progress bar
-    // container is already positioned; overriding it breaks its internal layout.
+    // Deliberately sets overflow only: YouTube's progress bar container is
+    // already positioned, and overriding `position` breaks its internal layout.
     container.style.overflow = "visible";
   }
-
-  // ---------------------------------------------------------------------------
-  // Public API
-  // ---------------------------------------------------------------------------
 
   setSegments(segments: Segment[]): void {
     this.segments = segments;
@@ -180,7 +140,6 @@ export class SegmentMarkersController {
     this.onMergeRequestCb = cb;
   }
 
-  /** Called once after a drag gesture completes. Use to persist and re-render. */
   onDragEnd(cb: () => void): void {
     this.onDragEndCb = cb;
   }
@@ -206,10 +165,6 @@ export class SegmentMarkersController {
     document.removeEventListener("mouseup", this.boundMouseUp);
     if (this.mergeTimer !== null) clearTimeout(this.mergeTimer);
   }
-
-  // ---------------------------------------------------------------------------
-  // DOM construction
-  // ---------------------------------------------------------------------------
 
   private rebuild(): void {
     for (const r of this.records) r.element.remove();
@@ -246,16 +201,8 @@ export class SegmentMarkersController {
     color: string,
     segNumber: number,
   ): HTMLElement {
-    // Positioning:
-    //   The flat base (y=24) rests directly on the bar's top surface.
-    //   bottom: 100% → element's bottom edge = container's top edge (bar top).
-    //
-    //   Horizontal transform — the apex AND flat leg are on the same vertical
-    //   edge, so that edge must land at `left: X%` (the cut line):
-    //     START — apex + flat right leg at x=14 → translateX(-100%) shifts
-    //             the element left so its right edge sits at the cut line.
-    //     END   — apex + flat left  leg at x=0  → translateX(0), left edge
-    //             already at the cut line.
+    // Shifts the element so its tip, not its box, sits on the cut line: the
+    // start tip is at x=0 so no shift, the end tip is at x=14 so shift a full width.
     const transform = role === "start" ? "translateX(0)" : "translateX(-100%)";
 
     const el = (
@@ -281,10 +228,6 @@ export class SegmentMarkersController {
 
     return el;
   }
-
-  // ---------------------------------------------------------------------------
-  // Drag handling
-  // ---------------------------------------------------------------------------
 
   private handleMarkerMouseDown(
     e: MouseEvent,
@@ -312,10 +255,8 @@ export class SegmentMarkersController {
     const { segmentId, role } = this.dragging;
     const clampedPct = this.clampMarkerPct(rawPct, segmentId, role);
 
-    // Update DOM position of the dragged marker.
     this.dragging.element.style.left = `${clampedPct}%`;
 
-    // Update internal segment data.
     const duration = this.video.duration || 1;
     const newTime = (clampedPct / 100) * duration;
     this.segments = this.segments.map((s) => {
@@ -325,15 +266,11 @@ export class SegmentMarkersController {
         : { ...s, endTime: newTime };
     });
 
-    // Seek video when dragging the in-point.
     if (role === "start") {
       this.video.currentTime = newTime;
     }
 
-    // Notify consumer (engine update, but no marker rebuild during drag).
     this.onSegmentsChangedCb?.(this.segments);
-
-    // Check for merge opportunity.
     this.checkMerge(segmentId, role, clampedPct);
   }
 
@@ -348,13 +285,8 @@ export class SegmentMarkersController {
       clearTimeout(this.mergeTimer);
       this.mergeTimer = null;
     }
-    // Notify that drag is done — caller can now persist + re-render panel.
     this.onDragEndCb?.();
   }
-
-  // ---------------------------------------------------------------------------
-  // Clamping
-  // ---------------------------------------------------------------------------
 
   private clampMarkerPct(
     rawPct: number,
@@ -379,10 +311,6 @@ export class SegmentMarkersController {
       return Math.min(nextStartPct - EPSILON_PCT, Math.max(rawPct, ownStartPct + EPSILON_PCT));
     }
   }
-
-  // ---------------------------------------------------------------------------
-  // Merge detection
-  // ---------------------------------------------------------------------------
 
   private static readonly MERGE_THRESHOLD_PCT = 1.5;
   private static readonly MERGE_HOLD_MS = 500;

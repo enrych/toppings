@@ -1,22 +1,11 @@
 import type { Segment, SegmentConfig, PlayStep } from "./types";
 
-// ---------------------------------------------------------------------------
-// Segment config factories
-// ---------------------------------------------------------------------------
-
 function randomId(): string {
   return crypto.randomUUID();
 }
 
-/**
- * Build the default "fresh slate" config for a video.
- *
- * Produces a single segment spanning the full video duration with one step
- * that loops it infinitely — identical to the previous Loop Segment default.
- *
- * Pass `videoDuration = 0` when the duration isn't known yet; callers should
- * update the endTime once the video's metadata loads.
- */
+// Callers that do not yet know the duration pass 0 and are responsible for
+// rewriting endTime once the video's metadata loads.
 export function createFreshConfig(videoDuration: number): SegmentConfig {
   const segId = randomId();
   const stepId = randomId();
@@ -30,7 +19,7 @@ export function createFreshConfig(videoDuration: number): SegmentConfig {
   const step: PlayStep = {
     id: stepId,
     segmentIds: [segId],
-    count: 0,          // 0 = infinite loop
+    count: 0,
     playbackRate: null,
     perIterationRates: [],
   };
@@ -47,10 +36,6 @@ export function createFreshConfig(videoDuration: number): SegmentConfig {
   };
 }
 
-/**
- * Create a new empty config placeholder (no segments, no steps).
- * Used when adding a brand-new named config before the user populates it.
- */
 export function createEmptyConfig(label: string): SegmentConfig {
   const now = Date.now();
   return {
@@ -64,11 +49,6 @@ export function createEmptyConfig(label: string): SegmentConfig {
   };
 }
 
-/**
- * Add a new segment to an existing config, appending it to both the segments
- * list and the first (or only) step's segmentIds. Returns a new config object
- * (immutable update pattern).
- */
 export function addSegmentToConfig(
   config: SegmentConfig,
   startTime: number,
@@ -77,7 +57,6 @@ export function addSegmentToConfig(
 ): SegmentConfig {
   const newSeg: Segment = { id: randomId(), startTime, endTime, label };
 
-  // If there are no steps yet, create a default infinite step.
   let newSequence: PlayStep[];
   if (config.sequence.length === 0) {
     const step: PlayStep = {
@@ -89,7 +68,7 @@ export function addSegmentToConfig(
     };
     newSequence = [step];
   } else {
-    // Append to the first step's segmentIds by default; user can rearrange.
+    // Lands in the first step by default; rearranging is left to the user.
     newSequence = config.sequence.map((step, i) =>
       i === 0 ? { ...step, segmentIds: [...step.segmentIds, newSeg.id] } : step,
     );
@@ -103,10 +82,8 @@ export function addSegmentToConfig(
   };
 }
 
-/**
- * Remove a segment from a config, also purging its ID from all steps.
- * Steps that become empty of segmentIds are also removed.
- */
+// Also drops any step left with no segments, so the sequence never contains a
+// step the engine would spin on forever.
 export function removeSegmentFromConfig(
   config: SegmentConfig,
   segmentId: string,
@@ -127,9 +104,6 @@ export function removeSegmentFromConfig(
   };
 }
 
-/**
- * Update a single segment's time boundaries within a config.
- */
 export function updateSegmentTimes(
   config: SegmentConfig,
   segmentId: string,
@@ -145,20 +119,12 @@ export function updateSegmentTimes(
   };
 }
 
-/** Generate a human-readable auto-label for new named configs. */
 export function generateConfigLabel(existingCount: number): string {
   return `Segment Config ${existingCount + 1}`;
 }
 
-/**
- * Split a segment at `splitTime`, replacing it with two adjacent segments.
- *
- * The original segment [start → end] becomes:
- *   Segment A: [start → splitTime]   (replaces original in-place)
- *   Segment B: [splitTime → end]     (new, inserted right after A in all steps)
- *
- * Returns null if the split point is too close to either boundary (< 0.1 s gap).
- */
+// Returns null when the split would leave either half under 0.1 s, which is the
+// same floor the markers enforce while dragging.
 export function splitSegmentAtTime(
   config: SegmentConfig,
   segmentId: string,
@@ -174,7 +140,6 @@ export function splitSegmentAtTime(
 
   const newSegments = config.segments.map((s) => (s.id === segmentId ? segA : s)).concat(segB);
 
-  // Insert segB after segA in every step that references the original.
   const newSequence = config.sequence.map((step) => {
     const idx = step.segmentIds.indexOf(segmentId);
     if (idx < 0) return step;

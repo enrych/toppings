@@ -1,10 +1,11 @@
 export interface SearchEntry {
-  /** Exact label text as it appears in the UI — used for search and DOM lookup. */
+  // Must match the rendered text character for character: navigating to a result
+  // locates the row by this label in the DOM, so a copy edit in the UI silently
+  // breaks the jump unless the entry is updated too.
   label: string;
   description?: string;
   path: string;
-  /** ID of the nearest <section> to scroll to when no individual row is found. */
-  sectionId?: string;
+  sectionId?: string; // fallback scroll target when the row itself is not found
   page: string;
   section?: string;
 }
@@ -12,18 +13,10 @@ export interface SearchEntry {
 export interface SearchResult {
   entry: SearchEntry;
   score: number;
-  /** Character indices in `entry.label` that matched the query — for highlighting. */
-  matchedIndices: number[];
+  matchedIndices: number[]; // into entry.label, for highlighting
 }
 
-// ---------------------------------------------------------------------------
-// Static index — labels must exactly match the text shown in the UI.
-// ---------------------------------------------------------------------------
-
 export const SEARCH_INDEX: SearchEntry[] = [
-  // -------------------------------------------------------------------------
-  // General
-  // -------------------------------------------------------------------------
   { label: "Enable Extension", description: "When off, no Toppings features run on YouTube.", path: "/", page: "General", section: "Extension" },
   { label: "Theme", description: "System, Dark, or Light. Affects the popup and options UI.", path: "/", page: "General", section: "Appearance" },
   { label: "Popup profile switcher", description: "Show the profile list in the extension popup.", path: "/", page: "General", section: "Profile Surfaces" },
@@ -34,9 +27,6 @@ export const SEARCH_INDEX: SearchEntry[] = [
   { label: "Shorts", description: "Enable or disable Toppings on Shorts.", path: "/", page: "General", section: "YouTube Pages" },
   { label: "Playlist", description: "Enable or disable runtime statistics on playlist pages.", path: "/", page: "General", section: "YouTube Pages" },
 
-  // -------------------------------------------------------------------------
-  // Watch
-  // -------------------------------------------------------------------------
   { label: "Default Playback Rate", description: "Rate applied to every video on load. 1 = Normal.", path: "/watch", sectionId: "playback-rate", page: "Watch", section: "Playback Rate" },
   { label: "Custom Playback Rates", description: "Comma-separated rates for the player speed menu.", path: "/watch", sectionId: "playback-rate", page: "Watch", section: "Playback Rate" },
   { label: "Toggle Playback Rate", description: "Rate to switch to when pressing the toggle shortcut.", path: "/watch", sectionId: "playback-rate", page: "Watch", section: "Playback Rate" },
@@ -47,22 +37,13 @@ export const SEARCH_INDEX: SearchEntry[] = [
   { label: "Auto-load on page open", description: "Automatically restore segments when you open a video.", path: "/watch", sectionId: "loop", page: "Watch", section: "Segments" },
   { label: "Feature Availability", description: "Which features are active on your YouTube.", path: "/watch", sectionId: "feature-availability", page: "Watch", section: "Feature Availability" },
 
-  // -------------------------------------------------------------------------
-  // Shorts
-  // -------------------------------------------------------------------------
   { label: "Auto-Scroll", description: "Automatically scroll to the next reel when one ends.", path: "/shorts", page: "Shorts", section: "Behavior" },
   { label: "Toggle Playback Rate", description: "Rate to switch to when pressing the toggle shortcut.", path: "/shorts", page: "Shorts", section: "Playback Rate" },
   { label: "Seek Backward", description: "Seconds to seek backward.", path: "/shorts", page: "Shorts", section: "Seek" },
   { label: "Seek Forward", description: "Seconds to seek forward.", path: "/shorts", page: "Shorts", section: "Seek" },
 
-  // -------------------------------------------------------------------------
-  // Playlist
-  // -------------------------------------------------------------------------
   { label: "Runtime Statistics", description: "Total and average runtime shown at the top of playlist pages.", path: "/playlist", page: "Playlist", section: "Runtime Statistics" },
 
-  // -------------------------------------------------------------------------
-  // Keybindings — Watch Page section
-  // -------------------------------------------------------------------------
   { label: "Toggle Playback Rate", path: "/keybindings", sectionId: "watch", page: "Shortcuts", section: "Watch Page" },
   { label: "Increase Playback Rate", path: "/keybindings", sectionId: "watch", page: "Shortcuts", section: "Watch Page" },
   { label: "Decrease Playback Rate", path: "/keybindings", sectionId: "watch", page: "Shortcuts", section: "Watch Page" },
@@ -74,15 +55,12 @@ export const SEARCH_INDEX: SearchEntry[] = [
   { label: "Segments: Set End of Active", description: "Pin the end marker of the active segment to the current time.", path: "/keybindings", sectionId: "watch", page: "Shortcuts", section: "Watch Page" },
   { label: "Segments: Save to Default Slot", description: "While segments active: saves to default slot. While segments off: clears the last-used record.", path: "/keybindings", sectionId: "watch", page: "Shortcuts", section: "Watch Page" },
 
-  // Keybindings — Shorts section
   { label: "Toggle Playback Rate", path: "/keybindings", sectionId: "shorts", page: "Shortcuts", section: "Shorts" },
   { label: "Seek Backward", path: "/keybindings", sectionId: "shorts", page: "Shortcuts", section: "Shorts" },
   { label: "Seek Forward", path: "/keybindings", sectionId: "shorts", page: "Shortcuts", section: "Shorts" },
 
-  // Keybindings — Profiles section
   { label: "Cycle Profiles", description: "Cycle through all profiles without leaving the video.", path: "/keybindings", sectionId: "profiles", page: "Shortcuts", section: "Profiles" },
 
-  // Keybindings — Nudge section
   { label: "Nudge Active Segment Start Backward", description: "Move the start marker of the active segment back.", path: "/keybindings", sectionId: "nudge", page: "Shortcuts", section: "Segments Nudge" },
   { label: "Nudge Active Segment Start Forward", description: "Move the start marker of the active segment forward.", path: "/keybindings", sectionId: "nudge", page: "Shortcuts", section: "Segments Nudge" },
   { label: "Nudge Active Segment End Forward", description: "Move the end marker of the active segment forward.", path: "/keybindings", sectionId: "nudge", page: "Shortcuts", section: "Segments Nudge" },
@@ -91,9 +69,6 @@ export const SEARCH_INDEX: SearchEntry[] = [
   { label: "Multiplier", description: "Step multiplier applied on rapid consecutive presses.", path: "/keybindings", sectionId: "nudge", page: "Shortcuts", section: "Segments Nudge" },
   { label: "Max Step (seconds)", description: "The nudge step will not exceed this value.", path: "/keybindings", sectionId: "nudge", page: "Shortcuts", section: "Segments Nudge" },
 
-  // -------------------------------------------------------------------------
-  // Profiles
-  // -------------------------------------------------------------------------
   { label: "Built-in Presets", description: "Curated by Toppings — activate in one tap, no configuration needed.", path: "/profiles", page: "Profiles", section: "Built-in Presets" },
   { label: "Audio", description: "Built-in preset: hides video player, shows only audio.", path: "/profiles", page: "Profiles", section: "Built-in Presets" },
   { label: "Focus", description: "Built-in preset: hides sidebar, comments, and end cards.", path: "/profiles", page: "Profiles", section: "Built-in Presets" },
@@ -112,17 +87,9 @@ export const SEARCH_INDEX: SearchEntry[] = [
   { label: "Shorts Shelf (everywhere)", description: "Hide the Shorts shelf across home, search, and other pages.", path: "/profiles", page: "Profiles", section: "Profile Editor" },
 ];
 
-// ---------------------------------------------------------------------------
-// Fuzzy search
-//
-// Characters in the query must appear in order in the target text, but
-// need not be contiguous. Scoring rewards:
-//   - consecutive character matches
-//   - matches at word boundaries
-//   - substring (contiguous) matches
-//   - exact matches
-// ---------------------------------------------------------------------------
-
+// Subsequence match: query characters must appear in order but need not be
+// adjacent. The bonuses below exist to pull contiguous and word-start matches
+// above the scattered ones a bare subsequence test would rank equally.
 function fuzzyMatch(
   text: string,
   query: string,
@@ -143,7 +110,6 @@ function fuzzyMatch(
       const isConsecutive = lastMatchIdx === ti - 1;
       consecutive = isConsecutive ? consecutive + 1 : 0;
       score += 1 + consecutive * 2;
-      // Word-boundary bonus
       if (ti === 0 || tl[ti - 1] === " " || tl[ti - 1] === ":") score += 3;
       lastMatchIdx = ti;
       qi++;
@@ -151,13 +117,10 @@ function fuzzyMatch(
     ti++;
   }
 
-  if (qi < ql.length) return { score: 0, indices: [] }; // didn't consume all query chars
+  if (qi < ql.length) return { score: 0, indices: [] };
 
-  // Substring bonus
   if (tl.includes(ql)) score += 15;
-  // Starts-with bonus
   if (tl.startsWith(ql)) score += 25;
-  // Exact match bonus
   if (tl === ql) score += 50;
 
   return { score, indices };
@@ -170,14 +133,13 @@ export function fuzzySearch(query: string): SearchResult[] {
   const results: SearchResult[] = [];
 
   for (const entry of SEARCH_INDEX) {
-    // Try label, description, section, and page as match targets.
-    // Use the best score across all fields; indices always correspond to label.
+    // Four fields contribute to the score but only the label's indices are kept:
+    // highlighting is drawn on the label, so another field's indices would be wrong.
     const labelMatch = fuzzyMatch(entry.label, q);
     const descMatch = entry.description ? fuzzyMatch(entry.description, q) : { score: 0, indices: [] };
     const sectionMatch = entry.section ? fuzzyMatch(entry.section, q) : { score: 0, indices: [] };
     const pageMatch = fuzzyMatch(entry.page, q);
 
-    // Weight label matches most heavily.
     const totalScore =
       labelMatch.score * 3 +
       sectionMatch.score * 1.5 +

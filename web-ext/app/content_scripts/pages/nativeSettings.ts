@@ -1,13 +1,3 @@
-/**
- * Native settings page — injects a "Toppings" entry into YouTube's left
- * sidebar and manages a full-page overlay that mirrors the extension options.
- *
- * Entry point: `setupNativeSettings()` called on every YouTube navigation.
- * The sidebar link is injected once (idempotent). The overlay is a lazily-
- * created singleton. Calling `setupNativeSettings(false)` removes the link
- * and hides the overlay (feature disabled flow).
- */
-
 import {
   getAllProfiles,
   getActiveProfile,
@@ -16,16 +6,8 @@ import {
 import { applyWatchProfile } from "../primitives/applyProfile";
 import type { Profile } from "../../../data/profiles";
 
-// ---------------------------------------------------------------------------
-// IDs
-// ---------------------------------------------------------------------------
-
 const SIDEBAR_LINK_ID = "tppng-native-sidebar-link";
 const OVERLAY_ID = "tppng-native-settings-overlay";
-
-// ---------------------------------------------------------------------------
-// Sidebar strategies — ordered by stability/likelihood
-// ---------------------------------------------------------------------------
 
 const SIDEBAR_STRATEGIES = [
   "ytd-guide-renderer #sections",
@@ -34,10 +16,8 @@ const SIDEBAR_STRATEGIES = [
   "tp-yt-app-drawer #guide-inner-content",
 ] as const;
 
-// ---------------------------------------------------------------------------
-// CSS vars that mirror YouTube's design tokens
-// ---------------------------------------------------------------------------
-
+// Every colour reads a --yt-spec-* token with a hard-coded fallback, so the
+// overlay follows YouTube's own theme instead of shipping a second one.
 const YT_STYLES = `
 #${OVERLAY_ID} {
   position: fixed;
@@ -200,16 +180,8 @@ const YT_STYLES = `
 }
 `;
 
-// ---------------------------------------------------------------------------
-// State
-// ---------------------------------------------------------------------------
-
 let overlayEl: HTMLElement | null = null;
 let stylesInjected = false;
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 
 function injectStyles() {
   if (stylesInjected) return;
@@ -226,10 +198,6 @@ function makeToggle(on: boolean): HTMLElement {
   return el;
 }
 
-// ---------------------------------------------------------------------------
-// Build overlay content
-// ---------------------------------------------------------------------------
-
 async function renderOverlay(body: HTMLElement): Promise<void> {
   body.innerHTML = "";
 
@@ -239,7 +207,6 @@ async function renderOverlay(body: HTMLElement): Promise<void> {
   ]);
   const activeId = activeProfile?.id ?? null;
 
-  // --- Profiles section ---
   const profileSection = document.createElement("div");
   profileSection.className = "tppng-ns-section";
 
@@ -251,7 +218,6 @@ async function renderOverlay(body: HTMLElement): Promise<void> {
   const chips = document.createElement("div");
   chips.className = "tppng-ns-card tppng-ns-chips";
 
-  // "Default" chip
   const defaultChip = makeProfileChip(null, activeId === null, async () => {
     await setActiveProfileId(null);
     void applyWatchProfile();
@@ -273,7 +239,6 @@ async function renderOverlay(body: HTMLElement): Promise<void> {
   profileSection.appendChild(chips);
   body.appendChild(profileSection);
 
-  // --- Watch primitives section ---
   const primSection = document.createElement("div");
   primSection.className = "tppng-ns-section";
 
@@ -337,7 +302,6 @@ async function renderOverlay(body: HTMLElement): Promise<void> {
   primSection.appendChild(primCard);
   body.appendChild(primSection);
 
-  // --- Open full settings link ---
   const linkSection = document.createElement("div");
   linkSection.className = "tppng-ns-section";
 
@@ -401,10 +365,6 @@ function makePrimRow(
   return row;
 }
 
-// ---------------------------------------------------------------------------
-// Overlay lifecycle
-// ---------------------------------------------------------------------------
-
 function getOrCreateOverlay(): HTMLElement {
   let el = document.getElementById(OVERLAY_ID);
   if (el) return el as HTMLElement;
@@ -412,7 +372,6 @@ function getOrCreateOverlay(): HTMLElement {
   el = document.createElement("div");
   el.id = OVERLAY_ID;
 
-  // Header
   const header = document.createElement("div");
   header.className = "tppng-ns-header";
 
@@ -453,14 +412,9 @@ function hideOverlay(): void {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Sidebar link injection
-// ---------------------------------------------------------------------------
-
 function injectSidebarLink(): void {
   if (document.getElementById(SIDEBAR_LINK_ID)) return;
 
-  // Try each strategy for the sidebar container.
   let container: HTMLElement | null = null;
   for (const sel of SIDEBAR_STRATEGIES) {
     container = document.querySelector(sel) as HTMLElement | null;
@@ -509,17 +463,6 @@ function removeSidebarLink(): void {
   document.getElementById(SIDEBAR_LINK_ID)?.remove();
 }
 
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
-
-/**
- * Call on every YouTube navigation when the native settings feature is enabled.
- * Safe to call multiple times — idempotent.
- *
- * @param enabled  Whether the feature is currently enabled. Pass false to
- *                 tear down all injections.
- */
 export function setupNativeSettings(enabled: boolean): void {
   if (!enabled) {
     removeSidebarLink();
@@ -529,8 +472,8 @@ export function setupNativeSettings(enabled: boolean): void {
 
   injectStyles();
 
-  // The sidebar may not be ready on the first call — retry once after a short
-  // delay to handle YouTube's SPA navigation latency.
+  // One delayed retry: on a cold SPA navigation the guide renderer often does
+  // not exist yet, and there is no event that reliably fires once it does.
   injectSidebarLink();
   if (!document.getElementById(SIDEBAR_LINK_ID)) {
     setTimeout(injectSidebarLink, 1500);

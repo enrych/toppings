@@ -32,29 +32,19 @@ import { injectGearMenuEntry } from "../components/GearMenuPanel";
 import { getCachedPlaylist } from "./playlistCache";
 import { formatDuration } from "../../../utils/duration";
 
-// ---------------------------------------------------------------------------
-// Selector strategy registries
-//
-// Each array is ordered by likelihood (current / most common variant first).
-// To support a new YouTube UI variant, append a selector to the relevant
-// array — no other code needs to change.
-// ---------------------------------------------------------------------------
-
+// Each array is ordered most-likely-variant first, and resolveTarget walks it in
+// order. Supporting a new YouTube layout means appending a selector here, nothing else.
 const STRATEGIES = {
-  /** Main video element. */
   player: ["video"] as const,
 
-  /** Right-hand player control bar — where we inject our buttons. */
   rightControls: [
     "div.ytp-right-controls",
   ] as const,
 
-  /** Progress bar container — where we inject loop segment markers. */
   progressBar: [
     "div.ytp-progress-bar-container",
   ] as const,
 
-  /** Below-video area — where the segment panel is injected. */
   panelHost: [
     "#above-the-fold",
     "ytd-watch-flexy #below",
@@ -62,18 +52,15 @@ const STRATEGIES = {
     "#columns",
   ] as const,
 
-  /** Gear/settings button that opens the player settings panel. */
   settingsButton: [
     "button.ytp-settings-button",
   ] as const,
 
-  /** Playback speed panel when opened from settings menu. */
   playbackRatePanel: [
     ".ytp-panel-animate-forward",
     ".ytp-panel.ytp-panel-animate-forward",
   ] as const,
 
-  /** Double-tap seek overlay shown after A/D seek shortcuts. */
   doubleTapSeek: [
     ".ytp-doubletap-ui-legacy",
     ".ytp-doubletap-ui",
@@ -91,7 +78,6 @@ const onWatchPage = async (ctx: WatchContext) => {
   gearMenuEnabled = !!(store.ui?.gearMenuEnabled);
   if (!preferences) return;
 
-  // Resolve video element — fundamental; bail if missing.
   const playerResolution = await resolveTarget(STRATEGIES.player, {
     stopOnDomReady: false,
   });
@@ -99,7 +85,6 @@ const onWatchPage = async (ctx: WatchContext) => {
   if (!playerResolution.resolved) return;
   player = playerResolution.element as HTMLVideoElement;
 
-  // Reset Player
   player.playbackRate = parseFloat(preferences.defaultPlaybackRate.value);
   const labels = document.querySelectorAll(".ytp-menuitem-label");
   if (labels.length !== 0) {
@@ -115,21 +100,17 @@ const onWatchPage = async (ctx: WatchContext) => {
     }
   }
 
-  // Keyboard Shortcuts
   document.removeEventListener("keydown", useShortcuts);
   document.addEventListener("keydown", useShortcuts);
 
-  // Segment button — inject into right controls bar.
   const rightControlsResolution = await resolveTarget(STRATEGIES.rightControls);
   void setCapabilityStatus("watch.rightControls", "watch", rightControlsResolution);
   if (rightControlsResolution.resolved) {
     rightControlsResolution.element.prepend(SegmentButton);
   }
 
-  // Inject segment panel below the video player FIRST so that renderPanel()
-  // can find #tppng-sp-inner when setupSegments auto-loads a saved config.
-  // resolveTarget polls until the element exists, avoiding the race where
-  // YouTube's SPA content hasn't rendered yet on a fresh page load.
+  // Must precede setupSegments: auto-loading a saved config renders into
+  // #tppng-sp-inner, which does not exist until the panel is in the DOM.
   const panelHostResolution = await resolveTarget(STRATEGIES.panelHost, {
     stopOnDomReady: false,
   });
@@ -138,7 +119,6 @@ const onWatchPage = async (ctx: WatchContext) => {
     (panelHostResolution.element as HTMLElement).prepend(SegmentPanel);
   }
 
-  // Segments — set up engine + markers + panel.
   const progressBarResolution = await resolveTarget(STRATEGIES.progressBar);
   void setCapabilityStatus("watch.progressBar", "watch", progressBarResolution);
   if (progressBarResolution.resolved) {
@@ -146,7 +126,6 @@ const onWatchPage = async (ctx: WatchContext) => {
       ctx.payload.videoId ?? undefined,
       preferences.segments?.autoLoad ?? "off",
     );
-    // Wire marker controller to the progress bar container.
     if (player) {
       initMarkers(
         progressBarResolution.element as HTMLElement,
@@ -155,7 +134,6 @@ const onWatchPage = async (ctx: WatchContext) => {
     }
   }
 
-  // Settings button — attach listener for playback speed menu.
   const settingsResolution = await resolveTarget(STRATEGIES.settingsButton);
   void setCapabilityStatus("watch.settingsButton", "watch", settingsResolution);
   if (!settingsResolution.resolved) return;
@@ -163,35 +141,23 @@ const onWatchPage = async (ctx: WatchContext) => {
   playerSettingsButton.removeEventListener("click", onSettingsMenu);
   playerSettingsButton.addEventListener("click", onSettingsMenu);
 
-  // Apply the active profile's watch-scope primitives (or restore defaults
-  // if no profile is active). This runs after all setup above so Audio Mode
-  // and other components are fully initialised before profile overrides land.
+  // Last, so profile overrides land on top of a fully initialised Audio Mode
+  // and segment panel rather than being overwritten by their setup.
   void applyWatchProfile();
 
-  // React to profile changes made from the popup or options page without a
-  // full page reload. The listener is idempotent — re-adding via
-  // addListener with the same function reference is a no-op in MV3.
+  // Remove-then-add keeps this single-registered across SPA navigations, which
+  // re-run this whole function against the same page.
   chrome.storage.onChanged.removeListener(onProfileStoreChanged);
   chrome.storage.onChanged.addListener(onProfileStoreChanged);
 
-  // If watching as part of a playlist, inject runtime info into the
-  // watch page's playlist panel.
   const listId = new URL(window.location.href).searchParams.get("list");
   if (listId) {
     void injectPlaylistRuntimeInWatchPanel(listId);
   }
 };
 
-// ---------------------------------------------------------------------------
-// Playlist runtime in watch panel (#4)
-// ---------------------------------------------------------------------------
-
 const WATCH_PANEL_RUNTIME_ID = "tppng-watch-playlist-runtime";
 
-/**
- * Strategies for the playlist panel header inside the watch page.
- * Ordered by most common YouTube layout variant first.
- */
 const WATCH_PLAYLIST_PANEL_STRATEGIES = [
   "#playlist-container .ytd-playlist-panel-renderer #header",
   "ytd-playlist-panel-renderer #header",
@@ -201,14 +167,14 @@ const WATCH_PLAYLIST_PANEL_STRATEGIES = [
 
 async function injectPlaylistRuntimeInWatchPanel(playlistId: string): Promise<void> {
   const data = await getCachedPlaylist(playlistId);
-  if (!data) return; // No cached data — skip (playlist page will cache on visit)
+  if (!data) return; // Nothing cached until the user has opened the playlist page itself.
 
   const panelResolution = await resolveTarget(WATCH_PLAYLIST_PANEL_STRATEGIES);
   if (!panelResolution.resolved) return;
 
   const header = panelResolution.element as HTMLElement;
 
-  // Remove existing badge if already injected (SPA navigation).
+  // SPA navigation re-runs this against a header that may already carry a badge.
   header.querySelector(`#${WATCH_PANEL_RUNTIME_ID}`)?.remove();
 
   const badge = document.createElement("div");
@@ -232,10 +198,6 @@ async function injectPlaylistRuntimeInWatchPanel(playlistId: string): Promise<vo
   header.appendChild(badge);
 }
 
-/**
- * Fired whenever chrome.storage.local changes. Re-applies the watch profile
- * when the active profile store is updated from the popup or options page.
- */
 const onProfileStoreChanged = (
   changes: Record<string, chrome.storage.StorageChange>,
   area: string,
@@ -269,7 +231,6 @@ const onSettingsMenu = async (): Promise<void> => {
     }
   }
 
-  // Inject the Toppings entry into the gear menu settings panel (opt-in).
   if (gearMenuEnabled) {
     const settingsMenu = document.querySelector(
       ".ytp-settings-menu",
@@ -304,7 +265,6 @@ const replacePlaybackItems = (playbackRatePanel: HTMLElement) => {
   if (!player) return;
   if (!preferences) return;
 
-  // Replace Native PlaybackRate Items
   const panelMenu = playbackRatePanel.querySelector(".ytp-panel-menu");
   if (!panelMenu) return;
 
@@ -388,9 +348,6 @@ const useShortcuts = (event: KeyboardEvent): void => {
 
   if (!isNotEditable) return;
 
-  // ---------------------------------------------------------------------------
-  // Segment nudge (accelerating, modifier-aware) — targets active segment
-  // ---------------------------------------------------------------------------
   if (preferences.nudgeLoopSegment) {
     const cfg = preferences.nudgeLoopSegment;
     const baseStep = Math.max(0.1, parseFloat(cfg.baseStep) || 1);
@@ -419,9 +376,6 @@ const useShortcuts = (event: KeyboardEvent): void => {
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // All other watch shortcuts — checked with exact modifier matching.
-  // ---------------------------------------------------------------------------
   if (matchesBinding(event, preferences.togglePlaybackRate.key)) {
     setPlaybackRate(
       player.playbackRate !== 1
@@ -463,19 +417,16 @@ const useShortcuts = (event: KeyboardEvent): void => {
     return;
   }
 
-  // Z — load last-used segments / toggle off
   if (matchesBinding(event, preferences.toggleLoopSegment.key)) {
     void toggleSegmentsLastUsed();
     return;
   }
 
-  // Shift+Z (or configurable) — fresh slate
   if (matchesBinding(event, preferences.segments?.freshSlateKey ?? "Shift+Z")) {
     activateFreshSegments();
     return;
   }
 
-  // Q / E — set active segment's start / end to playhead
   if (matchesBinding(event, preferences.setLoopSegmentBegin.key)) {
     setActiveSegmentStart();
     return;
@@ -486,13 +437,12 @@ const useShortcuts = (event: KeyboardEvent): void => {
     return;
   }
 
-  // Save shortcut — save active config to default slot (or clear last-used)
   if (preferences.saveLoopSegment?.key && matchesBinding(event, preferences.saveLoopSegment.key)) {
     void saveSegmentsShortcut();
     return;
   }
 
-  // Named config shortcuts — sync cache lookup (no DB hit on every keydown)
+  // Reads a cache rather than storage: this runs on every keydown.
   const namedConfigs = getCachedNamedConfigs();
   for (const config of namedConfigs) {
     if (config.shortcutKey && matchesBinding(event, config.shortcutKey)) {
@@ -507,15 +457,9 @@ const useShortcuts = (event: KeyboardEvent): void => {
   }
 };
 
-/**
- * Cycle through all available profiles (presets first, then custom) plus the
- * "no profile" state. On each invocation, advance one step and apply the next
- * profile, then show a brief on-page toast with the profile name.
- */
 async function cycleProfilesShortcut(): Promise<void> {
-  // Build the ordered cycle: [null (no profile), ...presets, ...custom]
+  // getAllProfiles returns only custom profiles, so the presets are prepended here.
   const customProfiles = await getAllProfiles();
-  // getAllProfiles returns only custom (non-preset) profiles.
   const cycle: Array<{ id: string | null; name: string }> = [
     { id: null, name: "Default" },
     ...BUILT_IN_PRESETS.map((p) => ({ id: p.id, name: p.name })),
@@ -530,16 +474,15 @@ async function cycleProfilesShortcut(): Promise<void> {
   const next = cycle[nextIdx];
 
   await setActiveProfileId(next.id);
-  void applyWatchProfile(); // reads storage; next.id is already set
+  void applyWatchProfile(); // reads back the id set on the line above
   showPageToast(`Profile: ${next.name}`);
 }
 
 
 let doubleTapSeekTimeout: ReturnType<typeof setTimeout>;
 const onDoubleTapSeek = (dataSide: "back" | "forward", time: number): void => {
-  // Use synchronous querySelector here — the double-tap element is always
-  // present in the DOM once the player is loaded, so resolveTarget's async
-  // path is not needed.
+  // Synchronous rather than resolveTarget: this fires on every seek keypress,
+  // and the overlay is guaranteed present once the player has loaded.
   const selector = STRATEGIES.doubleTapSeek.find((s) =>
     document.querySelector(s),
   );

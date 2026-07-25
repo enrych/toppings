@@ -1,19 +1,9 @@
-/**
- * GearMenuPanel — injects a "Toppings" entry into YouTube's player gear menu.
- *
- * When the user opens the gear menu (⚙), a "Toppings" item appears at the top
- * of the panel menu. Clicking it navigates into a Toppings sub-panel that lets
- * users control watch-scope primitives (sidebar, comments, end cards) and
- * switch profiles — all without leaving the video.
- *
- * YouTube's settings panel uses a fixed structure:
- *   .ytp-settings-menu > .ytp-panel > .ytp-panel-menu > .ytp-menuitem*
- * Sub-panels are created by injecting additional .ytp-panel siblings inside
- * .ytp-settings-menu. The back button at the top navigates back.
- *
- * All DOM mutations are idempotent — this file can be called on every gear
- * menu open and will reuse existing injected nodes.
- */
+// Rides on YouTube's own settings-panel structure, which every class name here
+// depends on: .ytp-settings-menu > .ytp-panel > .ytp-panel-menu > .ytp-menuitem,
+// where a sub-panel is an extra .ytp-panel sibling toggled by display.
+//
+// injectGearMenuEntry runs on every gear-menu open, so every mutation below has
+// to reuse existing nodes rather than append a second copy.
 
 import {
   getAllProfiles,
@@ -31,16 +21,8 @@ import {
 import { applyWatchProfile } from "../../primitives/applyProfile";
 import type { Profile } from "../../../../data/profiles";
 
-// ---------------------------------------------------------------------------
-// IDs for injected elements
-// ---------------------------------------------------------------------------
-
 const TPPNG_MENU_ITEM_ID = "tppng-gear-menu-item";
 const TPPNG_PANEL_ID = "tppng-gear-panel";
-
-// ---------------------------------------------------------------------------
-// Primitive state cache (updated when panel opens)
-// ---------------------------------------------------------------------------
 
 interface PanelState {
   sidebarVisible: boolean;
@@ -49,10 +31,6 @@ interface PanelState {
   profiles: Profile[];
   activeProfileId: string | null;
 }
-
-// ---------------------------------------------------------------------------
-// Helper: create a YouTube-styled toggle menu item
-// ---------------------------------------------------------------------------
 
 function makeToggleItem(
   label: string,
@@ -99,10 +77,6 @@ function makeToggleItem(
   return item;
 }
 
-// ---------------------------------------------------------------------------
-// Helper: create a YouTube-styled label item (non-interactive section header)
-// ---------------------------------------------------------------------------
-
 function makeSectionHeader(text: string): HTMLElement {
   const el = document.createElement("div");
   el.className = "ytp-menuitem";
@@ -114,10 +88,6 @@ function makeSectionHeader(text: string): HTMLElement {
   el.appendChild(label);
   return el;
 }
-
-// ---------------------------------------------------------------------------
-// Helper: create a profile radio item
-// ---------------------------------------------------------------------------
 
 function makeProfileItem(
   profile: Profile | null,
@@ -150,10 +120,6 @@ function makeProfileItem(
   return item;
 }
 
-// ---------------------------------------------------------------------------
-// Build / rebuild the Toppings sub-panel content
-// ---------------------------------------------------------------------------
-
 function buildToppingsPanel(
   panelMenu: HTMLElement,
   state: PanelState,
@@ -161,7 +127,6 @@ function buildToppingsPanel(
 ): void {
   panelMenu.innerHTML = "";
 
-  // --- Primitives section ---
   panelMenu.appendChild(makeSectionHeader("Watch page"));
 
   panelMenu.appendChild(
@@ -185,10 +150,8 @@ function buildToppingsPanel(
     }),
   );
 
-  // --- Profile section ---
   panelMenu.appendChild(makeSectionHeader("Profile"));
 
-  // "Default" (no profile) option
   panelMenu.appendChild(
     makeProfileItem(null, state.activeProfileId === null, async () => {
       await setActiveProfileId(null);
@@ -210,20 +173,14 @@ function buildToppingsPanel(
   }
 }
 
-// ---------------------------------------------------------------------------
-// Main injection function — call on every gear menu open
-// ---------------------------------------------------------------------------
-
 export async function injectGearMenuEntry(
   settingsMenu: HTMLElement,
 ): Promise<void> {
-  // Find the main panel and its menu list.
   const mainPanel = settingsMenu.querySelector(".ytp-panel");
   if (!mainPanel) return;
   const mainPanelMenu = mainPanel.querySelector(".ytp-panel-menu");
   if (!mainPanelMenu) return;
 
-  // --- Inject the "Toppings" entry in the main menu (idempotent) ---
   let tppngMenuItem = settingsMenu.querySelector(
     `#${TPPNG_MENU_ITEM_ID}`,
   ) as HTMLElement | null;
@@ -243,16 +200,15 @@ export async function injectGearMenuEntry(
 
     const content = document.createElement("div");
     content.className = "ytp-menuitem-content";
-    // Right-arrow indicator like native sub-menu items.
+    // Inlined rather than imported: matches the right-arrow YouTube draws on its
+    // own sub-menu items, and must live in the page's own DOM to inherit its styles.
     content.innerHTML =
       '<svg height="24" viewBox="0 0 24 24" width="24" style="fill:currentColor;opacity:0.6"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>';
     tppngMenuItem.appendChild(content);
 
-    // Prepend so it appears first in the menu.
     mainPanelMenu.prepend(tppngMenuItem);
   }
 
-  // --- Create or reuse the Toppings sub-panel ---
   let tppngPanel = settingsMenu.querySelector(
     `#${TPPNG_PANEL_ID}`,
   ) as HTMLElement | null;
@@ -263,7 +219,6 @@ export async function injectGearMenuEntry(
     tppngPanel.className = "ytp-panel";
     tppngPanel.style.display = "none";
 
-    // Back button header
     const header = document.createElement("div");
     header.className = "ytp-panel-header-back";
 
@@ -287,7 +242,6 @@ export async function injectGearMenuEntry(
 
     settingsMenu.appendChild(tppngPanel);
 
-    // Back button → return to main panel
     backBtn.addEventListener("click", () => {
       tppngPanel!.style.display = "none";
       (mainPanel as HTMLElement).style.display = "";
@@ -299,15 +253,14 @@ export async function injectGearMenuEntry(
   ) as HTMLElement | null;
   if (!panelMenu) return;
 
-  // --- Wire the entry click to show Toppings panel ---
   tppngMenuItem.onclick = async () => {
-    // Read current state.
     const [profiles, activeProfile] = await Promise.all([
       getAllProfiles(),
       getActiveProfile(),
     ]);
 
-    // Snapshot visibility state from DOM (simplest source of truth).
+    // Read from the DOM rather than the profile store: another profile, a
+    // shortcut, or YouTube itself may have changed visibility since it was written.
     const sidebarEl = document.querySelector(
       "#secondary, ytd-watch-next-secondary-results-renderer",
     ) as HTMLElement | null;
@@ -327,12 +280,10 @@ export async function injectGearMenuEntry(
     };
 
     buildToppingsPanel(panelMenu, state, () => {
-      // Close: hide sub-panel, show main panel
       tppngPanel!.style.display = "none";
       (mainPanel as HTMLElement).style.display = "";
     });
 
-    // Show sub-panel.
     (mainPanel as HTMLElement).style.display = "none";
     tppngPanel!.style.display = "";
   };
