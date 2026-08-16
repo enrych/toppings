@@ -12,7 +12,7 @@ import { getStorage, Storage } from "./store";
 import {
   getCachedPlaylist,
   setCachedPlaylist,
-} from "../../content_scripts/pages/playlistCache";
+} from "../content_scripts/pages/playlistCache";
 
 export type YoutubeContext = BaseContext & {
   scope: typeof EXTENSION_CONTEXT_SCOPE.YOUTUBE;

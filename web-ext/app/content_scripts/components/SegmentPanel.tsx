@@ -136,10 +136,18 @@ export const SegmentPanel: HTMLElement = (
 export async function setupSegmentPanel(videoId: string): Promise<void> {
   currentVideoId = videoId;
   viewMode = "main";
-  [savedConfigsCache, currentPin] = await Promise.all([
-    getSavedConfigs(videoId),
-    getAutoLoadPin(videoId),
-  ]);
+  // Storage failures must not throw here — setupSegments() wires the button
+  // click handler after this call, so a rejection would leave a dead button.
+  try {
+    [savedConfigsCache, currentPin] = await Promise.all([
+      getSavedConfigs(videoId),
+      getAutoLoadPin(videoId),
+    ]);
+  } catch (error) {
+    console.error("[toppings] segment storage unavailable", error);
+    savedConfigsCache = [];
+    currentPin = null;
+  }
 }
 
 export function showSegmentPanel(): void {

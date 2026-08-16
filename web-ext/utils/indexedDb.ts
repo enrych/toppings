@@ -1,42 +1,63 @@
 import { BROWSER_STORAGE_IDB_STORE } from "../data/core";
 
 const DB_NAME = "toppings";
-const DB_VERSION = 1;
+
+/** Object stores the extension needs, with their key paths. */
+const REQUIRED_STORES: ReadonlyArray<readonly [string, string]> = [
+  [BROWSER_STORAGE_IDB_STORE.VIDEO_PREFERENCE, "videoId"],
+  [BROWSER_STORAGE_IDB_STORE.CAPABILITY_CACHE, "primitiveId"],
+  [BROWSER_STORAGE_IDB_STORE.LOOP_SEGMENT, "videoId"],
+  [BROWSER_STORAGE_IDB_STORE.SEGMENT_DATA, "videoId"],
+];
 
 let dbPromise: Promise<IDBDatabase> | null = null;
 
 function upgradeDatabase(db: IDBDatabase): void {
-  if (!db.objectStoreNames.contains(BROWSER_STORAGE_IDB_STORE.VIDEO_PREFERENCE)) {
-    db.createObjectStore(BROWSER_STORAGE_IDB_STORE.VIDEO_PREFERENCE, { keyPath: "videoId" });
+  for (const [name, keyPath] of REQUIRED_STORES) {
+    if (!db.objectStoreNames.contains(name)) {
+      db.createObjectStore(name, { keyPath });
+    }
   }
-  if (!db.objectStoreNames.contains(BROWSER_STORAGE_IDB_STORE.CAPABILITY_CACHE)) {
-    db.createObjectStore(BROWSER_STORAGE_IDB_STORE.CAPABILITY_CACHE, { keyPath: "primitiveId" });
-  }
-  if (!db.objectStoreNames.contains(BROWSER_STORAGE_IDB_STORE.LOOP_SEGMENT)) {
-    db.createObjectStore(BROWSER_STORAGE_IDB_STORE.LOOP_SEGMENT, { keyPath: "videoId" });
-  }
-  if (!db.objectStoreNames.contains(BROWSER_STORAGE_IDB_STORE.SEGMENT_DATA)) {
-    db.createObjectStore(BROWSER_STORAGE_IDB_STORE.SEGMENT_DATA, { keyPath: "videoId" });
-  }
+}
+
+/**
+ * Open the database. Omitting `version` adopts whatever version is already
+ * stored, so we can never request one lower than the browser holds — that
+ * fails with VersionError and takes every storage read down with it.
+ */
+function open(version?: number): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    const request =
+      version === undefined
+        ? indexedDB.open(DB_NAME)
+        : indexedDB.open(DB_NAME, version);
+
+    request.onerror = () =>
+      reject(request.error ?? new Error("IndexedDB open failed"));
+    request.onupgradeneeded = () => upgradeDatabase(request.result);
+    request.onsuccess = () => resolve(request.result);
+  });
 }
 
 export function openExtensionDatabase(): Promise<IDBDatabase> {
   if (!dbPromise) {
-    dbPromise = new Promise((resolve, reject) => {
-      const request = indexedDB.open(DB_NAME, DB_VERSION);
+    dbPromise = (async () => {
+      const db = await open();
 
-      request.onerror = () => {
-        dbPromise = null;
-        reject(request.error ?? new Error("IndexedDB open failed"));
-      };
+      // A brand-new DB is created by the versionless open above (at version 1,
+      // running onupgradeneeded). An existing DB may predate a store we added
+      // since — bump the version once to create whatever is missing.
+      const missing = REQUIRED_STORES.some(
+        ([name]) => !db.objectStoreNames.contains(name),
+      );
+      if (!missing) return db;
 
-      request.onupgradeneeded = () => {
-        upgradeDatabase(request.result);
-      };
-
-      request.onsuccess = () => {
-        resolve(request.result);
-      };
+      const next = db.version + 1;
+      db.close();
+      return open(next);
+    })().catch((error) => {
+      dbPromise = null; // allow a later retry
+      throw error;
     });
   }
 
