@@ -2,28 +2,29 @@
 **/.DS_Store
 *.pem
 
-# Logs
-logs
-
-# nyc test coverage
-.nyc_output
-coverage
-
-# Dependency directories
+# Dependencies
 node_modules/
 
-# Build
+# Build output
 dist
-*.zip
 build
+*.zip
+**/.next/
+**/out/
 
-# Environment variables & secrets
+# Env & secrets
 .env
 .env.local
 .env.*.local
+.dev.vars
 
-# next.js
+# Cloudflare Workers
+**/.wrangler/
+
+# Caches
+**/tsconfig.tsbuildinfo
+*.tsbuildinfo
 .vercel
-**/.next/
-**/out/
-next-env.d.ts
+
+# Local agent tooling
+.claude/

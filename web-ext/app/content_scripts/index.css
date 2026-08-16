@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind utilities;
+
+#contentContainer.tp-yt-app-drawer[swipe-open].tp-yt-app-drawer::after {
+  width: 10px !important;
+}
+
+#movie_player.tppng-audio-mode-on .ytp-chrome-bottom,
+#movie_player.tppng-audio-mode-on .ytp-chrome-top,
+#movie_player.tppng-audio-mode-on .ytp-gradient-bottom,
+#movie_player.tppng-audio-mode-on .ytp-gradient-top,
+#movie_player.tppng-audio-mode-on .ytp-ce-element,
+#movie_player.tppng-audio-mode-on .ytp-iv-player-content,
+#movie_player.tppng-audio-mode-on .ytp-pause-overlay,
+#movie_player.tppng-audio-mode-on .ytp-cards-teaser {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Segment marker merge-ready pulse animation */
+@keyframes tppng-merge-pulse {
+  from { transform: translateX(-50%) scale(1);   filter: brightness(1); }
+  to   { transform: translateX(-50%) scale(1.25); filter: brightness(1.6) drop-shadow(0 0 6px #fff); }
+}

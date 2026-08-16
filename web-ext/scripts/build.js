@@ -1,5 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
+import { URLS } from "./../data/urls.ts";
+import { EXTENSION_VERSION } from "./../data/version.ts";
+import { BRAND_METADATA } from "./../data/brand.ts";
 import tailwindcss from "tailwindcss";
 import autoprefixer from "autoprefixer";
 import CopyWebpackPlugin from "copy-webpack-plugin";
@@ -11,15 +14,15 @@ export default (env) => {
     mode: env.production ? "production" : "development",
     devtool: env.production ? false : "cheap-module-source-map",
     entry: {
-      background: "./src/background/index.ts",
-      content: ["./src/content_scripts/index.ts"],
+      background: "./app/background/index.ts",
+      content: ["./app/content_scripts/index.ts"],
       popup: {
         filename: "./popup/index.js",
-        import: "./src/popup/index.tsx",
+        import: "./app/popup/index.tsx",
       },
       options: {
         filename: "./options/index.js",
-        import: "./src/options/index.tsx",
+        import: "./app/options/index.tsx",
       },
     },
     output: {
@@ -47,8 +50,36 @@ export default (env) => {
                       corePlugins: {
                         preflight: false,
                       },
-                      content: ["./src/**/*.tsx"],
+                      content: ["./app/**/*.tsx", "./components/**/*.tsx"],
                       prefix: "tw-",
+                      darkMode: ["class", '[data-theme="dark"]'],
+                      theme: {
+                        extend: {
+                          colors: {
+                            bg: "var(--color-bg)",
+                            surface: "var(--color-surface)",
+                            "surface-2": "var(--color-surface-2)",
+                            "surface-hover": "var(--color-surface-hover)",
+                            fg: "var(--color-fg)",
+                            "fg-muted": "var(--color-fg-muted)",
+                            "fg-subtle": "var(--color-fg-subtle)",
+                            "border-subtle": "var(--color-border-subtle)",
+                            "border-default": "var(--color-border-default)",
+                            "border-strong": "var(--color-border-strong)",
+                            accent: "var(--color-accent)",
+                            "accent-hover": "var(--color-accent-hover)",
+                            "accent-fg": "var(--color-accent-fg)",
+                            "danger-bg": "var(--color-danger-bg)",
+                            "danger-fg": "var(--color-danger-fg)",
+                            "success-bg": "var(--color-success-bg)",
+                            "success-fg": "var(--color-success-fg)",
+                            "info-bg": "var(--color-info-bg)",
+                            "info-fg": "var(--color-info-fg)",
+                            "warning-bg": "var(--color-warning-bg)",
+                            "warning-fg": "var(--color-warning-fg)",
+                          },
+                        },
+                      },
                     }),
                     autoprefixer,
                   ],
@@ -81,19 +112,17 @@ export default (env) => {
       new CleanWebpackPlugin(),
       new CopyWebpackPlugin({
         patterns: [
-          { from: "src/assets", to: "assets" },
-          { from: "src/options/index.html", to: "options" },
-          { from: "src/popup/index.html", to: "popup" },
-          { from: "src/_locales", to: "_locales" },
+          { from: "assets", to: "assets" },
+          { from: "app/options/index.html", to: "options" },
+          { from: "app/popup/index.html", to: "popup" },
+          { from: "_locales", to: "_locales" },
           {
-            from: "src/manifest.json",
+            from: "app/manifest.json",
             to: "manifest.json",
             transform(content) {
-              const packageJson = JSON.parse(
-                fs.readFileSync("package.json", "utf-8"),
-              );
               const manifest = JSON.parse(content.toString());
-              manifest.version = packageJson.version;
+              manifest.version = EXTENSION_VERSION;
+              manifest.homepage_url = URLS.HOMEPAGE;
 
               const isFirefox = env.firefox ? "firefox" : false;
               if (isFirefox) {
@@ -119,7 +148,7 @@ export default (env) => {
                   );
 
                 manifest.browser_specific_settings = {
-                  gecko: { id: "toppings@enry.ch" },
+                  gecko: { id: BRAND_METADATA.ID },
                 };
               }
               return JSON.stringify(manifest, null, 2);
