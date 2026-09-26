@@ -6,7 +6,7 @@ interface SectionNavItem {
 }
 
 interface SectionNavProps {
-  items: SectionNavItem[];
+  items: readonly SectionNavItem[];
 }
 
 export default function SectionNav({ items }: SectionNavProps) {

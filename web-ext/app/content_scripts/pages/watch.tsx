@@ -1,4 +1,4 @@
-import React from "dom-chef";
+/** @jsxImportSource dom-chef-jsx */
 import {
   setupSegments,
   SegmentButton,
@@ -287,7 +287,7 @@ const replacePlaybackItems = (playbackRatePanel: HTMLElement) => {
           aria-checked={isAriaChecked}
           tabIndex={0}
           data-tppng-playback-rate={playbackRate}
-          onClick={(_event) => {
+          onClick={() => {
             const panelBackButton = document.querySelector(
               ".ytp-panel-back-button",
             ) as HTMLElement | null;
@@ -311,7 +311,7 @@ const replacePlaybackItems = (playbackRatePanel: HTMLElement) => {
       aria-checked={isPresetRate ? "false" : "true"}
       tabIndex={0}
       style={{ display: isPresetRate ? "none" : "" }}
-      onClick={(_event) => {
+      onClick={() => {
         const panelBackButton = document.querySelector(
           ".ytp-panel-back-button",
         ) as HTMLElement | null;

@@ -56,15 +56,3 @@ export async function invalidateCachedPlaylist(
     chrome.storage.local.remove(storageKey(playlistId), resolve);
   });
 }
-
-export async function clearPlaylistCache(): Promise<void> {
-  return new Promise((resolve) => {
-    chrome.storage.local.get(null, (all) => {
-      const keys = Object.keys(all).filter((k) =>
-        k.startsWith(CACHE_KEY_PREFIX),
-      );
-      if (keys.length === 0) { resolve(); return; }
-      chrome.storage.local.remove(keys, resolve);
-    });
-  });
-}

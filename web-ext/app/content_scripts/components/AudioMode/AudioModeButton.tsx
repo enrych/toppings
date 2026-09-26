@@ -1,4 +1,4 @@
-import React from "dom-chef";
+/** @jsxImportSource dom-chef-jsx */
 
 export const AudioModeButton = (
   <button

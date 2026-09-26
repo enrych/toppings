@@ -96,7 +96,7 @@ export default (env) => {
             options: {
               presets: [
                 "@babel/preset-env",
-                "@babel/preset-react",
+                ["@babel/preset-react", { runtime: "automatic" }],
                 "@babel/preset-typescript",
               ],
             },
@@ -159,6 +159,7 @@ export default (env) => {
     ],
     resolve: {
       extensions: [".ts", ".tsx"],
+      alias: { "dom-chef-jsx": path.resolve("app/content_scripts/jsx") },
     },
     optimization: {
       minimize: false,

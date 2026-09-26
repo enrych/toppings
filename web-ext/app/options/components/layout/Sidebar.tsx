@@ -32,7 +32,6 @@ export default function Sidebar() {
 
   const setTheme = (next: ThemePreference) => {
     update((d) => {
-      if (!d.ui) d.ui = { theme: "system" };
       d.ui.theme = next;
     });
   };

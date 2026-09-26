@@ -34,7 +34,7 @@ export function recordBinding(e: KeyboardEvent): string | null {
     Shift: e.shiftKey,
     Meta: e.metaKey,
   };
-  const parts = MODIFIER_KEYS.filter((m) => modState[m]);
+  const parts: string[] = MODIFIER_KEYS.filter((m) => modState[m]);
   parts.push(baseKey);
 
   return parts.join("+");

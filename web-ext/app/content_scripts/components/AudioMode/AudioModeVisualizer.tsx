@@ -1,4 +1,4 @@
-import React from "dom-chef";
+/** @jsxImportSource dom-chef-jsx */
 
 let audioContext: AudioContext | null = null;
 let analyser: AnalyserNode | null = null;

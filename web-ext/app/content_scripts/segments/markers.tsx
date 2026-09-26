@@ -1,4 +1,4 @@
-import React from "dom-chef";
+/** @jsxImportSource dom-chef-jsx */
 import type { Segment, SegmentId } from "./types";
 
 // Owns the marker elements on YouTube's progress bar and nothing else:

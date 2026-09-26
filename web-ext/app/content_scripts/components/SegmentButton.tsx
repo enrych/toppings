@@ -1,4 +1,4 @@
-import React from "dom-chef";
+/** @jsxImportSource dom-chef-jsx */
 
 // State is shown by fill, never by colour — the same way YouTube signals its own
 // control-bar toggles, and the only cue that survives a colour-blind viewer.

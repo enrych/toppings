@@ -74,7 +74,6 @@ export default function General() {
               ]}
               onChange={(theme) => {
                 update((draft) => {
-                  if (!draft.ui) draft.ui = { theme: "system" };
                   draft.ui.theme = theme;
                 });
               }}
@@ -101,7 +100,6 @@ export default function General() {
               isEnabled={store.ui?.gearMenuEnabled ?? false}
               onToggle={(isEnabled) => {
                 update((draft) => {
-                  if (!draft.ui) draft.ui = { theme: "system", gearMenuEnabled: false, nativeSettingsEnabled: false };
                   draft.ui.gearMenuEnabled = isEnabled;
                 });
                 toast.success(
@@ -117,7 +115,6 @@ export default function General() {
               isEnabled={store.ui?.nativeSettingsEnabled ?? false}
               onToggle={(isEnabled) => {
                 update((draft) => {
-                  if (!draft.ui) draft.ui = { theme: "system", gearMenuEnabled: false, nativeSettingsEnabled: false };
                   draft.ui.nativeSettingsEnabled = isEnabled;
                 });
                 toast.success(

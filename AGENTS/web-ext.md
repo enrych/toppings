@@ -17,9 +17,7 @@ Run from `web-ext/`:
 | `bun test` | Bun's runner, for `*.test.ts` files |
 | `bun run release` | Build, then zip via `scripts/release.js` |
 
-`bun run test` is aliased to `type-check` only — it does **not** run `bun test`. Run both when you change logic.
-
-**Known breakage:** `type-check` currently fails with `TS2688: Cannot find type definition file for 'chai' / 'mocha'`. `tsconfig.json` lists both in `compilerOptions.types` but neither is installed. Pre-existing and unrelated to any new change — report it as such rather than "fixing" it inside an unrelated task.
+`bun run test` is aliased to `type-check` only — it does **not** run `bun test`. Run both when you change logic. `*.test.ts` files are excluded from `tsc` and run under Bun.
 
 ---
 
@@ -43,7 +41,7 @@ This is the single most important thing to get right in this project.
 - **`app/popup/`, `app/options/`, `components/`** — real React with `react-dom`, hooks, state, context.
 - **`app/content_scripts/`** — **dom-chef**, not React. JSX there compiles to real DOM nodes at call time. There is no reconciler, no re-render, no hooks. A component is a function that returns an `HTMLElement` you insert yourself and update by hand or replace outright.
 
-Both use `jsx: "react-jsx"` and the same Babel preset, so a file's imports are the only signal. Check them before writing JSX. Reaching for `useState` in a content script fails at runtime, not at build.
+A content-script file declares its world with `/** @jsxImportSource dom-chef-jsx */` as its first line; that routes its JSX to `app/content_scripts/jsx/jsx-runtime.ts`, which builds DOM nodes with dom-chef and types elements as `HTMLElement` with native event handlers. Without the pragma a file gets React's runtime and React's types. Reaching for `useState` in a content script fails at runtime, not at build.
 
 ---
 

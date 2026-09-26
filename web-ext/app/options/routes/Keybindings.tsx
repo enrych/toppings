@@ -88,11 +88,7 @@ export default function Keybindings() {
               value={seg?.freshSlateKey ?? "Shift+Z"}
               onChange={(key) => {
                 update((draft) => {
-                  if (!draft.preferences.watch.segments) {
-                    draft.preferences.watch.segments = { freshSlateKey: key };
-                  } else {
-                    draft.preferences.watch.segments.freshSlateKey = key;
-                  }
+                  draft.preferences.watch.segments.freshSlateKey = key;
                 });
               }}
             />

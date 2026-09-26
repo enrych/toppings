@@ -1,5 +1,5 @@
+/** @jsxImportSource dom-chef-jsx */
 import { formatDuration } from "../../../utils/duration";
-import React from "dom-chef";
 import elementReady from "element-ready";
 import {
   InvalidPlaylistPayload,

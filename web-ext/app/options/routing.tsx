@@ -34,7 +34,7 @@ const SECTION_RAIL_BY_SEGMENT: Record<SectionNavSegment, ComponentType> = {
 };
 
 export const SECTION_RAILS = Object.fromEntries(
-  OPTIONS_PAGES.filter((page) => page.sectionNav).map((page) => [
+  OPTIONS_PAGES.filter((page) => "sectionNav" in page && page.sectionNav).map((page) => [
     page.path,
     SECTION_RAIL_BY_SEGMENT[page.segment as SectionNavSegment],
   ]),

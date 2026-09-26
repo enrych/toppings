@@ -1,4 +1,4 @@
-import React from "dom-chef";
+/** @jsxImportSource dom-chef-jsx */
 import elementReady from "element-ready";
 import type { Storage } from "../../background/store";
 import type { ShortsContext } from "../../background/context";
