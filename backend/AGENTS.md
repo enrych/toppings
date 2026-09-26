@@ -1,0 +1,21 @@
+# backend/
+
+A Cloudflare Worker serving `https://toppings.enry.ch/api/*` for the extension. Read the root `AGENTS.md` first; its rules apply here too.
+
+## Shape
+
+- One file per feature in `src/`, next to `src/index.ts`, which owns routing, CORS and error responses. No layers, no barrels. A feature that needs a second file gets a folder.
+- Zero runtime dependencies. Routing is a regex per endpoint; add a router only when that stops being readable.
+- Package manager is Bun. Verify with `bun run check`; run locally with `bun run dev` (needs `YOUTUBE_DATA_API_V3_KEY` in a gitignored `.dev.vars`).
+- `worker-configuration.d.ts` is generated (`bun run types`, and by `wrangler dev`) and committed. Secrets never appear in it reliably, so they are declared by hand in `src/env.d.ts`; add new secrets there.
+
+## Contract with the extension
+
+`web-ext/app/background/api.ts` calls these; change them together.
+
+- `GET /api/ping` → `"pong"`
+- `GET /api/v1/playlist/:playlistId` → `{ scope: "playlist", payload: { playlistId, totalVideos, totalRuntime, averageRuntime } }`, runtimes in seconds. Errors are `{ status, error }` with the same HTTP status.
+
+## Deploy
+
+`.github/workflows/deploy-backend.yml` runs `wrangler deploy` on pushes to `main` that touch `backend/`. The `YOUTUBE_DATA_API_V3_KEY` secret is set on the Worker, not in the repo.
