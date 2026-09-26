@@ -1,24 +1,18 @@
 import type { Metadata } from "next";
-import { Instrument_Serif } from "next/font/google";
+import { Geist, Newsreader } from "next/font/google";
 import localFont from "next/font/local";
 import { site } from "@/lib/site";
 import "./globals.css";
 
-const display = Instrument_Serif({
-  weight: "400",
+const display = Newsreader({
+  weight: ["300", "400"],
+  style: ["normal", "italic"],
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
 });
 
-const sans = localFont({
-  variable: "--font-sans",
-  display: "swap",
-  src: [
-    { path: "./_fonts/inter-400.woff2", weight: "400" },
-    { path: "./_fonts/inter-500.woff2", weight: "500" },
-  ],
-});
+const sans = Geist({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 
 const mono = localFont({
   variable: "--font-mono",
