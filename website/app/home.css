@@ -36,7 +36,7 @@
   background:
     radial-gradient(48% 42% at 24% 42%, rgba(11, 11, 12, 0.55), transparent 100%),
     linear-gradient(100deg, rgba(11, 11, 12, 0.8) 0%, rgba(11, 11, 12, 0.52) 36%, rgba(11, 11, 12, 0.2) 64%, rgba(11, 11, 12, 0.04) 100%),
-    linear-gradient(0deg, rgba(11, 11, 12, 0.66), transparent 38%),
+    linear-gradient(0deg, rgba(11, 11, 12, 0.72), rgba(11, 11, 12, 0.3) 34%, transparent 52%),
     linear-gradient(180deg, rgba(11, 11, 12, 0.5), transparent 22%);
 }
 

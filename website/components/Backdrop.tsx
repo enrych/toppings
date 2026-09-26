@@ -45,7 +45,7 @@ void main(){
   st.y += (hash(vec2(tick, 3.0)) - 0.5) * step(0.9, hash(vec2(tick, 9.0))) * 0.02 * m;
   st += vec2(sin(uTime * 0.11), cos(uTime * 0.09)) * 0.003;
 
-  vec3 col = split(st, 0.002 + 0.05 * m);
+  vec3 col = split(st, 0.05 * m);
   col.r += 0.08 * m;
   col += (hash(st * uRes + uTime) - 0.5) * (0.03 + 0.14 * m);
   col *= 0.8 - 0.25 * m;
@@ -95,11 +95,11 @@ function drawWatchPage(c: HTMLCanvasElement, w: number, h: number) {
   x.fillStyle = "#0b0b0c";
   x.fillRect(0, -oy / s, w / s, h / s);
 
-  x.strokeStyle = "rgba(120,120,130,0.5)";
+  x.strokeStyle = "rgba(120,120,130,0.22)";
   x.lineWidth = 1;
   roundRect(x, 470, 30, 420, 34, 17);
   x.stroke();
-  x.fillStyle = "rgba(120,120,130,0.45)";
+  x.fillStyle = "rgba(120,120,130,0.2)";
   x.beginPath();
   x.arc(1330, 47, 17, 0, 7);
   x.fill();
@@ -113,15 +113,13 @@ function drawWatchPage(c: HTMLCanvasElement, w: number, h: number) {
     frame.y + frame.h * 0.5,
     frame.w * 0.62,
   );
-  lit.addColorStop(0, "#28282d");
-  lit.addColorStop(1, "#18181b");
+  lit.addColorStop(0, "#202024");
+  lit.addColorStop(1, "#121215");
   x.fillStyle = lit;
   roundRect(x, frame.x, frame.y, frame.w, frame.h, 10);
   x.fill();
-  x.strokeStyle = "rgba(234,229,216,0.09)";
-  x.stroke();
 
-  x.fillStyle = "rgba(234,229,216,0.14)";
+  x.fillStyle = "rgba(234,229,216,0.08)";
   x.beginPath();
   x.moveTo(frame.x + frame.w * 0.5 - 20, frame.y + frame.h * 0.5 - 28);
   x.lineTo(frame.x + frame.w * 0.5 + 32, frame.y + frame.h * 0.5);
@@ -143,7 +141,7 @@ function drawWatchPage(c: HTMLCanvasElement, w: number, h: number) {
   x.fillStyle = "rgba(0,0,0,0.55)";
   roundRect(x, 780, 520, 124, 40, 4);
   x.fill();
-  x.fillStyle = "rgba(255,255,255,0.8)";
+  x.fillStyle = "rgba(255,255,255,0.6)";
   x.font = "500 15px system-ui, sans-serif";
   x.fillText("Skip ad", 798, 546);
   x.beginPath();
@@ -153,7 +151,7 @@ function drawWatchPage(c: HTMLCanvasElement, w: number, h: number) {
   x.closePath();
   x.fill();
 
-  x.fillStyle = "rgba(150,150,160,0.85)";
+  x.fillStyle = "rgba(150,150,160,0.4)";
   x.fillRect(70, 600, 560, 22);
   x.fillStyle = "rgba(70,70,80,0.5)";
   x.beginPath();
@@ -163,11 +161,11 @@ function drawWatchPage(c: HTMLCanvasElement, w: number, h: number) {
   x.fillRect(122, 645, 180, 12);
   x.fillStyle = "rgba(60,60,70,0.4)";
   x.fillRect(122, 664, 120, 9);
-  x.fillStyle = "rgba(234,229,216,0.7)";
+  x.fillStyle = "rgba(234,229,216,0.3)";
   roundRect(x, 330, 638, 118, 36, 18);
   x.fill();
   for (let i = 0; i < 4; i++) {
-    x.fillStyle = "rgba(70,70,80,0.5)";
+    x.fillStyle = "rgba(70,70,80,0.3)";
     roundRect(x, 480 + i * 114, 638, 100, 36, 18);
     x.fill();
   }
