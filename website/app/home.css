@@ -3,8 +3,8 @@
   isolation: isolate;
   min-height: 100dvh;
   display: grid;
-  grid-template-rows: auto 1fr auto auto;
-  padding: 20px var(--pad) clamp(28px, 4vh, 56px);
+  grid-template-rows: auto 1fr auto;
+  padding: 22px var(--pad) clamp(24px, 3.5vh, 44px);
   overflow: hidden;
 }
 
@@ -29,34 +29,36 @@
   background: var(--ink);
 }
 
-.glow {
+/* Legibility veil sits under the lamp so the ember light reads as the top-most
+   layer. It pools softly behind the headline glyphs instead of walling off the
+   left half, so the watch page stays recognisable under the type. */
+.scrim {
   background:
-    radial-gradient(60% 55% at 18% 88%, rgba(234, 123, 44, 0.22), transparent 70%),
-    radial-gradient(45% 40% at 85% 10%, rgba(255, 42, 26, 0.1), transparent 70%);
-  animation: drift 18s ease-in-out infinite alternate;
+    radial-gradient(48% 42% at 24% 42%, rgba(11, 11, 12, 0.55), transparent 100%),
+    linear-gradient(100deg, rgba(11, 11, 12, 0.8) 0%, rgba(11, 11, 12, 0.52) 36%, rgba(11, 11, 12, 0.2) 64%, rgba(11, 11, 12, 0.04) 100%),
+    linear-gradient(0deg, rgba(11, 11, 12, 0.66), transparent 38%),
+    linear-gradient(180deg, rgba(11, 11, 12, 0.5), transparent 22%);
 }
 
-@keyframes drift {
+.glow {
+  background:
+    radial-gradient(70% 62% at 8% 100%, rgba(234, 123, 44, 0.3), rgba(194, 83, 30, 0.08) 45%, transparent 72%),
+    radial-gradient(38% 34% at 92% 6%, rgba(255, 42, 26, 0.09), transparent 70%);
+  animation: breathe 14s var(--ease-out) infinite alternate;
+}
+
+@keyframes breathe {
   to {
-    transform: translate(3%, -4%) scale(1.06);
+    transform: translate(2%, -3%) scale(1.05);
+    opacity: 0.88;
   }
 }
 
 .grain {
-  opacity: 0.28;
+  opacity: 0.09;
   mix-blend-mode: soft-light;
-  background-image: repeating-linear-gradient(
-    117deg,
-    rgba(255, 255, 255, 0.5) 0 1px,
-    transparent 1px 9px
-  );
-}
-
-.scrim {
-  background:
-    linear-gradient(100deg, var(--ink) 0%, rgba(11, 11, 12, 0.7) 34%, rgba(11, 11, 12, 0.22) 64%, rgba(11, 11, 12, 0.02)),
-    linear-gradient(0deg, rgba(11, 11, 12, 0.7), transparent 40%),
-    linear-gradient(180deg, rgba(11, 11, 12, 0.7), transparent 22%);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 220px 220px;
 }
 
 .top {
@@ -67,7 +69,31 @@
 
 .top-nav {
   display: flex;
-  gap: 26px;
+  gap: 24px;
+}
+
+.btn--quiet {
+  position: relative;
+  padding-bottom: 5px;
+  transition: color 0.2s ease;
+}
+
+.btn--quiet::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--bone);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s var(--ease-out);
+}
+
+.btn--quiet:hover::after,
+.btn--quiet:focus-visible::after {
+  transform: scaleX(1);
 }
 
 .stack {
@@ -75,21 +101,44 @@
   align-self: center;
   display: flex;
   flex-direction: column;
-  gap: clamp(22px, 2.6vw, 38px);
+  align-items: flex-start;
   max-width: 1240px;
-  padding: clamp(60px, 10vh, 120px) 0 clamp(40px, 6vh, 80px);
+  padding: clamp(32px, 5vh, 64px) 0 clamp(56px, 9vh, 112px);
+}
+
+.eyebrow {
+  margin-bottom: clamp(26px, 3.2vw, 44px);
+}
+
+.display {
+  margin-left: -0.04em;
+  text-wrap: balance;
+}
+
+.deck {
+  margin-top: clamp(26px, 2.8vw, 40px);
+}
+
+.actions {
+  margin-top: clamp(30px, 3.2vw, 44px);
+}
+
+.trust {
+  margin-top: clamp(26px, 2.8vw, 36px);
 }
 
 .mask {
   display: block;
   overflow: hidden;
-  padding-bottom: 0.08em;
+  padding: 0.04em 0.06em 0.09em 0.06em;
+  margin: -0.04em -0.06em -0.09em -0.06em;
 }
 
 .line {
   display: block;
-  transform: translateY(110%);
-  animation: reveal 1.15s var(--ease-out) forwards;
+  transform: translateY(112%) rotate(1.2deg);
+  transform-origin: left bottom;
+  animation: reveal 1.25s var(--ease-out) forwards;
   animation-delay: var(--d, 0s);
 }
 
@@ -108,7 +157,7 @@
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(14px);
   }
   to {
     opacity: 1;
@@ -119,54 +168,96 @@
 .actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   flex-wrap: wrap;
+}
+
+.btn .arrow {
+  display: inline-block;
+  transition: transform 0.35s var(--ease-out);
+}
+
+.btn:hover .arrow {
+  transform: translateX(4px);
+}
+
+.btn--solid {
+  box-shadow: 0 0 0 0 rgba(234, 123, 44, 0);
+  transition:
+    transform 0.16s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.45s var(--ease-out);
+}
+
+.btn--solid:hover {
+  box-shadow: 0 0 0 1px rgba(234, 123, 44, 0.35), 0 12px 40px -12px rgba(234, 123, 44, 0.45);
+}
+
+.btn:not(.btn--solid):not(.btn--quiet):hover {
+  background: rgba(234, 229, 216, 0.05);
+  border-color: var(--bone-dim);
 }
 
 .trust {
   display: flex;
-  gap: 28px;
+  gap: 8px 32px;
   flex-wrap: wrap;
-  font-size: 13px;
+  font-size: 13.5px;
+  line-height: 1.5;
   color: var(--bone-faint);
 }
 
 .trust b {
-  color: var(--bone);
+  color: var(--bone-dim);
   font-weight: 500;
 }
 
-.cue {
-  grid-row: 3;
-  margin-bottom: 22px;
-  font: 400 12px/1 var(--mono);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--bone-faint);
-}
-
 .foot {
-  grid-row: 4;
-  padding-top: 24px;
+  grid-row: 3;
+  padding-top: 20px;
   border-top: 1px solid var(--hair);
 }
 
+.foot a {
+  transition: color 0.2s ease;
+}
+
 @media (max-width: 720px) {
+  .hero {
+    padding-top: 18px;
+  }
+
   .stack {
-    padding-top: clamp(40px, 8vh, 80px);
+    padding: clamp(24px, 6vh, 56px) 0 clamp(40px, 8vh, 72px);
   }
 
   .display {
-    font-size: clamp(52px, 15vw, 96px);
+    font-size: clamp(52px, 15.5vw, 96px);
   }
 
-  .cue {
-    display: none;
+  .scrim {
+    background:
+      linear-gradient(0deg, rgba(11, 11, 12, 0.82) 0%, rgba(11, 11, 12, 0.6) 36%, rgba(11, 11, 12, 0.3) 66%, rgba(11, 11, 12, 0.06) 100%),
+      linear-gradient(180deg, rgba(11, 11, 12, 0.5), transparent 22%);
+  }
+
+  .top-nav {
+    gap: 22px;
+  }
+
+  .trust {
+    flex-direction: column;
+    gap: 6px;
   }
 }
 
-@media (hover: none) {
-  .cue {
-    display: none;
+@media (prefers-reduced-motion: reduce) {
+  .rise {
+    opacity: 1;
+  }
+
+  .line {
+    transform: none;
   }
 }

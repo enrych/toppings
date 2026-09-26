@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Backdrop from "@/components/Backdrop";
+import Cursor from "@/components/Cursor";
 import InstallLink from "@/components/InstallLink";
 import { site } from "@/lib/site";
 import "./home.css";
@@ -11,12 +12,13 @@ function delay(seconds: number) {
 export default function Home() {
   return (
     <main className="hero">
+      <Cursor />
       <Backdrop />
+      <div className="scrim" aria-hidden />
       <div className="glow" aria-hidden />
       <div className="grain" aria-hidden />
-      <div className="scrim" aria-hidden />
 
-      <header className="top">
+      <header className="top rise" style={delay(0.3)}>
         <span className="wordmark">{site.name}</span>
         <nav className="top-nav">
           <Link href="/docs" className="btn btn--quiet">
@@ -29,35 +31,35 @@ export default function Home() {
       </header>
 
       <section className="stack">
-        <span className="eyebrow rise" style={delay(0)}>
+        <span className="eyebrow rise" style={delay(0.5)}>
           Free · Open source · v{site.version}
         </span>
 
         <h1 className="display">
           <span className="mask">
-            <span className="line" style={delay(0.1)}>
+            <span className="line" style={delay(0.7)}>
               Your YouTube,
             </span>
           </span>
           <span className="mask">
-            <span className="line" style={delay(0.2)}>
+            <span className="line" style={delay(0.82)}>
               your <em>way</em>.
             </span>
           </span>
         </h1>
 
-        <p className="deck rise" style={delay(0.55)}>
+        <p className="deck rise" style={delay(1.2)}>
           The controls YouTube never gave you — done right.
         </p>
 
-        <div className="actions rise" style={delay(0.7)}>
+        <div className="actions rise" style={delay(1.35)}>
           <InstallLink />
           <a href={site.github} target="_blank" rel="noopener noreferrer" className="btn">
             Source
           </a>
         </div>
 
-        <div className="trust rise" style={delay(0.85)}>
+        <div className="trust rise" style={delay(1.5)}>
           <span>
             <b>0 trackers.</b> No analytics, no accounts.
           </span>
@@ -67,11 +69,7 @@ export default function Home() {
         </div>
       </section>
 
-      <span className="cue rise" style={delay(1.2)}>
-        Move the cursor to see the noise Toppings strips
-      </span>
-
-      <footer className="foot rise" style={delay(1)}>
+      <footer className="foot rise" style={delay(1.7)}>
         <span>
           {site.name} · v{site.version} · {site.license}
         </span>
