@@ -1,10 +1,10 @@
 import React from "react";
-import PageHeader from "../../../components/layout/PageHeader";
-import Section from "../../../components/layout/Section";
-import Card from "../../../components/layout/Card";
-import Keybinding from "../../../components/form/Keybinding";
-import Input from "../../../components/form/Input";
-import { useChromeStorageSync } from "../../../core/useChromeStorageSync";
+import PageHeader from "@/ui/layout/PageHeader";
+import Section from "@/ui/layout/Section";
+import Card from "@/ui/layout/Card";
+import Keybinding from "@/ui/form/Keybinding";
+import Input from "@/ui/form/Input";
+import { useChromeStorageSync } from "@/lib/useChromeStorageSync";
 
 export default function Keybindings() {
   const { store, update } = useChromeStorageSync();

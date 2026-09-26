@@ -1,7 +1,7 @@
 import React from "react";
 import { createMemoryRouter } from "react-router-dom";
 import { OPTIONS_PAGES } from "./data";
-import { getStorage } from "../background/store";
+import { getStorage } from "@/lib/store";
 import App from "./App";
 import General from "./routes/General";
 import Watch from "./routes/Watch";

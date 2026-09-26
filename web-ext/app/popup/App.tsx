@@ -1,26 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { Storage, DEFAULT_STORE, getStorage } from "../background/store";
-import StoreContext from "../../core/storeContext";
-import ThemeApplier from "../../components/ThemeApplier";
-import { ToastProvider } from "../../components/feedback/ToastProvider";
-import { useChromeStorageSync } from "../../core/useChromeStorageSync";
-import { useScope } from "../../core/useScope";
-import { EXTENSION_CONTEXT_SCOPE } from "../../data/core";
-import { URLS } from "../../data/urls";
-import { setExtensionIcon } from "../../utils/browser";
+import { Storage, DEFAULT_STORE, getStorage } from "@/lib/store";
+import StoreContext from "@/lib/storeContext";
+import ThemeApplier from "@/ui/ThemeApplier";
+import { ToastProvider } from "@/ui/feedback/ToastProvider";
+import { useChromeStorageSync } from "@/lib/useChromeStorageSync";
+import { useScope } from "./useScope";
+import { EXTENSION_CONTEXT_SCOPE } from "@/lib/protocol";
+import { URLS } from "@/lib/urls";
+import { setExtensionIcon } from "@/lib/browser";
 import { POPUP_TAB_SCOPE_LABEL, POPUP_SIZE } from "./data";
-import { formatTabUrlShort } from "./utils/formatTabUrl";
+import { formatTabUrlShort } from "./formatTabUrl";
 import TinySwitch from "./components/TinySwitch";
 import PopupRow from "./components/PopupRow";
 import NavBtn from "./components/NavBtn";
-import { openOptionsPage } from "./utils/openOptions";
-import type { Profile } from "../../data/profiles";
-import { CHROME_STORAGE_LOCAL_KEY } from "../../data/core";
+import { openOptionsPage } from "./openOptions";
+import type { Profile } from "@/features/profiles/profiles";
+import { CHROME_STORAGE_LOCAL_KEY } from "@/lib/storageKeys";
 import {
   getAllProfiles,
   getActiveProfile,
   setActiveProfileId,
-} from "../../core/profileStore";
+} from "@/features/profiles/profileStore";
 
 function usePopupProfiles() {
   const [profiles, setProfiles] = useState<Profile[]>([]);

@@ -3,7 +3,7 @@ import type { Config } from "tailwindcss";
 // Prefixed and without preflight because the content script's styles land
 // inside YouTube's own page.
 export default {
-  content: ["./app/**/*.tsx", "./components/**/*.tsx"],
+  content: ["./app/**/*.{ts,tsx}", "./features/**/*.{ts,tsx}", "./ui/**/*.{ts,tsx}", "./lib/**/*.ts"],
   prefix: "tw-",
   corePlugins: { preflight: false },
   darkMode: ["class", '[data-theme="dark"]'],

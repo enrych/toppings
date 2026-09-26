@@ -1,15 +1,11 @@
-import {
-  EXTENSION_CONTEXT_SCOPE,
-  YOUTUBE_QUERY_PARAM,
-  YOUTUBE_SYSTEM_PLAYLIST_ID,
-  YOUTUBE_URL_PATH,
-} from "../../data/core";
-import { fetchPlaylist } from "./api";
-import { getStorage, Storage } from "./store";
+import { EXTENSION_CONTEXT_SCOPE } from "@/lib/protocol";
+import { YOUTUBE_QUERY_PARAM, YOUTUBE_SYSTEM_PLAYLIST_ID, YOUTUBE_URL_PATH } from "@/lib/youtube";
+import { fetchPlaylist } from "@/features/playlist/api";
+import { getStorage, Storage } from "@/lib/store";
 import {
   getCachedPlaylist,
   setCachedPlaylist,
-} from "../content_scripts/pages/playlistCache";
+} from "@/features/playlist/cache";
 
 export type YoutubeContext = BaseContext & {
   scope: typeof EXTENSION_CONTEXT_SCOPE.YOUTUBE;

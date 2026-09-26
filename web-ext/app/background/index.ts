@@ -1,14 +1,14 @@
-import { syncStorageWithDefaults } from "./store";
-import { getActiveProfile } from "../../core/profileStore";
+import { syncStorageWithDefaults } from "@/lib/store";
+import { getActiveProfile } from "@/features/profiles/profileStore";
 import {
   getFeatureReports,
   markRecovered,
   removeFeatureReport,
-} from "../../core/featureReports";
-import { getCapabilityStatus } from "../../core/capabilityCache";
+} from "@/features/profiles/featureReports";
+import { getCapabilityStatus } from "@/features/profiles/capabilityCache";
 import { getContext } from "./context";
-import { URLS } from "../../data/urls";
-import { EXTENSION_MESSAGE_EVENT, EXTENSION_MESSAGE_TYPE } from "../../data/core";
+import { URLS } from "@/lib/urls";
+import { EXTENSION_MESSAGE_EVENT, EXTENSION_MESSAGE_TYPE } from "@/lib/protocol";
 
 chrome.runtime.onInstalled.addListener(onInitialize);
 chrome.runtime.onMessage.addListener(onConnected);

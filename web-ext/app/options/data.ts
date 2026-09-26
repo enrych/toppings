@@ -1,4 +1,4 @@
-import { EXTENSION_CONTEXT_SCOPE } from "../../data/core";
+import { EXTENSION_CONTEXT_SCOPE } from "@/lib/protocol";
 
 export const OPTIONS_HTML = "options/index.html";
 

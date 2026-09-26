@@ -2,9 +2,9 @@ import { cp, mkdir, rm, watch } from "node:fs/promises";
 import autoprefixer from "autoprefixer";
 import postcss from "postcss";
 import tailwindcss from "tailwindcss";
-import { BRAND_METADATA } from "../data/brand";
-import { URLS } from "../data/urls";
-import { EXTENSION_VERSION } from "../data/version";
+import { BRAND_METADATA } from "../lib/brand";
+import { URLS } from "../lib/urls";
+import { EXTENSION_VERSION } from "../lib/version";
 import tailwindConfig from "../tailwind.config";
 
 const production = process.argv.includes("--production");
@@ -15,13 +15,13 @@ const DIST = "dist";
 
 const scripts = [
   { entry: "app/background/index.ts", out: "background" },
-  { entry: "app/content_scripts/index.ts", out: "content" },
+  { entry: "app/content/index.ts", out: "content" },
   { entry: "app/popup/index.tsx", out: "popup/index" },
   { entry: "app/options/index.tsx", out: "options/index" },
 ];
 
 const styles = [
-  { entry: "app/content_scripts/index.css", out: "content.css" },
+  { entry: "app/content/index.css", out: "content.css" },
   { entry: "app/popup/index.css", out: "popup/index.css" },
   { entry: "app/options/index.css", out: "options/index.css" },
 ];
@@ -104,7 +104,7 @@ if (watching) {
     clearTimeout(timer);
     timer = setTimeout(() => build().catch(console.error), 150);
   };
-  for (const dir of ["app", "components", "core", "data", "utils"]) {
+  for (const dir of ["app", "features", "lib", "ui"]) {
     (async () => {
       for await (const _ of watch(dir, { recursive: true })) rebuild();
     })();

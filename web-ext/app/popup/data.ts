@@ -1,7 +1,4 @@
-import {
-  EXTENSION_CONTEXT_SCOPE,
-  type ExtensionContextScope,
-} from "../../data/core";
+import { EXTENSION_CONTEXT_SCOPE, type ExtensionContextScope } from "@/lib/protocol";
 
 export const POPUP_SIZE = {
   WIDTH_PX: 340,

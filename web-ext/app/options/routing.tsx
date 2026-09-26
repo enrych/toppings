@@ -1,6 +1,6 @@
 import React, { type ComponentType } from "react";
 import { OPTIONS_PAGES } from "./data";
-import SectionNav from "../../components/layout/SectionNav";
+import SectionNav from "@/ui/layout/SectionNav";
 
 type SectionNavSegment = "watch" | "keybindings";
 

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import PageHeader from "../../../components/layout/PageHeader";
-import Section from "../../../components/layout/Section";
-import Card from "../../../components/layout/Card";
-import Switch from "../../../components/form/Switch";
-import Select from "../../../components/form/Select";
-import { useToast } from "../../../components/feedback/ToastProvider";
-import { useCapabilityCache } from "../../../core/useCapabilityCache";
+import PageHeader from "@/ui/layout/PageHeader";
+import Section from "@/ui/layout/Section";
+import Card from "@/ui/layout/Card";
+import Switch from "@/ui/form/Switch";
+import Select from "@/ui/form/Select";
+import { useToast } from "@/ui/feedback/ToastProvider";
+import { useCapabilityCache } from "@/features/profiles/useCapabilityCache";
 import {
   getAllProfiles,
   getActiveProfile,
@@ -13,18 +13,18 @@ import {
   createProfile,
   updateProfile,
   deleteProfile,
-} from "../../../core/profileStore";
+} from "@/features/profiles/profileStore";
 import {
   exportProfile,
   importProfileFromFile,
-} from "../profileImportExport";
+} from "@/features/profiles/importExport";
 import {
   BUILT_IN_PRESETS,
   type Profile,
   type ProfilePrimitiveConfig,
   type ThumbnailMode,
-} from "../../../data/profiles";
-import type { PlayerLayout } from "../../../data/profiles";
+} from "@/features/profiles/profiles";
+import type { PlayerLayout } from "@/features/profiles/profiles";
 
 function blankPrimitives(): ProfilePrimitiveConfig {
   return {

@@ -7,7 +7,7 @@
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true,
-    "types": ["bun"]
+    "types": ["bun", "chrome-types"]
   },
-  "include": ["./*.ts", "../tailwind.config.ts", "../data/*.ts"]
+  "include": ["./*.ts", "../tailwind.config.ts", "../lib/brand.ts", "../lib/urls.ts", "../lib/version.ts"]
 }

@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import PageHeader from "../../../components/layout/PageHeader";
-import Section from "../../../components/layout/Section";
-import Card from "../../../components/layout/Card";
-import Switch from "../../../components/form/Switch";
-import Select from "../../../components/form/Select";
-import { useChromeStorageSync } from "../../../core/useChromeStorageSync";
-import { useToast } from "../../../components/feedback/ToastProvider";
-import { useCapabilityCache } from "../../../core/useCapabilityCache";
-import { setExtensionIcon } from "../../../utils/browser";
-import { ThemePreference } from "../../../core/useTheme";
+import PageHeader from "@/ui/layout/PageHeader";
+import Section from "@/ui/layout/Section";
+import Card from "@/ui/layout/Card";
+import Switch from "@/ui/form/Switch";
+import Select from "@/ui/form/Select";
+import { useChromeStorageSync } from "@/lib/useChromeStorageSync";
+import { useToast } from "@/ui/feedback/ToastProvider";
+import { useCapabilityCache } from "@/features/profiles/useCapabilityCache";
+import { setExtensionIcon } from "@/lib/browser";
+import { ThemePreference } from "@/ui/useTheme";
 
 export default function General() {
   const { store, update } = useChromeStorageSync();

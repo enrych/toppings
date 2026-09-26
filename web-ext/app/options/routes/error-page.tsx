@@ -1,7 +1,7 @@
 import React from "react";
 import { useRouteError } from "react-router-dom";
-import Button from "../../../components/primitives/Button";
-import Icon from "../../../components/primitives/Icon";
+import Button from "@/ui/primitives/Button";
+import Icon from "@/ui/primitives/Icon";
 
 type RouteError = {
   statusText?: string;

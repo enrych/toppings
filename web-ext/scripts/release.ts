@@ -1,5 +1,5 @@
 import { rm } from "node:fs/promises";
-import { EXTENSION_VERSION } from "../data/version";
+import { EXTENSION_VERSION } from "../lib/version";
 
 const browser = process.argv.includes("--firefox") ? "firefox" : "chrome";
 const filename = `toppings_v${EXTENSION_VERSION}_${browser}.zip`;

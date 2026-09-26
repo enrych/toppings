@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import PageHeader from "../../../components/layout/PageHeader";
-import Section from "../../../components/layout/Section";
-import Card from "../../../components/layout/Card";
-import Input from "../../../components/form/Input";
-import Select from "../../../components/form/Select";
-import CapabilityStatusRow from "../../../components/feedback/CapabilityStatusRow";
-import { useChromeStorageSync } from "../../../core/useChromeStorageSync";
-import { useCapabilityCache } from "../../../core/useCapabilityCache";
-import { isCustomPlaybackRatesList } from "../utils/validators";
+import PageHeader from "@/ui/layout/PageHeader";
+import Section from "@/ui/layout/Section";
+import Card from "@/ui/layout/Card";
+import Input from "@/ui/form/Input";
+import Select from "@/ui/form/Select";
+import CapabilityStatusRow from "@/features/profiles/CapabilityStatusRow";
+import { useChromeStorageSync } from "@/lib/useChromeStorageSync";
+import { useCapabilityCache } from "@/features/profiles/useCapabilityCache";
+import { isCustomPlaybackRatesList } from "@/app/options/validators";
 import {
   getUndismissedRecovered,
   dismissRecovered,
   type RecoveredFeature,
-} from "../../../core/featureReports";
+} from "@/features/profiles/featureReports";
 
 // Adding a watch-page primitive means appending an entry here; nothing
 // discovers them automatically.

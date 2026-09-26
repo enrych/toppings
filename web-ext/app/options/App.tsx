@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Outlet, useLoaderData, useLocation } from "react-router-dom";
-import StoreContext from "../../core/storeContext";
-import { Storage } from "../background/store";
-import ThemeApplier from "../../components/ThemeApplier";
-import AppLayout from "./components/layout/AppLayout";
-import { ToastProvider } from "../../components/feedback/ToastProvider";
-import { ConfirmProvider } from "../../components/feedback/ConfirmProvider";
+import StoreContext from "@/lib/storeContext";
+import { Storage } from "@/lib/store";
+import ThemeApplier from "@/ui/ThemeApplier";
+import AppLayout from "./layout/AppLayout";
+import { ToastProvider } from "@/ui/feedback/ToastProvider";
+import { ConfirmProvider } from "@/ui/feedback/ConfirmProvider";
 import { SECTION_RAILS } from "./routing";
 
 export default function App() {

@@ -1,10 +1,10 @@
 import React from "react";
-import PageHeader from "../../../components/layout/PageHeader";
-import Section from "../../../components/layout/Section";
-import Card from "../../../components/layout/Card";
-import Switch from "../../../components/form/Switch";
-import Input from "../../../components/form/Input";
-import { useChromeStorageSync } from "../../../core/useChromeStorageSync";
+import PageHeader from "@/ui/layout/PageHeader";
+import Section from "@/ui/layout/Section";
+import Card from "@/ui/layout/Card";
+import Switch from "@/ui/form/Switch";
+import Input from "@/ui/form/Input";
+import { useChromeStorageSync } from "@/lib/useChromeStorageSync";
 
 export default function Shorts() {
   const { store, update } = useChromeStorageSync();
