@@ -1,5 +1,4 @@
-export type PlayerLayout = "default" | "theatre" | "no-video";
-export type PlayerVisuals = "video" | "black" | "visualizer" | "custom";
+export type PlayerLayout = "default" | "no-video";
 
 // Every key is a primitiveId and its value is that primitive's state while the
 // profile is active. An absent key means "leave YouTube alone" — which is not the
@@ -7,7 +6,6 @@ export type PlayerVisuals = "video" | "black" | "visualizer" | "custom";
 
 export interface WatchPrimitiveConfig {
   "watch.layout"?: { value: PlayerLayout };
-  "watch.visuals"?: { value: PlayerVisuals };
   "watch.sidebar"?: { visible: boolean };
   "watch.comments"?: { visible: boolean };
   "watch.endCards"?: { visible: boolean };
@@ -65,7 +63,6 @@ export const PRESET_AUDIO: Profile = {
   createdAt: 0,
   primitives: {
     "watch.layout": { value: "no-video" },
-    "watch.visuals": { value: "black" },
     "watch.sidebar": { visible: false },
   },
 };

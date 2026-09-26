@@ -166,7 +166,7 @@ export default function General() {
           <Card>
             <Switch
               label="Watch Page"
-              description="Custom playback rates, seek, loops, audio mode."
+              description="Custom playback rates, seek, loops."
               isEnabled={store.preferences.watch.isEnabled}
               onToggle={(isEnabled) => {
                 update((draft) => {

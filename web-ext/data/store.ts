@@ -65,17 +65,6 @@ export const DEFAULT_STORE = {
       saveLoopSegment: {
         key: "" as string, // "" = unbound
       },
-      audioMode: {
-        isEnabled: true as boolean,
-        toggleAudioMode: {
-          key: KEYBOARD_KEY.B as string,
-        },
-        screenMode: "black" as "black" | "visualizer" | "custom",
-        customBackground: {
-          globalImageUrl: "" as string,
-        },
-        visualizerSensitivity: NUMBER.S1_5 as string,
-      },
       customPlaybackRates: [] as Array<string>,
       cycleProfiles: {
         key: "" as string, // "" = unbound

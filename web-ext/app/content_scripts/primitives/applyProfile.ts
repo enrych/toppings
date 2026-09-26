@@ -7,6 +7,8 @@ import {
   resetSidebar,
   resetComments,
   resetEndCards,
+  setPlayerLayout,
+  resetPlayerLayout,
 } from "./watch";
 import {
   setHomeThumbnailMode,
@@ -39,6 +41,7 @@ export async function applyWatchProfile(
 
   // Reset first, unconditionally: entering, switching and leaving a profile all
   // have to start from the same clean state, and no profile means reset only.
+  resetPlayerLayout();
   resetSidebar();
   resetComments();
   resetEndCards();
@@ -52,6 +55,9 @@ export async function applyWatchProfile(
 
   if (!config) return;
 
+  if (config["watch.layout"] !== undefined) {
+    void setPlayerLayout(config["watch.layout"].value);
+  }
   if (config["watch.sidebar"] !== undefined) {
     void setSidebarVisible(config["watch.sidebar"].visible);
   }

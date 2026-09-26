@@ -24,7 +24,7 @@ import {
   type ProfilePrimitiveConfig,
   type ThumbnailMode,
 } from "../../../data/profiles";
-import type { PlayerLayout, PlayerVisuals } from "../../../data/profiles";
+import type { PlayerLayout } from "../../../data/profiles";
 
 function blankPrimitives(): ProfilePrimitiveConfig {
   return {
@@ -32,7 +32,6 @@ function blankPrimitives(): ProfilePrimitiveConfig {
     "watch.comments": { visible: true },
     "watch.endCards": { visible: true },
     "watch.layout": { value: "default" },
-    "watch.visuals": { value: "video" },
   };
 }
 
@@ -56,7 +55,6 @@ function ProfileEditor({
   const [isSaving, setIsSaving] = useState(false);
 
   const layout = primitives["watch.layout"]?.value ?? "default";
-  const noVideo = layout === "no-video";
 
   const set = <K extends keyof ProfilePrimitiveConfig>(
     key: K,
@@ -110,36 +108,9 @@ function ProfileEditor({
               value={layout}
               options={[
                 { value: "default", label: "Default", description: "YouTube's standard layout" },
-                { value: "theatre", label: "Theatre", description: "Wider video, narrower sidebar" },
                 { value: "no-video", label: "No Video", description: "Hide the player area entirely" },
               ]}
               onChange={(v) => set("watch.layout", { value: v })}
-            />
-          </div>
-
-          {/* Visuals — disabled when no-video */}
-          <div
-            className={`tw-px-4 tw-transition-opacity ${
-              noVideo || isUnsupported("watch.visuals") ? "tw-opacity-40 tw-pointer-events-none" : ""
-            }`}
-          >
-            <Select<PlayerVisuals>
-              label="Player Visuals"
-              description={
-                noVideo
-                  ? "Not applicable when layout is No Video"
-                  : isUnsupported("watch.visuals")
-                    ? "Not available on your YouTube"
-                    : "What fills the video slot when the player is visible."
-              }
-              value={primitives["watch.visuals"]?.value ?? "video"}
-              options={[
-                { value: "video", label: "Real Video", description: "Normal video playback" },
-                { value: "black", label: "Black Screen", description: "Audio only with black overlay" },
-                { value: "visualizer", label: "Visualizer", description: "Audio visualizer animation" },
-                { value: "custom", label: "Custom Image", description: "Your uploaded background image" },
-              ]}
-              onChange={(v) => set("watch.visuals", { value: v })}
             />
           </div>
 
@@ -317,7 +288,6 @@ interface PresetCardProps {
 function PresetCard({ profile, isActive, onActivate }: PresetCardProps) {
   const primitiveLabels: Record<string, string> = {
     "watch.layout": "Layout",
-    "watch.visuals": "Visuals",
     "watch.sidebar": "Sidebar",
     "watch.comments": "Comments",
     "watch.endCards": "End Cards",

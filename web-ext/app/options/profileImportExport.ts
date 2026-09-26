@@ -108,8 +108,7 @@ function validateProfileJson(data: unknown): ImportResult | ImportError {
   return { ok: true, name, primitives: validated };
 }
 
-const VALID_PLAYER_LAYOUTS = new Set(["default", "theatre", "no-video"]);
-const VALID_PLAYER_VISUALS = new Set(["video", "black", "visualizer", "custom"]);
+const VALID_PLAYER_LAYOUTS = new Set(["default", "no-video"]);
 const VALID_THUMBNAIL_MODES = new Set(["show", "hide", "blur"]);
 
 function validatePrimitiveEntry(
@@ -127,14 +126,7 @@ function validatePrimitiveEntry(
       if (!VALID_PLAYER_LAYOUTS.has(v.value as string)) {
         return `"${key}.value" must be one of: ${[...VALID_PLAYER_LAYOUTS].join(", ")}`;
       }
-      out["watch.layout"] = { value: v.value as "default" | "theatre" | "no-video" };
-      return null;
-
-    case "watch.visuals":
-      if (!VALID_PLAYER_VISUALS.has(v.value as string)) {
-        return `"${key}.value" must be one of: ${[...VALID_PLAYER_VISUALS].join(", ")}`;
-      }
-      out["watch.visuals"] = { value: v.value as "video" | "black" | "visualizer" | "custom" };
+      out["watch.layout"] = { value: v.value as "default" | "no-video" };
       return null;
 
     case "watch.sidebar":

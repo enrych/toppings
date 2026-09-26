@@ -8,7 +8,6 @@ type IconName =
   | "watch"
   | "shorts"
   | "playlist"
-  | "audio"
   | "keyboard"
   | "general"
   | "trash"
@@ -35,8 +34,6 @@ const PATHS: Record<IconName, string> = {
     "M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z",
   playlist:
     "M4 6h16M4 10h16M4 14h10M4 18h10M18 14l4 2-4 2v-4z",
-  audio:
-    "M12 1C8.96 1 6.5 3.46 6.5 6.5V12.5C6.5 15.54 8.96 18 12 18C15.04 18 17.5 15.54 17.5 12.5V6.5C17.5 3.46 15.04 1 12 1ZM4 12.5C4 16.64 7.09 20.06 11 20.45V23H13V20.45C16.91 20.06 20 16.64 20 12.5H18C18 15.81 15.31 18.5 12 18.5C8.69 18.5 6 15.81 6 12.5H4Z",
   keyboard:
     "M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z",
   general:
@@ -63,7 +60,6 @@ const PATHS: Record<IconName, string> = {
 };
 
 const FILLED: Set<IconName> = new Set([
-  "audio",
   "shorts",
   "watch",
   "general",

@@ -141,8 +141,8 @@ const onWatchPage = async (ctx: WatchContext) => {
   playerSettingsButton.removeEventListener("click", onSettingsMenu);
   playerSettingsButton.addEventListener("click", onSettingsMenu);
 
-  // Last, so profile overrides land on top of a fully initialised Audio Mode
-  // and segment panel rather than being overwritten by their setup.
+  // Last, so profile overrides land on top of a fully initialised segment
+  // panel rather than being overwritten by its setup.
   void applyWatchProfile();
 
   // Remove-then-add keeps this single-registered across SPA navigations, which

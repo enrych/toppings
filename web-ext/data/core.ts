@@ -53,7 +53,6 @@ export const EXTENSION_MESSAGE_EVENT = {
 
 export const CHROME_STORAGE_LOCAL_KEY = {
   OPTIONS_SIDEBAR_COLLAPSED: "toppings:options_sidebar_collapsed",
-  AUDIO_MODE_GLOBAL_CUSTOM_IMAGE: "toppings:audio_mode_global_custom_image",
   PROFILE_STORE: "toppings:profile_store",
   FEATURE_REPORTS: "toppings:feature_reports",
   FEATURE_RECOVERED: "toppings:feature_recovered",

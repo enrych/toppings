@@ -56,7 +56,6 @@ function PopupShell() {
   const { profiles, activeProfileId, activate } = usePopupProfiles();
 
   const masterOn = store.isExtensionEnabled;
-  const audioOn = store.preferences.watch.audioMode?.isEnabled ?? false;
   const loopOn = store.preferences.watch.isEnabled;
   const shortsAuto = store.preferences.shorts.reelAutoScroll.value;
   const defaultRate = store.preferences.watch.defaultPlaybackRate.value;
@@ -127,30 +126,6 @@ function PopupShell() {
           subtitle={masterOn ? "Running on every YouTube tab" : "Globally disabled"}
           control={<TinySwitch on={masterOn} onClick={toggleMaster} />}
           onActivate={toggleMaster}
-        />
-        <PopupRow
-          title="Audio mode"
-          subtitle="Strip the video"
-          control={
-            <TinySwitch
-              on={audioOn}
-              onClick={() =>
-                update((d) => {
-                  if (!d.preferences.watch.audioMode) return;
-                  d.preferences.watch.audioMode.isEnabled =
-                    !d.preferences.watch.audioMode.isEnabled;
-                })
-              }
-            />
-          }
-          onActivate={() =>
-            update((d) => {
-              if (!d.preferences.watch.audioMode) return;
-              d.preferences.watch.audioMode.isEnabled =
-                !d.preferences.watch.audioMode.isEnabled;
-            })
-          }
-          disabled={!masterOn}
         />
         <PopupRow
           title="Watch features"
