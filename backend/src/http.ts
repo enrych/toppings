@@ -19,3 +19,8 @@ export function json(body: unknown, status = 200): Response {
     headers: { "Content-Type": "application/json", ...CORS },
   });
 }
+
+export async function errorMessage(response: Response): Promise<string> {
+  const body = (await response.json().catch(() => null)) as { error?: { message?: string } } | null;
+  return body?.error?.message ?? response.statusText;
+}

@@ -1,4 +1,4 @@
-import { HttpError } from "./http";
+import { errorMessage, HttpError } from "./http";
 
 export async function getPlaylistRuntime(playlistId: string, apiKey: string) {
   let totalVideos = 0;
@@ -70,11 +70,6 @@ async function fetchYouTube<T>(
 
   const response = await fetch(url);
   if (response.status === 404) throw new HttpError(404, "Playlist not found or private");
-  if (!response.ok) throw new HttpError(response.status, `YouTube: ${await youtubeErrorMessage(response)}`);
+  if (!response.ok) throw new HttpError(response.status, `YouTube: ${await errorMessage(response)}`);
   return response.json() as Promise<T>;
-}
-
-async function youtubeErrorMessage(response: Response): Promise<string> {
-  const body = (await response.json().catch(() => null)) as { error?: { message?: string } } | null;
-  return body?.error?.message ?? response.statusText;
 }
