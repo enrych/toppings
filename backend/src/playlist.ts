@@ -70,11 +70,11 @@ async function fetchYouTube<T>(
 
   const response = await fetch(url);
   if (response.status === 404) throw new HttpError(404, "Playlist not found or private");
-  if (!response.ok) throw new HttpError(response.status, `YouTube: ${await errorMessage(response)}`);
+  if (!response.ok) throw new HttpError(response.status, `YouTube: ${await youtubeErrorMessage(response)}`);
   return response.json() as Promise<T>;
 }
 
-async function errorMessage(response: Response): Promise<string> {
+async function youtubeErrorMessage(response: Response): Promise<string> {
   const body = (await response.json().catch(() => null)) as { error?: { message?: string } } | null;
   return body?.error?.message ?? response.statusText;
 }

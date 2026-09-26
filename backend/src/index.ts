@@ -1,7 +1,7 @@
 import { CORS, HttpError, json } from "./http";
 import { getPlaylistRuntime } from "./playlist";
 
-const PLAYLIST = /^\/api\/v1\/playlist\/([^/]+)$/;
+const PLAYLIST_PATH = /^\/api\/v1\/playlist\/([^/]+)$/;
 
 async function route(request: Request, env: Env): Promise<Response> {
   const { pathname } = new URL(request.url);
@@ -11,12 +11,12 @@ async function route(request: Request, env: Env): Promise<Response> {
 
   if (pathname === "/api/ping") return json("pong");
 
-  const playlist = PLAYLIST.exec(pathname);
+  const playlist = PLAYLIST_PATH.exec(pathname);
   if (playlist) {
     if (!env.YOUTUBE_DATA_API_V3_KEY) {
       throw new HttpError(500, "YOUTUBE_DATA_API_V3_KEY is not set");
     }
-    const playlistId = decodeURIComponent(playlist[1]);
+    const playlistId = playlist[1];
     return json({
       scope: "playlist",
       payload: await getPlaylistRuntime(playlistId, env.YOUTUBE_DATA_API_V3_KEY),
