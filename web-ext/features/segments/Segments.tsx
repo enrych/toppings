@@ -18,7 +18,7 @@ import {
   activeConfig,
   refreshNamedConfigsCache,
   getCachedNamedConfigs,
-} from "./SegmentPanel";
+} from "./panel/panel";
 import {
   SegmentButton,
   setSegmentButtonActive,

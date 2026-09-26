@@ -1,4 +1,5 @@
 import { EXTENSION_CONTEXT_SCOPE } from "./protocol";
+import { mergeDefaults } from "./object";
 
 export const DEFAULT_STORE = {
   isExtensionEnabled: true as boolean,
@@ -88,7 +89,6 @@ export const DEFAULT_STORE = {
   },
 };
 
-import { mergeDefaults } from "./object";
 
 export const getStorage = async (): Promise<Storage> => {
   return new Promise((resolve) => {
