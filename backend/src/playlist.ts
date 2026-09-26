@@ -4,7 +4,7 @@ export async function getPlaylistRuntime(playlistId: string, apiKey: string) {
   let totalVideos = 0;
   let totalRuntime = 0;
 
-  for await (const videoIds of videoIdsByPage(playlistId, apiKey)) {
+  for await (const videoIds of fetchVideoIdsByPage(playlistId, apiKey)) {
     totalVideos += videoIds.length;
     totalRuntime += await fetchDurationSeconds(videoIds, apiKey);
   }
@@ -19,7 +19,7 @@ export async function getPlaylistRuntime(playlistId: string, apiKey: string) {
 
 type PlaylistPage = { items?: { contentDetails: { videoId: string } }[]; nextPageToken?: string };
 
-async function* videoIdsByPage(playlistId: string, apiKey: string): AsyncGenerator<string[]> {
+async function* fetchVideoIdsByPage(playlistId: string, apiKey: string): AsyncGenerator<string[]> {
   let pageToken: string | undefined;
   do {
     const page = await fetchYouTube<PlaylistPage>("playlistItems", apiKey, {
