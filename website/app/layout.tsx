@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Newsreader } from "next/font/google";
+import { Geist, Gloock } from "next/font/google";
 import localFont from "next/font/local";
 import { site } from "@/lib/site";
 import "./globals.css";
 
-const display = Newsreader({
-  weight: ["300", "400"],
-  style: ["normal", "italic"],
+const display = Gloock({
+  weight: "400",
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",

@@ -101,8 +101,8 @@ ul {
 }
 
 .display {
-  font: 300 clamp(56px, 10.5vw, 184px) / 0.92 var(--display);
-  letter-spacing: -0.02em;
+  font: 400 clamp(48px, 7.6vw, 132px) / 1 var(--display);
+  letter-spacing: -0.015em;
 }
 
 .display em {

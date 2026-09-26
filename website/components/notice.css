@@ -41,7 +41,7 @@
 }
 
 .notice .display {
-  font-size: clamp(52px, 8vw, 124px);
+  font-size: clamp(44px, 6.4vw, 104px);
 }
 
 .notice .deck {
