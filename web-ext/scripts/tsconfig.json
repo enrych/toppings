@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "lib": ["esnext"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "types": ["bun", "chrome-types"]
+  },
+  "include": ["./*.ts", "../tailwind.config.ts", "../lib/brand.ts", "../lib/urls.ts", "../lib/version.ts"]
+}

@@ -2,7 +2,7 @@ export const site = {
   name: "Toppings",
   tagline: "Your YouTube, your way.",
   description:
-    "A free, open-source browser extension for YouTube. Audio mode, loop segments, custom playback speeds, one-key seeking. No accounts, no trackers.",
+    "A free, open-source browser extension for YouTube. Profiles, loop segments, custom playback speeds, one-key seeking. No accounts, no trackers.",
   version: "3.0.3",
   license: "GPL-3.0",
   url: "https://toppings.enry.ch",
@@ -19,9 +19,9 @@ export const site = {
 
 export const features = [
   {
-    name: "Audio mode",
+    name: "Profiles",
     blurb:
-      "Hide the video and keep the audio. Black screen, visualizer, or your own image.",
+      "Presets that reshape YouTube in one switch. Audio collapses the player and keeps the sound; Focus hides the sidebar, comments and end cards. Make your own.",
   },
   {
     name: "Loop segments",
@@ -61,7 +61,6 @@ export const shortcuts: readonly { group: string; rows: readonly Shortcut[] }[] 
     {
       group: "Watch page",
       rows: [
-        { keys: ["B"], name: "Audio mode", blurb: "Hide the video, keep the audio" },
         { keys: ["Z"], name: "Segments", blurb: "Load the last-used segments, or turn them off" },
         { keys: ["Shift", "Z"], name: "Fresh slate", blurb: "One segment spanning the whole video, looping" },
         { keys: ["Q"], name: "Segment in", blurb: "Pin the active segment's start to now" },

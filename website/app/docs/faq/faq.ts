@@ -13,9 +13,9 @@ export const faq: readonly { q: string; a: readonly string[] }[] = [
     ],
   },
   {
-    q: "How does Audio mode work?",
+    q: "How do I listen without the video?",
     a: [
-      "It hides the video and keeps the audio. The visible area becomes a black screen, a waveform visualizer, or an image of your choosing. Timeline, chapters, speed and shortcuts keep working.",
+      "Switch to the Audio preset from the popup, the player's gear menu, or a shortcut. It collapses the player and keeps playback running; switch profiles again to bring the video back.",
     ],
   },
   {

@@ -13,12 +13,9 @@
 		"allowJs": true,
 		"moduleResolution": "node",
 		"noEmitOnError": true,
-		"types": [
-			"chrome-types",
-			"node",
-			"mocha",
-			"chai"
-		],
-		"allowSyntheticDefaultImports": true
-	}
+		"types": ["chrome-types", "node"],
+		"allowSyntheticDefaultImports": true,
+		"paths": { "@/*": ["./*"], "dom-chef-jsx/*": ["./app/content/jsx/*"] }
+	},
+	"exclude": ["node_modules", "dist", "scripts", "**/*.test.ts"]
 }
