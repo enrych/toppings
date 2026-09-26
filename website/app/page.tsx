@@ -15,7 +15,6 @@ export default function Home() {
       <Cursor />
       <Backdrop />
       <div className="scrim" aria-hidden />
-      <div className="glow" aria-hidden />
       <div className="grain" aria-hidden />
 
       <header className="top rise" style={delay(0.3)}>

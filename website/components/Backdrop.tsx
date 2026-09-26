@@ -9,7 +9,7 @@ void main(){ uv = p * 0.5 + 0.5; gl_Position = vec4(p, 0.0, 1.0); }
 
 // A mock YouTube watch page. uNoise is the glitch amount: 1 while the intro
 // holds, falling to 0 as the page "strips the noise"; the pointer brings it
-// back locally so the effect stays alive. An ember lamp warms the bottom-left.
+// back locally so the effect stays alive.
 const FRAG = `
 precision mediump float;
 varying vec2 uv;
@@ -52,10 +52,6 @@ void main(){
 
   vec2 v = uv - vec2(0.55, 0.45);
   col *= 1.0 - dot(v, v) * 0.9;
-
-  float lamp = exp(-length((uv - vec2(0.08, 0.08)) * aspect) * 2.6);
-  col *= mix(vec3(1.0), vec3(1.35, 1.02, 0.78), lamp);
-  col += vec3(0.16, 0.07, 0.02) * lamp * lamp;
 
   col *= uExpo;
   gl_FragColor = vec4(col, 1.0);

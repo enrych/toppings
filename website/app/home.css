@@ -13,7 +13,6 @@
 }
 
 .backdrop,
-.glow,
 .grain,
 .scrim {
   position: fixed;
@@ -34,25 +33,12 @@
    left half, so the watch page stays recognisable under the type. */
 .scrim {
   background:
-    radial-gradient(48% 42% at 24% 42%, rgba(11, 11, 12, 0.55), transparent 100%),
-    linear-gradient(100deg, rgba(11, 11, 12, 0.8) 0%, rgba(11, 11, 12, 0.52) 36%, rgba(11, 11, 12, 0.2) 64%, rgba(11, 11, 12, 0.04) 100%),
+    radial-gradient(58% 52% at 26% 40%, rgba(11, 11, 12, 0.82), transparent 100%),
+    linear-gradient(100deg, rgba(11, 11, 12, 0.86) 0%, rgba(11, 11, 12, 0.64) 36%, rgba(11, 11, 12, 0.26) 64%, rgba(11, 11, 12, 0.06) 100%),
     linear-gradient(0deg, rgba(11, 11, 12, 0.72), rgba(11, 11, 12, 0.3) 34%, transparent 52%),
     linear-gradient(180deg, rgba(11, 11, 12, 0.5), transparent 22%);
 }
 
-.glow {
-  background:
-    radial-gradient(70% 62% at 8% 100%, rgba(234, 123, 44, 0.3), rgba(194, 83, 30, 0.08) 45%, transparent 72%),
-    radial-gradient(38% 34% at 92% 6%, rgba(255, 42, 26, 0.09), transparent 70%);
-  animation: breathe 14s var(--ease-out) infinite alternate;
-}
-
-@keyframes breathe {
-  to {
-    transform: translate(2%, -3%) scale(1.05);
-    opacity: 0.88;
-  }
-}
 
 .grain {
   opacity: 0.09;
