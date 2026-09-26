@@ -1,27 +1,30 @@
 import type { Metadata } from "next";
-import DocsPageHeader from "./components/DocsPageHeader";
-import DocsTop from "./components/DocsTop";
-import DocsNav from "./components/DocsNav";
+import Link from "next/link";
+import { site } from "@/lib/site";
+import DocsNav from "./DocsNav";
 import "./docs.css";
 
 export const metadata: Metadata = {
-  title: "Toppings — Docs",
-  description:
-    "Documentation, keybindings, and frequently asked questions for Toppings — a free, open-source YouTube extension.",
+  title: { default: "Docs", template: `%s — ${site.name} docs` },
+  description: `Install guide, default shortcuts, FAQ and changelog for ${site.name}.`,
 };
 
-export default function DocsLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DocsLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
-      <DocsTop />
+    <div className="docs">
+      <header className="docs-top">
+        <Link href="/" className="wordmark">
+          {site.name}
+        </Link>
+        <span className="label">Docs</span>
+        <a href={site.github} target="_blank" rel="noopener noreferrer" className="btn btn--quiet">
+          GitHub <span aria-hidden>↗</span>
+        </a>
+      </header>
       <div className="docs-shell">
         <DocsNav />
-        {children}
+        <main className="docs-main">{children}</main>
       </div>
-    </>
+    </div>
   );
 }

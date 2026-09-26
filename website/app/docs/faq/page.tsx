@@ -1,37 +1,32 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import DocsPageHeader from "../components/DocsPageHeader";
-import Pager from "../components/Pager";
-import { ROUTE, URL } from "@/constants/site";
-import { PAGE } from "./data";
-import FaqList from "./FaqList";
+import { site } from "@/lib/site";
+import { faq } from "./faq";
 
-export const metadata: Metadata = {
-  title: "Toppings — FAQ",
-  description:
-    "Frequently asked questions about Toppings — privacy, install, features, and troubleshooting.",
-};
+export const metadata: Metadata = { title: "FAQ" };
 
-export default function DocsFaqPage() {
+export default function Faq() {
   return (
-    <main className="docs-main">
-      <DocsPageHeader
-        {...PAGE}
-        LEDE={
-          <>
-            The short version of what people ask us most. If yours isn&apos;t
-            here,{" "}
-            <Link href={URL.GITHUB_ISSUES} target="_blank">
-              open an issue
-            </Link>{" "}
-            — we read all of them.
-          </>
-        }
-      />
+    <article className="prose">
+      <p className="label">Reference</p>
+      <h1>questions, answered.</h1>
+      <p className="lede">
+        If yours isn&apos;t here,{" "}
+        <a href={site.issues} target="_blank" rel="noopener noreferrer">
+          open an issue
+        </a>
+        .
+      </p>
 
-      <FaqList />
-
-      <Pager currentHref={ROUTE.DOCS_FAQ} />
-    </main>
+      <div className="faq">
+        {faq.map((entry, i) => (
+          <details key={entry.q} open={i === 0}>
+            <summary>{entry.q}</summary>
+            {entry.a.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </details>
+        ))}
+      </div>
+    </article>
   );
 }

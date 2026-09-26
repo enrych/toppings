@@ -1,95 +1,41 @@
 import type { Metadata } from "next";
-import DocsPageHeader from "../components/DocsPageHeader";
-import Pager from "../components/Pager";
-import { ROUTE } from "@/constants/site";
-import { GROUPS, PAGE, type KeybindingRow } from "./data";
+import { shortcuts } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Toppings — Keybindings",
-  description:
-    "Every default Toppings shortcut on YouTube — all rebindable from the options page.",
-};
+export const metadata: Metadata = { title: "Keybindings" };
 
-function Combo({ row }: { row: KeybindingRow }) {
-  if (row.SINGLE) {
-    return (
-      <div className="kb-row__combo">
-        <kbd>{row.COMBO[0]}</kbd>
-      </div>
-    );
-  }
+export default function Keybindings() {
   return (
-    <div className="kb-row__combo">
-      <kbd>{row.COMBO[0]}</kbd>
-      <span className="sep">+</span>
-      <kbd>{row.COMBO[1]}</kbd>
-    </div>
-  );
-}
-
-export default function DocsKeybindingsPage() {
-  const total = GROUPS.reduce((n, g) => n + g.ROWS.length, 0);
-
-  return (
-    <main className="docs-main">
-      <DocsPageHeader {...PAGE} />
-
-      <p className="docs-lede">
-        Toppings ships with {total} default shortcuts. All of them are
-        rebindable from the extension&rsquo;s options page. Bindings only fire
-        on{" "}
-        <code
-          style={{
-            font: "500 14px/1 var(--font-mono)",
-            background: "rgba(10,10,10,.06)",
-            padding: "2px 6px",
-            borderRadius: 4,
-          }}
-        >
-          youtube.com
-        </code>{" "}
-        — never globally, never when you&rsquo;re typing in a text field.
+    <article className="prose">
+      <p className="label">Reference</p>
+      <h1>every key, yours to remap.</h1>
+      <p className="lede">
+        Defaults below. Rebind any of them from the options page. Keys only fire on{" "}
+        <code>youtube.com</code>, and never while you type in a text field.
       </p>
 
-      <div className="kb-intro">
-        <div>
-          <div className="stat">{total}</div>
-          <div className="lbl">Default shortcuts</div>
-        </div>
-        <div>
-          <div className="stat">
-            <span className="amber">100%</span>
-          </div>
-          <div className="lbl">Rebindable</div>
-        </div>
-        <div>
-          <div className="stat">0</div>
-          <div className="lbl">Global hotkeys</div>
-        </div>
-      </div>
-
-      {GROUPS.map((group) => (
-        <section className="kb-section" key={group.TITLE}>
-          <div className="kb-section__head">
-            <div className="kb-section__title">{group.TITLE}</div>
-            <div className="kb-section__count">
-              {group.ROWS.length} shortcut{group.ROWS.length === 1 ? "" : "s"}
-            </div>
-          </div>
-          <div className="kb-table">
-            {group.ROWS.map((row, i) => (
-              <div className="kb-row" key={`${group.TITLE}-${i}`}>
-                <div className="kb-row__name">{row.NAME}</div>
-                <div className="kb-row__desc">{row.DESC}</div>
-                <Combo row={row} />
-                <span className="kb-row__edit">Rebind</span>
-              </div>
-            ))}
-          </div>
+      {shortcuts.map((group) => (
+        <section key={group.group}>
+          <h2>{group.group}</h2>
+          <table className="keys">
+            <tbody>
+              {group.rows.map((row) => (
+                <tr key={row.keys.join("+") + row.name}>
+                  <td>
+                    {row.keys.map((key, i) => (
+                      <span key={key}>
+                        {i > 0 && " + "}
+                        <kbd>{key}</kbd>
+                      </span>
+                    ))}
+                  </td>
+                  <td>{row.name}</td>
+                  <td>{row.blurb}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </section>
       ))}
-
-      <Pager currentHref={ROUTE.DOCS_KEYBINDINGS} />
-    </main>
+    </article>
   );
 }

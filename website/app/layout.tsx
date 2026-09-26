@@ -1,37 +1,8 @@
 import type { Metadata } from "next";
+import { Instrument_Serif } from "next/font/google";
 import localFont from "next/font/local";
-import { Instrument_Serif, Geist } from "next/font/google";
+import { site } from "@/lib/site";
 import "./globals.css";
-import { HTML_LANG, METADATA } from "@/constants/site";
-
-const inter = localFont({
-  variable: "--font-inter",
-  display: "swap",
-  src: [
-    { path: "./_fonts/inter-400.woff2", weight: "400", style: "normal" },
-    { path: "./_fonts/inter-500.woff2", weight: "500", style: "normal" },
-    { path: "./_fonts/inter-600.woff2", weight: "600", style: "normal" },
-    { path: "./_fonts/inter-700.woff2", weight: "700", style: "normal" },
-    { path: "./_fonts/inter-900.woff2", weight: "900", style: "normal" },
-  ],
-});
-
-const jetbrainsMono = localFont({
-  variable: "--font-jetbrains-mono",
-  display: "swap",
-  src: [
-    {
-      path: "./_fonts/jetbrains-mono-400.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "./_fonts/jetbrains-mono-500.woff2",
-      weight: "500",
-      style: "normal",
-    },
-  ],
-});
 
 const display = Instrument_Serif({
   weight: "400",
@@ -40,30 +11,31 @@ const display = Instrument_Serif({
   display: "swap",
 });
 
-const ui = Geist({
-  subsets: ["latin"],
-  variable: "--font-ui",
+const sans = localFont({
+  variable: "--font-sans",
   display: "swap",
+  src: [
+    { path: "./_fonts/inter-400.woff2", weight: "400" },
+    { path: "./_fonts/inter-500.woff2", weight: "500" },
+  ],
+});
+
+const mono = localFont({
+  variable: "--font-mono",
+  display: "swap",
+  src: [{ path: "./_fonts/jetbrains-mono-400.woff2", weight: "400" }],
 });
 
 export const metadata: Metadata = {
-  title: METADATA.TITLE,
-  description: METADATA.DESCRIPTION,
+  title: `${site.name} — ${site.tagline}`,
+  description: site.description,
+  metadataBase: new URL(site.url),
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang={HTML_LANG}
-      className={`${inter.variable} ${jetbrainsMono.variable} ${display.variable} ${ui.variable}`}
-    >
-      <body className="min-h-screen bg-[--surface-page] text-[--fg-1] antialiased">
-        {children}
-      </body>
+    <html lang="en" className={`${display.variable} ${sans.variable} ${mono.variable}`}>
+      <body>{children}</body>
     </html>
   );
 }

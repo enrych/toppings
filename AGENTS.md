@@ -20,7 +20,7 @@ This file holds the rules that apply **everywhere in the repo**. Anything that a
 | You are touching | Read this too | What it is |
 | --- | --- | --- |
 | `web-ext/` | [`AGENTS/web-ext.md`](AGENTS/web-ext.md) | Chrome/Firefox extension for YouTube |
-| `website/` | _(not written yet — root rules only)_ | Next.js marketing and docs site |
+| `website/` | [`website/AGENTS.md`](website/AGENTS.md) | Next.js marketing and docs site (static export) |
 | `backend/` | _(not written yet — root rules only)_ | Cloudflare Workers API |
 | `assets/` | _(none)_ | Brand assets |
 

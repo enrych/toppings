@@ -1,105 +1,43 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import DocsPageHeader from "../components/DocsPageHeader";
-import Pager from "../components/Pager";
-import { EXTENSION_VERSION, ROUTE, URL } from "@/constants/site";
-import { KIND_TONE, PAGE, RELEASES } from "./data";
+import { site } from "@/lib/site";
+import { releases } from "./releases";
 
-export const metadata: Metadata = {
-  title: "Toppings — Changelog",
-  description: "Release history for Toppings in user-facing terms.",
-};
+export const metadata: Metadata = { title: "Changelog" };
 
-function formatReleaseDate(iso: string): string {
-  const [y, m, d] = iso.split("-").map(Number);
-  if (!y || !m || !d) return iso;
-  return new Date(y, m - 1, d).toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-}
+const dateFormat = new Intl.DateTimeFormat("en-US", { dateStyle: "long", timeZone: "UTC" });
 
-export default function DocsChangelogPage() {
+export default function Changelog() {
   return (
-    <main className="docs-main">
-      <DocsPageHeader
-        {...PAGE}
-        LEDE={
-          <>
-            {PAGE.LEDE_BEFORE}
-            <code
-              style={{
-                font: "500 14px/1 var(--font-mono)",
-                background: "rgba(10,10,10,.06)",
-                padding: "2px 6px",
-                borderRadius: 4,
-              }}
-            >
-              v{EXTENSION_VERSION}
-            </code>
-            . For commits and PRs see the{" "}
-            <Link href={URL.GITHUB_COMMITS_MAIN} target="_blank">
-              {PAGE.LEDE_LINK_LABEL}
-            </Link>
-            .
-          </>
-        }
-      />
+    <article className="prose">
+      <p className="label">Reference</p>
+      <h1>the changelog.</h1>
+      <p className="lede">
+        The published version is <code>v{site.version}</code>. Commits are{" "}
+        <a href={site.commits} target="_blank" rel="noopener noreferrer">
+          on GitHub
+        </a>
+        .
+      </p>
 
-      <div className="changelog-list">
-        {RELEASES.map((release) => {
-          const isCurrent = release.VERSION === EXTENSION_VERSION;
-          const items = release.ITEMS.filter((i) => i.KIND !== "internal");
-          return (
-            <article
-              key={release.VERSION}
-              id={`v${release.VERSION}`}
-              className="changelog-entry"
-            >
-              <header className="changelog-entry__head">
-                <div className="changelog-entry__meta">
-                  <span
-                    className={
-                      "changelog-entry__version" +
-                      (isCurrent ? " changelog-entry__version--current" : "")
-                    }
-                  >
-                    v{release.VERSION}
-                  </span>
-                  <span className="changelog-entry__date">
-                    {formatReleaseDate(release.DATE)}
-                  </span>
-                  {isCurrent && (
-                    <span className="changelog-entry__chip">Current</span>
-                  )}
-                </div>
-                {release.TITLE && (
-                  <h2 className="changelog-entry__title">{release.TITLE}</h2>
-                )}
-              </header>
-              <ul className="changelog-entry__items">
-                {items.map((item, i) => (
-                  <li key={i} className="changelog-entry__item">
-                    <span
-                      className="changelog-entry__kind"
-                      style={{
-                        background: KIND_TONE[item.KIND].BG,
-                        color: KIND_TONE[item.KIND].FG,
-                      }}
-                    >
-                      {KIND_TONE[item.KIND].LABEL}
-                    </span>
-                    <span className="changelog-entry__text">{item.TEXT}</span>
-                  </li>
-                ))}
-              </ul>
-            </article>
-          );
-        })}
-      </div>
-
-      <Pager currentHref={ROUTE.DOCS_CHANGELOG} />
-    </main>
+      {releases.map((release) => (
+        <section key={release.version} id={`v${release.version}`} className="release">
+          <h2>
+            v{release.version} <span className="release-title">{release.title}</span>
+          </h2>
+          <p className="label">
+            {dateFormat.format(new Date(release.date))}
+            {release.version === site.version && " · current"}
+          </p>
+          <ul>
+            {release.changes.map((change) => (
+              <li key={change.text}>
+                <span className={`kind kind--${change.kind}`}>{change.kind}</span>
+                {change.text}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </article>
   );
 }
