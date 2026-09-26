@@ -3,5 +3,7 @@
   "name": "toppings",
   "main": "src/index.ts",
   "compatibility_date": "2024-11-12",
+  // Only /api/* is the Worker's; the rest of the hostname is the Pages site.
+  "routes": [{ "pattern": "toppings.enry.ch/api/*", "zone_name": "enry.ch" }],
   "observability": { "enabled": true }
 }

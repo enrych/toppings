@@ -64,7 +64,7 @@ Three, with different rules. Constants live in `data/core.ts`.
 ## 5. MANIFEST AND VERSIONING
 
 - `app/manifest.json` is the **MV3 source of truth**. The MV2 Firefox variant is generated at build time by the transform in `scripts/build.js` (flips `manifest_version`, folds `host_permissions` into `permissions`, renames `action` → `browser_action`, flattens `web_accessible_resources`). Never hand-maintain a second manifest; extend the transform.
-- Version lives in `data/version.ts` as `EXTENSION_VERSION` and is injected into the manifest at build time. It is also mirrored in `website/lib/version.ts` on release — update both.
+- Version lives in `data/version.ts` as `EXTENSION_VERSION` and is injected into the manifest at build time. It is also mirrored in `website/lib/site.ts` (`site.version`) on release — update both.
 
 ---
 
