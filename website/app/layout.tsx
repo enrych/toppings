@@ -28,6 +28,9 @@ export const metadata: Metadata = {
   title: `${site.name} — ${site.tagline}`,
   description: site.description,
   metadataBase: new URL(site.url),
+  // The site is also reachable on its *.pages.dev hostname; this keeps search
+  // engines on the real one.
+  alternates: { canonical: "./" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
