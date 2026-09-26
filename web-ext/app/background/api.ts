@@ -1,29 +1,10 @@
-import { HTTP_ACCEPT, HTTP_HEADER } from "../../data/http";
-import { NODE_ENV } from "../../data/core";
-import { interpolateTemplate } from "../../utils/interpolate";
+const API_BASE =
+  process.env.NODE_ENV === "development"
+    ? "http://127.0.0.1:8787/api"
+    : "https://toppings.enry.ch/api";
 
-function resolveBaseUrl(): string {
-  return process.env.NODE_ENV === NODE_ENV.DEVELOPMENT
-    ? "http://127.0.0.1:8787/api{{endpoint}}"
-    : "https://toppings.enry.ch/api{{endpoint}}";
+export function fetchPlaylist(playlistId: string): Promise<Response> {
+  return fetch(`${API_BASE}/v1/playlist/${playlistId}`, {
+    headers: { Accept: "application/json" },
+  });
 }
-
-export const api = {
-  url(
-    endpointTemplate: string,
-    params: Record<string, string | number> = {},
-  ): string {
-    return interpolateTemplate(resolveBaseUrl(), { endpoint: endpointTemplate, ...params });
-  },
-
-  fetch(
-    endpointTemplate: string,
-    params: Record<string, string | number> = {},
-    init?: RequestInit,
-  ): Promise<Response> {
-    return fetch(api.url(endpointTemplate, params), {
-      headers: { [HTTP_HEADER.ACCEPT]: HTTP_ACCEPT.JSON },
-      ...init,
-    });
-  },
-};

@@ -61,3 +61,10 @@ export function matchesBinding(event: KeyboardEvent, binding: string): boolean {
     MODIFIER_KEYS.every((m) => mods.has(m) === modState[m])
   );
 }
+
+// YouTube's comment box is a contenteditable, not a textarea.
+export function isTypingTarget(target: EventTarget | null): boolean {
+  const el = target as HTMLElement | null;
+  if (!el) return false;
+  return el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.matches("#contenteditable-root.yt-formatted-string");
+}

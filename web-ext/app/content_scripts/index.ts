@@ -6,10 +6,8 @@ import onShortsPage from "./pages/shorts";
 import onWatchPage from "./pages/watch";
 import onYoutubePage from "./pages/youtube";
 import { setupNativeSettings } from "./pages/nativeSettings";
-import { ERROR } from "../../data/errors";
 import { EXTENSION_CONTEXT_SCOPE } from "../../data/core";
 import {
-  EXTENSION_MESSAGE_BODY,
   EXTENSION_MESSAGE_EVENT,
   EXTENSION_MESSAGE_TYPE,
 } from "../../data/core";
@@ -24,8 +22,7 @@ const scopeHandlers: Record<string, Function> = {
 function runApp(message: any): undefined {
   (async () => {
     const parsed = JSON.parse(message) as Record<string, unknown>;
-    const type = parsed[EXTENSION_MESSAGE_BODY.TYPE];
-    const payload = parsed[EXTENSION_MESSAGE_BODY.PAYLOAD];
+    const { type, payload } = parsed;
 
     if (type !== EXTENSION_MESSAGE_TYPE.CONTEXT) return;
     const ctx = payload as Exclude<Context, null>;
@@ -41,7 +38,7 @@ function runApp(message: any): undefined {
     const handler = scopeHandlers[scope];
 
     if (!handler) {
-      console.warn(ERROR.NO_CONTENT_HANDLER, scope);
+      console.warn("[Toppings] No content script handler for scope:", scope);
       return;
     }
 
@@ -58,8 +55,8 @@ function runApp(message: any): undefined {
 chrome.runtime.sendMessage(
   chrome.runtime.id,
   JSON.stringify({
-    [EXTENSION_MESSAGE_BODY.TYPE]: EXTENSION_MESSAGE_TYPE.EVENT,
-    [EXTENSION_MESSAGE_BODY.PAYLOAD]: EXTENSION_MESSAGE_EVENT.CONNECTED,
+    type: EXTENSION_MESSAGE_TYPE.EVENT,
+    payload: EXTENSION_MESSAGE_EVENT.CONNECTED,
   }),
   {},
   runApp,

@@ -93,7 +93,3 @@ export async function applyWatchProfile(
   }
 }
 
-export async function getActivePrimitives(): Promise<ProfilePrimitiveConfig | null> {
-  const profile = await getActiveProfile();
-  return profile?.primitives ?? null;
-}

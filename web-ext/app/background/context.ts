@@ -4,10 +4,7 @@ import {
   YOUTUBE_SYSTEM_PLAYLIST_ID,
   YOUTUBE_URL_PATH,
 } from "../../data/core";
-import { ERROR } from "../../data/errors";
-import { HTTP_METHOD } from "../../data/http";
-import { EXTENSION_API_ENDPOINT } from "../../data/api";
-import { api } from "./api";
+import { fetchPlaylist } from "./api";
 import { getStorage, Storage } from "./store";
 import {
   getCachedPlaylist,
@@ -72,7 +69,7 @@ export const getContext = async (rawURL: string): Promise<Context> => {
   const store = await getStorage();
 
   if (!store) {
-    throw new Error(ERROR.STORE_NOT_FOUND);
+    throw new Error("Store not found");
   }
 
   if (url.pathname.startsWith(YOUTUBE_URL_PATH.WATCH)) {
@@ -110,14 +107,10 @@ export const getContext = async (rawURL: string): Promise<Context> => {
         } as const;
       }
 
-      const response = await api.fetch(
-        EXTENSION_API_ENDPOINT.PLAYLIST_V1,
-        { playlistId },
-        { method: HTTP_METHOD.GET },
-      );
+      const response = await fetchPlaylist(playlistId);
 
       if (!response.ok) {
-        throw new Error(ERROR.PLAYLIST_FETCH_FAILED);
+        throw new Error("Failed fetching playlist data");
       }
 
       const body = (await response.json()) as PlaylistResponse;
@@ -132,7 +125,7 @@ export const getContext = async (rawURL: string): Promise<Context> => {
         store,
       } as const;
     } catch (error) {
-      console.error(ERROR.PLAYLIST_FETCH_FAILED, error);
+      console.error("Failed fetching playlist data", error);
       return {
         scope: EXTENSION_CONTEXT_SCOPE.PLAYLIST,
         payload: { playlistId },

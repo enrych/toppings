@@ -2,7 +2,7 @@
 import elementReady from "element-ready";
 import type { Storage } from "../../background/store";
 import type { ShortsContext } from "../../background/context";
-import { matchesBinding } from "../../../utils/keybinding";
+import { isTypingTarget, matchesBinding } from "../../../utils/keybinding";
 
 let player: HTMLVideoElement | undefined;
 let preferences: Storage["preferences"]["shorts"] | undefined;
@@ -62,20 +62,14 @@ function useShortcuts(event: KeyboardEvent) {
   if (!player) return;
   if (!preferences) return;
 
-  const target = event.target as HTMLElement;
-  if (
-    target !== null &&
-    target.tagName !== "INPUT" &&
-    target.tagName !== "TEXTAREA" &&
-    !target.matches("#contenteditable-root.yt-formatted-string")
-  ) {
-    if (matchesBinding(event, preferences.togglePlaybackRate.key)) {
-      togglePlaybackRate();
-    } else if (matchesBinding(event, preferences.seekBackward.key)) {
-      player.currentTime -= +preferences.seekBackward.value;
-    } else if (matchesBinding(event, preferences.seekForward.key)) {
-      player.currentTime += +preferences.seekForward.value;
-    }
+  if (isTypingTarget(event.target)) return;
+
+  if (matchesBinding(event, preferences.togglePlaybackRate.key)) {
+    togglePlaybackRate();
+  } else if (matchesBinding(event, preferences.seekBackward.key)) {
+    player.currentTime -= +preferences.seekBackward.value;
+  } else if (matchesBinding(event, preferences.seekForward.key)) {
+    player.currentTime += +preferences.seekForward.value;
   }
 }
 
@@ -113,7 +107,7 @@ function scrollToNextReel() {
 
 const AutoScrollButton = (
   <button
-    id="#tppng-auto-scroll"
+    id="tppng-auto-scroll"
     className="tw-mt-[16px] yt-spec-button-shape-next yt-spec-button-shape-next--mono yt-spec-button-shape-next--size-l yt-spec-button-shape-next--icon-button tw-outline-none tw-border-none tw-font-medium tw-text-white"
     onClick={enableAutoScroll}
   >
@@ -123,7 +117,7 @@ const AutoScrollButton = (
 
 const TogglePlaybackRateButton = (
   <button
-    id="#tppng-toggle-playback-rate"
+    id="tppng-toggle-playback-rate"
     className="yt-spec-button-shape-next yt-spec-button-shape-next--mono yt-spec-button-shape-next--size-l yt-spec-button-shape-next--icon-button tw-outline-none tw-border-none tw-font-medium tw-text-white"
     onClick={togglePlaybackRate}
   >
@@ -140,9 +134,15 @@ function togglePlaybackRate() {
 
 function enableAutoScroll() {
   if (!preferences) return;
-  preferences.reelAutoScroll.value = !preferences.reelAutoScroll.value;
+  const next = !preferences.reelAutoScroll.value;
+  preferences.reelAutoScroll.value = next;
   AutoScrollButton.classList.toggle("tw-bg-white/10");
   AutoScrollButton.classList.toggle("tw-bg-white/20");
+  void chrome.storage.sync.get(undefined).then((stored) => {
+    const store = stored as Storage;
+    store.preferences.shorts.reelAutoScroll.value = next;
+    return chrome.storage.sync.set(store);
+  });
 }
 
 export default onShortsPage;

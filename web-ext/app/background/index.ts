@@ -7,15 +7,8 @@ import {
 } from "../../core/featureReports";
 import { getCapabilityStatus } from "../../core/capabilityCache";
 import { getContext } from "./context";
-import { dispatchContext } from "./utils/dispatchContext";
 import { URLS } from "../../data/urls";
-import {
-  EXTENSION_INSTALL_REASON,
-  EXTENSION_MESSAGE_BODY,
-  EXTENSION_MESSAGE_EVENT,
-  EXTENSION_MESSAGE_TYPE,
-  NODE_ENV,
-} from "../../data/core";
+import { EXTENSION_MESSAGE_EVENT, EXTENSION_MESSAGE_TYPE } from "../../data/core";
 
 chrome.runtime.onInstalled.addListener(onInitialize);
 chrome.runtime.onMessage.addListener(onConnected);
@@ -25,11 +18,8 @@ type InitializeDetails = Parameters<
   Parameters<typeof chrome.runtime.onInstalled.addListener>[0]
 >[0];
 function onInitialize({ reason }: InitializeDetails): void {
-  if (
-    reason === EXTENSION_INSTALL_REASON.INSTALL ||
-    reason === EXTENSION_INSTALL_REASON.UPDATE
-  ) {
-    if (process.env.NODE_ENV === NODE_ENV.PRODUCTION) {
+  if (reason === "install" || reason === "update") {
+    if (process.env.NODE_ENV === "production") {
       void chrome.tabs.create({ url: URLS.GREETINGS });
       void chrome.runtime.setUninstallURL(URLS.FAREWELL);
     }
@@ -37,7 +27,7 @@ function onInitialize({ reason }: InitializeDetails): void {
     // Read purely for its side effect: this is what writes the default profile
     // store on a fresh install.
     void getActiveProfile();
-    if (reason === EXTENSION_INSTALL_REASON.UPDATE) {
+    if (reason === "update") {
       void checkRecoveredFeatures();
     }
   }
@@ -64,7 +54,10 @@ async function onWebNavigation(details: WebNavigationDetails) {
 
   const ctx = await getContext(details.url);
   if (!ctx?.store.isExtensionEnabled) return;
-  await dispatchContext(tabId, ctx);
+  await chrome.tabs.sendMessage(
+    tabId,
+    JSON.stringify({ type: EXTENSION_MESSAGE_TYPE.CONTEXT, payload: ctx }),
+  );
 }
 
 function onConnected(
@@ -74,8 +67,7 @@ function onConnected(
 ) {
   (async () => {
     const parsed = JSON.parse(message) as Record<string, unknown>;
-    const type = parsed[EXTENSION_MESSAGE_BODY.TYPE];
-    const payload = parsed[EXTENSION_MESSAGE_BODY.PAYLOAD];
+    const { type, payload } = parsed;
     if (type !== EXTENSION_MESSAGE_TYPE.EVENT) return;
 
     const event = payload;
@@ -91,10 +83,7 @@ function onConnected(
     if (!ctx?.store.isExtensionEnabled) return;
 
     sendResponse(
-      JSON.stringify({
-        [EXTENSION_MESSAGE_BODY.TYPE]: EXTENSION_MESSAGE_TYPE.CONTEXT,
-        [EXTENSION_MESSAGE_BODY.PAYLOAD]: ctx,
-      }),
+      JSON.stringify({ type: EXTENSION_MESSAGE_TYPE.CONTEXT, payload: ctx }),
     );
   })();
 

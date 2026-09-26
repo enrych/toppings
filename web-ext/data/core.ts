@@ -27,21 +27,6 @@ export const YOUTUBE_SYSTEM_PLAYLIST_ID = {
   LIKED: "LL",
 } as const;
 
-export const NODE_ENV = {
-  DEVELOPMENT: "development",
-  PRODUCTION: "production",
-} as const;
-
-export const EXTENSION_INSTALL_REASON = {
-  INSTALL: "install",
-  UPDATE: "update",
-} as const;
-
-export const EXTENSION_MESSAGE_BODY = {
-  TYPE: "type",
-  PAYLOAD: "payload",
-} as const;
-
 export const EXTENSION_MESSAGE_TYPE = {
   CONTEXT: "context",
   EVENT: "event",

@@ -14,7 +14,7 @@ import {
   activateNamedConfig,
   getCachedNamedConfigs,
 } from "../components/Segments";
-import { matchesBinding } from "../../../utils/keybinding";
+import { isTypingTarget, matchesBinding } from "../../../utils/keybinding";
 import { WatchContext } from "../../background/context";
 import { Storage } from "../../background/store";
 import { resolveTarget } from "../../../utils/primitive";
@@ -282,7 +282,7 @@ const replacePlaybackItems = (playbackRatePanel: HTMLElement) => {
       return (
         <div
           key={playbackRate}
-          className="ytp-menuitem tw-tppng-playback-item"
+          className="ytp-menuitem tppng-playback-item"
           role="menuitemradio"
           aria-checked={isAriaChecked}
           tabIndex={0}
@@ -305,7 +305,7 @@ const replacePlaybackItems = (playbackRatePanel: HTMLElement) => {
 
   const customPlaybackRateItem = (
     <div
-      className="ytp-menuitem tw-tppng-playback-item"
+      className="ytp-menuitem tppng-playback-item"
       id="tppng-playback-custom-item"
       role="menuitemradio"
       aria-checked={isPresetRate ? "false" : "true"}
@@ -339,14 +339,7 @@ const replacePlaybackItems = (playbackRatePanel: HTMLElement) => {
 const useShortcuts = (event: KeyboardEvent): void => {
   if (!player || !preferences) return;
 
-  const target = event.target as HTMLElement;
-  const tagName = target?.tagName;
-  const isNotEditable =
-    tagName !== "INPUT" &&
-    tagName !== "TEXTAREA" &&
-    !target.matches("#contenteditable-root.yt-formatted-string");
-
-  if (!isNotEditable) return;
+  if (isTypingTarget(event.target)) return;
 
   if (preferences.nudgeLoopSegment) {
     const cfg = preferences.nudgeLoopSegment;
@@ -525,7 +518,7 @@ const onDoubleTapSeek = (dataSide: "back" | "forward", time: number): void => {
       if (doubleTapLabel) {
         doubleTapLabel.textContent = "5 seconds";
       }
-      staticCircle.style.cssText = "null";
+      staticCircle.style.cssText = "";
     }, 500);
   }
 };

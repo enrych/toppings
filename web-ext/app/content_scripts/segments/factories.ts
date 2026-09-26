@@ -36,18 +36,6 @@ export function createFreshConfig(videoDuration: number): SegmentConfig {
   };
 }
 
-export function createEmptyConfig(label: string): SegmentConfig {
-  const now = Date.now();
-  return {
-    id: randomId(),
-    label,
-    segments: [],
-    sequence: [],
-    shortcutKey: "",
-    createdAt: now,
-    updatedAt: now,
-  };
-}
 
 export function addSegmentToConfig(
   config: SegmentConfig,

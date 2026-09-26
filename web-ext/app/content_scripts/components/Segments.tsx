@@ -389,10 +389,4 @@ function clampConfigToDuration(
   };
 }
 
-export function isSegmentsActive(): boolean {
-  return isActive;
-}
 
-export function getActiveConfig(): SegmentConfig | null {
-  return activeConfig;
-}
