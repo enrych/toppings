@@ -7,6 +7,9 @@ on:
       - "backend/**"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 concurrency:
   group: "cf-worker-backend"
   cancel-in-progress: true
