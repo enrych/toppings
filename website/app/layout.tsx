@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Gloock } from "next/font/google";
+import { Gloock, Instrument_Sans } from "next/font/google";
 import localFont from "next/font/local";
 import { site } from "@/lib/site";
 import "./globals.css";
@@ -11,7 +11,12 @@ const display = Gloock({
   display: "swap",
 });
 
-const sans = Geist({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
+const sans = Instrument_Sans({
+  weight: ["400", "500"],
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
 
 const mono = localFont({
   variable: "--font-mono",
