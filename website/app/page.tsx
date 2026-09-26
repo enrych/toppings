@@ -1,39 +1,87 @@
-import Image from "next/image";
-import CallToAction from "@/components/CallToAction";
-import heroIllustration from "@/assets/illustrations/hero.webp";
+import Link from "next/link";
+import Backdrop from "@/components/Backdrop";
+import Cursor from "@/components/Cursor";
+import InstallLink from "@/components/InstallLink";
+import { site } from "@/lib/site";
+import "./home.css";
+
+function delay(seconds: number) {
+  return { "--d": `${seconds}s` } as React.CSSProperties;
+}
 
 export default function Home() {
   return (
-    <div className="relative mx-auto flex justify-center items-center w-screen h-auto py-12 lg:p-0">
-      <div className="w-full overflow-x-hidden flex flex-col-reverse lg:flex-row justify-around items-center h-full">
-        <div className="flex flex-col items-center justify-center p-8 lg:p-24 w-full lg:w-1/2 h-full overflow-x-hidden text-wrap break-words">
-          <h1
-            className="text-[64px] max-w-[500px] font-bold text-gray-900 leading-tight text-center lg:text-left"
-            style={{ fontVariationSettings: "'wght' 900" }}
-          >
-            Your YouTube,
-            <br />
-            <span className="text-primary">Your Way</span>
-          </h1>
-          <p className="mt-4 text-lg text-gray-700 text-center">
-            A customizable browser extension that gives you total control over
-            YouTube—track playlist runtimes, fine-tune playback speed,
-            auto-scroll Shorts, set custom seek durations, and more. Take
-            control of your YouTube like never before.
-          </p>
-          <div className="py-8">
-            <CallToAction />
-          </div>
+    <main className="hero">
+      <Cursor />
+      <Backdrop />
+      <div className="scrim" aria-hidden />
+      <div className="grain" aria-hidden />
+
+      <header className="top rise" style={delay(0.3)}>
+        <span className="wordmark">{site.name}</span>
+        <nav className="top-nav">
+          <Link href="/docs" className="btn btn--quiet">
+            Docs
+          </Link>
+          <a href={site.github} target="_blank" rel="noopener noreferrer" className="btn btn--quiet">
+            Source
+          </a>
+        </nav>
+      </header>
+
+      <section className="stack">
+        <span className="eyebrow rise" style={delay(0.5)}>
+          Free · Open source
+        </span>
+
+        <h1 className="display">
+          <span className="mask">
+            <span className="line" style={delay(0.7)}>
+              Your YouTube,
+            </span>
+          </span>
+          <span className="mask">
+            <span className="line" style={delay(0.82)}>
+              your <em>way</em>.
+            </span>
+          </span>
+        </h1>
+
+        <p className="deck rise" style={delay(1.2)}>
+          The controls YouTube never gave you — done right.
+        </p>
+
+        <div className="actions rise" style={delay(1.35)}>
+          <InstallLink />
+          <a href={site.github} target="_blank" rel="noopener noreferrer" className="btn">
+            Source
+          </a>
         </div>
-        <div className="flex items-center justify-center w-full lg:w-1/2">
-          <Image
-            src={heroIllustration}
-            alt="hero"
-            className="max-w-none w-3/4 lg:w-[70vw] relative lg:transform drop-shadow-md select-none"
-            draggable={false}
-          />
+
+        <div className="trust rise" style={delay(1.5)}>
+          <span>
+            <b>0 trackers.</b> No analytics, no accounts.
+          </span>
+          <span>
+            <b>{site.license}.</b> Fork it, modify it, ship it.
+          </span>
         </div>
-      </div>
-    </div>
+      </section>
+
+      <footer className="foot rise" style={delay(1.7)}>
+        <span>
+          {site.name} · {site.license}
+        </span>
+        <span className="foot-links">
+          <Link href="/docs">Docs</Link>
+          <a href={site.issues} target="_blank" rel="noopener noreferrer">
+            Issues
+          </a>
+          <a href={site.support} target="_blank" rel="noopener noreferrer">
+            Add a topping
+          </a>
+        </span>
+      </footer>
+    </main>
   );
 }
