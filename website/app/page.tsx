@@ -31,7 +31,7 @@ export default function Home() {
 
       <section className="stack">
         <span className="eyebrow rise" style={delay(0.5)}>
-          Free · Open source · v{site.version}
+          Free · Open source
         </span>
 
         <h1 className="display">
@@ -70,7 +70,7 @@ export default function Home() {
 
       <footer className="foot rise" style={delay(1.7)}>
         <span>
-          {site.name} · v{site.version} · {site.license}
+          {site.name} · {site.license}
         </span>
         <span className="foot-links">
           <Link href="/docs">Docs</Link>

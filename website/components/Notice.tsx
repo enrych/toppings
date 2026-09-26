@@ -47,7 +47,7 @@ export default function Notice({
       </section>
       <footer className="foot">
         <span>
-          {site.name} · v{site.version} · {site.license}
+          {site.name} · {site.license}
         </span>
         <span className="foot-links">
           <Link href="/docs">Docs</Link>
