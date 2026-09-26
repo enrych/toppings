@@ -1,5 +1,5 @@
 import { CORS, HttpError, json } from "./http";
-import { playlistRuntime } from "./playlist";
+import { getPlaylistRuntime } from "./playlist";
 
 const PLAYLIST = /^\/api\/v1\/playlist\/([^/]+)$/;
 
@@ -16,7 +16,7 @@ async function route(request: Request, env: Env): Promise<Response> {
     const playlistId = decodeURIComponent(playlist[1]);
     return json({
       scope: "playlist",
-      payload: await playlistRuntime(playlistId, env.YOUTUBE_DATA_API_V3_KEY),
+      payload: await getPlaylistRuntime(playlistId, env.YOUTUBE_DATA_API_V3_KEY),
     });
   }
 
