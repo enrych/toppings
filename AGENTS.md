@@ -21,7 +21,7 @@ This file holds the rules that apply **everywhere in the repo**. Anything that a
 | --- | --- | --- |
 | `web-ext/` | [`AGENTS/web-ext.md`](AGENTS/web-ext.md) | Chrome/Firefox extension for YouTube |
 | `website/` | [`website/AGENTS.md`](website/AGENTS.md) | Next.js marketing and docs site (static export) |
-| `backend/` | _(not written yet — root rules only)_ | Cloudflare Workers API |
+| `backend/` | [`backend/AGENTS.md`](backend/AGENTS.md) | Cloudflare Worker behind `/api` |
 | `assets/` | _(none)_ | Brand assets |
 
 Write a scoped file when a project accumulates rules of its own — not before. A scoped file that only restates the root is noise.
