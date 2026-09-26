@@ -1,0 +1,35 @@
+# enry.ch/toppings/ is this repo's GitHub Pages site. The site now lives on
+# Cloudflare at toppings.enry.ch; this publishes a redirect in its place.
+name: Redirect old GitHub Pages site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/pages-redirect/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: cp .github/pages-redirect/index.html .github/pages-redirect/404.html
+      - uses: actions/configure-pages@v4
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .github/pages-redirect
+      - id: deployment
+        uses: actions/deploy-pages@v4
