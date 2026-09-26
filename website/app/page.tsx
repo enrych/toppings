@@ -77,8 +77,8 @@ export default function Home() {
           <a href={site.issues} target="_blank" rel="noopener noreferrer">
             Issues
           </a>
-          <a href={site.sponsor} target="_blank" rel="noopener noreferrer">
-            Sponsor
+          <a href={site.support} target="_blank" rel="noopener noreferrer">
+            Add a topping
           </a>
         </span>
       </footer>

@@ -12,7 +12,7 @@ export const site = {
   chrome:
     "https://chrome.google.com/webstore/detail/toppings/aemiblppibhggpgijajindcmmomboibl",
   firefox: "https://addons.mozilla.org/en-US/firefox/addon/toppings/",
-  sponsor: "https://darhkvoyd.me/sponsor",
+  support: "https://darhkvoyd.me/sponsor",
   feedback:
     "mailto:divyadityasnaruka@gmail.com?subject=Feedback%20for%20Toppings",
 } as const;
