@@ -10,20 +10,19 @@ Run from `web-ext/`:
 
 | Command | What it does |
 | --- | --- |
-| `bun run dev` | Webpack watch build into `dist/` (Chrome, MV3) |
+| `bun run dev` | Build into `dist/` (Chrome, MV3) and rebuild on change |
 | `bun run dev:firefox` | Same, transformed to MV2 |
-| `bun run build` | Production build |
-| `bun run type-check` | `tsc --noEmit` |
-| `bun test` | Bun's runner, for `*.test.ts` files |
-| `bun run release` | Build, then zip via `scripts/release.js` |
+| `bun run build` / `build:firefox` | Production build |
+| `bun run check` | `tsc --noEmit` (app and `scripts/`), then `bun test` |
+| `bun run release` / `release:firefox` | Build, then zip `dist/` via `scripts/release.ts` |
 
-`bun run test` is aliased to `type-check` only — it does **not** run `bun test`. Run both when you change logic. `*.test.ts` files are excluded from `tsc` and run under Bun.
+The build is `scripts/build.ts`: `Bun.build` per entry (IIFE, no code splitting), Tailwind through its PostCSS API from `tailwind.config.ts`, static copies, and the manifest transform. CSS is not imported from JS: the content script's stylesheet is listed in the manifest, and the popup and options pages link theirs.
 
 ---
 
 ## 2. ENTRY POINTS
 
-Four webpack entries, all under `app/` (`scripts/build.js`):
+Four entries, all under `app/` (`scripts/build.ts`):
 
 | Entry | Source | Runs in |
 | --- | --- | --- |
@@ -61,7 +60,7 @@ Three, with different rules. Constants live in `data/core.ts`.
 
 ## 5. MANIFEST AND VERSIONING
 
-- `app/manifest.json` is the **MV3 source of truth**. The MV2 Firefox variant is generated at build time by the transform in `scripts/build.js` (flips `manifest_version`, folds `host_permissions` into `permissions`, renames `action` → `browser_action`, flattens `web_accessible_resources`). Never hand-maintain a second manifest; extend the transform.
+- `app/manifest.json` is the **MV3 source of truth**. The MV2 Firefox variant is generated at build time by the transform in `scripts/build.ts` (flips `manifest_version`, folds `host_permissions` into `permissions`, renames `action` → `browser_action`, flattens `web_accessible_resources`). Never hand-maintain a second manifest; extend the transform.
 - Version lives in `data/version.ts` as `EXTENSION_VERSION` and is injected into the manifest at build time. It is also mirrored in `website/lib/site.ts` (`site.version`) on release — update both.
 
 ---
@@ -83,7 +82,7 @@ web-ext/
 ├── core/                    # Cross-cutting state: stores, hooks, caches
 ├── data/                    # Constants and schemas: store, core, urls, brand, profiles
 ├── utils/                   # Pure helpers, one file per domain
-└── scripts/                 # build.js (webpack + manifest transform), release.js
+└── scripts/                 # build.ts (Bun.build + manifest transform), release.ts
 ```
 
 `utils/` is one file per domain (`object.ts`, `duration.ts`, `keybinding.ts`, …). A new helper goes in the existing domain file. Create a new one only when the domain genuinely does not exist yet — not for a single function.

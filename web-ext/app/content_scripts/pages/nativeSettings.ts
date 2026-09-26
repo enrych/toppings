@@ -5,6 +5,7 @@ import {
 } from "../../../core/profileStore";
 import { applyWatchProfile } from "../primitives/applyProfile";
 import type { Profile } from "../../../data/profiles";
+import { setCommentsVisible, setEndCardsVisible, setSidebarVisible } from "../primitives/watch";
 
 const SIDEBAR_LINK_ID = "tppng-native-sidebar-link";
 const OVERLAY_ID = "tppng-native-settings-overlay";
@@ -266,9 +267,6 @@ async function renderOverlay(body: HTMLElement): Promise<void> {
       "Show or hide the right-side recommendations",
       !sidebarEl || sidebarEl.style.display !== "none",
       async (next) => {
-        const { setSidebarVisible, resetSidebar } = await import(
-          "../primitives/watch"
-        );
         if (next) void setSidebarVisible(true);
         else void setSidebarVisible(false);
       },
@@ -281,7 +279,6 @@ async function renderOverlay(body: HTMLElement): Promise<void> {
       "Show or hide the comments section",
       !commentsEl || commentsEl.style.display !== "none",
       async (next) => {
-        const { setCommentsVisible } = await import("../primitives/watch");
         void setCommentsVisible(next);
       },
     ),
@@ -293,7 +290,6 @@ async function renderOverlay(body: HTMLElement): Promise<void> {
       "Show or hide video end card overlays",
       !endCardEl || endCardEl.style.display !== "none",
       async (next) => {
-        const { setEndCardsVisible } = await import("../primitives/watch");
         void setEndCardsVisible(next);
       },
     ),

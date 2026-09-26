@@ -25,6 +25,7 @@ import {
   setSegmentButtonSaved,
 } from "./SegmentButton";
 import { showPageToast } from "../utils/pageToast";
+import { saveNamedConfig, setDefaultConfig } from "../segments/segmentStore";
 
 let engine: SegmentEngine | null = null;
 let markersCtrl: SegmentMarkersController | null = null;
@@ -352,9 +353,6 @@ export async function saveSegmentsShortcut(): Promise<void> {
   if (!currentVideoId) return;
 
   if (isActive && activeConfig) {
-    const { saveNamedConfig, setDefaultConfig } = await import(
-      "../segments/segmentStore"
-    );
     const named = { ...activeConfig, updatedAt: Date.now() };
     await saveNamedConfig(currentVideoId, named);
     await setDefaultConfig(currentVideoId, named.id);

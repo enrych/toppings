@@ -6,7 +6,6 @@ import onShortsPage from "./pages/shorts";
 import onWatchPage from "./pages/watch";
 import onYoutubePage from "./pages/youtube";
 import { setupNativeSettings } from "./pages/nativeSettings";
-import "./index.css";
 import { ERROR } from "../../data/errors";
 import { EXTENSION_CONTEXT_SCOPE } from "../../data/core";
 import {
