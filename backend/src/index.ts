@@ -13,6 +13,9 @@ async function route(request: Request, env: Env): Promise<Response> {
 
   const playlist = PLAYLIST.exec(pathname);
   if (playlist) {
+    if (!env.YOUTUBE_DATA_API_V3_KEY) {
+      throw new HttpError(500, "YOUTUBE_DATA_API_V3_KEY is not set");
+    }
     const playlistId = decodeURIComponent(playlist[1]);
     return json({
       scope: "playlist",
