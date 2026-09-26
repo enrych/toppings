@@ -46,10 +46,22 @@ async function bundleScripts() {
   }
 }
 
+// Relative @imports are inlined here; the PostCSS pipeline below does not
+// resolve them, and a raw @import would point nowhere from dist/.
+async function inlineImports(css: string, from: string): Promise<string> {
+  const dir = from.slice(0, from.lastIndexOf("/"));
+  const imports = [...css.matchAll(/^@import "(\.[^"]+)";\n?/gm)];
+  for (const match of imports) {
+    const path = `${dir}/${match[1]}`;
+    css = css.replace(match[0], await inlineImports(await Bun.file(path).text(), path) + "\n");
+  }
+  return css;
+}
+
 async function buildStyles() {
   const processor = postcss([tailwindcss(tailwindConfig), autoprefixer]);
   for (const { entry, out } of styles) {
-    const css = await Bun.file(entry).text();
+    const css = await inlineImports(await Bun.file(entry).text(), entry);
     const result = await processor.process(css, { from: entry, to: `${DIST}/${out}` });
     await Bun.write(`${DIST}/${out}`, result.css);
   }

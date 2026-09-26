@@ -1,6 +1,7 @@
 /** @jsxImportSource dom-chef-jsx */
 import { formatDuration } from "@/lib/duration";
-import elementReady from "element-ready";
+import { resolveTarget } from "@/features/profiles/primitives/resolve";
+import { setCapabilityStatus } from "@/features/profiles/capabilityCache";
 import {
   InvalidPlaylistPayload,
   PlaylistContext,
@@ -8,13 +9,21 @@ import {
 } from "@/app/background/context";
 import { invalidateCachedPlaylist } from "./cache";
 
+// YouTube serves two playlist layouts: the page-header one (class names are
+// generated, so only the custom elements are matched) and the older sidebar one.
+const HEADER_STRATEGIES = [
+  "yt-page-header-renderer yt-content-metadata-view-model",
+  "ytd-playlist-header-renderer .metadata-action-bar",
+  "ytd-playlist-sidebar-primary-info-renderer #stats",
+] as const;
+
 const onPlaylistPage = async (ctx: PlaylistContext): Promise<void> => {
   const { payload } = ctx;
 
-  const metadataActionBar = await elementReady(
-    "#page-manager ytd-browse > yt-page-header-renderer .yt-page-header-view-model__page-header-content yt-content-metadata-view-model",
-  );
-  if (!metadataActionBar) return;
+  const resolution = await resolveTarget(HEADER_STRATEGIES);
+  void setCapabilityStatus("playlist.runtime", "playlist", resolution);
+  if (!resolution.resolved) return;
+  const metadataActionBar = resolution.element;
 
   let runtimeSection = document.querySelector("div#tppng-ytp-runtime-section");
 
