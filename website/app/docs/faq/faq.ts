@@ -13,7 +13,7 @@ export const faq: readonly { q: string; a: readonly string[] }[] = [
     ],
   },
   {
-    q: "How does Audio mode work?",
+    q: "How do I listen without the video?"
     a: [
       "It hides the video and keeps the audio. The visible area becomes a black screen, a waveform visualizer, or an image of your choosing. Timeline, chapters, speed and shortcuts keep working.",
     ],

@@ -17,6 +17,7 @@ export const releases: readonly {
       { kind: "new", text: "Z loads the last-used setup or turns segments off; Shift+Z starts a fresh slate." },
       { kind: "new", text: "Drag two adjacent markers together to merge segments." },
       { kind: "new", text: "A control panel under the video for segments, loop counts and rates." },
+      { kind: "polish", text: "Audio mode is now the Audio preset. Profiles replace the standalone toggle, the B key, the visualizer and custom backgrounds." },
     ],
   },
   {
