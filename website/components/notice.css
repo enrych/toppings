@@ -4,11 +4,11 @@
   min-height: 100dvh;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  padding: 28px 40px 22px;
+  padding: 20px var(--pad) clamp(28px, 4vh, 56px);
 }
 
 .notice .backdrop,
-.notice .scrim {
+.notice-scrim {
   position: fixed;
   inset: 0;
   z-index: -1;
@@ -21,11 +21,11 @@
   display: block;
 }
 
-.notice .scrim {
-  background: radial-gradient(60% 60% at 50% 45%, rgba(11, 11, 13, 0.2), rgba(11, 11, 13, 0.9));
+.notice-scrim {
+  background: radial-gradient(60% 60% at 50% 45%, rgba(11, 11, 12, 0.35), rgba(11, 11, 12, 0.94));
 }
 
-.notice .top {
+.notice-top {
   display: flex;
   justify-content: center;
 }
@@ -36,58 +36,19 @@
   display: grid;
   justify-items: center;
   text-align: center;
-  max-width: 720px;
-  gap: 24px;
+  max-width: 760px;
+  gap: 28px;
 }
 
-.notice .eyebrow {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  font: 500 11px/1 var(--sans);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-2);
-}
-
-.notice .eyebrow-rule {
-  width: 40px;
-  height: 1px;
-  background: var(--amber);
-}
-
-.notice h1 {
-  font: 400 clamp(52px, 8vw, 120px) / 0.9 var(--display);
-  letter-spacing: -0.025em;
+.notice .display {
+  font-size: clamp(52px, 8vw, 124px);
 }
 
 .notice .deck {
-  font: 400 14px/1.75 var(--mono);
-  color: var(--ink-2);
-  max-width: 48ch;
+  text-align: center;
 }
 
 .notice .foot {
-  display: flex;
-  justify-content: space-between;
-  font: 500 10px/1 var(--sans);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-}
-
-.notice .foot-links {
-  display: flex;
-  gap: 22px;
-}
-
-@media (max-width: 640px) {
-  .notice {
-    padding: 20px;
-  }
-
-  .notice .foot {
-    flex-direction: column;
-    gap: 12px;
-  }
+  padding-top: 24px;
+  border-top: 1px solid var(--hair);
 }

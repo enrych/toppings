@@ -7,8 +7,8 @@ varying vec2 uv;
 void main(){ uv = p * 0.5 + 0.5; gl_Position = vec4(p, 0.0, 1.0); }
 `;
 
-// A dimmed mock of a YouTube watch page, glitching where the pointer is.
-// uNoise is 1 on load and eases to 0; the pointer re-introduces noise locally.
+// A mock YouTube watch page. uNoise is 1 on load and eases to 0 as the page
+// "strips the noise"; the pointer brings it back locally so the effect stays alive.
 const FRAG = `
 precision mediump float;
 varying vec2 uv;
@@ -31,21 +31,21 @@ vec3 split(vec2 st, float a){
 void main(){
   vec2 st = vec2(uv.x, 1.0 - uv.y);
   vec2 aspect = vec2(uRes.x / uRes.y, 1.0);
-  float near = 1.0 - smoothstep(0.0, 0.34, length((uv - uMouse) * aspect));
-  float m = max(uNoise, near * 0.4);
+  float near = 1.0 - smoothstep(0.0, 0.38, length((uv - uMouse) * aspect));
+  float m = max(uNoise, near * 0.55);
 
   float band = floor(st.y * 26.0);
   st.x += (hash(vec2(band, floor(uTime * 10.0))) - 0.5)
           * step(0.78, hash(vec2(band, 7.0))) * 0.16 * m;
   st += vec2(sin(uTime * 0.11), cos(uTime * 0.09)) * 0.004;
 
-  vec3 col = split(st, 0.004 + 0.05 * m);
+  vec3 col = split(st, 0.002 + 0.05 * m);
   col.r += 0.08 * m;
   col += (hash(st * uRes + uTime) - 0.5) * 0.14 * m;
-  col *= 0.38 - 0.1 * m;
+  col *= 0.8 - 0.25 * m;
 
-  vec2 v = uv - vec2(0.5, 0.45);
-  col *= 1.0 - dot(v, v) * 1.1;
+  vec2 v = uv - vec2(0.55, 0.45);
+  col *= 1.0 - dot(v, v) * 0.9;
   gl_FragColor = vec4(col, 1.0);
 }
 `;
@@ -134,7 +134,7 @@ function drawWatchPage(c: HTMLCanvasElement, w: number, h: number) {
   }
 }
 
-const INTRO_MS = 1400;
+const INTRO_MS = 2400;
 
 export default function Backdrop() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -168,8 +168,7 @@ export default function Backdrop() {
     const uRes = gl.getUniformLocation(program, "uRes");
     const uMouse = gl.getUniformLocation(program, "uMouse");
 
-    const tex = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -185,14 +184,13 @@ export default function Backdrop() {
       canvas.height = h;
       gl.viewport(0, 0, w, h);
       gl.uniform2f(uRes, w, h);
-      // Drawn small and upscaled so the page reads as a soft impression, not UI.
-      drawWatchPage(page, Math.floor(w / 3), Math.floor(h / 3));
+      drawWatchPage(page, w, h);
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, page);
     };
     resize();
     window.addEventListener("resize", resize);
 
-    const mouse = { x: -1, y: -1, tx: -1, ty: -1 };
+    const mouse = { x: -2, y: -2, tx: -2, ty: -2 };
     const onMove = (e: PointerEvent) => {
       mouse.tx = e.clientX / window.innerWidth;
       mouse.ty = 1 - e.clientY / window.innerHeight;
@@ -216,11 +214,12 @@ export default function Backdrop() {
     };
     frame();
 
+    // The context is deliberately not released here: React dev mode re-runs
+    // effects, and a released context stays lost on the same canvas.
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", onMove);
-      gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
   }, []);
 

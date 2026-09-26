@@ -11,7 +11,7 @@ export default function Notice({
   cta,
 }: {
   kicker: string;
-  title: string;
+  title: React.ReactNode;
   body: string;
   cta: { label: string; href: string };
 }) {
@@ -19,26 +19,29 @@ export default function Notice({
   return (
     <main className="notice">
       <Backdrop />
-      <div className="scrim" aria-hidden />
-      <header className="top">
+      <div className="notice-scrim" aria-hidden />
+      <header className="notice-top">
         <Link href="/" className="wordmark">
           {site.name}
         </Link>
       </header>
       <section className="notice-body">
-        <p className="eyebrow">
-          <span className="eyebrow-rule" aria-hidden />
-          {kicker}
-        </p>
-        <h1>{title}</h1>
+        <span className="eyebrow eyebrow--ember">{kicker}</span>
+        <h1 className="display">{title}</h1>
         <p className="deck">{body}</p>
         {external ? (
           <a href={cta.href} className="btn btn--solid">
-            {cta.label} <span aria-hidden>→</span>
+            {cta.label}
+            <span className="arrow" aria-hidden>
+              →
+            </span>
           </a>
         ) : (
           <Link href={cta.href} className="btn btn--solid">
-            {cta.label} <span aria-hidden>→</span>
+            {cta.label}
+            <span className="arrow" aria-hidden>
+              →
+            </span>
           </Link>
         )}
       </section>
@@ -49,7 +52,7 @@ export default function Notice({
         <span className="foot-links">
           <Link href="/docs">Docs</Link>
           <a href={site.github} target="_blank" rel="noopener noreferrer">
-            GitHub ↗
+            GitHub
           </a>
         </span>
       </footer>

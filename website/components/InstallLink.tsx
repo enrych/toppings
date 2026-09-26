@@ -7,18 +7,20 @@ const stores = {
   firefox: { href: site.firefox, label: "Add to Firefox" },
 } as const;
 
-const noSubscribe = () => () => {};
 type Store = keyof typeof stores;
+const noSubscribe = () => () => {};
 const readStore = (): Store => (/firefox|fxios/i.test(navigator.userAgent) ? "firefox" : "chrome");
 const serverStore = (): Store => "chrome";
 
-export default function InstallLink({ className = "btn btn--solid" }: { className?: string }) {
+export default function InstallLink() {
   const store = useSyncExternalStore(noSubscribe, readStore, serverStore);
 
   return (
-    <a href={stores[store].href} target="_blank" rel="noopener noreferrer" className={className}>
+    <a href={stores[store].href} target="_blank" rel="noopener noreferrer" className="btn btn--solid">
       {stores[store].label}
-      <span aria-hidden>→</span>
+      <span className="arrow" aria-hidden>
+        →
+      </span>
     </a>
   );
 }

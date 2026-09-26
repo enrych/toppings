@@ -1,16 +1,8 @@
 import Link from "next/link";
 import Backdrop from "@/components/Backdrop";
 import InstallLink from "@/components/InstallLink";
-import KeyDock from "@/components/KeyDock";
 import { site } from "@/lib/site";
 import "./home.css";
-
-const rail = [
-  { label: "Runs on", value: "Chrome, Firefox, Edge, Brave, Arc" },
-  { label: "Price", value: "Free, forever" },
-  { label: "Source", value: `${site.license} on GitHub`, href: site.github },
-  { label: "Trackers", value: "None. No accounts either" },
-];
 
 function delay(seconds: number) {
   return { "--d": `${seconds}s` } as React.CSSProperties;
@@ -20,76 +12,76 @@ export default function Home() {
   return (
     <main className="hero">
       <Backdrop />
+      <div className="glow" aria-hidden />
       <div className="grain" aria-hidden />
       <div className="scrim" aria-hidden />
 
-      <header className="top rise" style={delay(0.1)}>
+      <header className="top">
         <span className="wordmark">{site.name}</span>
         <nav className="top-nav">
           <Link href="/docs" className="btn btn--quiet">
             Docs
           </Link>
           <a href={site.github} target="_blank" rel="noopener noreferrer" className="btn btn--quiet">
-            GitHub <span aria-hidden>↗</span>
+            Source
           </a>
         </nav>
       </header>
 
-      <aside className="rail rise" style={delay(0.6)}>
-        <span className="label rail-title">
-          {site.name} / open source
+      <section className="stack">
+        <span className="eyebrow rise" style={delay(0)}>
+          Free · Open source · v{site.version}
         </span>
-        {rail.map((row) => (
-          <div key={row.label}>
-            <span className="label">{row.label}</span>
-            {row.href ? (
-              <a href={row.href} target="_blank" rel="noopener noreferrer" className="rail-value">
-                {row.value} <span aria-hidden>↗</span>
-              </a>
-            ) : (
-              <span className="rail-value">{row.value}</span>
-            )}
-          </div>
-        ))}
-      </aside>
 
-      <section className="copy">
-        <p className="eyebrow rise" style={delay(0.2)}>
-          <span className="eyebrow-rule" aria-hidden />
-          an extension for youtube · v{site.version}
-        </p>
-        <h1 className="rise" style={delay(0.3)}>
-          your youtube,
-          <br />
-          your way.
+        <h1 className="display">
+          <span className="mask">
+            <span className="line" style={delay(0.1)}>
+              Your YouTube,
+            </span>
+          </span>
+          <span className="mask">
+            <span className="line" style={delay(0.2)}>
+              your <em>way</em>.
+            </span>
+          </span>
         </h1>
-        <div className="deck-row rise" style={delay(0.5)}>
-          <p className="deck">
-            Audio mode, loop segments, custom speeds, one-key seeking. The controls YouTube never
-            shipped, and nothing else.
-          </p>
-          <div className="actions">
-            <InstallLink />
-            <a href={site.github} target="_blank" rel="noopener noreferrer" className="btn">
-              Source <span aria-hidden>↗</span>
-            </a>
-          </div>
+
+        <p className="deck rise" style={delay(0.55)}>
+          The controls YouTube never gave you — done right.
+        </p>
+
+        <div className="actions rise" style={delay(0.7)}>
+          <InstallLink />
+          <a href={site.github} target="_blank" rel="noopener noreferrer" className="btn">
+            Source
+          </a>
+        </div>
+
+        <div className="trust rise" style={delay(0.85)}>
+          <span>
+            <b>0 trackers.</b> No analytics, no accounts.
+          </span>
+          <span>
+            <b>{site.license}.</b> Fork it, modify it, ship it.
+          </span>
         </div>
       </section>
 
-      <KeyDock />
+      <span className="cue rise" style={delay(1.2)}>
+        Move the cursor to see the noise Toppings strips
+      </span>
 
-      <footer className="foot rise" style={delay(0.9)}>
+      <footer className="foot rise" style={delay(1)}>
         <span>
-          © {new Date().getFullYear()} {site.name} · {site.license}
+          {site.name} · v{site.version} · {site.license}
         </span>
         <span className="foot-links">
           <Link href="/docs">Docs</Link>
           <a href={site.issues} target="_blank" rel="noopener noreferrer">
-            Issues ↗
+            Issues
           </a>
           <a href={site.sponsor} target="_blank" rel="noopener noreferrer">
-            Sponsor ↗
+            Sponsor
           </a>
         </span>
       </footer>

@@ -6,8 +6,12 @@ export const metadata: Metadata = { title: "Toppings installed" };
 export default function Greetings() {
   return (
     <Notice
-      kicker="toppings installed"
-      title="you're all set."
+      kicker="Toppings installed"
+      title={
+        <>
+          You&apos;re all <em>set</em>.
+        </>
+      }
       body="Open any YouTube video and press B. Everything else is in the docs."
       cta={{ label: "Read the docs", href: "/docs" }}
     />
