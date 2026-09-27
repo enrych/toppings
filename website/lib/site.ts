@@ -30,7 +30,7 @@ export const features = [
   },
   {
     name: "Custom playback rates",
-    blurb: "Speeds YouTube doesn't offer, from 0.0625× to 16×, on the native menu.",
+    blurb: "Speeds YouTube doesn't offer, from 0.0625× to 16×, right in the player's speed panel.",
   },
   {
     name: "Toggle playback rate",

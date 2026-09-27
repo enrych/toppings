@@ -28,15 +28,15 @@
   background: var(--ink);
 }
 
-/* Legibility veil sits under the lamp so the ember light reads as the top-most
-   layer. It pools softly behind the headline glyphs instead of walling off the
-   left half, so the watch page stays recognisable under the type. */
+/* Legibility veil: it pools softly behind the headline glyphs instead of
+   walling off the left half, so the watch page stays recognisable under the
+   type. */
 .scrim {
   background:
-    radial-gradient(58% 52% at 26% 40%, rgba(11, 11, 12, 0.82), transparent 100%),
-    linear-gradient(100deg, rgba(11, 11, 12, 0.86) 0%, rgba(11, 11, 12, 0.64) 36%, rgba(11, 11, 12, 0.26) 64%, rgba(11, 11, 12, 0.06) 100%),
-    linear-gradient(0deg, rgba(11, 11, 12, 0.72), rgba(11, 11, 12, 0.3) 34%, transparent 52%),
-    linear-gradient(180deg, rgba(11, 11, 12, 0.5), transparent 22%);
+    radial-gradient(58% 52% at 26% 40%, rgba(15, 15, 15, 0.82), transparent 100%),
+    linear-gradient(100deg, rgba(15, 15, 15, 0.86) 0%, rgba(15, 15, 15, 0.64) 36%, rgba(15, 15, 15, 0.26) 64%, rgba(15, 15, 15, 0.06) 100%),
+    linear-gradient(0deg, rgba(15, 15, 15, 0.72), rgba(15, 15, 15, 0.3) 34%, transparent 52%),
+    linear-gradient(180deg, rgba(15, 15, 15, 0.5), transparent 22%);
 }
 
 
@@ -71,7 +71,7 @@
   right: 0;
   bottom: 0;
   height: 1px;
-  background: var(--bone);
+  background: var(--text);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.35s var(--ease-out);
@@ -168,7 +168,7 @@
 }
 
 .btn--solid {
-  box-shadow: 0 0 0 0 rgba(234, 123, 44, 0);
+  box-shadow: 0 0 0 0 rgba(255, 0, 51, 0);
   transition:
     transform 0.16s ease,
     background 0.2s ease,
@@ -177,12 +177,12 @@
 }
 
 .btn--solid:hover {
-  box-shadow: 0 0 0 1px rgba(234, 123, 44, 0.35), 0 12px 40px -12px rgba(234, 123, 44, 0.45);
+  box-shadow: 0 0 0 1px rgba(255, 0, 51, 0.35), 0 12px 40px -12px rgba(255, 0, 51, 0.45);
 }
 
 .btn:not(.btn--solid):not(.btn--quiet):hover {
-  background: rgba(234, 229, 216, 0.05);
-  border-color: var(--bone-dim);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--text-2);
 }
 
 .trust {
@@ -191,11 +191,11 @@
   flex-wrap: wrap;
   font-size: 13.5px;
   line-height: 1.5;
-  color: var(--bone-faint);
+  color: var(--text-3);
 }
 
 .trust b {
-  color: var(--bone-dim);
+  color: var(--text-2);
   font-weight: 500;
 }
 
@@ -224,8 +224,8 @@
 
   .scrim {
     background:
-      linear-gradient(0deg, rgba(11, 11, 12, 0.82) 0%, rgba(11, 11, 12, 0.6) 36%, rgba(11, 11, 12, 0.3) 66%, rgba(11, 11, 12, 0.06) 100%),
-      linear-gradient(180deg, rgba(11, 11, 12, 0.5), transparent 22%);
+      linear-gradient(0deg, rgba(15, 15, 15, 0.82) 0%, rgba(15, 15, 15, 0.6) 36%, rgba(15, 15, 15, 0.3) 66%, rgba(15, 15, 15, 0.06) 100%),
+      linear-gradient(180deg, rgba(15, 15, 15, 0.5), transparent 22%);
   }
 
   .top-nav {

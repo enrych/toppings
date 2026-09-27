@@ -11,7 +11,7 @@
   gap: 16px;
   padding: 18px 40px;
   border-bottom: 1px solid var(--hair);
-  background: rgba(11, 11, 13, 0.8);
+  background: rgba(15, 15, 15, 0.8);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -40,43 +40,43 @@
 .docs-nav a {
   padding: 6px 10px;
   border-left: 1px solid var(--hair);
-  color: var(--bone-dim);
+  color: var(--text-2);
   font-size: 14px;
 }
 
 .docs-nav a:hover {
-  color: var(--bone);
+  color: var(--text);
 }
 
 .docs-nav a[aria-current] {
-  color: var(--bone);
-  border-left-color: var(--ember-glow);
+  color: var(--text);
+  border-left-color: var(--red);
 }
 
 .prose {
   max-width: 68ch;
   font-size: 15.5px;
   line-height: 1.7;
-  color: var(--bone-dim);
+  color: var(--text-2);
 }
 
 .prose h1 {
   margin: 10px 0 16px;
   font: 400 clamp(44px, 6vw, 72px) / 0.95 var(--display);
   letter-spacing: -0.02em;
-  color: var(--bone);
+  color: var(--text);
 }
 
 .prose h2 {
   margin: 44px 0 12px;
   font: 400 30px/1.1 var(--display);
   letter-spacing: -0.01em;
-  color: var(--bone);
+  color: var(--text);
 }
 
 .prose .lede {
   font-size: 17px;
-  color: var(--bone);
+  color: var(--text);
 }
 
 .prose p + p,
@@ -96,18 +96,18 @@
 
 .prose strong {
   font-weight: 500;
-  color: var(--bone);
+  color: var(--text);
 }
 
 .prose a {
-  color: var(--bone);
+  color: var(--text);
   text-decoration: underline;
-  text-decoration-color: var(--bone-faint);
+  text-decoration-color: var(--text-3);
   text-underline-offset: 3px;
 }
 
 .prose a:hover {
-  text-decoration-color: var(--ember-glow);
+  text-decoration-color: var(--link);
 }
 
 .prose code,
@@ -115,14 +115,14 @@
   font: 400 0.9em var(--mono);
   padding: 2px 6px;
   border: 1px solid var(--hair);
-  background: rgba(234, 229, 216, 0.05);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .prose kbd {
   min-width: 26px;
   display: inline-block;
   text-align: center;
-  color: var(--bone);
+  color: var(--text);
 }
 
 .keys {
@@ -143,7 +143,7 @@
 }
 
 .keys td:nth-child(2) {
-  color: var(--bone);
+  color: var(--text);
   white-space: nowrap;
 }
 
@@ -161,7 +161,7 @@
   cursor: pointer;
   padding: 12px 0;
   font-size: 16px;
-  color: var(--bone);
+  color: var(--text);
   list-style: none;
   display: flex;
   justify-content: space-between;
@@ -174,7 +174,7 @@
 
 .faq summary::after {
   content: "+";
-  color: var(--bone-dim);
+  color: var(--text-2);
   font-family: var(--mono);
 }
 
@@ -191,7 +191,7 @@
 }
 
 .release-title {
-  color: var(--bone-dim);
+  color: var(--text-2);
 }
 
 .kind {
@@ -203,12 +203,12 @@
   text-transform: uppercase;
   text-align: center;
   border: 1px solid var(--hair);
-  color: var(--bone-dim);
+  color: var(--text-2);
 }
 
 .kind--new {
-  color: var(--ember-glow);
-  border-color: rgba(234, 123, 44, 0.5);
+  color: var(--red);
+  border-color: rgba(255, 0, 51, 0.5);
 }
 
 @media (max-width: 760px) {

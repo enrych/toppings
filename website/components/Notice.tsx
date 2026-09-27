@@ -26,7 +26,7 @@ export default function Notice({
         </Link>
       </header>
       <section className="notice-body">
-        <span className="eyebrow eyebrow--ember">{kicker}</span>
+        <span className="eyebrow">{kicker}</span>
         <h1 className="display">{title}</h1>
         <p className="deck">{body}</p>
         {external ? (

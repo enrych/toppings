@@ -88,14 +88,14 @@ function drawWatchPage(c: HTMLCanvasElement, w: number, h: number) {
   const s = portrait ? (w < h * 0.6 ? w / 900 : (w * 1.25) / 1440) : w / 1440;
   const oy = portrait ? h - 900 * s - 40 * s : 0;
   x.setTransform(s, 0, 0, s, 0, oy);
-  x.fillStyle = "#0b0b0c";
+  x.fillStyle = "#0f0f0f";
   x.fillRect(0, -oy / s, w / s, h / s);
 
-  x.strokeStyle = "rgba(120,120,130,0.22)";
+  x.strokeStyle = "rgba(120,120,120,0.22)";
   x.lineWidth = 1;
   roundRect(x, 470, 30, 420, 34, 17);
   x.stroke();
-  x.fillStyle = "rgba(120,120,130,0.2)";
+  x.fillStyle = "rgba(120,120,120,0.2)";
   x.beginPath();
   x.arc(1330, 47, 17, 0, 7);
   x.fill();
@@ -109,13 +109,13 @@ function drawWatchPage(c: HTMLCanvasElement, w: number, h: number) {
     frame.y + frame.h * 0.5,
     frame.w * 0.62,
   );
-  lit.addColorStop(0, "#202024");
-  lit.addColorStop(1, "#121215");
+  lit.addColorStop(0, "#272727");
+  lit.addColorStop(1, "#181818");
   x.fillStyle = lit;
   roundRect(x, frame.x, frame.y, frame.w, frame.h, 10);
   x.fill();
 
-  x.fillStyle = "rgba(234,229,216,0.08)";
+  x.fillStyle = "rgba(241,241,241,0.08)";
   x.beginPath();
   x.moveTo(frame.x + frame.w * 0.5 - 20, frame.y + frame.h * 0.5 - 28);
   x.lineTo(frame.x + frame.w * 0.5 + 32, frame.y + frame.h * 0.5);
@@ -123,13 +123,13 @@ function drawWatchPage(c: HTMLCanvasElement, w: number, h: number) {
   x.closePath();
   x.fill();
 
-  x.fillStyle = "rgba(234,229,216,0.16)";
+  x.fillStyle = "rgba(241,241,241,0.16)";
   x.fillRect(frame.x + 16, frame.y + frame.h - 10, frame.w - 32, 3);
-  x.fillStyle = "#ff3322";
+  x.fillStyle = "#ff0033";
   x.fillRect(frame.x + 16, frame.y + frame.h - 10, (frame.w - 32) * 0.34, 3);
   x.fillStyle = "#ffcc00";
   x.fillRect(frame.x + 16 + (frame.w - 32) * 0.61, frame.y + frame.h - 10, 8, 3);
-  x.fillStyle = "rgba(234,229,216,0.5)";
+  x.fillStyle = "rgba(241,241,241,0.5)";
   x.fillRect(frame.x + 16 + (frame.w - 32) * 0.34 - 12, frame.y + frame.h - 36, 12, 12);
   x.fillRect(frame.x + 54, frame.y + frame.h - 36, 12, 12);
   x.fillRect(frame.x + 84, frame.y + frame.h - 36, 12, 12);
@@ -147,43 +147,43 @@ function drawWatchPage(c: HTMLCanvasElement, w: number, h: number) {
   x.closePath();
   x.fill();
 
-  x.fillStyle = "rgba(150,150,160,0.4)";
+  x.fillStyle = "rgba(150,150,150,0.4)";
   x.fillRect(70, 600, 560, 22);
-  x.fillStyle = "rgba(70,70,80,0.5)";
+  x.fillStyle = "rgba(70,70,70,0.5)";
   x.beginPath();
   x.arc(90, 656, 20, 0, 7);
   x.fill();
-  x.fillStyle = "rgba(90,90,100,0.6)";
+  x.fillStyle = "rgba(90,90,90,0.6)";
   x.fillRect(122, 645, 180, 12);
-  x.fillStyle = "rgba(60,60,70,0.4)";
+  x.fillStyle = "rgba(60,60,60,0.4)";
   x.fillRect(122, 664, 120, 9);
-  x.fillStyle = "rgba(234,229,216,0.3)";
+  x.fillStyle = "rgba(241,241,241,0.3)";
   roundRect(x, 330, 638, 118, 36, 18);
   x.fill();
   for (let i = 0; i < 4; i++) {
-    x.fillStyle = "rgba(70,70,80,0.3)";
+    x.fillStyle = "rgba(70,70,70,0.3)";
     roundRect(x, 480 + i * 114, 638, 100, 36, 18);
     x.fill();
   }
 
-  x.fillStyle = "rgba(60,60,70,0.28)";
+  x.fillStyle = "rgba(60,60,60,0.28)";
   roundRect(x, 70, 700, 850, 78, 8);
   x.fill();
-  x.fillStyle = "rgba(120,120,130,0.55)";
+  x.fillStyle = "rgba(120,120,120,0.55)";
   x.fillRect(86, 716, 240, 11);
-  x.fillStyle = "rgba(90,90,100,0.4)";
+  x.fillStyle = "rgba(90,90,90,0.4)";
   x.fillRect(86, 738, 620, 9);
   x.fillRect(86, 756, 460, 9);
 
   for (let i = 0; i < 3; i++) {
     const y = 806 + i * 56;
-    x.fillStyle = "rgba(70,70,80,0.5)";
+    x.fillStyle = "rgba(70,70,70,0.5)";
     x.beginPath();
     x.arc(86, y + 16, 16, 0, 7);
     x.fill();
-    x.fillStyle = "rgba(90,90,100,0.55)";
+    x.fillStyle = "rgba(90,90,90,0.55)";
     x.fillRect(120, y, 280, 12);
-    x.fillStyle = "rgba(60,60,70,0.35)";
+    x.fillStyle = "rgba(60,60,60,0.35)";
     x.fillRect(120, y + 22, 480, 10);
   }
 
@@ -191,15 +191,15 @@ function drawWatchPage(c: HTMLCanvasElement, w: number, h: number) {
   // out; it is the arrangement that was signed off on and must stay as is.
   for (let i = 0; i < 6; i++) {
     const y = 96 + i * 122;
-    x.fillStyle = "rgba(45,45,52,0.7)";
+    x.fillStyle = "rgba(45,45,45,0.7)";
     x.fillRect(960, y, 168, 94);
-    x.fillStyle = "rgba(255,51,34,0.85)";
+    x.fillStyle = "rgba(255,0,51,0.85)";
     x.fillRect(1098, y + 8, 30, 16);
-    x.fillStyle = "rgba(80,80,90,0.4)";
+    x.fillStyle = "rgba(80,80,80,0.4)";
     x.fillRect(1140, y + 38, 110, 10);
-    x.fillStyle = "rgba(80,80,90,0.5)";
+    x.fillStyle = "rgba(80,80,80,0.5)";
     x.fillRect(1140, y + 56, 150, 10);
-    x.fillStyle = "rgba(120,120,130,0.65)";
+    x.fillStyle = "rgba(120,120,120,0.65)";
     x.fillRect(1140, y + 76, 210, 12);
   }
 }

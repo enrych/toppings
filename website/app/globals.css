@@ -1,13 +1,14 @@
 :root {
-  --ink: #0b0b0c;
-  --bone: #eae5d8;
-  --bone-dim: rgba(234, 229, 216, 0.6);
-  --bone-faint: rgba(234, 229, 216, 0.34);
-  --hair: rgba(234, 229, 216, 0.12);
-  --hair-strong: rgba(234, 229, 216, 0.22);
-  --noise-red: #ff2a1a;
-  --ember: #c2531e;
-  --ember-glow: #ea7b2c;
+  /* YouTube's dark theme: its base, text and outline tones, its red for the
+     brand accent and its link blue for focus and links. */
+  --ink: #0f0f0f;
+  --text: #f1f1f1;
+  --text-2: #aaaaaa;
+  --text-3: #717171;
+  --hair: rgba(255, 255, 255, 0.1);
+  --hair-strong: rgba(255, 255, 255, 0.2);
+  --red: #ff0033;
+  --link: #3ea6ff;
 
   --display: var(--font-display), Georgia, serif;
   --sans: var(--font-sans), system-ui, sans-serif;
@@ -31,15 +32,15 @@ body {
 
 body {
   background: var(--ink);
-  color: var(--bone);
+  color: var(--text);
   font: 400 15px/1.6 var(--sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background: var(--ember);
-  color: var(--bone);
+  background: var(--red);
+  color: var(--text);
 }
 
 a {
@@ -65,7 +66,7 @@ ul {
 }
 
 :focus-visible {
-  outline: 2px solid var(--ember-glow);
+  outline: 2px solid var(--link);
   outline-offset: 3px;
 }
 
@@ -77,7 +78,7 @@ ul {
 .label {
   font: 500 13px/1.4 var(--sans);
   letter-spacing: 0.01em;
-  color: var(--bone-dim);
+  color: var(--text-2);
 }
 
 .eyebrow {
@@ -86,18 +87,14 @@ ul {
   gap: 12px;
   font: 500 13px/1 var(--sans);
   letter-spacing: 0.01em;
-  color: var(--bone-dim);
+  color: var(--text-2);
 }
 
 .eyebrow::before {
   content: "";
   width: 8px;
   height: 8px;
-  background: var(--noise-red);
-}
-
-.eyebrow--ember::before {
-  background: var(--ember-glow);
+  background: var(--red);
 }
 
 .display {
@@ -107,13 +104,13 @@ ul {
 
 .display em {
   font-style: normal;
-  color: var(--ember-glow);
+  color: var(--red);
 }
 
 .deck {
   font: 400 clamp(17px, 1.35vw, 20px) / 1.5 var(--sans);
   letter-spacing: -0.005em;
-  color: rgba(234, 229, 216, 0.72);
+  color: rgba(255, 255, 255, 0.72);
   max-width: 40ch;
 }
 
@@ -134,7 +131,7 @@ ul {
 }
 
 .btn:hover {
-  border-color: var(--bone);
+  border-color: var(--text);
 }
 
 .btn:active {
@@ -142,9 +139,9 @@ ul {
 }
 
 .btn--solid {
-  background: var(--bone);
+  background: var(--text);
   color: var(--ink);
-  border-color: var(--bone);
+  border-color: var(--text);
 }
 
 .btn--solid:hover {
@@ -153,7 +150,7 @@ ul {
 }
 
 .btn--solid .arrow {
-  color: var(--ember);
+  color: var(--red);
 }
 
 .btn--quiet {
@@ -163,11 +160,11 @@ ul {
   border-radius: 0;
   font: 500 13px/1 var(--sans);
   letter-spacing: 0.01em;
-  color: var(--bone-dim);
+  color: var(--text-2);
 }
 
 .btn--quiet:hover {
-  color: var(--bone);
+  color: var(--text);
 }
 
 .foot {
@@ -177,7 +174,7 @@ ul {
   flex-wrap: wrap;
   font: 400 13px/1 var(--sans);
   letter-spacing: 0.005em;
-  color: var(--bone-faint);
+  color: var(--text-3);
 }
 
 .foot-links {
@@ -186,7 +183,7 @@ ul {
 }
 
 .foot a:hover {
-  color: var(--bone);
+  color: var(--text);
 }
 
 @media (prefers-reduced-motion: reduce) {
