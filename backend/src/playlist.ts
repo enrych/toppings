@@ -1,13 +1,21 @@
 import { errorMessage, HttpError } from "./http";
 
+// Playlist pages come one after another, since each page's token arrives
+// with the page before it, but a page's durations need nothing further, so
+// they are fetched while the next page loads rather than before it.
 export async function getPlaylistRuntime(playlistId: string, apiKey: string) {
   let totalVideos = 0;
-  let totalRuntime = 0;
+  const durations: Promise<number>[] = [];
 
   for await (const videoIds of fetchVideoIdsByPage(playlistId, apiKey)) {
     totalVideos += videoIds.length;
-    totalRuntime += await fetchDurationSeconds(videoIds, apiKey);
+    const duration = fetchDurationSeconds(videoIds, apiKey);
+    // Handled by the Promise.all below; this only keeps an early failure
+    // from surfacing as an unhandled rejection while later pages load.
+    duration.catch(() => {});
+    durations.push(duration);
   }
+  const totalRuntime = (await Promise.all(durations)).reduce((sum, seconds) => sum + seconds, 0);
 
   return {
     playlistId,
