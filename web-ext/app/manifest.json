@@ -14,7 +14,6 @@
   "background": {
     "service_worker": "/background.js"
   },
-  "commands": {},
   "content_scripts": [
     {
       "all_frames": true,
@@ -45,7 +44,6 @@
     "page": "/options/index.html"
   },
   "permissions": [
-    "webNavigation",
     "storage"
   ],
   "short_name": "Toppings",

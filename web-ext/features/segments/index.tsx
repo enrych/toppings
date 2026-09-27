@@ -3,7 +3,7 @@ import { bindKeys } from "@/kernel/keys";
 import { mount, mountInline } from "@/kernel/dom/mount";
 import { setCapabilityStatus } from "@/kernel/dom/capabilities";
 import { showToast } from "@/kernel/dom/toast";
-import { isTypingTarget, matchesBinding } from "@/lib/keybinding";
+import { isTypingTarget, matchesBinding } from "@/kernel/keybinding";
 import { resolveBelowPlayer, resolveProgressBar, resolveRightControls, resolveVideo } from "@/youtube/player";
 import { Markers } from "./Markers";
 import { Panel } from "./panel/Panel";

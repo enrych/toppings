@@ -1,4 +1,4 @@
-import { isTypingTarget, matchesBinding } from "@/lib/keybinding";
+import { isTypingTarget, matchesBinding } from "./keybinding";
 import { defineSettings } from "./settings";
 
 export interface KeyDefinition {

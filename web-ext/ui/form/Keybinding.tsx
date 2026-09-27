@@ -1,6 +1,6 @@
 import { useId, useState } from "preact/hooks";
 import Field from "./Field";
-import { formatBindingDisplay, recordBinding } from "@/lib/keybinding";
+import { formatBindingDisplay, recordBinding } from "@/kernel/keybinding";
 
 interface KeybindingProps {
   label: string;

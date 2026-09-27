@@ -16,7 +16,7 @@ Run from `web-ext/`:
 | `bun run check` | `tsc --noEmit` (app and `scripts/`), then `bun test` |
 | `bun run release` / `release:firefox` | Build, then zip `dist/` via `scripts/release.ts` |
 
-The build is `scripts/build.ts`: `Bun.build` per entry (IIFE, no code splitting), Tailwind through its PostCSS API from `tailwind.config.ts`, static copies, and the manifest transform. CSS is not imported from JS: the content script's stylesheet is listed in the manifest, and the popup and options pages link theirs.
+The build is `scripts/build.ts`: `Bun.build` per entry (IIFE, no code splitting), Tailwind through its PostCSS API from `tailwind.config.ts`, static copies, and the manifest transform. Set `DIST=<dir>` to build somewhere other than `dist/`, so a Chrome and a Firefox build can coexist. CSS is not imported from JS: the popup and options pages link their stylesheet; the content script ships none, because everything it injects is styled inside its own shadow roots.
 
 ---
 
@@ -31,50 +31,52 @@ Four entries, all under `app/` (`scripts/build.ts`):
 | `popup` | `app/popup/index.tsx` | Toolbar popup |
 | `options` | `app/options/index.tsx` | Options page |
 
----
-
-## 3. THE KERNEL, AND WHAT STILL RUNS ON THE OLD PATH
-
-The extension is moving feature by feature onto a small kernel. Ported so far: **playlist-runtime**. Everything else (playback, segments, shorts, profiles) still runs on the legacy path: background `getContext` → `CONTEXT` message → `app/content/index.ts` scope handlers. Port the next feature the same way; do not add to the legacy path.
-
-A kernel feature is one folder under `features/` exporting a `Feature` (`kernel/features.ts`):
-
-- `routes`: which `youtube/route.ts` routes it runs on. The kernel mounts it on every navigation that lands there and calls the returned unmount on the next one, so `mount` starts from a clean page and never has to be idempotent.
-- `settings.ts`: its own slice via `defineSettings(id, defaults, legacy?)` (`kernel/settings.ts`), stored under `settings:<id>` in `chrome.storage.sync`. `legacy` reads the value out of the old store shape; `migrateSettings` in the background runs it once before the legacy resync. Options pages read a slice with `useSettings`.
-- `messages.ts`: anything the background must do for it (API calls) is a `defineMessage` (`kernel/messaging.ts`); the background registers the handler in a `background.ts` next to the feature.
-- UI is Preact (`/** @jsxImportSource preact */`) rendered into a shadow root with `kernel/dom/mount.ts`, styled inline; YouTube's CSS and ours never meet.
-- DOM lookups go through `resolveTarget` (`kernel/dom/resolve.ts`) with the strategies in `youtube/` and the result recorded with `setCapabilityStatus`, so the options page can report a broken selector.
-- Tests run under Bun with happy-dom (`test/setup.ts` registers the DOM and an in-memory `chrome.storage`). A feature takes its outside world as a `deps` object so tests mount it against HTML fixtures of each YouTube layout; `features/playlist-runtime/index.test.ts` is the pattern.
-
-## 4. THE TWO RENDERING WORLDS
-
-This is the single most important thing to get right in this project.
-
-- **`app/popup/`, `app/options/`, `ui/`** — real React with `react-dom`, hooks, state, context.
-- **`app/content/`, and the content-script code under `features/`** — **dom-chef**, not React. JSX there compiles to real DOM nodes at call time. There is no reconciler, no re-render, no hooks. A component is a function that returns an `HTMLElement` you insert yourself and update by hand or replace outright.
-
-A content-script file declares its world with `/** @jsxImportSource dom-chef-jsx */` as its first line; that routes its JSX to `app/content/jsx/jsx-runtime.ts`, which builds DOM nodes with dom-chef and types elements as `HTMLElement` with native event handlers. Without the pragma a file gets React's runtime and React's types. Reaching for `useState` in a content script fails at runtime, not at build.
+The content script does one thing: `bootFeatures([...features], onNavigate, { enabled })`. The background serves feature messages, migrates the pre-kernel store on install, and keeps the toolbar icon in step with the master switch.
 
 ---
 
-## 5. STORAGE LAYERS
+## 3. THE KERNEL
 
-Three, with different rules. Keys live in `lib/storageKeys.ts`.
+Every feature is one folder under `features/` exporting a `Feature` (`kernel/features.ts`). The kernel mounts a feature on each navigation that lands on one of its `routes` and calls the returned unmount on the next, so `mount` always starts from a clean page and never has to be idempotent. YouTube is a single-page app; `youtube/route.ts` turns its `yt-navigate-finish` event into a `Route`.
+
+A feature folder holds, as needed:
+
+- `settings.ts` — its slice: `defineSettings(id, defaults, { legacy?, area? })` (`kernel/settings.ts`), stored as `settings:<id>` in `chrome.storage.sync` (or `local` for data too big or personal to roam). `legacy` maps the pre-kernel store into the slice; `migrateSettings` runs each once. Pages read a slice with `useSettings`.
+- `keys.ts` — its keyboard actions: `defineKeys({ id, title, keys })` (`kernel/keys.ts`). A feature binds handlers at mount with `bindKeys`; the user's overrides live in the `keybindings` slice by action id (`playback.seekForward`); the Shortcuts page renders every group from the registries. Data-driven shortcuts (a saved segment config's own key) are the feature's business.
+- `messages.ts` — anything the background must do for it: `defineMessage(kind)` (`kernel/messaging.ts`), handled in a `background.ts` next to the feature.
+- `index.tsx` — the `Feature`. Where it needs a page element it asks `youtube/` (`resolveVideo`, `resolveGuideSettingsSection`, …), which wraps `resolveTarget` (`kernel/dom/resolve.ts`) around ordered selector strategies, and records the outcome with `setCapabilityStatus` so the options page can say a selector broke. **Selectors live in `youtube/`, not in features.**
+- UI is Preact. `mount()` (`kernel/dom/mount.ts`) renders into a shadow root so YouTube's CSS and ours never meet; `mountInline()` renders into a host the caller shapes when the element must take YouTube's own classes (a `.ytp-button`, a settings-menu row). In-page styles read YouTube's colour tokens through `themeTokens` (`kernel/dom/theme.ts`) and so follow the page's theme. `showToast` (`kernel/dom/toast.tsx`) is the shared notice.
+- Profiles are built on primitives: `youtube/primitives.ts` catalogues each page knob (id, routes, strategies, `parse`, idempotent `apply`, `reset`), and `runPrimitives` (`kernel/primitives.ts`) keeps a set of values applied while the page re-renders and restores everything on stop.
+- Tests run under Bun with happy-dom; `test/setup.ts` registers the DOM and an in-memory `chrome.storage` that emits change events. A feature takes anything it cannot get from the page as a `deps` object (a fetcher, a storage) so tests mount it against HTML fixtures of each YouTube layout. `features/playlist-runtime/index.test.ts` and `features/segments/index.test.ts` are the patterns.
+
+Live verification is Playwright loading the built `dist/` into Chromium against real YouTube; headless, logged-out YouTube serves older layouts than a signed-in browser, so a strategy list should carry both.
+
+---
+
+## 4. PAGES
+
+`app/popup/` and `app/options/` are Preact pages (`preact/hooks`; `preact/compat` only for portals). Options routes by hash (`app/options/router.ts`); the search box (`app/options/search/`) locates a result by its rendered label, so a copy edit in a page must land in `searchIndex.ts` too.
+
+The theme (`ui/theme.css`) is YouTube's own palette and Roboto stack in both modes, on `--color-*` tokens that `tailwind.config.ts` exposes as `tw-` utilities. Tailwind runs prefixed and without preflight; `ui/base.css` is the reset. Tailwind's opacity modifiers (`tw-bg-accent/50`) do nothing on these variable colours — use `color-mix` in a style attribute instead.
+
+---
+
+## 5. STORAGE
 
 | Layer | Holds | Accessed via |
 | --- | --- | --- |
-| `chrome.storage.sync` | Legacy settings, shape of `DEFAULT_STORE` (`lib/store.ts`); kernel slices under `settings:<feature>` | `lib/store.ts`, `lib/useChromeStorageSync.ts`; `kernel/settings.ts` |
-| `chrome.storage.local` | Profiles, feature reports — keys in `CHROME_STORAGE_LOCAL_KEY` | `features/profiles/profileStore.ts`, `features/profiles/featureReports.ts`, `lib/useChromeStorageLocal.ts` |
-| IndexedDB | Capability cache, segment data — stores in `BROWSER_STORAGE_IDB_STORE` | `lib/indexedDb.ts`, `features/profiles/capabilityCache.ts`, `features/segments/segmentStore.ts` |
+| `chrome.storage.sync` | Every settings slice, `settings:<id>` | `kernel/settings.ts` |
+| `chrome.storage.local` | The profile store (`settings:profiles`), feature reports, per-device UI flags | `features/profiles/store.ts`, `kernel/dom/featureReports.ts`, `lib/useChromeStorageLocal.ts` |
+| IndexedDB | Capability cache, per-video segment data | `lib/indexedDb.ts`, `kernel/dom/capabilities.ts`, `features/segments/store.ts` |
 
-**`DEFAULT_STORE` is the schema.** `mergeDefaults` (`lib/object.ts`) overlays stored values on it and **drops keys absent from the defaults**, and `syncStorageWithDefaults` writes the result back. Adding a setting means adding it to `DEFAULT_STORE`; removing one from `DEFAULT_STORE` removes it from every user's storage on next sync. Every `storage.sync.set` in the codebase writes this one shape — keep it that way, or `mergeDefaults` will quietly delete whatever does not fit.
+A slice is read with its defaults merged in, which is also how a new setting reaches existing users. The pre-kernel store (`isExtensionEnabled`, `ui`, `preferences`) is migrated once by `app/background/migrations.ts` and then removed; `migrations.test.ts` pins the mapping.
 
 ---
 
 ## 6. MANIFEST AND VERSIONING
 
 - `app/manifest.json` is the **MV3 source of truth**. The MV2 Firefox variant is generated at build time by the transform in `scripts/build.ts` (flips `manifest_version`, folds `host_permissions` into `permissions`, renames `action` → `browser_action`, flattens `web_accessible_resources`). Never hand-maintain a second manifest; extend the transform.
-- Version lives in `data/version.ts` as `EXTENSION_VERSION` and is injected into the manifest at build time. It is also mirrored in `website/lib/site.ts` (`site.version`) on release — update both.
+- Version lives in `lib/version.ts` as `EXTENSION_VERSION` and is injected into the manifest at build time. It is also mirrored in `website/lib/site.ts` (`site.version`) on release — update both.
 
 ---
 
@@ -83,34 +85,37 @@ Three, with different rules. Keys live in `lib/storageKeys.ts`.
 ```text
 web-ext/
 ├── app/                 # The four surfaces, and only their shells
-│   ├── background/      # Service worker: context dispatch, install hooks
-│   ├── content/         # Content-script entry, its CSS, the dom-chef JSX runtime
-│   ├── options/         # React options page: router, layout, search, routes/
-│   └── popup/           # React toolbar popup
-├── kernel/              # Feature contract, settings slices, messaging, DOM resolve + mount
-├── youtube/             # Routes, navigation event, per-page DOM strategies (kernel features)
+│   ├── background/      # Install hooks, migrations, message handlers, icon
+│   ├── content/         # bootFeatures
+│   ├── options/         # Preact options page: router, layout, search, routes/
+│   ├── popup/           # Preact toolbar popup
+│   └── settings.ts      # The app slice: master switch and theme
+├── kernel/              # Feature contract, settings, keys, messaging, primitives,
+│                        # dom/ (resolve, mount, capabilities, reports, theme, toast)
+├── youtube/             # Routes, navigation, selectors per page area, the primitive catalogue
 ├── features/            # One folder per thing the extension does
-│   ├── playback/        # Rates, seek, double-tap, the player menu (watch page)
-│   ├── playlist/        # Playlist page, cache, API client
-│   ├── profiles/        # Presets, profile store, primitives/ (YouTube DOM strategies),
-│   │                    # applyProfile, gear menu, native settings, import/export,
-│   │                    # capability cache, feature reports
-│   ├── segments/        # Engine, store, markers, button, panel
-│   └── shorts/          # Shorts page
-├── lib/                 # Plumbing any feature may use: store schema and helpers,
-│                        # storage keys, protocol, YouTube constants, indexedDb,
-│                        # keybinding, duration, object, browser, version
-├── ui/                  # Shared React components: form, feedback, layout, primitives, theme
+│   ├── playback/        # Default rate, rate and seek keys, custom rates in the speed panel
+│   ├── playlist-runtime/# Runtime statistics on playlist and watch pages
+│   ├── profiles/        # Presets, profile store, gear-menu panel, native settings, import/export
+│   ├── segments/        # Engine, session, storage, markers, button, panel/
+│   └── shorts/          # Auto-scroll, rate and seek on Shorts
+├── lib/                 # Plumbing with no YouTube or kernel knowledge: storage keys,
+│                        # indexedDb, duration, urls, version, brand
+├── ui/                  # Shared page components: form, feedback, layout, primitives, theme
+├── test/                # Bun test preload
 └── scripts/             # build.ts (Bun.build + manifest transform), release.ts
 ```
 
-Imports across folders use the `@/` root alias (`@/lib/store`); same-folder imports stay relative. There are no barrel `index.ts` files: import the file that defines what you need. Options routes stay under `app/options/routes` because they do not map one-to-one onto features (Keybindings spans all of them).
+Imports across folders use the `@/` root alias; same-folder imports stay relative. There are no barrel `index.ts` files: import the file that defines what you need. Options routes stay under `app/options/routes` because they do not map one-to-one onto features.
 
-A helper that only one feature uses lives in that feature's folder. It moves to `lib/` when a second feature needs it, not before.
+A helper that only one feature uses lives in that feature's folder. It moves to `kernel/` when it is about running features, to `youtube/` when it is about YouTube's page, and to `lib/` only when it is neither.
 
 ---
 
 ## 8. YOUTUBE-SPECIFIC GOTCHAS
 
-- **YouTube is a SPA — the content script never re-runs on navigation.** The background listens to `chrome.webNavigation.onHistoryStateUpdated` (`app/background/index.ts`) and dispatches a `CONTEXT` message; `app/content/index.ts` receives it and routes to a per-scope handler. So a page handler runs repeatedly against a live DOM it did not start with: it must be idempotent, must not double-inject, and must tear down what the previous route left behind. Nothing is cleaned up for you.
-- Selectors in `features/profiles/primitives/` target YouTube's markup and break when YouTube ships changes. They are the correct place for a "why" comment naming the layout variant a selector targets — that is exactly the external constraint the code cannot state on its own.
+- Selectors in `youtube/` target YouTube's markup and break when YouTube ships changes. They are the correct place for a "why" comment naming the layout variant a strategy targets.
+- YouTube's Polymer lists (the guide, the settings menu) drop foreign children when they re-render; anything injected into one must be put back on a `MutationObserver` (`features/profiles/index.tsx`).
+- The player's speed panel is a slider with preset chips, not a menu list; the playback feature replaces the chips and syncs the slider and display itself, because YouTube only redraws them from its own state.
+- The desktop player has no double-tap seek overlay to reuse; the playback feature draws its own.
+- YouTube's theme reaches shadow roots as `--yt-sys-color-baseline--*` custom properties on `<html>`; a shadow host reset with `all: initial` would discard them.

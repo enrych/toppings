@@ -11,7 +11,7 @@ import { getActiveProfile, getAllProfiles, setActiveProfileId, subscribeProfiles
 import type { Profile } from "@/features/profiles/profiles";
 import { routeFor, type Route } from "@/youtube/route";
 import { URLS } from "@/lib/urls";
-import { YOUTUBE_HOSTNAME_SUFFIX } from "@/lib/youtube";
+import { YOUTUBE_HOSTNAME_SUFFIX } from "@/youtube/urls";
 
 const WIDTH = 340;
 

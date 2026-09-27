@@ -1,4 +1,4 @@
-import { YOUTUBE_QUERY_PARAM, YOUTUBE_SYSTEM_PLAYLIST_ID, YOUTUBE_URL_PATH } from "@/lib/youtube";
+import { YOUTUBE_QUERY_PARAM, YOUTUBE_SYSTEM_PLAYLIST_ID, YOUTUBE_URL_PATH } from "./urls";
 
 export type RouteName = "watch" | "playlist" | "shorts" | "home" | "search" | "other";
 
