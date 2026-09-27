@@ -37,7 +37,13 @@ async function bundleScripts() {
       target: "browser",
       format: "iife",
       sourcemap: production ? "none" : "linked",
-      define: { "process.env.NODE_ENV": JSON.stringify(production ? "production" : "development") },
+      define: {
+        "process.env.NODE_ENV": JSON.stringify(production ? "production" : "development"),
+        // Firefox's chrome.* namespace is callback-only under MV2 and returns
+        // undefined when called for a promise; its browser.* namespace is the
+        // same API with promises, which is how the code calls it.
+        ...(firefox && { chrome: "browser" }),
+      },
     });
     if (!result.success) {
       for (const log of result.logs) console.error(String(log));

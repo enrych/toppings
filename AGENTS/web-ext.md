@@ -49,7 +49,7 @@ A feature folder holds, as needed:
 - Profiles are built on primitives: `youtube/primitives.ts` catalogues each page knob (id, routes, strategies, `parse`, idempotent `apply`, `reset`), and `runPrimitives` (`kernel/primitives.ts`) keeps a set of values applied while the page re-renders and restores everything on stop.
 - Tests run under Bun with happy-dom; `test/setup.ts` registers the DOM and an in-memory `chrome.storage` that emits change events. A feature takes anything it cannot get from the page as a `deps` object (a fetcher, a storage) so tests mount it against HTML fixtures of each YouTube layout. `features/playlist-runtime/index.test.ts` and `features/segments/index.test.ts` are the patterns.
 
-Live verification is Playwright loading the built `dist/` into Chromium against real YouTube; headless, logged-out YouTube serves older layouts than a signed-in browser, so a strategy list should carry both.
+Live verification covers both browsers. Chromium: Playwright loading the built `dist/`. Firefox: Puppeteer over WebDriver BiDi with `browser.installExtension`, launched with `-remote-allow-system-access`; BiDi will not navigate to `moz-extension://` pages directly, so a throwaway copy of the build lists `options/*` and `popup/*` as web-accessible and is reached from a normal page. Headless, logged-out YouTube serves older layouts than a signed-in browser, so a strategy list should carry both.
 
 ---
 
@@ -118,4 +118,5 @@ A helper that only one feature uses lives in that feature's folder. It moves to 
 - YouTube's Polymer lists (the guide, the settings menu) drop foreign children when they re-render; anything injected into one must be put back on a `MutationObserver` (`features/profiles/index.tsx`).
 - The player's speed panel is a slider with preset chips, not a menu list; the playback feature replaces the chips and syncs the slider and display itself, because YouTube only redraws them from its own state.
 - The desktop player has no double-tap seek overlay to reuse; the playback feature draws its own.
+- Firefox's `chrome.*` namespace is callback-only under MV2: called for a promise it returns `undefined`. The code calls `chrome.*` promise-style, and the Firefox build rewrites the global to `browser` (`scripts/build.ts`). Never pass callbacks to extension APIs, or the Firefox build breaks the other way.
 - YouTube's theme reaches shadow roots as `--yt-sys-color-baseline--*` custom properties on `<html>`; a shadow host reset with `all: initial` would discard them.
