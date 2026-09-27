@@ -8,7 +8,7 @@ import type { RouteName } from "@/youtube/route";
 import { PRIMITIVES, watchComments, watchEndCards, watchSidebar, type Visibility } from "@/youtube/primitives";
 import { resolveSettingsButton } from "@/youtube/player";
 import { resolveGuideSettingsSection, settingsMenu } from "@/youtube/guide";
-import { showPageToast } from "@/lib/pageToast";
+import { showToast } from "@/kernel/dom/toast";
 import { GearEntry, GearPanel, type QuickToggle } from "./GearPanel";
 import { GuideLink, NativeSettings } from "./NativeSettings";
 import { profilesKeys } from "./keys";
@@ -72,7 +72,7 @@ async function cycleProfile(): Promise<void> {
   const current = (await getActiveProfile())?.id ?? null;
   const next = cycle[(cycle.findIndex((p) => p.id === current) + 1) % cycle.length];
   await setActiveProfileId(next.id);
-  showPageToast(`Profile: ${next.name}`);
+  showToast(`Profile: ${next.name}`);
 }
 
 const GEAR_ENTRY_ID = "tppng-gear-entry";

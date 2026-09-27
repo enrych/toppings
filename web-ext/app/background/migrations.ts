@@ -5,6 +5,7 @@ import { shortsSettings } from "@/features/shorts/settings";
 import { playbackSettings } from "@/features/playback/settings";
 import { profilesSettings } from "@/features/profiles/settings";
 import { profileStore } from "@/features/profiles/store";
+import { segmentsSettings } from "@/features/segments/settings";
 
 // Where each action's binding lived in the pre-kernel store, by action id.
 const LEGACY_BINDINGS: Record<string, string> = {
@@ -14,6 +15,15 @@ const LEGACY_BINDINGS: Record<string, string> = {
   "playback.seekBackward": "preferences.watch.seekBackward.key",
   "playback.seekForward": "preferences.watch.seekForward.key",
   "profiles.cycle": "preferences.watch.cycleProfiles.key",
+  "segments.toggle": "preferences.watch.toggleLoopSegment.key",
+  "segments.fresh": "preferences.watch.segments.freshSlateKey",
+  "segments.setStart": "preferences.watch.setLoopSegmentBegin.key",
+  "segments.setEnd": "preferences.watch.setLoopSegmentEnd.key",
+  "segments.save": "preferences.watch.saveLoopSegment.key",
+  "segments.nudgeStartBackward": "preferences.watch.nudgeLoopSegment.startBackwardKey",
+  "segments.nudgeStartForward": "preferences.watch.nudgeLoopSegment.startForwardKey",
+  "segments.nudgeEndBackward": "preferences.watch.nudgeLoopSegment.endBackwardKey",
+  "segments.nudgeEndForward": "preferences.watch.nudgeLoopSegment.endForwardKey",
   "shorts.toggleRate": "preferences.shorts.togglePlaybackRate.key",
   "shorts.seekBackward": "preferences.shorts.seekBackward.key",
   "shorts.seekForward": "preferences.shorts.seekForward.key",
@@ -36,5 +46,5 @@ const legacyKeybindings: Settings<Record<string, string>> = {
 };
 
 export function migrateLegacyStore(): Promise<void> {
-  return migrateSettings([playlistRuntimeSettings, shortsSettings, playbackSettings, profilesSettings, profileStore, legacyKeybindings]);
+  return migrateSettings([playlistRuntimeSettings, shortsSettings, playbackSettings, profilesSettings, profileStore, segmentsSettings, legacyKeybindings]);
 }

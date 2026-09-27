@@ -6,10 +6,11 @@ import Input from "@/ui/form/Input";
 import Select from "@/ui/form/Select";
 import Switch from "@/ui/form/Switch";
 import CapabilityStatusRow from "@/app/options/components/CapabilityStatusRow";
-import { useChromeStorageSync } from "@/lib/useChromeStorageSync";
 import { useSettings } from "@/kernel/useSettings";
 import { useCapabilityCache } from "@/kernel/dom/useCapabilities";
 import { MAX_RATE, MIN_RATE, parseRates, playbackSettings } from "@/features/playback/settings";
+import { segmentsSettings } from "@/features/segments/settings";
+import type { AutoLoad } from "@/features/segments/store";
 import {
   getUndismissedRecovered,
   dismissRecovered,
@@ -52,7 +53,7 @@ function useRecoveredFeatures() {
 
 export default function Watch() {
   const { value, update } = useSettings(playbackSettings);
-  const { store, update: updateStore } = useChromeStorageSync();
+  const segments = useSettings(segmentsSettings);
   const { getStatus, isLoading } = useCapabilityCache();
   const { recovered, dismiss } = useRecoveredFeatures();
 
@@ -162,22 +163,37 @@ export default function Watch() {
           description="Define multiple time-range segments on any video and play them in sequence."
         >
           <Card>
-            <Select
+            <Select<AutoLoad>
               label="Auto-load on page open"
               description="Whether to automatically restore segments when you open a video. Per-video pins (set in the player panel) override this setting."
-              value={store.preferences.watch.segments?.autoLoad ?? "off"}
+              value={segments.value.autoLoad}
               options={[
                 { value: "off", label: "Off — manual only (press Z to load)" },
                 { value: "last-used", label: "Restore last-used session" },
                 { value: "default", label: "Restore default saved config" },
               ]}
-              onChange={(v) => {
-                const autoLoad = v as "off" | "last-used" | "default";
-                updateStore((draft) => {
-                  const segments = draft.preferences.watch.segments ?? { freshSlateKey: "Shift+Z", autoLoad };
-                  draft.preferences.watch.segments = { ...segments, autoLoad };
-                });
-              }}
+              onChange={(autoLoad) => segments.update({ autoLoad })}
+            />
+            <Input
+              label="Nudge step"
+              description="Seconds a segment edge moves on the first nudge."
+              initialValue={String(segments.value.nudgeBaseStep)}
+              validator={isSeconds}
+              onChange={(v) => segments.update({ nudgeBaseStep: Number(v) })}
+            />
+            <Input
+              label="Nudge multiplier"
+              description="How much the step grows on each repeated nudge in the same direction."
+              initialValue={String(segments.value.nudgeMultiplier)}
+              validator={isStep}
+              onChange={(v) => segments.update({ nudgeMultiplier: Number(v) })}
+            />
+            <Input
+              label="Nudge maximum"
+              description="Largest step a repeated nudge can reach, in seconds."
+              initialValue={String(segments.value.nudgeMaxStep)}
+              validator={isSeconds}
+              onChange={(v) => segments.update({ nudgeMaxStep: Number(v) })}
             />
           </Card>
         </Section>

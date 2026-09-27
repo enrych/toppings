@@ -20,6 +20,11 @@ export function resolveProgressBar(): Promise<PrimitiveResolution> {
   return resolveTarget(["div.ytp-progress-bar-container"]);
 }
 
+// Where a panel goes to sit under the player, above the title.
+export function resolveBelowPlayer(): Promise<PrimitiveResolution> {
+  return resolveTarget(["#above-the-fold", "ytd-watch-flexy #below", "#secondary-inner", "#columns"]);
+}
+
 // The slider-and-chips panel YouTube opens for "Playback speed".
 export function resolveRatePanel(): Promise<PrimitiveResolution> {
   return resolveTarget([".ytp-settings-menu .ytp-variable-speed-panel-content"]);
