@@ -26,7 +26,7 @@ const styles = [
   { entry: "app/options/index.css", out: "options/index.css" },
 ];
 
-const copies = ["assets", "_locales", "app/popup/index.html", "app/options/index.html"];
+const copies = ["assets", "app/popup/index.html", "app/options/index.html"];
 
 async function bundleScripts() {
   for (const { entry, out } of scripts) {

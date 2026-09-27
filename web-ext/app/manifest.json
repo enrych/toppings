@@ -7,7 +7,7 @@
       "48": "assets/icons/icon48.png",
       "128": "assets/icons/icon128.png"
     },
-    "default_title": "__MSG_popupTitle__",
+    "default_title": "Toppings",
     "default_popup": "popup/index.html"
   },
   "author": "Enrych",
@@ -26,8 +26,7 @@
       "run_at": "document_end"
     }
   ],
-  "default_locale": "en",
-  "description": "__MSG_description__",
+  "description": "Your YouTube, your way.",
   "host_permissions": [
     "*://*.youtube.com/*"
   ],
