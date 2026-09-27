@@ -15,21 +15,11 @@ import {
   getCachedNamedConfigs,
 } from "@/features/segments/Segments";
 import { isTypingTarget, matchesBinding } from "@/lib/keybinding";
-import { resolveSettingsButton, resolveVideo } from "@/youtube/player";
+import { resolveVideo } from "@/youtube/player";
 import { WatchContext } from "@/app/background/context";
 import { Storage } from "@/lib/store";
 import { resolveTarget } from "@/kernel/dom/resolve";
 import { setCapabilityStatus } from "@/kernel/dom/capabilities";
-import { applyWatchProfile } from "@/features/profiles/applyProfile";
-import {
-  getCustomProfiles,
-  getActiveProfile,
-  setActiveProfileId,
-} from "@/features/profiles/profileStore";
-import { BUILT_IN_PRESETS } from "@/features/profiles/profiles";
-import { CHROME_STORAGE_LOCAL_KEY } from "@/lib/storageKeys";
-import { showPageToast } from "@/lib/pageToast";
-import { injectGearMenuEntry } from "@/features/profiles/gearMenu";
 
 const STRATEGIES = {
   rightControls: ["div.ytp-right-controls"] as const,
@@ -39,12 +29,10 @@ const STRATEGIES = {
 
 let player: HTMLVideoElement | undefined;
 let preferences: Storage["preferences"]["watch"] | undefined;
-let gearMenuEnabled = false;
 
 const onWatchPage = async (ctx: WatchContext) => {
   const { store } = ctx;
   preferences = store.preferences.watch;
-  gearMenuEnabled = !!(store.ui?.gearMenuEnabled);
   if (!preferences) return;
 
   const playerResolution = await resolveVideo();
@@ -85,35 +73,6 @@ const onWatchPage = async (ctx: WatchContext) => {
     }
   }
 
-  const settingsResolution = await resolveSettingsButton();
-  if (!settingsResolution.resolved) return;
-  const playerSettingsButton = settingsResolution.element as HTMLElement;
-  playerSettingsButton.removeEventListener("click", onSettingsMenu);
-  playerSettingsButton.addEventListener("click", onSettingsMenu);
-
-  // Last, so profile overrides land on top of a fully initialised segment
-  // panel rather than being overwritten by its setup.
-  void applyWatchProfile();
-
-  // Remove-then-add keeps this single-registered across SPA navigations, which
-  // re-run this whole function against the same page.
-  chrome.storage.onChanged.removeListener(onProfileStoreChanged);
-  chrome.storage.onChanged.addListener(onProfileStoreChanged);
-};
-
-const onProfileStoreChanged = (
-  changes: Record<string, chrome.storage.StorageChange>,
-  area: string,
-): void => {
-  if (area !== "local") return;
-  if (!(CHROME_STORAGE_LOCAL_KEY.PROFILE_STORE in changes)) return;
-  void applyWatchProfile();
-};
-
-const onSettingsMenu = (): void => {
-  if (!gearMenuEnabled) return;
-  const settingsMenu = document.querySelector<HTMLElement>(".ytp-settings-menu");
-  if (settingsMenu) void injectGearMenuEntry(settingsMenu);
 };
 
 const useShortcuts = (event: KeyboardEvent): void => {
@@ -183,32 +142,6 @@ const useShortcuts = (event: KeyboardEvent): void => {
     }
   }
 
-  if (preferences.cycleProfiles?.key && matchesBinding(event, preferences.cycleProfiles.key)) {
-    void cycleProfilesShortcut();
-    return;
-  }
 };
-
-async function cycleProfilesShortcut(): Promise<void> {
-  // getCustomProfiles, not getAllProfiles: the presets are prepended below, and
-  // getAllProfiles already includes them.
-  const customProfiles = await getCustomProfiles();
-  const cycle: Array<{ id: string | null; name: string }> = [
-    { id: null, name: "Default" },
-    ...BUILT_IN_PRESETS.map((p) => ({ id: p.id, name: p.name })),
-    ...customProfiles.map((p) => ({ id: p.id, name: p.name })),
-  ];
-
-  const activeProfile = await getActiveProfile();
-  const currentId = activeProfile?.id ?? null;
-
-  const currentIdx = cycle.findIndex((c) => c.id === currentId);
-  const nextIdx = currentIdx === -1 ? 0 : (currentIdx + 1) % cycle.length;
-  const next = cycle[nextIdx];
-
-  await setActiveProfileId(next.id);
-  void applyWatchProfile(); // reads back the id set on the line above
-  showPageToast(`Profile: ${next.name}`);
-}
 
 export default onWatchPage;

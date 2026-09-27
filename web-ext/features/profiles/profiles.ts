@@ -1,61 +1,33 @@
-export type PlayerLayout = "default" | "no-video";
+import type { Layout, Thumbnails, Visibility } from "@/youtube/primitives";
 
-// Every key is a primitiveId and its value is that primitive's state while the
-// profile is active. An absent key means "leave YouTube alone" — which is not the
-// same as a false value, and is what lets profiles compose without fighting.
+export type { PlayerLayout, ThumbnailMode } from "@/youtube/primitives";
 
-export interface WatchPrimitiveConfig {
-  "watch.layout"?: { value: PlayerLayout };
-  "watch.sidebar"?: { visible: boolean };
-  "watch.comments"?: { visible: boolean };
-  "watch.endCards"?: { visible: boolean };
+// Keyed by primitive id. An absent key means "leave YouTube alone", which is
+// not the same as a default value and is what lets profiles stay small.
+export interface ProfilePrimitiveConfig {
+  "watch.layout"?: Layout;
+  "watch.sidebar"?: Visibility;
+  "watch.comments"?: Visibility;
+  "watch.endCards"?: Visibility;
+  "home.thumbnails"?: Thumbnails;
+  "home.feed"?: Visibility;
+  "home.shorts"?: Visibility;
+  "search.thumbnails"?: Thumbnails;
+  "search.metadata"?: Visibility;
+  "search.shorts"?: Visibility;
+  "shorts.shelf"?: Visibility;
 }
-
-export type ThumbnailMode = "show" | "hide" | "blur"; // blur is a CSS filter, hide removes
-
-export interface HomePrimitiveConfig {
-  "home.thumbnails"?: { mode: ThumbnailMode };
-  "home.feed"?: { visible: boolean };
-  "home.shorts"?: { visible: boolean };
-}
-
-export interface SearchPrimitiveConfig {
-  "search.thumbnails"?: { mode: ThumbnailMode };
-  "search.metadata"?: { visible: boolean };
-  "search.shorts"?: { visible: boolean };
-}
-
-export interface ShortsPrimitiveConfig {
-  "shorts.shelf"?: { visible: boolean };
-}
-
-export type ProfilePrimitiveConfig = WatchPrimitiveConfig &
-  HomePrimitiveConfig &
-  SearchPrimitiveConfig &
-  ShortsPrimitiveConfig;
 
 export interface Profile {
-  id: string; // "preset:<name>" for presets, uuid for custom
+  id: string;
   name: string;
   isPreset: boolean;
-  createdAt: number; // unix ms; 0 for presets, which are never created
+  createdAt: number;
   primitives: ProfilePrimitiveConfig;
 }
 
-export interface ProfileStore {
-  activeProfileId: string | null; // null runs on individual preferences instead
-  profiles: Profile[]; // custom only; presets are constants, not stored
-}
-
-export const DEFAULT_PROFILE_STORE: ProfileStore = {
-  activeProfileId: null,
-  profiles: [],
-};
-
-// Presets are derived at runtime and never written to storage, so editing a
-// definition here reaches existing users on update with no migration. That is
-// also why they cannot be edited or deleted from the UI.
-
+// Presets are constants, never stored, so editing one here reaches existing
+// users on update with no migration; that is also why the UI cannot edit them.
 export const PRESET_AUDIO: Profile = {
   id: "preset:audio",
   name: "Audio",
@@ -79,8 +51,4 @@ export const PRESET_FOCUS: Profile = {
   },
 };
 
-// Order here is the order the UI displays them in.
-export const BUILT_IN_PRESETS: readonly Profile[] = [
-  PRESET_AUDIO,
-  PRESET_FOCUS,
-];
+export const BUILT_IN_PRESETS: readonly Profile[] = [PRESET_AUDIO, PRESET_FOCUS];

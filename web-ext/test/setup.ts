@@ -2,9 +2,19 @@ import { GlobalRegistrator } from "@happy-dom/global-registrator";
 
 GlobalRegistrator.register();
 
-// An in-memory stand-in for the parts of the extension API the kernel uses.
-function memoryArea() {
+type ChangeListener = (changes: Record<string, { oldValue?: unknown; newValue?: unknown }>, area: string) => void;
+const listeners = new Set<ChangeListener>();
+
+// An in-memory stand-in for the parts of the extension API the kernel uses,
+// including change events so subscriptions behave as they do in the browser.
+function memoryArea(name: string) {
   let data: Record<string, unknown> = {};
+  const notify = (next: Record<string, unknown>) => {
+    const keys = new Set([...Object.keys(data), ...Object.keys(next)]);
+    const changes = Object.fromEntries([...keys].filter((k) => data[k] !== next[k]).map((k) => [k, { oldValue: data[k], newValue: next[k] }]));
+    data = next;
+    if (Object.keys(changes).length) for (const listener of listeners) listener(changes, name);
+  };
   return {
     async get(keys?: string | string[] | null) {
       if (keys == null) return { ...data };
@@ -12,13 +22,15 @@ function memoryArea() {
       return Object.fromEntries(list.filter((k) => k in data).map((k) => [k, data[k]]));
     },
     async set(items: Record<string, unknown>) {
-      data = { ...data, ...items };
+      notify({ ...data, ...items });
     },
     async remove(keys: string | string[]) {
-      for (const k of Array.isArray(keys) ? keys : [keys]) delete data[k];
+      const next = { ...data };
+      for (const k of Array.isArray(keys) ? keys : [keys]) delete next[k];
+      notify(next);
     },
     async clear() {
-      data = {};
+      notify({});
     },
   };
 }
@@ -26,9 +38,12 @@ function memoryArea() {
 Object.assign(globalThis, {
   chrome: {
     storage: {
-      sync: memoryArea(),
-      local: memoryArea(),
-      onChanged: { addListener() {}, removeListener() {} },
+      sync: memoryArea("sync"),
+      local: memoryArea("local"),
+      onChanged: {
+        addListener: (listener: ChangeListener) => listeners.add(listener),
+        removeListener: (listener: ChangeListener) => listeners.delete(listener),
+      },
     },
     runtime: {
       getURL: (path: string) => `chrome-extension://test/${path}`,

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { EXTENSION_VERSION } from "@/lib/version";
 import type { CapabilityStatus } from "@/kernel/dom/capabilities";
-import { addFeatureReport } from "./featureReports";
+import { addFeatureReport } from "@/kernel/dom/featureReports";
 
 interface CapabilityStatusRowProps {
   label: string;

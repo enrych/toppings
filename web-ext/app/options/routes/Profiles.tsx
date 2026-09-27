@@ -13,7 +13,7 @@ import {
   createProfile,
   updateProfile,
   deleteProfile,
-} from "@/features/profiles/profileStore";
+} from "@/features/profiles/store";
 import {
   exportProfile,
   importProfileFromFile,

@@ -17,12 +17,12 @@ import PopupRow from "./components/PopupRow";
 import NavBtn from "./components/NavBtn";
 import { openOptionsPage } from "./openOptions";
 import type { Profile } from "@/features/profiles/profiles";
-import { CHROME_STORAGE_LOCAL_KEY } from "@/lib/storageKeys";
 import {
   getAllProfiles,
   getActiveProfile,
   setActiveProfileId,
-} from "@/features/profiles/profileStore";
+  subscribeProfiles,
+} from "@/features/profiles/store";
 
 function usePopupProfiles() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -36,11 +36,7 @@ function usePopupProfiles() {
 
   useEffect(() => {
     void load();
-    const listener = (changes: Record<string, chrome.storage.StorageChange>) => {
-      if (CHROME_STORAGE_LOCAL_KEY.PROFILE_STORE in changes) void load();
-    };
-    chrome.storage.onChanged.addListener(listener);
-    return () => chrome.storage.onChanged.removeListener(listener);
+    return subscribeProfiles(() => void load());
   }, []);
 
   const activate = async (id: string | null) => {

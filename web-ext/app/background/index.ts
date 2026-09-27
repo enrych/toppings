@@ -1,18 +1,19 @@
 import { syncStorageWithDefaults } from "@/lib/store";
-import { getActiveProfile } from "@/features/profiles/profileStore";
 import {
   getFeatureReports,
   markRecovered,
   removeFeatureReport,
-} from "@/features/profiles/featureReports";
+} from "@/kernel/dom/featureReports";
 import { getCapabilityStatus } from "@/kernel/dom/capabilities";
 import { getContext } from "./context";
 import { URLS } from "@/lib/urls";
 import { EXTENSION_MESSAGE_EVENT, EXTENSION_MESSAGE_TYPE } from "@/lib/protocol";
 import { servePlaylistRuntime } from "@/features/playlist-runtime/background";
+import { openOptions } from "@/features/profiles/messages";
 import { migrateLegacyStore } from "./migrations";
 
 servePlaylistRuntime();
+openOptions.handle(() => chrome.runtime.openOptionsPage());
 
 chrome.runtime.onInstalled.addListener(onInitialize);
 chrome.runtime.onMessage.addListener(onConnected);
@@ -30,9 +31,6 @@ async function onInitialize({ reason }: InitializeDetails): Promise<void> {
     // Before the resync, which drops legacy keys the slices still read.
     await migrateLegacyStore();
     void syncStorageWithDefaults();
-    // Read purely for its side effect: this is what writes the default profile
-    // store on a fresh install.
-    void getActiveProfile();
     if (reason === "update") {
       void checkRecoveredFeatures();
     }

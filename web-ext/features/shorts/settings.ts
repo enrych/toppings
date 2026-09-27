@@ -21,15 +21,17 @@ const number = (value: string | undefined) => (value === undefined ? undefined :
 export const shortsSettings = defineSettings<ShortsSettings>(
   "shorts",
   { enabled: true, autoScroll: true, toggleRate: 1.5, seekBackward: 5, seekForward: 5 },
-  (store) => {
-    const legacy = (store.preferences as { shorts?: LegacyShorts } | undefined)?.shorts;
-    if (!legacy) return undefined;
-    return {
-      enabled: legacy.isEnabled,
-      autoScroll: legacy.reelAutoScroll?.value,
-      toggleRate: number(legacy.togglePlaybackRate?.value),
-      seekBackward: number(legacy.seekBackward?.value),
-      seekForward: number(legacy.seekForward?.value),
-    };
+  {
+    legacy: (store) => {
+      const legacy = (store.preferences as { shorts?: LegacyShorts } | undefined)?.shorts;
+      if (!legacy) return undefined;
+      return {
+        enabled: legacy.isEnabled,
+        autoScroll: legacy.reelAutoScroll?.value,
+        toggleRate: number(legacy.togglePlaybackRate?.value),
+        seekBackward: number(legacy.seekBackward?.value),
+        seekForward: number(legacy.seekForward?.value),
+      };
+    },
   },
 );

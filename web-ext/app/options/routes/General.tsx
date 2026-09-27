@@ -9,9 +9,12 @@ import { useToast } from "@/ui/feedback/ToastProvider";
 import { useCapabilityCache } from "@/kernel/dom/useCapabilities";
 import { setExtensionIcon } from "@/lib/browser";
 import { ThemePreference } from "@/ui/useTheme";
+import { useSettings } from "@/kernel/useSettings";
+import { profilesSettings } from "@/features/profiles/settings";
 
 export default function General() {
   const { store, update } = useChromeStorageSync();
+  const surfaces = useSettings(profilesSettings);
   const toast = useToast();
   const { rescan } = useCapabilityCache();
   const [isRescanning, setIsRescanning] = useState(false);
@@ -97,11 +100,9 @@ export default function General() {
             <Switch
               label="Player gear menu (⚙)"
               description="Adds a Toppings section to the video player's settings menu for quick access to primitives and profiles."
-              isEnabled={store.ui?.gearMenuEnabled ?? false}
+              isEnabled={surfaces.value.gearMenu}
               onToggle={(isEnabled) => {
-                update((draft) => {
-                  draft.ui.gearMenuEnabled = isEnabled;
-                });
+                surfaces.update({ gearMenu: isEnabled });
                 toast.success(
                   isEnabled
                     ? "Gear menu injection enabled — open the ⚙ menu on a video to try it"
@@ -112,11 +113,9 @@ export default function General() {
             <Switch
               label="YouTube sidebar entry"
               description="Adds a 'Toppings' entry to YouTube's left navigation sidebar with a native-styled settings page."
-              isEnabled={store.ui?.nativeSettingsEnabled ?? false}
+              isEnabled={surfaces.value.nativeSettings}
               onToggle={(isEnabled) => {
-                update((draft) => {
-                  draft.ui.nativeSettingsEnabled = isEnabled;
-                });
+                surfaces.update({ nativeSettings: isEnabled });
                 toast.success(
                   isEnabled
                     ? "Sidebar entry enabled — visit YouTube to see it"

@@ -1,9 +1,11 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { defineSettings, migrateSettings } from "./settings";
 
-const slice = defineSettings("demo", { enabled: true, size: 3 }, (store) => {
-  const legacy = store.preferences as { demo?: { isEnabled: boolean } } | undefined;
-  return legacy?.demo ? { enabled: legacy.demo.isEnabled } : undefined;
+const slice = defineSettings("demo", { enabled: true, size: 3 }, {
+  legacy: (store) => {
+    const legacy = store.preferences as { demo?: { isEnabled: boolean } } | undefined;
+    return legacy?.demo ? { enabled: legacy.demo.isEnabled } : undefined;
+  },
 });
 
 beforeEach(() => chrome.storage.sync.clear());

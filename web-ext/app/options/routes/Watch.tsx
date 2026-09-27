@@ -5,7 +5,7 @@ import Card from "@/ui/layout/Card";
 import Input from "@/ui/form/Input";
 import Select from "@/ui/form/Select";
 import Switch from "@/ui/form/Switch";
-import CapabilityStatusRow from "@/features/profiles/CapabilityStatusRow";
+import CapabilityStatusRow from "@/app/options/components/CapabilityStatusRow";
 import { useChromeStorageSync } from "@/lib/useChromeStorageSync";
 import { useSettings } from "@/kernel/useSettings";
 import { useCapabilityCache } from "@/kernel/dom/useCapabilities";
@@ -14,7 +14,7 @@ import {
   getUndismissedRecovered,
   dismissRecovered,
   type RecoveredFeature,
-} from "@/features/profiles/featureReports";
+} from "@/kernel/dom/featureReports";
 
 // Adding a watch-page primitive means appending an entry here; nothing
 // discovers them automatically.

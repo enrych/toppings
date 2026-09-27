@@ -28,18 +28,20 @@ export const MAX_RATE = 16;
 export const playbackSettings = defineSettings<PlaybackSettings>(
   "playback",
   { enabled: true, defaultRate: 1, toggleRate: 1.5, rateStep: 0.25, seekBackward: 15, seekForward: 15, customRates: [] },
-  (store) => {
-    const legacy = (store.preferences as { watch?: LegacyWatch } | undefined)?.watch;
-    if (!legacy) return undefined;
-    return {
-      enabled: legacy.isEnabled,
-      defaultRate: number(legacy.defaultPlaybackRate?.value),
-      toggleRate: number(legacy.togglePlaybackRate?.value),
-      rateStep: number(legacy.increasePlaybackRate?.value),
-      seekBackward: number(legacy.seekBackward?.value),
-      seekForward: number(legacy.seekForward?.value),
-      customRates: legacy.customPlaybackRates?.map(Number),
-    };
+  {
+    legacy: (store) => {
+      const legacy = (store.preferences as { watch?: LegacyWatch } | undefined)?.watch;
+      if (!legacy) return undefined;
+      return {
+        enabled: legacy.isEnabled,
+        defaultRate: number(legacy.defaultPlaybackRate?.value),
+        toggleRate: number(legacy.togglePlaybackRate?.value),
+        rateStep: number(legacy.increasePlaybackRate?.value),
+        seekBackward: number(legacy.seekBackward?.value),
+        seekForward: number(legacy.seekForward?.value),
+        customRates: legacy.customPlaybackRates?.map(Number),
+      };
+    },
   },
 );
 

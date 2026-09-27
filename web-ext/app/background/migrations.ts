@@ -3,6 +3,8 @@ import { migrateSettings, type Settings } from "@/kernel/settings";
 import { playlistRuntimeSettings } from "@/features/playlist-runtime/settings";
 import { shortsSettings } from "@/features/shorts/settings";
 import { playbackSettings } from "@/features/playback/settings";
+import { profilesSettings } from "@/features/profiles/settings";
+import { profileStore } from "@/features/profiles/store";
 
 // Where each action's binding lived in the pre-kernel store, by action id.
 const LEGACY_BINDINGS: Record<string, string> = {
@@ -11,6 +13,7 @@ const LEGACY_BINDINGS: Record<string, string> = {
   "playback.decreaseRate": "preferences.watch.decreasePlaybackRate.key",
   "playback.seekBackward": "preferences.watch.seekBackward.key",
   "playback.seekForward": "preferences.watch.seekForward.key",
+  "profiles.cycle": "preferences.watch.cycleProfiles.key",
   "shorts.toggleRate": "preferences.shorts.togglePlaybackRate.key",
   "shorts.seekBackward": "preferences.shorts.seekBackward.key",
   "shorts.seekForward": "preferences.shorts.seekForward.key",
@@ -33,5 +36,5 @@ const legacyKeybindings: Settings<Record<string, string>> = {
 };
 
 export function migrateLegacyStore(): Promise<void> {
-  return migrateSettings([playlistRuntimeSettings, shortsSettings, playbackSettings, legacyKeybindings]);
+  return migrateSettings([playlistRuntimeSettings, shortsSettings, playbackSettings, profilesSettings, profileStore, legacyKeybindings]);
 }
