@@ -1,0 +1,121 @@
+import { afterEach, beforeEach, describe, expect, test } from "bun:test";
+import { playback } from "./index";
+import { playbackSettings } from "./settings";
+
+const page = `
+  <div id="movie_player">
+    <video></video>
+    <button class="ytp-settings-button"></button>
+    <div class="ytp-settings-menu">
+      <div class="ytp-menuitem"><div class="ytp-menuitem-icon"></div><div class="ytp-menuitem-label">Playback speed</div><div class="ytp-menuitem-content">Normal</div></div>
+      <div class="ytp-panel"><div class="ytp-variable-speed-panel-content">
+        <div class="ytp-variable-speed-panel-display"><span>1.00x</span></div>
+        <input class="ytp-speedslider" type="range" min="0.25" max="2" step="0.05" value="1">
+        <div class="ytp-variable-speed-panel-chips"><div class="ytp-variable-speed-panel-preset-button-wrapper"><button><span>1.0</span></button></div></div>
+      </div></div>
+    </div>
+  </div>`;
+
+const route = { name: "watch", videoId: "v1", playlistId: null } as const;
+const press = (key: string) => document.body.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
+const video = () => document.querySelector("video") as HTMLVideoElement;
+const tick = () => new Promise((r) => setTimeout(r, 5));
+const flashPill = () => document.getElementById("tppng-seek-flash")?.shadowRoot?.querySelector(".pill");
+const chips = () => [...document.querySelectorAll(".ytp-variable-speed-panel-chips button")];
+
+let unmount: (() => void) | undefined | void;
+const mountPlayback = async () => {
+  unmount = await playback.mount({ route });
+};
+
+async function openSpeedPanel() {
+  document.querySelector<HTMLElement>(".ytp-settings-button")!.click();
+  await tick();
+  document.querySelector<HTMLElement>(".ytp-menuitem-label")!.parentElement!.click();
+  await tick();
+}
+
+beforeEach(async () => {
+  await chrome.storage.sync.clear();
+  document.body.innerHTML = page;
+  video().currentTime = 60;
+});
+afterEach(() => {
+  unmount?.();
+  unmount = undefined;
+  document.body.innerHTML = "";
+});
+
+describe("playback", () => {
+  test("applies the default rate on mount", async () => {
+    await playbackSettings.set({ defaultRate: 1.25 });
+    await mountPlayback();
+    expect(video().playbackRate).toBe(1.25);
+    expect(document.querySelector(".ytp-menuitem-content")!.textContent).toBe("1.25");
+  });
+
+  test("rate keys toggle, step and clamp", async () => {
+    await playbackSettings.set({ toggleRate: 2, rateStep: 0.5 });
+    await mountPlayback();
+    press("x");
+    expect(video().playbackRate).toBe(2);
+    press("w");
+    expect(video().playbackRate).toBe(2.5);
+    press("x");
+    expect(video().playbackRate).toBe(1);
+    for (let i = 0; i < 5; i++) press("s");
+    expect(video().playbackRate).toBe(0.0625);
+  });
+
+  test("seek keys move the playhead and flash the amount", async () => {
+    await playbackSettings.set({ seekForward: 10, seekBackward: 30 });
+    await mountPlayback();
+    press("d");
+    expect(video().currentTime).toBe(70);
+    expect(flashPill()?.textContent).toBe("+10s");
+    expect(flashPill()?.hasAttribute("data-visible")).toBe(true);
+    press("a");
+    expect(video().currentTime).toBe(40);
+    expect(flashPill()?.textContent).toBe("−30s");
+    unmount?.();
+    unmount = undefined;
+    expect(document.getElementById("tppng-seek-flash")).toBeNull();
+  });
+
+  test("custom rates replace YouTube's speed chips", async () => {
+    await playbackSettings.set({ customRates: [1, 1.5, 3] });
+    await mountPlayback();
+    await openSpeedPanel();
+    expect(chips().map((b) => b.textContent)).toEqual(["1.0", "1.5", "3.0"]);
+    expect(chips().map((b) => b.getAttribute("aria-pressed"))).toEqual(["true", "false", "false"]);
+
+    (chips()[2] as HTMLElement).click();
+    expect(video().playbackRate).toBe(3);
+    expect(chips()[2].getAttribute("aria-pressed")).toBe("true");
+    expect(document.querySelector(".ytp-variable-speed-panel-display span")!.textContent).toBe("3.00x");
+    expect(document.querySelector<HTMLInputElement>(".ytp-speedslider")!.value).toBe("3");
+  });
+
+  test("the panel reflects a rate set by keyboard", async () => {
+    await playbackSettings.set({ customRates: [1, 2], toggleRate: 2 });
+    await mountPlayback();
+    press("x");
+    await openSpeedPanel();
+    expect(document.querySelector(".ytp-variable-speed-panel-display span")!.textContent).toBe("2.00x");
+    expect(chips()[1].getAttribute("aria-pressed")).toBe("true");
+  });
+
+  test("without custom rates the panel is left to YouTube", async () => {
+    await mountPlayback();
+    await openSpeedPanel();
+    expect(chips().map((b) => b.textContent)).toEqual(["1.0"]);
+  });
+
+  test("keys stop working after unmount", async () => {
+    await mountPlayback();
+    unmount?.();
+    unmount = undefined;
+    press("x");
+    expect(video().playbackRate).toBe(1);
+  });
+});

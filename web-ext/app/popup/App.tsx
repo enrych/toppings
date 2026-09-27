@@ -4,6 +4,8 @@ import StoreContext from "@/lib/storeContext";
 import ThemeApplier from "@/ui/ThemeApplier";
 import { ToastProvider } from "@/ui/feedback/ToastProvider";
 import { useChromeStorageSync } from "@/lib/useChromeStorageSync";
+import { useSettings } from "@/kernel/useSettings";
+import { playbackSettings } from "@/features/playback/settings";
 import { useScope } from "./useScope";
 import { EXTENSION_CONTEXT_SCOPE } from "@/lib/protocol";
 import { URLS } from "@/lib/urls";
@@ -58,7 +60,7 @@ function PopupShell() {
   const masterOn = store.isExtensionEnabled;
   const loopOn = store.preferences.watch.isEnabled;
   const shortsAuto = store.preferences.shorts.reelAutoScroll.value;
-  const defaultRate = store.preferences.watch.defaultPlaybackRate.value;
+  const defaultRate = useSettings(playbackSettings).value.defaultRate;
 
   const toggleMaster = () => {
     const next = !masterOn;

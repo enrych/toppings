@@ -4,6 +4,7 @@ import { bootFeatures } from "@/kernel/features";
 import { onNavigate } from "@/youtube/route";
 import { playlistRuntime } from "@/features/playlist-runtime";
 import { shorts } from "@/features/shorts";
+import { playback } from "@/features/playback";
 
 import onWatchPage from "@/features/playback/watch";
 import onYoutubePage from "@/features/profiles/youtubePage";
@@ -58,4 +59,4 @@ chrome.runtime.sendMessage(
 );
 chrome.runtime.onMessage.addListener(runApp);
 
-bootFeatures([playlistRuntime, shorts], onNavigate);
+bootFeatures([playlistRuntime, shorts, playback], onNavigate);

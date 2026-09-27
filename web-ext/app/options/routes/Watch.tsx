@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import PageHeader from "@/ui/layout/PageHeader";
 import Section from "@/ui/layout/Section";
 import Card from "@/ui/layout/Card";
 import Input from "@/ui/form/Input";
 import Select from "@/ui/form/Select";
+import Switch from "@/ui/form/Switch";
 import CapabilityStatusRow from "@/features/profiles/CapabilityStatusRow";
 import { useChromeStorageSync } from "@/lib/useChromeStorageSync";
+import { useSettings } from "@/kernel/useSettings";
 import { useCapabilityCache } from "@/kernel/dom/useCapabilities";
-import { isCustomPlaybackRatesList } from "@/app/options/validators";
+import { MAX_RATE, MIN_RATE, parseRates, playbackSettings } from "@/features/playback/settings";
 import {
   getUndismissedRecovered,
   dismissRecovered,
@@ -23,10 +24,16 @@ const WATCH_PRIMITIVES: { id: string; label: string }[] = [
   { id: "watch.progressBar",   label: "Progress Bar" },
   { id: "watch.moviePlayer",   label: "Movie Player Container" },
   { id: "watch.settingsButton",label: "Settings Button" },
+  { id: "watch.ratePanel",     label: "Playback Speed Panel" },
   { id: "watch.sidebar",       label: "Recommendations Sidebar" },
   { id: "watch.comments",      label: "Comments Section" },
   { id: "watch.endCards",      label: "End Screen Cards" },
 ];
+
+const isRate = (v: string) => Number.isFinite(Number(v)) && Number(v) >= MIN_RATE && Number(v) <= MAX_RATE;
+const isStep = (v: string) => Number.isFinite(Number(v)) && Number(v) > 0 && Number(v) <= MAX_RATE;
+const isSeconds = (v: string) => Number.isFinite(Number(v)) && Number(v) >= 0;
+const isRateList = (v: string) => parseRates(v) !== undefined;
 
 function useRecoveredFeatures() {
   const [recovered, setRecovered] = useState<RecoveredFeature[]>([]);
@@ -44,10 +51,10 @@ function useRecoveredFeatures() {
 }
 
 export default function Watch() {
-  const { store, update } = useChromeStorageSync();
+  const { value, update } = useSettings(playbackSettings);
+  const { store, update: updateStore } = useChromeStorageSync();
   const { getStatus, isLoading } = useCapabilityCache();
   const { recovered, dismiss } = useRecoveredFeatures();
-  const w = store.preferences.watch;
 
   return (
     <>
@@ -56,7 +63,6 @@ export default function Watch() {
         description="Settings for the YouTube watch page — playback rate, seek, and loop controls."
       />
 
-      {/* Recovery banners — shown when a previously-reported feature is now working */}
       {recovered.map((r) => (
         <div
           key={r.primitiveId}
@@ -86,122 +92,66 @@ export default function Watch() {
         <Section
           id="playback-rate"
           title="Playback Rate"
-          description="Configure custom rate options and the default rate applied when a video starts."
+          description="Custom rate options and the default rate applied when a video starts."
         >
           <Card>
+            <Switch
+              label="Playback controls"
+              description="Default rate, rate shortcuts and seek shortcuts on the watch page."
+              isEnabled={value.enabled}
+              onToggle={(enabled) => update({ enabled })}
+            />
             <Input
-              label="Default Playback Rate"
+              label="Default playback rate"
               description="Rate applied to every video on load. 1 = Normal."
-              initialValue={w.defaultPlaybackRate.value}
-              validator={(v) => {
-                const n = parseFloat(v);
-                return Number.isFinite(n) && n >= 0.0625 && n <= 16;
-              }}
-              errorMessage="Must be between 0.0625 and 16"
-              onChange={(value) => {
-                update((draft) => {
-                  draft.preferences.watch.defaultPlaybackRate.value = value;
-                });
-              }}
+              initialValue={String(value.defaultRate)}
+              validator={isRate}
+              errorMessage={`Must be between ${MIN_RATE} and ${MAX_RATE}`}
+              onChange={(v) => update({ defaultRate: Number(v) })}
             />
             <Input
-              label="Custom Playback Rates"
-              description="Leave empty to use YouTube's speed menu. Or comma-separated rates (must include 1)."
-              initialValue={w.customPlaybackRates.join(", ")}
-              validator={isCustomPlaybackRatesList}
-              errorMessage="Must include 1, separated by commas, between 0.0625 and 16"
+              label="Custom playback rates"
+              description="Leave empty to keep YouTube's speed menu, or comma-separated rates that include 1."
+              initialValue={value.customRates.join(", ")}
+              validator={isRateList}
+              errorMessage={`Comma-separated rates between ${MIN_RATE} and ${MAX_RATE}, including 1`}
               inputWidthClass="tw-w-72"
-              onChange={(value) => {
-                update((draft) => {
-                  const trimmed = value.trim();
-                  draft.preferences.watch.customPlaybackRates =
-                    trimmed === ""
-                      ? []
-                      : trimmed
-                          .split(",")
-                          .map((r) => Number(r.trim()).toFixed(2));
-                });
-              }}
+              onChange={(v) => update({ customRates: parseRates(v) ?? [] })}
             />
             <Input
-              label="Toggle Playback Rate"
-              description="Rate to switch to when pressing the toggle shortcut."
-              initialValue={w.togglePlaybackRate.value}
-              validator={(v) => {
-                const n = parseFloat(v);
-                return Number.isFinite(n) && n >= 0.0625 && n <= 16;
-              }}
-              errorMessage="Must be between 0.0625 and 16"
-              onChange={(value) => {
-                update((draft) => {
-                  draft.preferences.watch.togglePlaybackRate.value = value;
-                });
-              }}
+              label="Toggle playback rate"
+              description="Rate to switch to with the toggle shortcut."
+              initialValue={String(value.toggleRate)}
+              validator={isRate}
+              errorMessage={`Must be between ${MIN_RATE} and ${MAX_RATE}`}
+              onChange={(v) => update({ toggleRate: Number(v) })}
             />
             <Input
-              label="Increase Playback Rate Step"
-              description="Amount the rate goes up when pressing the increase shortcut."
-              initialValue={w.increasePlaybackRate.value}
-              validator={(v) => {
-                const n = parseFloat(v);
-                return Number.isFinite(n) && n >= 0 && n <= 16;
-              }}
-              onChange={(value) => {
-                update((draft) => {
-                  draft.preferences.watch.increasePlaybackRate.value = value;
-                });
-              }}
-            />
-            <Input
-              label="Decrease Playback Rate Step"
-              description="Amount the rate goes down when pressing the decrease shortcut."
-              initialValue={w.decreasePlaybackRate.value}
-              validator={(v) => {
-                const n = parseFloat(v);
-                return Number.isFinite(n) && n >= 0 && n <= 16;
-              }}
-              onChange={(value) => {
-                update((draft) => {
-                  draft.preferences.watch.decreasePlaybackRate.value = value;
-                });
-              }}
+              label="Playback rate step"
+              description="Amount the rate changes on the increase and decrease shortcuts."
+              initialValue={String(value.rateStep)}
+              validator={isStep}
+              errorMessage={`Must be between 0 and ${MAX_RATE}`}
+              onChange={(v) => update({ rateStep: Number(v) })}
             />
           </Card>
         </Section>
 
-        <Section
-          id="seek"
-          title="Seek"
-          description="How far to jump when pressing the seek shortcuts."
-        >
+        <Section id="seek" title="Seek" description="How far to jump on the seek shortcuts.">
           <Card>
             <Input
-              label="Seek Backward"
+              label="Seek backward"
               description="Seconds to seek backward."
-              initialValue={w.seekBackward.value}
-              validator={(v) => {
-                const n = parseFloat(v);
-                return Number.isFinite(n) && n >= 0;
-              }}
-              onChange={(value) => {
-                update((draft) => {
-                  draft.preferences.watch.seekBackward.value = value;
-                });
-              }}
+              initialValue={String(value.seekBackward)}
+              validator={isSeconds}
+              onChange={(v) => update({ seekBackward: Number(v) })}
             />
             <Input
-              label="Seek Forward"
+              label="Seek forward"
               description="Seconds to seek forward."
-              initialValue={w.seekForward.value}
-              validator={(v) => {
-                const n = parseFloat(v);
-                return Number.isFinite(n) && n >= 0;
-              }}
-              onChange={(value) => {
-                update((draft) => {
-                  draft.preferences.watch.seekForward.value = value;
-                });
-              }}
+              initialValue={String(value.seekForward)}
+              validator={isSeconds}
+              onChange={(v) => update({ seekForward: Number(v) })}
             />
           </Card>
         </Section>
@@ -221,17 +171,11 @@ export default function Watch() {
                 { value: "last-used", label: "Restore last-used session" },
                 { value: "default", label: "Restore default saved config" },
               ]}
-              onChange={(value) => {
-                update((draft) => {
-                  if (!draft.preferences.watch.segments) {
-                    draft.preferences.watch.segments = {
-                      freshSlateKey: "Shift+Z",
-                      autoLoad: value as "off" | "last-used" | "default",
-                    };
-                  } else {
-                    draft.preferences.watch.segments.autoLoad =
-                      value as "off" | "last-used" | "default";
-                  }
+              onChange={(v) => {
+                const autoLoad = v as "off" | "last-used" | "default";
+                updateStore((draft) => {
+                  const segments = draft.preferences.watch.segments ?? { freshSlateKey: "Shift+Z", autoLoad };
+                  draft.preferences.watch.segments = { ...segments, autoLoad };
                 });
               }}
             />

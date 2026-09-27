@@ -11,7 +11,8 @@ const production = process.argv.includes("--production");
 const firefox = process.argv.includes("--firefox");
 const watching = process.argv.includes("--watch");
 
-const DIST = "dist";
+// Overridable so a Chrome and a Firefox build can coexist on disk.
+const DIST = process.env.DIST ?? "dist";
 
 const scripts = [
   { entry: "app/background/index.ts", out: "background" },
@@ -116,7 +117,7 @@ if (watching) {
     clearTimeout(timer);
     timer = setTimeout(() => build().catch(console.error), 150);
   };
-  for (const dir of ["app", "features", "lib", "ui"]) {
+  for (const dir of ["app", "features", "kernel", "lib", "ui", "youtube"]) {
     (async () => {
       for await (const _ of watch(dir, { recursive: true })) rebuild();
     })();
