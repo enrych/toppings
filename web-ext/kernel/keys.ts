@@ -15,20 +15,8 @@ export interface KeyGroup<K extends string = string> {
   keys: Record<K, KeyDefinition>;
 }
 
-export function defineKeys<K extends string>(group: KeyGroup<K>): KeyGroup<K> {
-  return group;
-}
-
 // Only bindings the user changed are stored, by action id ("shorts.seekForward").
 export const keybindings = defineSettings<Record<string, string>>("keybindings", {});
-
-export function actionId(group: KeyGroup, key: string): string {
-  return `${group.id}.${key}`;
-}
-
-export function bindingOf(group: KeyGroup, key: string, stored: Record<string, string>): string {
-  return stored[actionId(group, key)] ?? group.keys[key].defaultBinding;
-}
 
 interface Binding {
   group: KeyGroup;
@@ -39,6 +27,18 @@ interface Binding {
 let active: Binding[] = [];
 let stored: Record<string, string> = {};
 let installed = false;
+
+export function defineKeys<K extends string>(group: KeyGroup<K>): KeyGroup<K> {
+  return group;
+}
+
+export function actionId(group: KeyGroup, key: string): string {
+  return `${group.id}.${key}`;
+}
+
+export function bindingOf(group: KeyGroup, key: string, stored: Record<string, string>): string {
+  return stored[actionId(group, key)] ?? group.keys[key].defaultBinding;
+}
 
 function install(): void {
   if (installed) return;

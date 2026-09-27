@@ -12,6 +12,9 @@ const style = `
   .toast[data-visible] { opacity: 1; }
 `;
 
+let ui: ReturnType<typeof mount> | undefined;
+let timer: ReturnType<typeof setTimeout> | undefined;
+
 function Toast({ message, visible }: { message: string; visible: boolean }) {
   return (
     <>
@@ -20,9 +23,6 @@ function Toast({ message, visible }: { message: string; visible: boolean }) {
     </>
   );
 }
-
-let ui: ReturnType<typeof mount> | undefined;
-let timer: ReturnType<typeof setTimeout> | undefined;
 
 // One shared element: rapid calls replace the message rather than stacking.
 export function showToast(message: string, duration = 2000): void {

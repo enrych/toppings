@@ -18,15 +18,15 @@ export interface RecoveredFeature {
   dismissedAt: number | null;
 }
 
+const REPORTS = CHROME_STORAGE_LOCAL_KEY.FEATURE_REPORTS;
+const RECOVERED = CHROME_STORAGE_LOCAL_KEY.FEATURE_RECOVERED;
+
 async function readList<T>(key: string): Promise<T[]> {
   const stored = (await chrome.storage.local.get(key))[key];
   return Array.isArray(stored) ? (stored as T[]) : [];
 }
 
 const writeList = (key: string, list: unknown[]) => chrome.storage.local.set({ [key]: list });
-
-const REPORTS = CHROME_STORAGE_LOCAL_KEY.FEATURE_REPORTS;
-const RECOVERED = CHROME_STORAGE_LOCAL_KEY.FEATURE_RECOVERED;
 
 export const getFeatureReports = () => readList<FeatureReport>(REPORTS);
 

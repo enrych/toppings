@@ -9,6 +9,10 @@ const API_BASE = process.env.TOPPINGS_API;
 // day-old answer is nearly always right; the refresh button bypasses it.
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
+// YouTube announces a hard load more than once, so the same playlist is often
+// asked for again before its first answer is back.
+const inFlight = new Map<string, Promise<PlaylistRuntime | null>>();
+
 interface CacheEntry {
   data: PlaylistRuntime;
   cachedAt: number;
@@ -35,10 +39,6 @@ async function fetchRuntime(playlistId: string): Promise<PlaylistRuntime | null>
   const body = (await response.json()) as { payload: PlaylistRuntime };
   return body.payload;
 }
-
-// YouTube announces a hard load more than once, so the same playlist is often
-// asked for again before its first answer is back.
-const inFlight = new Map<string, Promise<PlaylistRuntime | null>>();
 
 async function fetchAndCache(playlistId: string): Promise<PlaylistRuntime | null> {
   const data = await fetchRuntime(playlistId);

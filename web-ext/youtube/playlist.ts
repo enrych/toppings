@@ -15,10 +15,6 @@ const HEADER_STRATEGIES = [
   `${PLAYLIST_PAGE} ytd-playlist-header-renderer`,
 ];
 
-export function resolvePlaylistHeader(): Promise<PrimitiveResolution> {
-  return resolveTarget(HEADER_STRATEGIES);
-}
-
 // The title block of the playlist panel beside the player on a watch page:
 // playlist name, then the "channel · 2/10" line.
 const WATCH_PANEL_STRATEGIES = [
@@ -27,6 +23,10 @@ const WATCH_PANEL_STRATEGIES = [
   "ytd-playlist-panel-renderer #header-contents",
   "ytd-playlist-panel-renderer #header",
 ] as const;
+
+export function resolvePlaylistHeader(): Promise<PrimitiveResolution> {
+  return resolveTarget(HEADER_STRATEGIES);
+}
 
 export function resolveWatchPlaylistPanel(): Promise<PrimitiveResolution> {
   return resolveTarget(WATCH_PANEL_STRATEGIES);

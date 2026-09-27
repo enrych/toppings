@@ -15,6 +15,11 @@ const ACTION_BAR_STRATEGIES = [
   "ytd-reel-video-renderer #actions",
 ] as const;
 
+// The button's label is localised; its container's id is not.
+const NEXT_REEL_STRATEGIES = ["#navigation-button-down button"] as const;
+
+const OPEN_PANEL_STRATEGIES = ["ytd-engagement-panel-section-list-renderer[visibility='ENGAGEMENT_PANEL_VISIBILITY_EXPANDED']"] as const;
+
 export function resolveReelVideo(): Promise<PrimitiveResolution> {
   return resolveTarget(VIDEO_STRATEGIES);
 }
@@ -22,11 +27,6 @@ export function resolveReelVideo(): Promise<PrimitiveResolution> {
 export function resolveReelActionBar(): Promise<PrimitiveResolution> {
   return resolveTarget(ACTION_BAR_STRATEGIES);
 }
-
-// The button's label is localised; its container's id is not.
-const NEXT_REEL_STRATEGIES = ["#navigation-button-down button"] as const;
-
-const OPEN_PANEL_STRATEGIES = ["ytd-engagement-panel-section-list-renderer[visibility='ENGAGEMENT_PANEL_VISIBILITY_EXPANDED']"] as const;
 
 // A watch page left in the background keeps its own engagement panels, so
 // reel controls are looked up in the Shorts page the playing reel is on.

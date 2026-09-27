@@ -58,6 +58,18 @@ const OVERLAY_STYLE = `
   .options:hover { background: var(--tp-additive); }
 `;
 
+const LINK_STYLE = `
+  ${themeTokens}
+  :host { display: block; }
+  .link {
+    display: flex; align-items: center; gap: 16px; height: 40px; margin: 4px 12px; padding: 0 24px;
+    border-radius: 10px; cursor: pointer; font: 14px var(--tp-font);
+    color: var(--tp-text);
+  }
+  .link:hover { background: var(--tp-additive); }
+  svg { flex-shrink: 0; opacity: .8; }
+`;
+
 export interface NativeSettingsProps {
   open: boolean;
   profiles: Profile[];
@@ -119,18 +131,6 @@ export function NativeSettings({ open, profiles, activeProfileId, toggles, onPic
     </>
   );
 }
-
-const LINK_STYLE = `
-  ${themeTokens}
-  :host { display: block; }
-  .link {
-    display: flex; align-items: center; gap: 16px; height: 40px; margin: 4px 12px; padding: 0 24px;
-    border-radius: 10px; cursor: pointer; font: 14px var(--tp-font);
-    color: var(--tp-text);
-  }
-  .link:hover { background: var(--tp-additive); }
-  svg { flex-shrink: 0; opacity: .8; }
-`;
 
 export function GuideLink({ onOpen }: { onOpen: () => void }) {
   return (

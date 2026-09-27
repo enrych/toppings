@@ -78,6 +78,7 @@ The repo predates this rule and still carries comments that break it. Do not lau
 - **Smallest diff that works.** Do not restructure files you were not asked to change. Do not add abstractions for a second caller that does not exist yet.
 - **Delete over add.** Removing dead code is a complete contribution.
 - **Match the surrounding file** in naming, import ordering, and idiom, even where it differs from your own preference.
+- **File order:** imports, then types, then module-level constants and state (selectors, ids, limits, caches, flags), then functions. A value built from the file's own helpers (a settings slice, a feature object, a catalogue) comes after the helpers it uses.
 - **No new dependencies** for something a few lines of platform or standard-library code already do. If a dependency is genuinely needed, say why before adding it.
 - **Never commit unless asked.** When asked, stage only the files your task touched — the working tree often carries unrelated in-progress work. No `Co-Authored-By` or agent-attribution trailers.
 - **Verify before claiming done.** Run the project's type-check or test command and report what it actually printed, including pre-existing failures you did not cause.

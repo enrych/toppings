@@ -8,6 +8,8 @@ export interface ResolveOptions {
   timeout?: number;
 }
 
+const UNRESOLVED: PrimitiveResolution = { resolved: false, element: null, strategyIndex: null };
+
 // YouTube keeps the pages you navigated away from alive but hidden, and parks
 // unused layouts under display:none, so a selector can match a header or
 // player that is not on screen. Only rendered elements count.
@@ -23,8 +25,6 @@ function findLive(strategies: readonly PrimitiveStrategy[]): PrimitiveResolution
   }
   return null;
 }
-
-const UNRESOLVED: PrimitiveResolution = { resolved: false, element: null, strategyIndex: null };
 
 // For looking inside a root that was itself resolved live. There YouTube hides
 // elements on purpose (a closed menu, buttons a narrow layout tucks away), and

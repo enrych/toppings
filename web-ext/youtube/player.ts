@@ -1,5 +1,12 @@
 import { findWithin, resolveTarget, type PrimitiveResolution } from "@/kernel/dom/resolve";
 
+// Matched by its icon: the row has no id, and its label is in the viewer's
+// language.
+const SPEED_ROW_STRATEGIES = [`.ytp-settings-menu .ytp-panel-menu > .ytp-menuitem:has(path[d^="M12 1c1.44 0 2.87.28 4.21.83"])`] as const;
+const SPEED_ROW_ENGLISH_LABEL = "Playback speed";
+
+const normalLabels = new WeakMap<Element, string>();
+
 export function resolveVideo(): Promise<PrimitiveResolution> {
   return resolveTarget(["#movie_player video", "video.html5-main-video"]);
 }
@@ -38,11 +45,6 @@ export function playerOf(control: Element): ParentNode {
   return control.closest(".html5-video-player") ?? document;
 }
 
-// Matched by its icon: the row has no id, and its label is in the viewer's
-// language.
-const SPEED_ROW_STRATEGIES = [`.ytp-settings-menu .ytp-panel-menu > .ytp-menuitem:has(path[d^="M12 1c1.44 0 2.87.28 4.21.83"])`] as const;
-const SPEED_ROW_ENGLISH_LABEL = "Playback speed";
-
 // The English label keeps English players working if YouTube swaps the icon.
 export function findSpeedRow(inPlayer: Element): PrimitiveResolution {
   const player = playerOf(inPlayer);
@@ -55,8 +57,6 @@ export function findSpeedRow(inPlayer: Element): PrimitiveResolution {
   }
   return byIcon;
 }
-
-const normalLabels = new WeakMap<Element, string>();
 
 // YouTube words 1x in the viewer's language ("Normal", "Standard") and every
 // other rate as a bare number, so the word is kept from YouTube's own label.

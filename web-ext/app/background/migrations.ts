@@ -30,6 +30,10 @@ const LEGACY_BINDINGS: Record<string, string> = {
   "shorts.seekForward": "preferences.shorts.seekForward.key",
 };
 
+// The pre-kernel store lived under these three keys; once every slice has
+// had its chance to copy from them they are dropped.
+const LEGACY_KEYS = ["isExtensionEnabled", "ui", "preferences"];
+
 function read(store: Record<string, unknown>, path: string): unknown {
   return path.split(".").reduce<unknown>((node, part) => (node as Record<string, unknown> | undefined)?.[part], store);
 }
@@ -45,10 +49,6 @@ const legacyKeybindings: Settings<Record<string, string>> = {
     return Object.keys(bindings).length ? bindings : undefined;
   },
 };
-
-// The pre-kernel store lived under these three keys; once every slice has
-// had its chance to copy from them they are dropped.
-const LEGACY_KEYS = ["isExtensionEnabled", "ui", "preferences"];
 
 export async function migrateLegacyStore(): Promise<void> {
   await migrateSettings([appSettings, playlistRuntimeSettings, shortsSettings, playbackSettings, profilesSettings, profileStore, segmentsSettings, legacyKeybindings]);

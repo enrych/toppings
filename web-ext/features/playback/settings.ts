@@ -20,10 +20,10 @@ interface LegacyWatch {
   customPlaybackRates?: string[];
 }
 
-const number = (value: string | undefined) => (value === undefined ? undefined : Number(value));
-
 export const MIN_RATE = 0.0625;
 export const MAX_RATE = 16;
+
+const number = (value: string | undefined) => (value === undefined ? undefined : Number(value));
 
 export const playbackSettings = defineSettings<PlaybackSettings>(
   "playback",

@@ -17,6 +17,8 @@ import { profilesSettings } from "./settings";
 import { getActiveProfile, getAllProfiles, getCustomProfiles, setActiveProfileId, subscribeProfiles } from "./store";
 
 const QUICK_TOGGLES = [watchSidebar, watchComments, watchEndCards];
+const GEAR_ENTRY_ID = "tppng-gear-entry";
+const GEAR_PANEL_ID = "tppng-gear-panel";
 
 export const profiles: Feature = {
   id: "profiles",
@@ -76,9 +78,6 @@ async function cycleProfile(): Promise<void> {
   await setActiveProfileId(next.id);
   showToast(`Profile: ${next.name}`);
 }
-
-const GEAR_ENTRY_ID = "tppng-gear-entry";
-const GEAR_PANEL_ID = "tppng-gear-panel";
 
 // YouTube builds the settings menu on first open and may rebuild it, so the
 // entry is (re)attached on every click of the gear button.
