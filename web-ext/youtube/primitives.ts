@@ -1,10 +1,15 @@
 import { definePrimitive, type Primitive } from "@/kernel/primitives";
+import { removeCover, showCover } from "./cover";
 
 export type Visibility = { visible: boolean };
 export type ThumbnailMode = "show" | "hide" | "blur";
 export type Thumbnails = { mode: ThumbnailMode };
 export type PlayerLayout = "default" | "no-video";
 export type Layout = { value: PlayerLayout };
+export type VisualsMode = "video" | "black" | "visualizer" | "custom";
+export type Visuals = { value: VisualsMode };
+
+const VISUALS_MODES: readonly VisualsMode[] = ["video", "black", "visualizer", "custom"];
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null;
 
@@ -53,6 +58,21 @@ export const watchLayout = definePrimitive<Layout>({
     el.style.minHeight = "";
     el.style.overflow = "";
   },
+});
+
+// What fills the video's place: the video itself, or a cover over it that
+// leaves the player's controls, progress bar and audio untouched.
+export const watchVisuals = definePrimitive<Visuals>({
+  id: "watch.visuals",
+  label: "Video screen",
+  routes: ["watch"],
+  strategies: ["#movie_player", ".html5-video-player"],
+  parse: (value) => (isRecord(value) && VISUALS_MODES.includes(value.value as VisualsMode) ? { value: value.value as VisualsMode } : undefined),
+  apply(el, { value }) {
+    if (value === "video") removeCover(el);
+    else showCover(el, value);
+  },
+  reset: removeCover,
 });
 
 export const watchSidebar = definePrimitive<Visibility>({
@@ -161,6 +181,7 @@ export const shortsShelf = definePrimitive<Visibility>({
 
 export const PRIMITIVES: readonly Primitive[] = [
   watchLayout,
+  watchVisuals,
   watchSidebar,
   watchComments,
   watchEndCards,

@@ -21,7 +21,7 @@ export const features = [
   {
     name: "Profiles",
     blurb:
-      "Presets that reshape YouTube in one switch. Audio collapses the player and keeps the sound; Focus hides the sidebar, comments and end cards. Make your own.",
+      "Presets that reshape YouTube in one switch. Audio covers the video with a waveform and keeps the controls; Focus hides the sidebar, comments and end cards. Make your own.",
   },
   {
     name: "Loop segments",

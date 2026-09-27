@@ -67,6 +67,12 @@ export default function General() {
               isEnabled={surfaces.value.nativeSettings}
               onToggle={(nativeSettings) => surfaces.update({ nativeSettings })}
             />
+            <Switch
+              label="Audio button in the player"
+              description="A headphones button beside the player's controls that turns the Audio profile on and off."
+              isEnabled={surfaces.value.audioButton}
+              onToggle={(audioButton) => surfaces.update({ audioButton })}
+            />
           </Card>
         </Section>
 
@@ -74,10 +80,11 @@ export default function General() {
           <Card>
             <div class="tw-w-full tw-flex tw-items-center tw-justify-between tw-gap-4 tw-py-3">
               <div class="tw-flex tw-flex-col tw-gap-0.5">
-                <span class="tw-text-[15px] tw-text-fg tw-leading-tight">Re-scan features</span>
+                <label for="rescan-features" class="tw-text-[15px] tw-text-fg tw-leading-tight">Re-scan features</label>
                 <span class="tw-text-xs tw-text-fg-subtle">Features are re-checked the next time you open YouTube.</span>
               </div>
               <Button
+                id="rescan-features"
                 size="sm"
                 disabled={rescanning}
                 onClick={async () => {

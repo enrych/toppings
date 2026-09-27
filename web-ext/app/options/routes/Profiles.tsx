@@ -4,9 +4,12 @@ import PageHeader from "@/ui/layout/PageHeader";
 import Section from "@/ui/layout/Section";
 import Card from "@/ui/layout/Card";
 import Switch from "@/ui/form/Switch";
-import Select from "@/ui/form/Select";
+import Select, { type SelectOption } from "@/ui/form/Select";
+import Field from "@/ui/form/Field";
 import { useToast } from "@/ui/feedback/ToastProvider";
 import { useCapabilityCache } from "@/kernel/dom/useCapabilities";
+import { useChromeStorageLocal } from "@/lib/useChromeStorageLocal";
+import { CHROME_STORAGE_LOCAL_KEY } from "@/lib/storageKeys";
 import {
   getAllProfiles,
   getActiveProfile,
@@ -26,7 +29,14 @@ import {
   type ProfilePrimitiveConfig,
   type ThumbnailMode,
 } from "@/features/profiles/profiles";
-import type { PlayerLayout } from "@/features/profiles/profiles";
+import type { PlayerLayout, VisualsMode } from "@/features/profiles/profiles";
+
+const VISUALS_OPTIONS: SelectOption<VisualsMode>[] = [
+  { value: "video", label: "Real video", description: "The video as YouTube shows it" },
+  { value: "black", label: "Black screen", description: "A plain black screen" },
+  { value: "visualizer", label: "Visualizer", description: "A waveform that reacts to the audio" },
+  { value: "custom", label: "Custom image", description: "An image of your choice" },
+];
 
 function blankPrimitives(): ProfilePrimitiveConfig {
   return {
@@ -35,6 +45,50 @@ function blankPrimitives(): ProfilePrimitiveConfig {
     "watch.endCards": { visible: true },
     "watch.layout": { value: "default" },
   };
+}
+
+function VisualsImagePicker() {
+  const toast = useToast();
+  const [image] = useChromeStorageLocal<string | null>(CHROME_STORAGE_LOCAL_KEY.VISUALS_IMAGE, null);
+  const fileInput = useRef<HTMLInputElement>(null);
+
+  const store = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = async () => {
+      if (typeof reader.result !== "string") return;
+      // Local storage is capped without unlimitedStorage, and a photo's data
+      // URL can pass the cap, so a failed write is expected, not exceptional.
+      try {
+        await chrome.storage.local.set({ [CHROME_STORAGE_LOCAL_KEY.VISUALS_IMAGE]: reader.result });
+      } catch {
+        toast.error("Image not saved", "It is too large; try a smaller one.");
+      }
+    };
+    reader.onerror = () => toast.error("Could not read that image");
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <Field label="Custom image" hint="Kept on this device only, and shared by every profile set to a custom image.">
+      <div class="tw-flex tw-items-center tw-gap-2">
+        {image && <img src={image} alt="" class="tw-h-8 tw-w-14 tw-rounded tw-object-cover tw-border tw-border-border-subtle" />}
+        {image && <Button size="sm" variant="ghost" onClick={() => void chrome.storage.local.remove(CHROME_STORAGE_LOCAL_KEY.VISUALS_IMAGE)}>Clear</Button>}
+        <Button size="sm" onClick={() => fileInput.current?.click()}>{image ? "Change image" : "Choose image"}</Button>
+        <input
+          ref={fileInput}
+          type="file"
+          accept="image/*"
+          hidden
+          onChange={(e) => {
+            const input = e.currentTarget;
+            const file = input.files?.[0];
+            input.value = "";
+            if (file) store(file);
+          }}
+        />
+      </div>
+    </Field>
+  );
 }
 
 interface ProfileEditorProps {
@@ -58,6 +112,7 @@ function ProfileEditor({
   const [isSaving, setIsSaving] = useState(false);
 
   const layout = primitives["watch.layout"]?.value ?? "default";
+  const visuals = primitives["watch.visuals"]?.value ?? "video";
 
   const set = <K extends keyof ProfilePrimitiveConfig>(
     key: K,
@@ -113,6 +168,23 @@ function ProfileEditor({
               ]}
               onChange={(v) => set("watch.layout", { value: v })}
             />
+          </div>
+
+          <div
+            class={`tw-px-4 ${isUnsupported("watch.visuals") ? "tw-opacity-50" : ""}`}
+          >
+            <Select<VisualsMode>
+              label="Video screen"
+              description={
+                isUnsupported("watch.visuals")
+                  ? "Not available on your YouTube"
+                  : "Covers the video but keeps the player's controls, so you can listen without the picture showing."
+              }
+              value={visuals}
+              options={VISUALS_OPTIONS}
+              onChange={(v) => set("watch.visuals", { value: v })}
+            />
+            {visuals === "custom" && <VisualsImagePicker />}
           </div>
 
                     <div
@@ -271,6 +343,7 @@ interface PresetCardProps {
 function PresetCard({ profile, isActive, onActivate }: PresetCardProps) {
   const primitiveLabels: Record<string, string> = {
     "watch.layout": "Layout",
+    "watch.visuals": "Video screen",
     "watch.sidebar": "Sidebar",
     "watch.comments": "Comments",
     "watch.endCards": "End Cards",
@@ -288,6 +361,9 @@ function PresetCard({ profile, isActive, onActivate }: PresetCardProps) {
       const label = primitiveLabels[key] ?? key;
       if ("visible" in val) return `${label}: ${val.visible ? "on" : "off"}`;
       if ("mode" in val) return `${label}: ${val.mode}`;
+      if (key === "watch.visuals" && "value" in val) {
+        return `${label}: ${VISUALS_OPTIONS.find((o) => o.value === val.value)?.label ?? val.value}`;
+      }
       if ("value" in val) return `${label}: ${val.value}`;
       return label;
     })

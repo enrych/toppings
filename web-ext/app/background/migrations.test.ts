@@ -43,7 +43,7 @@ describe("migrateLegacyStore", () => {
     expect(await playbackSettings.get()).toEqual({ enabled: true, defaultRate: 1.5, toggleRate: 2, rateStep: 0.5, seekBackward: 10, seekForward: 20, customRates: [1, 1.5] });
     expect(await shortsSettings.get()).toMatchObject({ enabled: false, autoScroll: false, toggleRate: 1.75, seekBackward: 5 });
     expect(await segmentsSettings.get()).toEqual({ enabled: true, autoLoad: "last-used", nudgeBaseStep: 2, nudgeMultiplier: 3, nudgeMaxStep: 8 });
-    expect(await profilesSettings.get()).toEqual({ gearMenu: true, nativeSettings: false });
+    expect(await profilesSettings.get()).toEqual({ gearMenu: true, nativeSettings: false, audioButton: true });
     expect((await profileStore.get()).activeProfileId).toBe("preset:focus");
     expect(await keybindings.get()).toEqual({ "playback.toggleRate": "T", "playback.increaseRate": "W", "playback.seekBackward": "A", "playback.seekForward": "D", "segments.toggle": "L", "segments.fresh": "Shift+Z", "segments.nudgeStartBackward": "Shift+Q", "shorts.toggleRate": "X" });
     expect(Object.keys(await chrome.storage.sync.get()).filter((k) => !k.startsWith("settings:"))).toEqual([]);
@@ -54,6 +54,13 @@ describe("migrateLegacyStore", () => {
     await migrateLegacyStore();
     expect((await playbackSettings.get()).enabled).toBe(false);
     expect((await segmentsSettings.get()).enabled).toBe(false);
+  });
+
+  test("3.x audio mode's key and player button carry over to the Audio profile", async () => {
+    await chrome.storage.sync.set({ preferences: { watch: { audioMode: { isEnabled: false, toggleAudioMode: { key: "Shift+B" } } } } });
+    await migrateLegacyStore();
+    expect((await keybindings.get())["profiles.preset:audio"]).toBe("Shift+B");
+    expect((await profilesSettings.get()).audioButton).toBe(false);
   });
 
   test("a fresh install keeps every default", async () => {

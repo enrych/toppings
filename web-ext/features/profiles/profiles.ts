@@ -1,11 +1,12 @@
-import type { Layout, Thumbnails, Visibility } from "@/youtube/primitives";
+import type { Layout, Thumbnails, Visibility, Visuals } from "@/youtube/primitives";
 
-export type { PlayerLayout, ThumbnailMode } from "@/youtube/primitives";
+export type { PlayerLayout, ThumbnailMode, VisualsMode } from "@/youtube/primitives";
 
 // Keyed by primitive id. An absent key means "leave YouTube alone", which is
 // not the same as a default value and is what lets profiles stay small.
 export interface ProfilePrimitiveConfig {
   "watch.layout"?: Layout;
+  "watch.visuals"?: Visuals;
   "watch.sidebar"?: Visibility;
   "watch.comments"?: Visibility;
   "watch.endCards"?: Visibility;
@@ -34,7 +35,7 @@ export const PRESET_AUDIO: Profile = {
   isPreset: true,
   createdAt: 0,
   primitives: {
-    "watch.layout": { value: "no-video" },
+    "watch.visuals": { value: "visualizer" },
     "watch.sidebar": { visible: false },
   },
 };

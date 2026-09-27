@@ -3,6 +3,7 @@ import { h, render } from "preact";
 import { act } from "preact/test-utils";
 import Shortcuts from "@/app/options/routes/Shortcuts";
 import Profiles from "@/app/options/routes/Profiles";
+import General from "@/app/options/routes/General";
 import { ToastProvider } from "@/ui/feedback/ToastProvider";
 import OptionsSearch from "./OptionsSearch";
 import { SEARCH_INDEX } from "./searchIndex";
@@ -42,5 +43,14 @@ describe("options search", () => {
     const sections = SEARCH_INDEX.filter((e) => e.page === "Profiles" && e.label === e.section).map((e) => e.label);
     expect(sections.length).toBeGreaterThan(0);
     for (const label of sections) expect(headings).toContain(label);
+  });
+
+  test("every General page entry matches a rendered label", async () => {
+    act(() => {
+      render(h(ToastProvider, null, h(General, null)), root);
+    });
+    await wait(20);
+    const labels = [...root.querySelectorAll("label, h2")].map((el) => el.textContent?.trim());
+    for (const entry of SEARCH_INDEX.filter((e) => e.page === "General")) expect(labels).toContain(entry.label);
   });
 });

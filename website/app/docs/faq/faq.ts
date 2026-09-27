@@ -16,7 +16,7 @@ export const faq: readonly { q: string; a: readonly string[] }[] = [
   {
     q: "How do I listen without the video?",
     a: [
-      "Switch to the Audio preset from the popup, the player's gear menu, or a shortcut. It collapses the player and keeps playback running; switch profiles again to bring the video back.",
+      "Press B, click the headphones button beside the player's controls, or pick Audio in the popup. It covers the video with a waveform that moves with the sound, while the controls, progress bar and seeking keep working. Press B again to go back to what you had before.",
     ],
   },
   {
@@ -34,7 +34,7 @@ export const faq: readonly { q: string; a: readonly string[] }[] = [
   {
     q: "What are profiles?",
     a: [
-      "Named bundles of YouTube settings: sidebar, comments, end cards, Shorts shelf, feed thumbnails and more. Two presets ship, Audio and Focus. Create your own, then switch from the popup, a shortcut, or the player's gear menu.",
+      "Named bundles of YouTube settings: sidebar, comments, end cards, Shorts shelf, feed thumbnails and more. Two presets ship, Audio and Focus. Create your own, then switch from the popup, the player's gear menu, or a shortcut; every profile can have its own.",
       "Each custom profile can be exported to a JSON file and imported elsewhere. Imports are validated, so a bad file can't corrupt your settings.",
     ],
   },

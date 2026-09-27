@@ -1,20 +1,21 @@
 import { render } from "preact";
 import type { Feature } from "@/kernel/features";
 import { bindKeys } from "@/kernel/keys";
-import { mount } from "@/kernel/dom/mount";
+import { mount, mountInline } from "@/kernel/dom/mount";
 import { runPrimitives, type PrimitiveRun } from "@/kernel/primitives";
 import type { RouteName } from "@/youtube/route";
 import { PRIMITIVES, watchComments, watchEndCards, watchSidebar, type Visibility } from "@/youtube/primitives";
-import { resolveSettingsButton } from "@/youtube/player";
+import { resolveRightControls, resolveSettingsButton } from "@/youtube/player";
 import { resolveGuideSettingsSection, settingsMenu } from "@/youtube/guide";
 import { showToast } from "@/kernel/dom/toast";
 import { GearEntry, GearPanel, type QuickToggle } from "./GearPanel";
 import { GuideLink, NativeSettings } from "./NativeSettings";
-import { profilesKeys } from "./keys";
+import { AudioButton, audioButtonHost, setAudioButtonState } from "./AudioButton";
+import { profileToggleKeys, profilesKeys } from "./keys";
 import { openOptions } from "./messages";
-import { BUILT_IN_PRESETS, type Profile } from "./profiles";
+import { BUILT_IN_PRESETS, PRESET_AUDIO, type Profile } from "./profiles";
 import { profilesSettings } from "./settings";
-import { getActiveProfile, getAllProfiles, getCustomProfiles, setActiveProfileId, subscribeProfiles } from "./store";
+import { getActiveProfile, getAllProfiles, getCustomProfiles, setActiveProfileId, subscribeProfiles, toggleProfile } from "./store";
 
 const QUICK_TOGGLES = [watchSidebar, watchComments, watchEndCards];
 const GEAR_ENTRY_ID = "tppng-gear-entry";
@@ -28,14 +29,30 @@ export const profiles: Feature = {
 
     let run: PrimitiveRun | undefined;
     let stopped = false;
+    let audio: AudioToggle | undefined;
+    let audioActive = false;
     const start = async () => {
       const active = await getActiveProfile();
       if (stopped) return;
       run?.stop();
       run = runPrimitives(PRIMITIVES, { ...active?.primitives }, route.name);
+      audioActive = active?.id === PRESET_AUDIO.id;
+      audio?.show(audioActive);
     };
     await start();
-    const unsubscribe = subscribeProfiles(() => void start());
+
+    let unbindToggles = () => {};
+    const bindToggles = async () => {
+      const all = await getAllProfiles();
+      if (stopped) return;
+      unbindToggles();
+      unbindToggles = bindKeys(profileToggleKeys(all), Object.fromEntries(all.map((profile) => [profile.id, () => void switchProfile(profile.id)])));
+    };
+    await bindToggles();
+    const unsubscribe = subscribeProfiles(() => {
+      void start();
+      void bindToggles();
+    });
 
     const page: PageControls = {
       route: route.name,
@@ -47,6 +64,14 @@ export const profiles: Feature = {
     };
 
     const unbindKeys = bindKeys(profilesKeys, { cycle: () => void cycleProfile() });
+    // Not awaited: the control bar can render late, and nothing else waits on it.
+    if (route.name === "watch" && settings.audioButton) {
+      void mountAudioToggle().then((toggle) => {
+        if (stopped) return toggle?.unmount();
+        audio = toggle;
+        audio?.show(audioActive);
+      });
+    }
     const gear = route.name === "watch" && settings.gearMenu ? await hookGearMenu(page) : undefined;
     const native = settings.nativeSettings ? await mountNativeSettings(page) : undefined;
 
@@ -54,6 +79,8 @@ export const profiles: Feature = {
       stopped = true;
       unsubscribe();
       unbindKeys();
+      unbindToggles();
+      audio?.unmount();
       gear?.();
       native?.();
       run?.stop();
@@ -65,6 +92,31 @@ interface PageControls {
   route: RouteName;
   toggles(): QuickToggle[];
   setVisible(id: string, visible: boolean): void;
+}
+
+async function switchProfile(id: string): Promise<void> {
+  const now = await toggleProfile(id);
+  showToast(`Profile: ${now?.name ?? "Default"}`);
+}
+
+interface AudioToggle {
+  show(active: boolean): void;
+  unmount(): void;
+}
+
+async function mountAudioToggle(): Promise<AudioToggle | undefined> {
+  const controls = await resolveRightControls();
+  if (!controls.resolved) return;
+  const host = audioButtonHost();
+  const button = mountInline(host, controls.element, <AudioButton active={false} />, "prepend");
+  host.addEventListener("click", () => void switchProfile(PRESET_AUDIO.id));
+  return {
+    show(active) {
+      setAudioButtonState(host, active);
+      button.update(<AudioButton active={active} />);
+    },
+    unmount: button.unmount,
+  };
 }
 
 async function cycleProfile(): Promise<void> {

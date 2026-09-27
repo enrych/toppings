@@ -28,6 +28,7 @@ const LEGACY_BINDINGS: Record<string, string> = {
   "shorts.toggleRate": "preferences.shorts.togglePlaybackRate.key",
   "shorts.seekBackward": "preferences.shorts.seekBackward.key",
   "shorts.seekForward": "preferences.shorts.seekForward.key",
+  "profiles.preset:audio": "preferences.watch.audioMode.toggleAudioMode.key",
 };
 
 // The pre-kernel store lived under these three keys; once every slice has

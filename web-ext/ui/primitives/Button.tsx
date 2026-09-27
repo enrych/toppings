@@ -21,6 +21,7 @@ export interface ButtonProps {
   size?: ButtonSize;
   icon?: ComponentChildren;
   class?: string;
+  id?: string;
   title?: string;
   disabled?: boolean;
   onClick?: () => void;

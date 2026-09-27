@@ -7,11 +7,13 @@ interface ProfileStore {
   activeProfileId: string | null;
   // Custom profiles only; presets are constants.
   profiles: Profile[];
+  // What a profile's shortcut returns to when pressed again.
+  previousProfileId: string | null;
 }
 
 export const profileStore = defineSettings<ProfileStore>(
   "profiles",
-  { activeProfileId: null, profiles: [] },
+  { activeProfileId: null, profiles: [], previousProfileId: null },
   {
     area: "local",
     legacy: (store) => store[CHROME_STORAGE_LOCAL_KEY.PROFILE_STORE] as Partial<ProfileStore> | undefined,
@@ -39,6 +41,15 @@ export async function getActiveProfile(): Promise<Profile | null> {
 
 export function setActiveProfileId(activeProfileId: string | null): Promise<void> {
   return profileStore.set({ activeProfileId });
+}
+
+// A profile's shortcut switches to it, and pressing it again goes back to
+// whatever was active before, so Audio can be flipped on and off over Focus.
+export async function toggleProfile(id: string): Promise<Profile | null> {
+  const { activeProfileId, previousProfileId } = await profileStore.get();
+  const next = activeProfileId === id ? previousProfileId : id;
+  await profileStore.set({ activeProfileId: next, previousProfileId: activeProfileId === id ? null : activeProfileId });
+  return next ? ((await getProfileById(next)) ?? null) : null;
 }
 
 export async function createProfile(data: Pick<Profile, "name" | "primitives">): Promise<Profile> {

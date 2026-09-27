@@ -17,7 +17,9 @@ export const releases: readonly {
       { kind: "new", text: "Z loads the last-used setup or turns segments off; Shift+Z starts a fresh slate." },
       { kind: "new", text: "Drag two adjacent markers together to merge segments." },
       { kind: "new", text: "A control panel under the video for segments, loop counts and rates." },
-      { kind: "polish", text: "Audio mode is now the Audio preset. Profiles replace the standalone toggle, the B key, the visualizer and custom backgrounds." },
+      { kind: "polish", text: "Audio mode is now the Audio preset. B and the headphones button in the player still turn it on and off, and any profile can cover the video with black, the visualizer or your own image while keeping the controls." },
+      { kind: "new", text: "Every profile can have its own shortcut; pressing it again goes back to the profile you had before." },
+      { kind: "polish", text: "Per-video audio-mode pins and the visualizer sensitivity setting are gone." },
     ],
   },
   {

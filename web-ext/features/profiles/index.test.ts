@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { profiles } from "./index";
 import { profilesSettings } from "./settings";
 import { createProfile, getActiveProfile, setActiveProfileId } from "./store";
+import { keybindings } from "@/kernel/keys";
 
 const watchPage = `
   <div id="movie_player" class="html5-video-player">
@@ -17,7 +18,7 @@ const watch = { name: "watch", videoId: "v", playlistId: null } as const;
 const home = { name: "home" } as const;
 const tick = () => new Promise((r) => setTimeout(r, 10));
 const sidebar = () => document.getElementById("secondary")!;
-const press = (key: string) => document.body.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
+const press = (key: string, init: KeyboardEventInit = {}) => document.body.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true, ...init }));
 
 let unmount: (() => void) | undefined | void;
 const mountOn = async (route: typeof watch | typeof home) => {
@@ -63,6 +64,30 @@ describe("profiles", () => {
     await mountOn(watch);
     expect(sidebar().style.display).toBe("none");
     expect(document.getElementById("comments")!.style.display).toBe("");
+  });
+
+  test("B switches to Audio and back to the profile that was on before", async () => {
+    await setActiveProfileId("preset:focus");
+    await mountOn(watch);
+    press("b");
+    await tick();
+    expect((await getActiveProfile())?.id).toBe("preset:audio");
+    press("b");
+    await tick();
+    expect((await getActiveProfile())?.id).toBe("preset:focus");
+  });
+
+  test("a custom profile's shortcut toggles it from Default", async () => {
+    const mine = await createProfile({ name: "Work", primitives: { "watch.sidebar": { visible: false } } });
+    await keybindings.set({ [`profiles.${mine.id}`]: "Shift+W" });
+    await mountOn(watch);
+    press("W", { shiftKey: true });
+    await tick();
+    expect((await getActiveProfile())?.id).toBe(mine.id);
+    expect(sidebar().style.display).toBe("none");
+    press("W", { shiftKey: true });
+    await tick();
+    expect(await getActiveProfile()).toBeNull();
   });
 
   test("the cycle key walks default, presets, then custom profiles", async () => {
