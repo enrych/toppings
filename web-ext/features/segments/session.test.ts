@@ -64,7 +64,7 @@ describe("SegmentSession", () => {
     expect(session.state.saved.map((c) => c.label)).toEqual(["Chorus"]);
     expect(session.state.config?.label).toBe("Chorus");
     await session.saveDefault();
-    expect(session.state.defaultId).toBe(session.state.config?.id);
+    expect(session.state.defaultId).toBe(session.state.config!.id);
   });
 
   test("restore honours the global setting and a per-video pin", async () => {

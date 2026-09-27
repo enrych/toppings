@@ -39,6 +39,6 @@ describe("legacy migration", () => {
 
   test("writes nothing when there is no legacy value", async () => {
     await migrateSettings([slice]);
-    expect(await chrome.storage.sync.get(null)).toEqual({});
+    expect(await chrome.storage.sync.get()).toEqual({});
   });
 });

@@ -18,7 +18,8 @@ import { RateChips } from "./RateChips";
 import { SeekFlash } from "./SeekFlash";
 import { MAX_RATE, MIN_RATE, playbackSettings } from "./settings";
 
-const clamp = (rate: number) => Math.min(MAX_RATE, Math.max(MIN_RATE, Number(rate.toFixed(2))));
+// Four places keep 1/16 steps exact while dropping float drift like 1.1 + 0.1.
+const clamp = (rate: number) => Math.min(MAX_RATE, Math.max(MIN_RATE, Number(rate.toFixed(4))));
 
 export const playback: Feature = {
   id: "playback",

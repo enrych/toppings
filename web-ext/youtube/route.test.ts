@@ -6,13 +6,13 @@ const at = (path: string) => routeFor(new URL(`https://www.youtube.com${path}`))
 describe("routeFor", () => {
   test("watch pages carry the video id", () => {
     expect(at("/watch?v=abc123")).toEqual({ name: "watch", videoId: "abc123", playlistId: null });
-    expect(at("/watch?v=abc123&list=PL1").playlistId).toBe("PL1");
+    expect(at("/watch?v=abc123&list=PL1")).toMatchObject({ playlistId: "PL1" });
   });
 
   test("playlists distinguish YouTube's own lists", () => {
     expect(at("/playlist?list=PL1")).toEqual({ name: "playlist", playlistId: "PL1", system: false });
     expect(at("/playlist?list=WL")).toEqual({ name: "playlist", playlistId: "WL", system: true });
-    expect(at("/playlist?list=LL").system).toBe(true);
+    expect(at("/playlist?list=LL")).toMatchObject({ system: true });
   });
 
   test("shorts carry the short id", () => {

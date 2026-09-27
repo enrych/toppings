@@ -46,7 +46,7 @@ describe("migrateLegacyStore", () => {
     expect(await profilesSettings.get()).toEqual({ gearMenu: true, nativeSettings: false });
     expect((await profileStore.get()).activeProfileId).toBe("preset:focus");
     expect(await keybindings.get()).toEqual({ "playback.toggleRate": "T", "playback.increaseRate": "W", "playback.seekBackward": "A", "playback.seekForward": "D", "segments.toggle": "L", "segments.fresh": "Shift+Z", "segments.nudgeStartBackward": "Shift+Q", "shorts.toggleRate": "X" });
-    expect(Object.keys(await chrome.storage.sync.get(null)).filter((k) => !k.startsWith("settings:"))).toEqual([]);
+    expect(Object.keys(await chrome.storage.sync.get()).filter((k) => !k.startsWith("settings:"))).toEqual([]);
   });
 
   test("a fresh install keeps every default", async () => {

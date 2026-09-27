@@ -119,9 +119,13 @@ await build();
 
 if (watching) {
   let timer: ReturnType<typeof setTimeout> | undefined;
+  let building = Promise.resolve();
+  // Each build starts by deleting DIST, so one must not start under another.
   const rebuild = () => {
     clearTimeout(timer);
-    timer = setTimeout(() => build().catch(console.error), 150);
+    timer = setTimeout(() => {
+      building = building.then(build).catch(console.error);
+    }, 150);
   };
   for (const dir of ["app", "assets", "features", "kernel", "lib", "ui", "youtube"]) {
     (async () => {

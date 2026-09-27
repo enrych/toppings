@@ -70,6 +70,15 @@ describe("playback", () => {
     expect(video().playbackRate).toBe(0.0625);
   });
 
+  test("sixteenth steps stay exact", async () => {
+    await playbackSettings.set({ rateStep: 0.0625 });
+    await mountPlayback();
+    press("w");
+    press("w");
+    expect(video().playbackRate).toBe(1.125);
+    expect(document.querySelector(".ytp-menuitem-content")!.textContent).toBe("1.125");
+  });
+
   test("seek keys move the playhead and flash the amount", async () => {
     await playbackSettings.set({ seekForward: 10, seekBackward: 30 });
     await mountPlayback();

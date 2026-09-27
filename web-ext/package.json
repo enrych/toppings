@@ -10,7 +10,7 @@
     "build:firefox": "bun scripts/build.ts --production --firefox",
     "release": "bun run build && bun scripts/release.ts",
     "release:firefox": "bun run build:firefox && bun scripts/release.ts --firefox",
-    "type-check": "tsc --noEmit && tsc --noEmit -p scripts",
+    "type-check": "tsc --noEmit && tsc --noEmit -p scripts && tsc --noEmit -p tsconfig.test.json",
     "test": "bun test",
     "check": "bun run type-check && bun test"
   },

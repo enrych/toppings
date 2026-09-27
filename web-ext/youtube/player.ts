@@ -65,7 +65,7 @@ export function showRateInSpeedRow(row: Element, rate: number): void {
   if (!value) return;
   const shown = value.textContent ?? "";
   if (shown && !/\p{Nd}/u.test(shown)) normalLabels.set(row, shown);
-  value.textContent = rate === 1 ? (normalLabels.get(row) ?? "1") : String(Number(rate.toFixed(2)));
+  value.textContent = rate === 1 ? (normalLabels.get(row) ?? "1") : String(Number(rate.toFixed(4)));
 }
 
 export function ratePanelChips(panel: Element): HTMLElement | null {
