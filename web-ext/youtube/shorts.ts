@@ -29,11 +29,11 @@ const NEXT_REEL_STRATEGIES = ["#navigation-button-down button"] as const;
 const OPEN_PANEL_STRATEGIES = ["ytd-engagement-panel-section-list-renderer[visibility='ENGAGEMENT_PANEL_VISIBILITY_EXPANDED']"] as const;
 
 export function nextReelButton(): HTMLButtonElement | null {
-  return findTarget(NEXT_REEL_STRATEGIES) as HTMLButtonElement | null;
+  return findTarget(NEXT_REEL_STRATEGIES).element as HTMLButtonElement | null;
 }
 
 // Advancing would close an open comments, description or audio panel under
 // the user.
 export function isReelPanelOpen(): boolean {
-  return findTarget(OPEN_PANEL_STRATEGIES) !== null;
+  return findTarget(OPEN_PANEL_STRATEGIES).resolved;
 }

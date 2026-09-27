@@ -26,8 +26,8 @@ function findLive(strategies: readonly PrimitiveStrategy[]): PrimitiveResolution
 
 const UNRESOLVED: PrimitiveResolution = { resolved: false, element: null, strategyIndex: null };
 
-export function findTarget(strategies: readonly PrimitiveStrategy[]): Element | null {
-  return findLive(strategies)?.element ?? null;
+export function findTarget(strategies: readonly PrimitiveStrategy[]): PrimitiveResolution {
+  return findLive(strategies) ?? UNRESOLVED;
 }
 
 // Strategies are ordered by preference, and the first to match a live element

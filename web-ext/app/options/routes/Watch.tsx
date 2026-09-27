@@ -26,6 +26,7 @@ const WATCH_PRIMITIVES: { id: string; label: string }[] = [
   { id: "watch.progressBar",   label: "Progress Bar" },
   { id: "watch.moviePlayer",   label: "Movie Player Container" },
   { id: "watch.settingsButton",label: "Settings Button" },
+  { id: "watch.speedRow",      label: "Playback Speed Menu Row" },
   { id: "watch.ratePanel",     label: "Playback Speed Panel" },
   { id: "watch.sidebar",       label: "Recommendations Sidebar" },
   { id: "watch.comments",      label: "Comments Section" },

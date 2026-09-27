@@ -3,15 +3,15 @@ import type { Feature } from "@/kernel/features";
 import { bindKeys } from "@/kernel/keys";
 import { mount } from "@/kernel/dom/mount";
 import { setCapabilityStatus } from "@/kernel/dom/capabilities";
+import { settingsMenu } from "@/youtube/guide";
 import {
-  findSettingsMenuItem,
-  formatRate,
+  findSpeedRow,
   ratePanelChips,
   resolveMoviePlayer,
   resolveRatePanel,
   resolveSettingsButton,
   resolveVideo,
-  setSettingsMenuValue,
+  showRateInSpeedRow,
   syncRatePanel,
 } from "@/youtube/player";
 import { playbackKeys } from "./keys";
@@ -35,8 +35,8 @@ export const playback: Feature = {
 
     const setRate = (rate: number) => {
       video.playbackRate = clamp(rate);
-      const row = findSettingsMenuItem("Playback speed");
-      if (row) setSettingsMenuValue(row, formatRate(video.playbackRate));
+      const row = findSpeedRow();
+      if (row.resolved) showRateInSpeedRow(row.element, video.playbackRate);
     };
     setRate(settings.defaultRate);
 
@@ -104,13 +104,16 @@ async function hookRatePanel(rates: number[], video: HTMLVideoElement, setRate: 
     draw();
   };
 
-  let speedRow: HTMLElement | null = null;
+  let speedRow: Element | null = null;
   const onSettings = () => {
     // The row exists only once the menu has rendered, which happens on this same click.
     setTimeout(() => {
-      const row = findSettingsMenuItem("Playback speed");
-      if (!row) return;
-      setSettingsMenuValue(row, formatRate(video.playbackRate));
+      if (!settingsMenu()) return;
+      const found = findSpeedRow();
+      void setCapabilityStatus("watch.speedRow", "watch", found);
+      if (!found.resolved) return;
+      const row = found.element;
+      showRateInSpeedRow(row, video.playbackRate);
       if (row !== speedRow) {
         speedRow?.removeEventListener("click", onSpeedRow);
         row.addEventListener("click", onSpeedRow);

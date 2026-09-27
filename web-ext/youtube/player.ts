@@ -1,4 +1,4 @@
-import { resolveTarget, type PrimitiveResolution } from "@/kernel/dom/resolve";
+import { findTarget, resolveTarget, type PrimitiveResolution } from "@/kernel/dom/resolve";
 
 export function resolveVideo(): Promise<PrimitiveResolution> {
   return resolveTarget(["#movie_player video", "video.html5-main-video"]);
@@ -32,21 +32,24 @@ export function resolveRatePanel(): Promise<PrimitiveResolution> {
   return resolveTarget([".ytp-settings-menu .ytp-variable-speed-panel-content"]);
 }
 
-export function findSettingsMenuItem(label: string): HTMLElement | null {
-  for (const el of document.querySelectorAll<HTMLElement>(".ytp-menuitem-label")) {
-    if (el.textContent === label) return el.parentElement;
-  }
-  return null;
+// Matched by its icon: the row has no id, and its label is in the viewer's
+// language.
+const SPEED_ROW_STRATEGIES = [`.ytp-settings-menu .ytp-panel-menu > .ytp-menuitem:has(path[d^="M12 1c1.44 0 2.87.28 4.21.83"])`] as const;
+
+export function findSpeedRow(): PrimitiveResolution {
+  return findTarget(SPEED_ROW_STRATEGIES);
 }
 
-export function formatRate(rate: number): string {
-  return rate === 1 ? "Normal" : String(Number(rate.toFixed(2)));
-}
+const normalLabels = new WeakMap<Element, string>();
 
-// The value column of a settings-menu row, e.g. "Normal" next to "Playback speed".
-export function setSettingsMenuValue(item: HTMLElement, text: string): void {
-  const value = item.children[2] as HTMLElement | undefined;
-  if (value) value.textContent = text;
+// YouTube words 1x in the viewer's language ("Normal", "Standard") and every
+// other rate as a bare number, so the word is kept from YouTube's own label.
+export function showRateInSpeedRow(row: Element, rate: number): void {
+  const value = row.querySelector(".ytp-menuitem-content");
+  if (!value) return;
+  const shown = value.textContent ?? "";
+  if (shown && !/\d/.test(shown)) normalLabels.set(row, shown);
+  value.textContent = rate === 1 ? (normalLabels.get(row) ?? "1") : String(Number(rate.toFixed(2)));
 }
 
 export function ratePanelChips(panel: Element): HTMLElement | null {

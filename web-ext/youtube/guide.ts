@@ -7,7 +7,7 @@ export function resolveGuideSettingsSection(): Promise<PrimitiveResolution> {
 }
 
 export function settingsMenu(): { menu: HTMLElement; mainPanel: HTMLElement; mainList: HTMLElement } | null {
-  const menu = findTarget([".ytp-settings-menu"]) as HTMLElement | null;
+  const menu = findTarget([".ytp-settings-menu"]).element as HTMLElement | null;
   const mainPanel = menu?.querySelector<HTMLElement>(".ytp-panel");
   const mainList = mainPanel?.querySelector<HTMLElement>(".ytp-panel-menu");
   return menu && mainPanel && mainList ? { menu, mainPanel, mainList } : null;

@@ -2,12 +2,15 @@ import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { playback } from "./index";
 import { playbackSettings } from "./settings";
 
-const page = `
+const SPEED_ICON = "M12 1c1.44 0 2.87.28 4.21.83a11 11 0 0 1 3.45 2.27";
+const page = (label = "Playback speed", normal = "Normal") => `
   <div id="movie_player">
     <video></video>
     <button class="ytp-settings-button"></button>
     <div class="ytp-settings-menu">
-      <div class="ytp-menuitem"><div class="ytp-menuitem-icon"></div><div class="ytp-menuitem-label">Playback speed</div><div class="ytp-menuitem-content">Normal</div></div>
+      <div class="ytp-panel"><div class="ytp-panel-menu">
+        <div class="ytp-menuitem"><div class="ytp-menuitem-icon"><svg><path d="${SPEED_ICON}"></path></svg></div><div class="ytp-menuitem-label">${label}</div><div class="ytp-menuitem-content">${normal}</div></div>
+      </div></div>
       <div class="ytp-panel"><div class="ytp-variable-speed-panel-content">
         <div class="ytp-variable-speed-panel-display"><span>1.00x</span></div>
         <input class="ytp-speedslider" type="range" min="0.25" max="2" step="0.05" value="1">
@@ -37,7 +40,7 @@ async function openSpeedPanel() {
 
 beforeEach(async () => {
   await chrome.storage.sync.clear();
-  document.body.innerHTML = page;
+  document.body.innerHTML = page();
   video().currentTime = 60;
 });
 afterEach(() => {
@@ -109,6 +112,28 @@ describe("playback", () => {
     await mountPlayback();
     await openSpeedPanel();
     expect(chips().map((b) => b.textContent)).toEqual(["1.0"]);
+  });
+
+  test("the speed row keeps YouTube's own word for 1x in any language", async () => {
+    document.body.innerHTML = page("Wiedergabegeschwindigkeit", "Standard");
+    await playbackSettings.set({ defaultRate: 1.25, toggleRate: 2 });
+    await mountPlayback();
+    const value = () => document.querySelector(".ytp-menuitem-content")!.textContent;
+    expect(value()).toBe("1.25");
+    press("x");
+    expect(value()).toBe("Standard");
+    press("x");
+    expect(value()).toBe("2");
+    press("x");
+    expect(value()).toBe("Standard");
+  });
+
+  test("custom rates reach the speed panel in any language", async () => {
+    document.body.innerHTML = page("Wiedergabegeschwindigkeit", "Standard");
+    await playbackSettings.set({ customRates: [1, 1.5, 3] });
+    await mountPlayback();
+    await openSpeedPanel();
+    expect(chips().map((b) => b.textContent)).toEqual(["1.0", "1.5", "3.0"]);
   });
 
   test("keys stop working after unmount", async () => {
