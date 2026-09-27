@@ -7,7 +7,7 @@ import { isTypingTarget, matchesBinding } from "@/kernel/keybinding";
 import { resolveBelowPlayer, resolveProgressBar, resolveRightControls, resolveVideo } from "@/youtube/player";
 import { Markers } from "./Markers";
 import { Panel } from "./panel/Panel";
-import { SegmentButton, segmentButtonHost, styleSegmentButton } from "./SegmentButton";
+import { SegmentButton, segmentButtonHost, setSegmentButtonState } from "./SegmentButton";
 import { segmentsKeys } from "./keys";
 import { SegmentSession } from "./session";
 import { segmentsSettings } from "./settings";
@@ -48,7 +48,7 @@ export function createSegments({ storage }: SegmentsDeps): Feature {
         const { active, config } = session.state;
         if (button) {
           button.update(<SegmentButton active={active} />);
-          styleSegmentButton(button.host as HTMLButtonElement, active, config && config.label !== "Default" ? config.label : null);
+          setSegmentButtonState(button.host as HTMLButtonElement, active, config && config.label !== "Default" ? config.label : null);
         }
         markers?.update(
           <Markers

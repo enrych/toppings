@@ -23,10 +23,7 @@ export function segmentButtonHost(): HTMLButtonElement {
   return host;
 }
 
-export function styleSegmentButton(host: HTMLButtonElement, active: boolean, label: string | null): void {
+export function setSegmentButtonState(host: HTMLButtonElement, active: boolean, label: string | null): void {
   host.setAttribute("aria-pressed", String(active));
   host.title = credit(label ? `Segments: ${label}` : "Segments");
-  host.style.opacity = active ? "1" : "0.7";
-  host.style.background = active ? "rgba(255,255,255,.15)" : "";
-  host.style.borderRadius = active ? "4px" : "";
 }
