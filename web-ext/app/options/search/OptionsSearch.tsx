@@ -1,99 +1,27 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import { fuzzySearch, type SearchResult } from "./searchIndex";
+import { useEffect, useRef, useState } from "preact/hooks";
+import Icon from "@/ui/primitives/Icon";
+import { navigate } from "../router";
+import { fuzzySearch, type SearchEntry, type SearchResult } from "./searchIndex";
 
-function HighlightedLabel({
-  text,
-  indices,
-}: {
-  text: string;
-  indices: number[];
-}) {
-  if (indices.length === 0) return <>{text}</>;
-
-  const indexSet = new Set(indices);
-  const nodes: React.ReactNode[] = [];
-  let i = 0;
-
-  while (i < text.length) {
-    if (indexSet.has(i)) {
-      let run = "";
-      while (i < text.length && indexSet.has(i)) {
-        run += text[i];
-        i++;
-      }
-      nodes.push(
-        <mark key={i} className="tppng-search-highlight">
-          {run}
-        </mark>,
-      );
-    } else {
-      let plain = "";
-      while (i < text.length && !indexSet.has(i)) {
-        plain += text[i];
-        i++;
-      }
-      nodes.push(plain);
-    }
-  }
-
-  return <>{nodes}</>;
+function Highlighted({ text, indices }: { text: string; indices: number[] }) {
+  const marks = new Set(indices);
+  return <>{[...text].map((ch, i) => (marks.has(i) ? <mark class="tppng-search-highlight">{ch}</mark> : ch))}</>;
 }
 
-// Matches on rendered text because the search index stores UI labels, not ids.
-// Ordered most specific first: a Field's <label>, then a Section <h2>, then any
-// leaf <span> — so a row wins over the section that contains it.
-function findRowByLabel(labelText: string): HTMLElement | null {
-  for (const el of document.querySelectorAll<HTMLElement>("label")) {
-    if (el.textContent?.trim() === labelText) {
-      return closestRow(el) ?? el;
-    }
-  }
-
-  for (const el of document.querySelectorAll<HTMLElement>("h2")) {
-    if (el.textContent?.trim() === labelText) {
-      return el.closest("section") as HTMLElement ?? el;
-    }
-  }
-
-  for (const el of document.querySelectorAll<HTMLElement>("span")) {
-    if (el.children.length === 0 && el.textContent?.trim() === labelText) {
-      return closestRow(el) ?? el;
-    }
-  }
-
-  return null;
-}
-
-function closestRow(el: HTMLElement): HTMLElement | null {
-  let node: HTMLElement | null = el.parentElement;
-  while (node && node !== document.body) {
-    const cls = node.className ?? "";
-    if (
-      typeof cls === "string" &&
-      (cls.includes("tw-py-3") || cls.includes("tw-py-4"))
-    ) {
-      return node;
-    }
-    node = node.parentElement;
+// Results are located by their rendered label: a field's <label> first, then
+// a section heading, so a row wins over the section that contains it.
+function findByLabel(label: string): HTMLElement | null {
+  for (const el of document.querySelectorAll<HTMLElement>("label, h2")) {
+    if (el.textContent?.trim() !== label) continue;
+    return el.closest<HTMLElement>("section, [class*='tw-py-3']") ?? el;
   }
   return null;
 }
 
-function flashElement(el: HTMLElement): void {
+function flash(el: HTMLElement): void {
   el.scrollIntoView({ behavior: "smooth", block: "nearest" });
   el.classList.remove("tppng-section-flash");
-  void (el as HTMLElement).offsetWidth; // force reflow
-  el.classList.add("tppng-section-flash");
-  setTimeout(() => el.classList.remove("tppng-section-flash"), 1000);
-}
-
-function flashSectionById(id: string): void {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.scrollIntoView({ behavior: "smooth", block: "start" });
-  el.classList.remove("tppng-section-flash");
-  void (el as HTMLElement).offsetWidth;
+  void el.offsetWidth;
   el.classList.add("tppng-section-flash");
   setTimeout(() => el.classList.remove("tppng-section-flash"), 1000);
 }
@@ -101,149 +29,79 @@ function flashSectionById(id: string): void {
 export default function OptionsSearch() {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
-  const [activeIdx, setActiveIdx] = useState(0);
-  const navigate = useNavigate();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [active, setActive] = useState(0);
+  const root = useRef<HTMLDivElement>(null);
+  const input = useRef<HTMLInputElement>(null);
+  const results = fuzzySearch(query);
 
-  const results: SearchResult[] = fuzzySearch(query);
+  const go = ({ entry }: SearchResult) => {
+    setQuery("");
+    setOpen(false);
+    navigate(entry.segment);
+    // The row exists only once the page has rendered.
+    setTimeout(() => {
+      const target = findByLabel(entry.label) ?? (entry.sectionId ? document.getElementById(entry.sectionId) : null);
+      if (target) flash(target);
+    }, 150);
+  };
 
-  const handleSelect = useCallback(
-    (result: SearchResult) => {
-      const { entry } = result;
-      setQuery("");
-      setOpen(false);
-      setActiveIdx(0);
-      navigate(entry.path);
-
-      // Deferred a tick: the row only exists once React has rendered the new page.
-      setTimeout(() => {
-        const row = findRowByLabel(entry.label);
-        if (row) {
-          flashElement(row);
-        } else if (entry.sectionId) {
-          flashSectionById(entry.sectionId);
-        }
-      }, 150);
-    },
-    [navigate],
-  );
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (!open || results.length === 0) return;
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setActiveIdx((i) => (i + 1) % results.length);
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setActiveIdx((i) => (i - 1 + results.length) % results.length);
-    } else if (e.key === "Enter") {
-      e.preventDefault();
-      const r = results[activeIdx];
-      if (r) handleSelect(r);
-    } else if (e.key === "Escape") {
-      setOpen(false);
-      inputRef.current?.blur();
-    }
+  const onKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Escape") return (setOpen(false), input.current?.blur());
+    if (!open || !results.length) return;
+    if (e.key === "ArrowDown") (e.preventDefault(), setActive((i) => (i + 1) % results.length));
+    else if (e.key === "ArrowUp") (e.preventDefault(), setActive((i) => (i - 1 + results.length) % results.length));
+    else if (e.key === "Enter") (e.preventDefault(), go(results[active]));
   };
 
   useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (!containerRef.current?.contains(e.target as Node)) setOpen(false);
+    const onDown = (e: MouseEvent) => {
+      if (!root.current?.contains(e.target as Node)) setOpen(false);
     };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
   }, []);
+  useEffect(() => setActive(0), [query]);
 
-  useEffect(() => {
-    setActiveIdx(0);
-  }, [query]);
+  const crumb = (entry: SearchEntry) => `${entry.page}${entry.section ? ` › ${entry.section}` : ""}`;
 
   return (
-    <div ref={containerRef} className="tw-relative tw-px-2 tw-pb-3">
-      <div className="tw-relative tw-flex tw-items-center">
-        <svg
-          className="tw-absolute tw-left-2.5 tw-w-3.5 tw-h-3.5 tw-text-fg-subtle tw-pointer-events-none"
-          viewBox="0 0 16 16"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-        >
-          <circle cx="6.5" cy="6.5" r="4.5" />
-          <line x1="10.5" y1="10.5" x2="14" y2="14" />
-        </svg>
+    <div ref={root} class="tw-relative tw-px-3 tw-pb-3">
+      <div class="tw-relative tw-flex tw-items-center">
+        <Icon name="search" size={16} class="tw-absolute tw-left-3 tw-text-fg-subtle tw-pointer-events-none" />
         <input
-          ref={inputRef}
+          ref={input}
           type="text"
           value={query}
-          placeholder="Search settings…"
+          placeholder="Search settings"
           aria-label="Search settings"
-          onChange={(e) => {
-            setQuery(e.target.value);
-            setOpen(true);
-          }}
+          onInput={(e) => (setQuery(e.currentTarget.value), setOpen(true))}
           onFocus={() => setOpen(true)}
-          onKeyDown={handleKeyDown}
-          className="tw-w-full tw-bg-surface-hover tw-border tw-border-border-default tw-rounded-lg tw-pl-8 tw-pr-7 tw-py-1.5 tw-text-xs tw-text-fg tw-placeholder-fg-subtle focus:tw-outline-none focus:tw-border-accent tw-transition-colors"
+          onKeyDown={onKeyDown}
+          class="tw-w-full tw-h-9 tw-bg-surface-hover tw-rounded-full tw-pl-9 tw-pr-8 tw-text-sm tw-text-fg placeholder:tw-text-fg-subtle focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-accent"
         />
         {query && (
-          <button
-            type="button"
-            aria-label="Clear search"
-            onClick={() => {
-              setQuery("");
-              setOpen(false);
-              inputRef.current?.focus();
-            }}
-            className="tw-absolute tw-right-2 tw-text-fg-subtle hover:tw-text-fg tw-transition-colors"
-          >
-            <svg
-              className="tw-w-3 tw-h-3"
-              viewBox="0 0 12 12"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-            >
-              <path d="M2 2l8 8M10 2l-8 8" />
-            </svg>
+          <button type="button" aria-label="Clear search" onClick={() => (setQuery(""), input.current?.focus())} class="tw-absolute tw-right-2.5 tw-text-fg-subtle hover:tw-text-fg">
+            <Icon name="x" size={14} />
           </button>
         )}
       </div>
-
-      {open && results.length > 0 && (
-        <div className="tw-absolute tw-left-2 tw-right-2 tw-top-full tw-mt-1 tw-bg-surface-2 tw-border tw-border-border-default tw-rounded-xl tw-shadow-xl tw-z-50 tw-overflow-hidden">
+      {open && query && (
+        <div class="tw-absolute tw-left-3 tw-right-3 tw-top-full tw-mt-1 tw-bg-surface-2 tw-rounded-xl tw-shadow-xl tw-z-50 tw-overflow-hidden tw-py-1">
+          {results.length === 0 && <p class="tw-px-3 tw-py-2 tw-text-xs tw-text-fg-subtle">No results for “{query}”</p>}
           {results.map((result, i) => (
             <button
-              key={`${result.entry.path}-${result.entry.label}-${result.entry.section}`}
+              key={`${result.entry.segment}-${result.entry.section}-${result.entry.label}`}
               type="button"
-              onMouseEnter={() => setActiveIdx(i)}
-              onClick={() => handleSelect(result)}
-              className={`tw-w-full tw-text-left tw-px-3 tw-py-2 tw-transition-colors ${
-                i === activeIdx ? "tw-bg-surface-hover" : ""
-              }`}
+              onMouseEnter={() => setActive(i)}
+              onClick={() => go(result)}
+              class={`tw-w-full tw-text-left tw-px-3 tw-py-2 tw-transition-colors ${i === active ? "tw-bg-surface-hover" : ""}`}
             >
-              <div className="tw-text-xs tw-font-medium tw-text-fg tw-leading-snug">
-                <HighlightedLabel
-                  text={result.entry.label}
-                  indices={result.matchedIndices}
-                />
+              <div class="tw-text-sm tw-text-fg tw-leading-snug">
+                <Highlighted text={result.entry.label} indices={result.matchedIndices} />
               </div>
-              <div className="tw-text-[10px] tw-text-fg-subtle tw-mt-0.5">
-                {result.entry.page}
-                {result.entry.section ? ` › ${result.entry.section}` : ""}
-              </div>
+              <div class="tw-text-[11px] tw-text-fg-subtle tw-mt-0.5">{crumb(result.entry)}</div>
             </button>
           ))}
-        </div>
-      )}
-
-      {open && query.length >= 1 && results.length === 0 && (
-        <div className="tw-absolute tw-left-2 tw-right-2 tw-top-full tw-mt-1 tw-bg-surface-2 tw-border tw-border-border-default tw-rounded-xl tw-shadow-xl tw-z-50 tw-px-3 tw-py-3">
-          <p className="tw-text-xs tw-text-fg-subtle">
-            No results for "{query}"
-          </p>
         </div>
       )}
     </div>

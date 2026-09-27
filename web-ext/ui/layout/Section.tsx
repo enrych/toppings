@@ -1,32 +1,24 @@
-import React, { ReactNode } from "react";
+import type { ComponentChildren } from "preact";
 
 interface SectionProps {
   id?: string;
   title: string;
   description?: string;
-  headerActions?: ReactNode;
-  children: ReactNode;
+  actions?: ComponentChildren;
+  children: ComponentChildren;
 }
 
-export default function Section({
-  id,
-  title,
-  description,
-  headerActions,
-  children,
-}: SectionProps) {
+export default function Section({ id, title, description, actions, children }: SectionProps) {
   return (
-    <section id={id} className="tw-scroll-mt-6">
-      <div className="tw-flex tw-items-end tw-justify-between tw-mb-3">
+    <section id={id} class="tw-scroll-mt-6">
+      <div class="tw-flex tw-items-end tw-justify-between tw-gap-4 tw-mb-3">
         <div>
-          <h2 className="tw-text-lg tw-font-semibold tw-text-fg">{title}</h2>
-          {description && (
-            <p className="tw-text-sm tw-text-fg-muted tw-mt-1">{description}</p>
-          )}
+          <h2 class="tw-text-base tw-font-medium tw-text-fg">{title}</h2>
+          {description && <p class="tw-text-sm tw-text-fg-muted tw-mt-0.5">{description}</p>}
         </div>
-        {headerActions && <div>{headerActions}</div>}
+        {actions}
       </div>
-      <div>{children}</div>
+      {children}
     </section>
   );
 }

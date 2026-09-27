@@ -1,4 +1,3 @@
-/** @jsxImportSource preact */
 import { useState } from "preact/hooks";
 import { addSegmentToConfig, removeSegmentFromConfig, splitSegmentAtTime } from "../factories";
 import type { SegmentSession } from "../session";

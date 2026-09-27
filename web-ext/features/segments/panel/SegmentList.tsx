@@ -1,4 +1,3 @@
-/** @jsxImportSource preact */
 import { colorForIndex, formatTimestamp } from "../format";
 import type { SegmentConfig } from "../types";
 

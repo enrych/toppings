@@ -1,9 +1,9 @@
 import type { Config } from "tailwindcss";
 
-// Prefixed and without preflight because the content script's styles land
-// inside YouTube's own page.
+// Prefixed and without preflight: the pages carry their own small reset and
+// the class names must never collide with YouTube's.
 export default {
-  content: ["./app/**/*.{ts,tsx}", "./features/**/*.{ts,tsx}", "./ui/**/*.{ts,tsx}", "./lib/**/*.ts"],
+  content: ["./app/**/*.{ts,tsx}", "./ui/**/*.{ts,tsx}"],
   prefix: "tw-",
   corePlugins: { preflight: false },
   darkMode: ["class", '[data-theme="dark"]'],
@@ -31,7 +31,9 @@ export default {
         "info-fg": "var(--color-info-fg)",
         "warning-bg": "var(--color-warning-bg)",
         "warning-fg": "var(--color-warning-fg)",
+        brand: "var(--color-brand)",
       },
+      fontFamily: { sans: ["Roboto", "Arial", "sans-serif"] },
     },
   },
 } satisfies Config;

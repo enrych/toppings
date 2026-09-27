@@ -1,4 +1,3 @@
-/** @jsxImportSource preact */
 import { useState } from "preact/hooks";
 import type { SegmentConfig } from "../types";
 

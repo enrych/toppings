@@ -1,134 +1,68 @@
-import React, {
-  ReactNode,
-  useEffect,
-  useId,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
-import { createPortal } from "react-dom";
+import type { ComponentChildren } from "preact";
+import { createPortal } from "preact/compat";
+import { useLayoutEffect, useRef, useState } from "preact/hooks";
 
 interface TooltipProps {
-  children: ReactNode;
+  children: ComponentChildren;
   text: string;
   side?: "top" | "right" | "bottom" | "left";
 }
 
-interface Position {
-  top: number;
-  left: number;
-}
+const TRANSFORM = {
+  right: "translateY(-50%)",
+  left: "translate(-100%, -50%)",
+  top: "translate(-50%, -100%)",
+  bottom: "translateX(-50%)",
+};
 
 export default function Tooltip({ children, text, side = "right" }: TooltipProps) {
   const [visible, setVisible] = useState(false);
-  const [position, setPosition] = useState<Position | null>(null);
-  const triggerRef = useRef<HTMLSpanElement | null>(null);
-  const tooltipId = useId();
+  const [at, setAt] = useState<{ top: number; left: number } | null>(null);
+  const trigger = useRef<HTMLSpanElement>(null);
 
   useLayoutEffect(() => {
-    if (!visible || !triggerRef.current) return;
-    const rect = triggerRef.current.getBoundingClientRect();
-    const margin = 8;
-    let top = 0;
-    let left = 0;
-
-    switch (side) {
-      case "right":
-        top = rect.top + rect.height / 2;
-        left = rect.right + margin;
-        break;
-      case "left":
-        top = rect.top + rect.height / 2;
-        left = rect.left - margin;
-        break;
-      case "top":
-        top = rect.top - margin;
-        left = rect.left + rect.width / 2;
-        break;
-      case "bottom":
-        top = rect.bottom + margin;
-        left = rect.left + rect.width / 2;
-        break;
-    }
-
-    setPosition({ top, left });
-  }, [visible, side, text]);
-
-  useEffect(() => {
-    if (!visible) return;
-    const reposition = () => {
-      if (!triggerRef.current) return;
-      const rect = triggerRef.current.getBoundingClientRect();
-      const margin = 8;
-      let top = 0;
-      let left = 0;
-      switch (side) {
-        case "right":
-          top = rect.top + rect.height / 2;
-          left = rect.right + margin;
-          break;
-        case "left":
-          top = rect.top + rect.height / 2;
-          left = rect.left - margin;
-          break;
-        case "top":
-          top = rect.top - margin;
-          left = rect.left + rect.width / 2;
-          break;
-        case "bottom":
-          top = rect.bottom + margin;
-          left = rect.left + rect.width / 2;
-          break;
-      }
-      setPosition({ top, left });
+    if (!visible || !trigger.current) return;
+    const place = () => {
+      const r = trigger.current!.getBoundingClientRect();
+      const gap = 8;
+      setAt(
+        side === "right" ? { top: r.top + r.height / 2, left: r.right + gap }
+        : side === "left" ? { top: r.top + r.height / 2, left: r.left - gap }
+        : side === "top" ? { top: r.top - gap, left: r.left + r.width / 2 }
+        : { top: r.bottom + gap, left: r.left + r.width / 2 },
+      );
     };
-    window.addEventListener("scroll", reposition, true);
-    window.addEventListener("resize", reposition);
+    place();
+    window.addEventListener("scroll", place, true);
+    window.addEventListener("resize", place);
     return () => {
-      window.removeEventListener("scroll", reposition, true);
-      window.removeEventListener("resize", reposition);
+      window.removeEventListener("scroll", place, true);
+      window.removeEventListener("resize", place);
     };
-  }, [visible, side]);
-
-  const transformBySide: Record<typeof side, string> = {
-    right: "translateY(-50%)",
-    left: "translate(-100%, -50%)",
-    top: "translate(-50%, -100%)",
-    bottom: "translateX(-50%)",
-  };
+  }, [visible, side, text]);
 
   return (
     <span
-      ref={triggerRef}
-      className="tw-relative tw-inline-flex tw-items-center"
+      ref={trigger}
+      class="tw-relative tw-inline-flex tw-items-center"
       onMouseEnter={() => setVisible(true)}
       onMouseLeave={() => setVisible(false)}
       onFocus={() => setVisible(true)}
       onBlur={() => setVisible(false)}
-      // A click that mutates the surrounding DOM never fires mouseleave, since
-      // the cursor does not leave the wrapper — leaving the tooltip stuck open.
+      // A click that changes the DOM under the cursor never fires mouseleave.
       onClick={() => setVisible(false)}
-      aria-describedby={visible ? tooltipId : undefined}
     >
       {children}
-      {visible &&
-        position &&
-        createPortal(
-          <span
-            id={tooltipId}
-            role="tooltip"
-            style={{
-              position: "fixed",
-              top: position.top,
-              left: position.left,
-              transform: transformBySide[side],
-            }}
-            className="tw-w-max tw-max-w-[14rem] tw-px-2 tw-py-1.5 tw-text-xs tw-leading-snug tw-text-fg tw-bg-surface-2 tw-border tw-border-border-strong tw-rounded tw-shadow-xl tw-z-[10002] tw-pointer-events-none"
-          >
-            {text}
-          </span>,
-          document.body,
-        )}
+      {visible && at && createPortal(
+        <span
+          role="tooltip"
+          style={{ position: "fixed", top: at.top, left: at.left, transform: TRANSFORM[side] }}
+          class="tw-w-max tw-max-w-[14rem] tw-px-2 tw-py-1.5 tw-text-xs tw-leading-snug tw-text-bg tw-bg-fg tw-rounded tw-shadow-xl tw-z-[10002] tw-pointer-events-none"
+        >
+          {text}
+        </span>,
+        document.body,
+      )}
     </span>
   );
 }

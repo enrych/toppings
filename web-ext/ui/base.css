@@ -1,0 +1,83 @@
+@import "./theme.css";
+
+/* Tailwind runs without preflight because its utilities also land inside
+   YouTube's page, so extension pages carry this small reset of their own. */
+*,
+::before,
+::after {
+  box-sizing: border-box;
+  border: 0 solid var(--color-border-default);
+}
+
+html {
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-fg);
+}
+
+h1, h2, h3, p {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+button, input, select {
+  font: inherit;
+  color: inherit;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+button, [role="button"] {
+  cursor: pointer;
+}
+
+:disabled {
+  cursor: default;
+}
+
+img, svg {
+  display: block;
+  vertical-align: middle;
+}
+
+[hidden] {
+  display: none;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-default);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-strong);
+}

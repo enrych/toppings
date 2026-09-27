@@ -1,4 +1,5 @@
 import { keybindings } from "@/kernel/keys";
+import { appSettings } from "@/app/settings";
 import { migrateSettings, type Settings } from "@/kernel/settings";
 import { playlistRuntimeSettings } from "@/features/playlist-runtime/settings";
 import { shortsSettings } from "@/features/shorts/settings";
@@ -45,6 +46,11 @@ const legacyKeybindings: Settings<Record<string, string>> = {
   },
 };
 
-export function migrateLegacyStore(): Promise<void> {
-  return migrateSettings([playlistRuntimeSettings, shortsSettings, playbackSettings, profilesSettings, profileStore, segmentsSettings, legacyKeybindings]);
+// The pre-kernel store lived under these three keys; once every slice has
+// had its chance to copy from them they are dropped.
+const LEGACY_KEYS = ["isExtensionEnabled", "ui", "preferences"];
+
+export async function migrateLegacyStore(): Promise<void> {
+  await migrateSettings([appSettings, playlistRuntimeSettings, shortsSettings, playbackSettings, profilesSettings, profileStore, segmentsSettings, legacyKeybindings]);
+  await chrome.storage.sync.remove(LEGACY_KEYS);
 }

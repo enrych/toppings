@@ -36,8 +36,8 @@ describe("playlist runtime", () => {
       const host = document.getElementById("tppng-playlist-runtime");
       expect(host).not.toBeNull();
       const text = host!.shadowRoot!.textContent;
-      expect(text).toContain("Average Runtime: 21 minutes, 45 seconds");
-      expect(text).toContain("Total Runtime: 3 hours, 37 minutes, 34 seconds");
+      expect(text).toContain("Average 21 minutes, 45 seconds");
+      expect(text).toContain("Total 3 hours, 37 minutes, 34 seconds");
 
       unmount?.();
       expect(document.getElementById("tppng-playlist-runtime")).toBeNull();
@@ -80,6 +80,6 @@ describe("playlist runtime", () => {
     await new Promise((r) => setTimeout(r, 0));
 
     expect(calls).toEqual([false, true]);
-    expect(root.textContent).toContain("Total Runtime: 1 minute");
+    expect(root.textContent).toContain("Total 1 minute");
   });
 });

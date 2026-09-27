@@ -1,21 +1,34 @@
 {
-	"compilerOptions": {
-		"jsx": "react-jsx",
-		"outDir": "./dist/",
-		"strict": true,
-		"lib": [
-			"esnext",
-			"dom",
-			"dom.iterable"
-		],
-		"module": "ES2020",
-		"target": "ES6",
-		"allowJs": true,
-		"moduleResolution": "node",
-		"noEmitOnError": true,
-		"types": ["chrome-types", "node"],
-		"allowSyntheticDefaultImports": true,
-		"paths": { "@/*": ["./*"], "dom-chef-jsx/*": ["./app/content/jsx/*"] }
-	},
-	"exclude": ["node_modules", "dist", "scripts", "test", "**/*.test.ts"]
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "strict": true,
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable"
+    ],
+    "module": "esnext",
+    "target": "es2022",
+    "moduleResolution": "bundler",
+    "noEmitOnError": true,
+    "types": [
+      "chrome-types",
+      "node"
+    ],
+    "allowSyntheticDefaultImports": true,
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    },
+    "jsxImportSource": "preact",
+    "skipLibCheck": true
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "scripts",
+    "test",
+    "**/*.test.ts"
+  ]
 }

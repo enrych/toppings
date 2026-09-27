@@ -1,4 +1,3 @@
-/** @jsxImportSource preact */
 import { useState } from "preact/hooks";
 import { generateConfigLabel } from "../factories";
 import type { SegmentAutoLoadPin, SegmentConfig } from "../types";

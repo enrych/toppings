@@ -1,4 +1,4 @@
-/** @jsxImportSource preact */
+import { themeTokens } from "@/kernel/dom/theme";
 import { formatDuration } from "@/lib/duration";
 import type { PlaylistRuntime } from "./messages";
 
@@ -10,32 +10,36 @@ export interface SectionProps {
 }
 
 const styles = `
-  .card { margin-top: 2px; padding: 12px 15px; border-radius: 8px; background: rgba(101,101,101,0.4);
-    backdrop-filter: blur(10px) saturate(180%); box-shadow: 0 4px 30px rgba(0,0,0,0.1);
-    font-family: "Roboto", "Arial", sans-serif; color: #b9b8b8; }
-  .head { display: flex; align-items: center; margin-bottom: 6px; }
-  .head img { width: 24px; margin: 0 6px; }
-  .head h2 { margin: 0 6px 0 10px; font-size: 1.6rem; font-weight: 800; color: #fff; }
-  .refresh { margin-left: auto; background: none; border: none; color: inherit; cursor: pointer; font-size: 16px; }
-  .refresh:disabled { opacity: 0.5; cursor: default; }
-  .rows { padding-left: 10px; font-size: 12px; line-height: 1.7; }
+  ${themeTokens}
+  .card {
+    display: flex; align-items: center; gap: 12px; margin-top: 8px; padding: 10px 14px; border-radius: 12px;
+    background: var(--tp-additive); color: var(--tp-text); font: 12px/1.5 var(--tp-font);
+  }
+  .card img { width: 20px; height: 20px; }
+  .title { font-weight: 500; font-size: 13px; }
+  .stats { display: flex; gap: 14px; color: var(--tp-text-2); }
+  .stats b { color: var(--tp-text); font-weight: 500; }
+  .refresh {
+    margin-left: auto; width: 28px; height: 28px; border: 0; border-radius: 50%; cursor: pointer;
+    background: transparent; color: var(--tp-text-2); font-size: 15px;
+  }
+  .refresh:hover { background: var(--tp-additive); color: var(--tp-text); }
+  .refresh:disabled { opacity: .5; cursor: default; }
 `;
 
 export function Section({ runtime, iconUrl, refreshing, onRefresh }: SectionProps) {
   return (
     <div class="card">
       <style>{styles}</style>
-      <div class="head">
-        <img src={iconUrl} alt="" />
-        <h2>Toppings</h2>
-        <button class="refresh" title="Refresh playlist data" disabled={refreshing} onClick={onRefresh}>
-          ↻
-        </button>
-      </div>
-      <div class="rows">
-        <div>Average Runtime: {formatDuration(runtime.averageRuntime)}</div>
-        <div>Total Runtime: {formatDuration(runtime.totalRuntime)}</div>
-      </div>
+      <img src={iconUrl} alt="" />
+      <span class="title">Toppings</span>
+      <span class="stats">
+        <span>Total <b>{formatDuration(runtime.totalRuntime)}</b></span>
+        <span>Average <b>{formatDuration(runtime.averageRuntime)}</b></span>
+      </span>
+      <button class="refresh" title="Refresh playlist data" disabled={refreshing} onClick={onRefresh}>
+        ↻
+      </button>
     </div>
   );
 }

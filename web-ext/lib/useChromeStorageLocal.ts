@@ -1,35 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "preact/hooks";
 
-export function useChromeStorageLocal<T>(
-  key: string,
-  fallback: T,
-): [T, (value: T) => void] {
+// One local-area key as component state, for per-device UI preferences.
+export function useChromeStorageLocal<T>(key: string, fallback: T): [T, (value: T) => void] {
   const [value, setValue] = useState<T>(fallback);
 
   useEffect(() => {
-    chrome.storage.local.get(key, (result) => {
+    void chrome.storage.local.get(key).then((result) => {
       if (result[key] != null) setValue(result[key] as T);
     });
-
-    const onChange = (
-      changes: Record<string, chrome.storage.StorageChange>,
-      areaName: string,
-    ) => {
-      if (areaName !== "local") return;
-      if (key in changes) {
-        const next = changes[key].newValue as T | undefined;
-        setValue(next ?? fallback);
-      }
+    const onChange = (changes: Record<string, chrome.storage.StorageChange>, area: string) => {
+      if (area === "local" && key in changes) setValue((changes[key].newValue as T | undefined) ?? fallback);
     };
     chrome.storage.onChanged.addListener(onChange);
     return () => chrome.storage.onChanged.removeListener(onChange);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
 
-  const update = (next: T) => {
-    setValue(next);
-    chrome.storage.local.set({ [key]: next });
-  };
-
-  return [value, update];
+  return [value, (next) => void chrome.storage.local.set({ [key]: next })];
 }

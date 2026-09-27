@@ -1,4 +1,3 @@
-import React from "react";
 import { useSettings } from "@/kernel/useSettings";
 import { playlistRuntimeSettings } from "@/features/playlist-runtime/settings";
 import PageHeader from "@/ui/layout/PageHeader";
@@ -13,7 +12,7 @@ export default function Playlist() {
     <>
       <PageHeader title="Playlist" description="Settings for YouTube playlist pages." />
 
-      <div className="tw-flex tw-flex-col tw-gap-8">
+      <div class="tw-flex tw-flex-col tw-gap-8">
         <Section
           title="Runtime Statistics"
           description="The total and average runtime of a playlist, shown at the top of the page."

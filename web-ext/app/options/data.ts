@@ -1,49 +1,42 @@
-import { EXTENSION_CONTEXT_SCOPE } from "@/lib/protocol";
+import type { IconName } from "@/ui/primitives/Icon";
+import type { SectionNavItem } from "@/ui/layout/SectionNav";
 
 export const OPTIONS_HTML = "options/index.html";
-
 export const OPTIONS_ICON_SRC = "/assets/icons/icon48.png";
 
-export type ExtensionOptionsPage = {
-  readonly segment: string;
-  readonly path: string;
-  readonly label: string;
-  readonly icon: string;
-  readonly sectionNav?: true;
-};
+export interface OptionsPage {
+  // The hash segment; "" is the landing page.
+  segment: string;
+  label: string;
+  icon: IconName;
+  sections?: readonly SectionNavItem[];
+}
 
-export const OPTIONS_PAGES = [
-  { segment: "", path: "/", label: "General", icon: "general" },
+export const OPTIONS_PAGES: readonly OptionsPage[] = [
+  { segment: "", label: "General", icon: "general" },
   {
-    segment: EXTENSION_CONTEXT_SCOPE.WATCH,
-    path: "/watch",
+    segment: "watch",
     label: "Watch",
     icon: "watch",
-    sectionNav: true,
+    sections: [
+      { id: "playback-rate", label: "Playback rate" },
+      { id: "seek", label: "Seek" },
+      { id: "segments", label: "Segments" },
+      { id: "feature-availability", label: "Availability" },
+    ],
   },
+  { segment: "shorts", label: "Shorts", icon: "shorts" },
+  { segment: "playlist", label: "Playlist", icon: "playlist" },
+  { segment: "profiles", label: "Profiles", icon: "profiles" },
   {
-    segment: EXTENSION_CONTEXT_SCOPE.SHORTS,
-    path: "/shorts",
-    label: "Shorts",
-    icon: "shorts",
-  },
-  {
-    segment: EXTENSION_CONTEXT_SCOPE.PLAYLIST,
-    path: "/playlist",
-    label: "Playlist",
-    icon: "playlist",
-  },
-  {
-    segment: "keybindings",
-    path: "/keybindings",
+    segment: "shortcuts",
     label: "Shortcuts",
     icon: "keyboard",
-    sectionNav: true,
+    sections: [
+      { id: "playback", label: "Playback" },
+      { id: "segments", label: "Segments" },
+      { id: "shorts", label: "Shorts" },
+      { id: "profiles", label: "Profiles" },
+    ],
   },
-  {
-    segment: "profiles",
-    path: "/profiles",
-    label: "Profiles",
-    icon: "profiles",
-  },
-] as const satisfies readonly ExtensionOptionsPage[];
+];

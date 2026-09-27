@@ -1,14 +1,8 @@
-import React, {
-  useEffect,
-  useId,
-  useRef,
-  useState,
-  KeyboardEvent,
-} from "react";
+import { useEffect, useId, useRef, useState } from "preact/hooks";
 import Field from "./Field";
 import Icon from "@/ui/primitives/Icon";
 
-interface SelectOption<T extends string> {
+export interface SelectOption<T extends string> {
   value: T;
   label: string;
   description?: string;
@@ -23,127 +17,76 @@ interface SelectProps<T extends string> {
   onChange: (value: T) => void;
 }
 
-// Native <select> can't be themed consistently across OS/browser.
-export default function Select<T extends string>({
-  label,
-  description,
-  hint,
-  value,
-  options,
-  onChange,
-}: SelectProps<T>) {
+// A native <select> cannot be themed consistently across browsers.
+export default function Select<T extends string>({ label, description, hint, value, options, onChange }: SelectProps<T>) {
   const id = useId();
   const [open, setOpen] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(
-    Math.max(
-      0,
-      options.findIndex((o) => o.value === value),
-    ),
-  );
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
-  const listRef = useRef<HTMLUListElement | null>(null);
-
+  const [active, setActive] = useState(Math.max(0, options.findIndex((o) => o.value === value)));
+  const root = useRef<HTMLDivElement>(null);
   const selected = options.find((o) => o.value === value);
 
   useEffect(() => {
     if (!open) return;
-    const onClickOutside = (e: MouseEvent) => {
-      if (
-        buttonRef.current?.contains(e.target as Node) ||
-        listRef.current?.contains(e.target as Node)
-      )
-        return;
-      setOpen(false);
+    const onDown = (e: MouseEvent) => {
+      if (!root.current?.contains(e.target as Node)) setOpen(false);
     };
-    document.addEventListener("mousedown", onClickOutside);
-    return () => document.removeEventListener("mousedown", onClickOutside);
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
   }, [open]);
 
-  const select = (optionValue: T) => {
-    onChange(optionValue);
+  const pick = (next: T) => {
+    onChange(next);
     setOpen(false);
-    buttonRef.current?.focus();
   };
 
-  const onKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
+  const onKeyDown = (e: KeyboardEvent) => {
     if (e.key === "ArrowDown" || e.key === "ArrowUp") {
       e.preventDefault();
-      if (!open) {
-        setOpen(true);
-        return;
-      }
-      const delta = e.key === "ArrowDown" ? 1 : -1;
-      setActiveIndex((i) => (i + delta + options.length) % options.length);
+      if (!open) return setOpen(true);
+      setActive((i) => (i + (e.key === "ArrowDown" ? 1 : -1) + options.length) % options.length);
     } else if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      if (open) select(options[activeIndex].value);
+      if (open) pick(options[active].value);
       else setOpen(true);
-    } else if (e.key === "Escape") {
-      setOpen(false);
-    }
+    } else if (e.key === "Escape") setOpen(false);
   };
 
   return (
     <Field label={label} description={description} hint={hint} htmlFor={id}>
-      <div className="tw-relative">
+      <div class="tw-relative" ref={root}>
         <button
           id={id}
-          ref={buttonRef}
           type="button"
           aria-haspopup="listbox"
           aria-expanded={open}
-          onClick={() => setOpen((v) => !v)}
+          onClick={() => setOpen((o) => !o)}
           onKeyDown={onKeyDown}
-          className="tw-w-44 tw-flex tw-items-center tw-justify-between tw-gap-2 tw-px-3 tw-py-2 tw-bg-bg tw-text-fg tw-text-sm tw-rounded-md tw-border tw-border-border-strong focus-visible:tw-outline-none focus-visible:tw-border-accent focus-visible:tw-ring-2 focus-visible:tw-ring-accent/30 hover:tw-border-border-strong tw-transition-colors"
+          class="tw-h-9 tw-w-44 tw-flex tw-items-center tw-justify-between tw-gap-2 tw-px-3 tw-rounded-lg tw-bg-surface-hover tw-text-fg tw-text-sm hover:tw-bg-border-default focus-visible:tw-outline-none focus-visible:tw-ring-2 focus-visible:tw-ring-accent tw-transition-colors"
         >
-          <span className="tw-truncate">{selected?.label ?? "Select..."}</span>
-          <Icon
-            name="chevron-down"
-            size={14}
-            className={`tw-text-fg-muted tw-transition-transform ${open ? "tw-rotate-180" : ""}`}
-          />
+          <span class="tw-truncate">{selected?.label ?? "Select…"}</span>
+          <Icon name="chevron-down" size={14} class={`tw-text-fg-muted tw-transition-transform ${open ? "tw-rotate-180" : ""}`} />
         </button>
         {open && (
-          <ul
-            ref={listRef}
-            role="listbox"
-            className="tw-absolute tw-right-0 tw-mt-1 tw-w-56 tw-max-h-72 tw-overflow-y-auto tw-bg-surface-2 tw-border tw-border-border-strong tw-rounded-md tw-shadow-xl tw-z-40 tw-py-1"
-          >
-            {options.map((opt, i) => {
-              const isSelected = opt.value === value;
-              const isActive = i === activeIndex;
-              return (
-                <li
-                  key={opt.value}
-                  role="option"
-                  aria-selected={isSelected}
-                  onMouseEnter={() => setActiveIndex(i)}
-                  onClick={() => select(opt.value)}
-                  className={`tw-px-3 tw-py-2 tw-cursor-pointer tw-flex tw-items-start tw-gap-2 ${
-                    isActive ? "tw-bg-surface-hover" : ""
-                  } ${isSelected ? "tw-text-fg" : "tw-text-fg-muted"}`}
-                >
-                  <span
-                    className={`tw-mt-1.5 tw-w-1.5 tw-h-1.5 tw-rounded-full ${
-                      isSelected ? "tw-bg-accent" : "tw-bg-transparent"
-                    }`}
-                  />
-                  <div className="tw-flex tw-flex-col">
-                    <span className="tw-text-sm">{opt.label}</span>
-                    {opt.description && (
-                      <span className="tw-text-xs tw-text-fg-subtle">
-                        {opt.description}
-                      </span>
-                    )}
-                  </div>
-                </li>
-              );
-            })}
+          <ul role="listbox" class="tw-absolute tw-right-0 tw-mt-1 tw-w-60 tw-max-h-72 tw-overflow-y-auto tw-bg-surface-2 tw-rounded-xl tw-shadow-xl tw-z-40 tw-py-2">
+            {options.map((opt, i) => (
+              <li
+                key={opt.value}
+                role="option"
+                aria-selected={opt.value === value}
+                onMouseEnter={() => setActive(i)}
+                onClick={() => pick(opt.value)}
+                class={`tw-px-4 tw-py-2 tw-cursor-pointer tw-flex tw-items-start tw-gap-3 ${i === active ? "tw-bg-surface-hover" : ""}`}
+              >
+                <span class="tw-w-4 tw-flex-shrink-0 tw-text-fg">{opt.value === value && <Icon name="check" size={16} />}</span>
+                <span class="tw-flex tw-flex-col">
+                  <span class="tw-text-sm tw-text-fg">{opt.label}</span>
+                  {opt.description && <span class="tw-text-xs tw-text-fg-muted">{opt.description}</span>}
+                </span>
+              </li>
+            ))}
           </ul>
         )}
       </div>
     </Field>
   );
 }
-
-export type { SelectOption };

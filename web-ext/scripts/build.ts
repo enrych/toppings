@@ -22,7 +22,6 @@ const scripts = [
 ];
 
 const styles = [
-  { entry: "app/content/index.css", out: "content.css" },
   { entry: "app/popup/index.css", out: "popup/index.css" },
   { entry: "app/options/index.css", out: "options/index.css" },
 ];

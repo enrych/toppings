@@ -65,7 +65,9 @@ export async function migrateSettings(slices: Settings<object>[]): Promise<void>
   for (const slice of slices) {
     const all = stores[slice.area];
     if (!slice.legacy || slice.key in all) continue;
-    const value = slice.legacy(all);
-    if (value) await chrome.storage[slice.area].set({ [slice.key]: { ...slice.defaults, ...value } });
+    // A mapper may hand back undefined for fields the old store lacked; those
+    // must not shadow the defaults.
+    const value = Object.fromEntries(Object.entries(slice.legacy(all) ?? {}).filter(([, v]) => v !== undefined));
+    if (Object.keys(value).length) await chrome.storage[slice.area].set({ [slice.key]: { ...slice.defaults, ...value } });
   }
 }

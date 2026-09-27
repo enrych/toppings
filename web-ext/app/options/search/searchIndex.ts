@@ -1,11 +1,16 @@
+import { playbackKeys } from "@/features/playback/keys";
+import { profilesKeys } from "@/features/profiles/keys";
+import { segmentsKeys } from "@/features/segments/keys";
+import { shortsKeys } from "@/features/shorts/keys";
+
 export interface SearchEntry {
-  // Must match the rendered text character for character: navigating to a result
-  // locates the row by this label in the DOM, so a copy edit in the UI silently
-  // breaks the jump unless the entry is updated too.
+  // Must match the rendered label character for character: a result is
+  // located in the DOM by this text, so a copy edit in the page must land
+  // here too.
   label: string;
   description?: string;
-  path: string;
-  sectionId?: string; // fallback scroll target when the row itself is not found
+  segment: string;
+  sectionId?: string;
   page: string;
   section?: string;
 }
@@ -13,145 +18,81 @@ export interface SearchEntry {
 export interface SearchResult {
   entry: SearchEntry;
   score: number;
-  matchedIndices: number[]; // into entry.label, for highlighting
+  matchedIndices: number[];
 }
 
+const shortcutEntries = (group: { id: string; title: string; keys: Record<string, { label: string; description?: string }> }): SearchEntry[] =>
+  Object.values(group.keys).map((key) => ({ label: key.label, description: key.description, segment: "shortcuts", sectionId: group.id, page: "Shortcuts", section: group.title }));
+
 export const SEARCH_INDEX: SearchEntry[] = [
-  { label: "Enable Extension", description: "When off, no Toppings features run on YouTube.", path: "/", page: "General", section: "Extension" },
-  { label: "Theme", description: "System, Dark, or Light. Affects the popup and options UI.", path: "/", page: "General", section: "Appearance" },
-  { label: "Popup profile switcher", description: "Show the profile list in the extension popup.", path: "/", page: "General", section: "Profile Surfaces" },
-  { label: "Player gear menu", description: "Adds a Toppings section to the video player's settings menu.", path: "/", page: "General", section: "Profile Surfaces" },
-  { label: "YouTube sidebar entry", description: "Adds a Toppings entry to YouTube's left navigation sidebar.", path: "/", page: "General", section: "Profile Surfaces" },
-  { label: "Re-scan Capabilities", description: "Clears the cached feature compatibility check.", path: "/", page: "General", section: "Feature Diagnostics" },
-  { label: "Watch Page", description: "Enable or disable all Toppings features on the watch page.", path: "/", page: "General", section: "YouTube Pages" },
-  { label: "Shorts", description: "Enable or disable Toppings on Shorts.", path: "/", page: "General", section: "YouTube Pages" },
-  { label: "Playlist", description: "Enable or disable runtime statistics on playlist pages.", path: "/playlist", page: "Playlist", section: "Runtime Statistics" },
-
-  { label: "Default Playback Rate", description: "Rate applied to every video on load. 1 = Normal.", path: "/watch", sectionId: "playback-rate", page: "Watch", section: "Playback Rate" },
-  { label: "Custom Playback Rates", description: "Comma-separated rates for the player speed menu.", path: "/watch", sectionId: "playback-rate", page: "Watch", section: "Playback Rate" },
-  { label: "Toggle Playback Rate", description: "Rate to switch to when pressing the toggle shortcut.", path: "/watch", sectionId: "playback-rate", page: "Watch", section: "Playback Rate" },
-  { label: "Increase Playback Rate Step", description: "Amount the rate goes up when pressing the increase shortcut.", path: "/watch", sectionId: "playback-rate", page: "Watch", section: "Playback Rate" },
-  { label: "Decrease Playback Rate Step", description: "Amount the rate goes down when pressing the decrease shortcut.", path: "/watch", sectionId: "playback-rate", page: "Watch", section: "Playback Rate" },
-  { label: "Seek Backward", description: "Seconds to seek backward.", path: "/watch", sectionId: "seek", page: "Watch", section: "Seek" },
-  { label: "Seek Forward", description: "Seconds to seek forward.", path: "/watch", sectionId: "seek", page: "Watch", section: "Seek" },
-  { label: "Auto-load on page open", description: "Automatically restore segments when you open a video.", path: "/watch", sectionId: "loop", page: "Watch", section: "Segments" },
-  { label: "Feature Availability", description: "Which features are active on your YouTube.", path: "/watch", sectionId: "feature-availability", page: "Watch", section: "Feature Availability" },
-
-  { label: "Auto-Scroll", description: "Automatically scroll to the next reel when one ends.", path: "/shorts", page: "Shorts", section: "Behavior" },
-  { label: "Toggle Playback Rate", description: "Rate to switch to when pressing the toggle shortcut.", path: "/shorts", page: "Shorts", section: "Playback Rate" },
-  { label: "Seek Backward", description: "Seconds to seek backward.", path: "/shorts", page: "Shorts", section: "Seek" },
-  { label: "Seek Forward", description: "Seconds to seek forward.", path: "/shorts", page: "Shorts", section: "Seek" },
-
-  { label: "Runtime Statistics", description: "Total and average runtime shown at the top of playlist pages.", path: "/playlist", page: "Playlist", section: "Runtime Statistics" },
-
-  { label: "Toggle Playback Rate", path: "/keybindings", sectionId: "watch", page: "Shortcuts", section: "Watch Page" },
-  { label: "Increase Playback Rate", path: "/keybindings", sectionId: "watch", page: "Shortcuts", section: "Watch Page" },
-  { label: "Decrease Playback Rate", path: "/keybindings", sectionId: "watch", page: "Shortcuts", section: "Watch Page" },
-  { label: "Seek Backward", path: "/keybindings", sectionId: "watch", page: "Shortcuts", section: "Watch Page" },
-  { label: "Seek Forward", path: "/keybindings", sectionId: "watch", page: "Shortcuts", section: "Watch Page" },
-  { label: "Segments: Load Last Used / Toggle", description: "Load the last-used segment config and enable it. If segments are already active, disables them.", path: "/keybindings", sectionId: "watch", page: "Shortcuts", section: "Watch Page" },
-  { label: "Segments: Fresh Slate", description: "Always start a brand-new segment config.", path: "/keybindings", sectionId: "watch", page: "Shortcuts", section: "Watch Page" },
-  { label: "Segments: Set Start of Active", description: "Pin the start marker of the active segment to the current time.", path: "/keybindings", sectionId: "watch", page: "Shortcuts", section: "Watch Page" },
-  { label: "Segments: Set End of Active", description: "Pin the end marker of the active segment to the current time.", path: "/keybindings", sectionId: "watch", page: "Shortcuts", section: "Watch Page" },
-  { label: "Segments: Save to Default Slot", description: "While segments active: saves to default slot. While segments off: clears the last-used record.", path: "/keybindings", sectionId: "watch", page: "Shortcuts", section: "Watch Page" },
-
-  { label: "Toggle Playback Rate", path: "/keybindings", sectionId: "shorts", page: "Shortcuts", section: "Shorts" },
-  { label: "Seek Backward", path: "/keybindings", sectionId: "shorts", page: "Shortcuts", section: "Shorts" },
-  { label: "Seek Forward", path: "/keybindings", sectionId: "shorts", page: "Shortcuts", section: "Shorts" },
-
-  { label: "Cycle Profiles", description: "Cycle through all profiles without leaving the video.", path: "/keybindings", sectionId: "profiles", page: "Shortcuts", section: "Profiles" },
-
-  { label: "Nudge Active Segment Start Backward", description: "Move the start marker of the active segment back.", path: "/keybindings", sectionId: "nudge", page: "Shortcuts", section: "Segments Nudge" },
-  { label: "Nudge Active Segment Start Forward", description: "Move the start marker of the active segment forward.", path: "/keybindings", sectionId: "nudge", page: "Shortcuts", section: "Segments Nudge" },
-  { label: "Nudge Active Segment End Forward", description: "Move the end marker of the active segment forward.", path: "/keybindings", sectionId: "nudge", page: "Shortcuts", section: "Segments Nudge" },
-  { label: "Nudge Active Segment End Backward", description: "Move the end marker of the active segment back.", path: "/keybindings", sectionId: "nudge", page: "Shortcuts", section: "Segments Nudge" },
-  { label: "Base Step (seconds)", description: "How many seconds the first press nudges the marker.", path: "/keybindings", sectionId: "nudge", page: "Shortcuts", section: "Segments Nudge" },
-  { label: "Multiplier", description: "Step multiplier applied on rapid consecutive presses.", path: "/keybindings", sectionId: "nudge", page: "Shortcuts", section: "Segments Nudge" },
-  { label: "Max Step (seconds)", description: "The nudge step will not exceed this value.", path: "/keybindings", sectionId: "nudge", page: "Shortcuts", section: "Segments Nudge" },
-
-  { label: "Built-in Presets", description: "Curated by Toppings — activate in one tap, no configuration needed.", path: "/profiles", page: "Profiles", section: "Built-in Presets" },
-  { label: "Audio", description: "Built-in preset: hides video player, shows only audio.", path: "/profiles", page: "Profiles", section: "Built-in Presets" },
-  { label: "Focus", description: "Built-in preset: hides sidebar, comments, and end cards.", path: "/profiles", page: "Profiles", section: "Built-in Presets" },
-  { label: "My Profiles", description: "Create your own mix of YouTube experience settings.", path: "/profiles", page: "Profiles", section: "My Profiles" },
-  { label: "Player Layout", description: "Default, Theatre, or No Video layout for the watch page.", path: "/profiles", page: "Profiles", section: "Profile Editor" },
-  { label: "Player Visuals", description: "What fills the video slot: real video, black screen, visualizer, or custom image.", path: "/profiles", page: "Profiles", section: "Profile Editor" },
-  { label: "Recommendations Sidebar", description: "Show or hide the Up Next recommendations panel.", path: "/profiles", page: "Profiles", section: "Profile Editor" },
-  { label: "Comments Section", description: "Show or hide the comments below the video.", path: "/profiles", page: "Profiles", section: "Profile Editor" },
-  { label: "End Screen Cards", description: "Show or hide overlay cards at the end of videos.", path: "/profiles", page: "Profiles", section: "Profile Editor" },
-  { label: "Feed Thumbnails", description: "Show, hide, or blur thumbnail images in the home feed.", path: "/profiles", page: "Profiles", section: "Profile Editor" },
-  { label: "Home Feed", description: "Show or hide the entire home page feed.", path: "/profiles", page: "Profiles", section: "Profile Editor" },
-  { label: "Shorts Shelf", description: "Show or hide the Shorts row in the home feed.", path: "/profiles", page: "Profiles", section: "Profile Editor" },
-  { label: "Result Thumbnails", description: "Show, hide, or blur thumbnails in search results.", path: "/profiles", page: "Profiles", section: "Profile Editor" },
-  { label: "Video Metadata", description: "Show or hide view count and date below search results.", path: "/profiles", page: "Profiles", section: "Profile Editor" },
-  { label: "Shorts in Search", description: "Show or hide the Shorts shelf in search results.", path: "/profiles", page: "Profiles", section: "Profile Editor" },
-  { label: "Shorts Shelf (everywhere)", description: "Hide the Shorts shelf across home, search, and other pages.", path: "/profiles", page: "Profiles", section: "Profile Editor" },
+  { label: "Enable Toppings", description: "When off, nothing runs on YouTube.", segment: "", page: "General", section: "Extension" },
+  { label: "Appearance", description: "System, dark, or light, for the popup and this page.", segment: "", page: "General", section: "Appearance" },
+  { label: "Player gear menu", description: "A Toppings section in the player's settings menu.", segment: "", page: "General", section: "Profile surfaces" },
+  { label: "YouTube sidebar entry", description: "A Toppings entry in YouTube's left navigation.", segment: "", page: "General", section: "Profile surfaces" },
+  { label: "Re-scan features", description: "Clears the cached feature compatibility check.", segment: "", page: "General", section: "Diagnostics" },
+  { label: "Playback controls", description: "Default rate, rate shortcuts and seek shortcuts on the watch page.", segment: "watch", sectionId: "playback-rate", page: "Watch", section: "Playback rate" },
+  { label: "Default playback rate", description: "Rate applied to every video on load.", segment: "watch", sectionId: "playback-rate", page: "Watch", section: "Playback rate" },
+  { label: "Custom playback rates", description: "Rates offered in the player's speed panel.", segment: "watch", sectionId: "playback-rate", page: "Watch", section: "Playback rate" },
+  { label: "Toggle playback rate", description: "Rate to switch to with the toggle shortcut.", segment: "watch", sectionId: "playback-rate", page: "Watch", section: "Playback rate" },
+  { label: "Playback rate step", description: "Amount the rate changes on the increase and decrease shortcuts.", segment: "watch", sectionId: "playback-rate", page: "Watch", section: "Playback rate" },
+  { label: "Seek backward", description: "Seconds to seek backward.", segment: "watch", sectionId: "seek", page: "Watch", section: "Seek" },
+  { label: "Seek forward", description: "Seconds to seek forward.", segment: "watch", sectionId: "seek", page: "Watch", section: "Seek" },
+  { label: "Auto-load on page open", description: "Restore segments when you open a video.", segment: "watch", sectionId: "segments", page: "Watch", section: "Segments" },
+  { label: "Nudge step", description: "Seconds a segment edge moves on the first nudge.", segment: "watch", sectionId: "segments", page: "Watch", section: "Segments" },
+  { label: "Nudge multiplier", description: "How much the step grows on repeated nudges.", segment: "watch", sectionId: "segments", page: "Watch", section: "Segments" },
+  { label: "Nudge maximum", description: "Largest step a repeated nudge can reach.", segment: "watch", sectionId: "segments", page: "Watch", section: "Segments" },
+  { label: "Feature availability", description: "Which features work on your YouTube.", segment: "watch", sectionId: "feature-availability", page: "Watch", section: "Feature availability" },
+  { label: "Shorts features", description: "Auto-scroll, seek and rate controls on Shorts.", segment: "shorts", page: "Shorts", section: "Behavior" },
+  { label: "Auto-scroll", description: "Continue to the next Short when one ends.", segment: "shorts", page: "Shorts", section: "Behavior" },
+  { label: "Toggle playback rate", description: "Rate to switch to on Shorts.", segment: "shorts", page: "Shorts", section: "Playback rate" },
+  { label: "Seek backward", description: "Seconds to seek backward on Shorts.", segment: "shorts", page: "Shorts", section: "Seek" },
+  { label: "Seek forward", description: "Seconds to seek forward on Shorts.", segment: "shorts", page: "Shorts", section: "Seek" },
+  { label: "Runtime statistics", description: "Total and average runtime at the top of playlist pages.", segment: "playlist", page: "Playlist", section: "Runtime statistics" },
+  { label: "Built-in presets", description: "Audio and Focus, ready to activate.", segment: "profiles", page: "Profiles", section: "Built-in presets" },
+  { label: "Audio", description: "Built-in preset: hides the video, keeps the sound.", segment: "profiles", page: "Profiles", section: "Built-in presets" },
+  { label: "Focus", description: "Built-in preset: hides sidebar, comments, and end cards.", segment: "profiles", page: "Profiles", section: "Built-in presets" },
+  { label: "My profiles", description: "Your own mix of page tweaks.", segment: "profiles", page: "Profiles", section: "My profiles" },
+  ...shortcutEntries(playbackKeys),
+  ...shortcutEntries(segmentsKeys),
+  ...shortcutEntries(shortsKeys),
+  ...shortcutEntries(profilesKeys),
 ];
 
 // Subsequence match: query characters must appear in order but need not be
-// adjacent. The bonuses below exist to pull contiguous and word-start matches
-// above the scattered ones a bare subsequence test would rank equally.
-function fuzzyMatch(
-  text: string,
-  query: string,
-): { score: number; indices: number[] } {
-  const tl = text.toLowerCase();
-  const ql = query.toLowerCase();
-
-  let ti = 0;
-  let qi = 0;
-  let score = 0;
-  let consecutive = 0;
-  let lastMatchIdx = -1;
+// adjacent. Bonuses pull contiguous and word-start matches above scattered ones.
+function fuzzyMatch(text: string, query: string): { score: number; indices: number[] } {
+  const t = text.toLowerCase();
+  const q = query.toLowerCase();
   const indices: number[] = [];
-
-  while (ti < tl.length && qi < ql.length) {
-    if (tl[ti] === ql[qi]) {
-      indices.push(ti);
-      const isConsecutive = lastMatchIdx === ti - 1;
-      consecutive = isConsecutive ? consecutive + 1 : 0;
-      score += 1 + consecutive * 2;
-      if (ti === 0 || tl[ti - 1] === " " || tl[ti - 1] === ":") score += 3;
-      lastMatchIdx = ti;
-      qi++;
-    }
-    ti++;
+  let score = 0;
+  let run = 0;
+  let qi = 0;
+  for (let ti = 0; ti < t.length && qi < q.length; ti++) {
+    if (t[ti] !== q[qi]) continue;
+    run = indices.length && indices[indices.length - 1] === ti - 1 ? run + 1 : 0;
+    score += 1 + run * 2 + (ti === 0 || t[ti - 1] === " " ? 3 : 0);
+    indices.push(ti);
+    qi++;
   }
-
-  if (qi < ql.length) return { score: 0, indices: [] };
-
-  if (tl.includes(ql)) score += 15;
-  if (tl.startsWith(ql)) score += 25;
-  if (tl === ql) score += 50;
-
+  if (qi < q.length) return { score: 0, indices: [] };
+  if (t.includes(q)) score += 15;
+  if (t.startsWith(q)) score += 25;
+  if (t === q) score += 50;
   return { score, indices };
 }
 
 export function fuzzySearch(query: string): SearchResult[] {
   const q = query.trim();
-  if (q.length < 1) return [];
-
+  if (!q) return [];
   const results: SearchResult[] = [];
-
   for (const entry of SEARCH_INDEX) {
-    // Four fields contribute to the score but only the label's indices are kept:
-    // highlighting is drawn on the label, so another field's indices would be wrong.
-    const labelMatch = fuzzyMatch(entry.label, q);
-    const descMatch = entry.description ? fuzzyMatch(entry.description, q) : { score: 0, indices: [] };
-    const sectionMatch = entry.section ? fuzzyMatch(entry.section, q) : { score: 0, indices: [] };
-    const pageMatch = fuzzyMatch(entry.page, q);
-
-    const totalScore =
-      labelMatch.score * 3 +
-      sectionMatch.score * 1.5 +
-      pageMatch.score +
-      descMatch.score * 0.5;
-
-    if (totalScore > 0) {
-      results.push({ entry, score: totalScore, matchedIndices: labelMatch.indices });
-    }
+    const label = fuzzyMatch(entry.label, q);
+    const score =
+      label.score * 3 +
+      (entry.section ? fuzzyMatch(entry.section, q).score * 1.5 : 0) +
+      fuzzyMatch(entry.page, q).score +
+      (entry.description ? fuzzyMatch(entry.description, q).score * 0.5 : 0);
+    if (score > 0) results.push({ entry, score, matchedIndices: label.indices });
   }
-
-  return results
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 10);
+  return results.sort((a, b) => b.score - a.score).slice(0, 10);
 }

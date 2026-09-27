@@ -1,4 +1,3 @@
-/** @jsxImportSource preact */
 
 export interface SeekFlashProps {
   seconds: number;

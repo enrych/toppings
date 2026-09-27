@@ -1,6 +1,5 @@
-import React from "react";
-import Icon, { IconName } from "../primitives/Icon";
-import IconButton from "@/ui/primitives/IconButton";
+import Icon, { type IconName } from "../primitives/Icon";
+import IconButton from "../primitives/IconButton";
 
 export type ToastTone = "success" | "error" | "info";
 
@@ -12,59 +11,24 @@ export interface ToastData {
   duration?: number;
 }
 
-const TONE_STYLES: Record<
-  ToastTone,
-  { border: string; iconColor: string; icon: IconName }
-> = {
-  success: {
-    border: "tw-border-success-fg/40",
-    iconColor: "tw-text-success-fg",
-    icon: "check",
-  },
-  error: {
-    border: "tw-border-danger-fg/40",
-    iconColor: "tw-text-danger-fg",
-    icon: "alert",
-  },
-  info: {
-    border: "tw-border-info-fg/40",
-    iconColor: "tw-text-info-fg",
-    icon: "info",
-  },
+const ICON: Record<ToastTone, { name: IconName; color: string }> = {
+  success: { name: "check", color: "tw-text-success-fg" },
+  error: { name: "alert", color: "tw-text-danger-fg" },
+  info: { name: "info", color: "tw-text-info-fg" },
 };
 
-interface ToastProps {
-  data: ToastData;
-  onDismiss: (id: string) => void;
-}
-
-export default function Toast({ data, onDismiss }: ToastProps) {
-  const style = TONE_STYLES[data.tone];
-
+export default function Toast({ data, onDismiss }: { data: ToastData; onDismiss: (id: string) => void }) {
+  const icon = ICON[data.tone];
   return (
-    <div
-      role="status"
-      className={`tw-flex tw-items-start tw-gap-3 tw-p-3 tw-pr-2 tw-bg-surface-2 tw-border ${style.border} tw-rounded-lg tw-shadow-xl tw-min-w-[280px] tw-max-w-md tw-pointer-events-auto tw-animate-[slideInRight_220ms_ease-out]`}
-    >
-      <div className={`tw-mt-0.5 ${style.iconColor}`}>
-        <Icon name={style.icon} size={18} />
+    <div role="status" class="tw-flex tw-items-start tw-gap-3 tw-p-3 tw-pr-2 tw-bg-surface-2 tw-rounded-lg tw-shadow-xl tw-min-w-[280px] tw-max-w-md tw-pointer-events-auto tw-animate-[slideInRight_220ms_ease-out]">
+      <div class={`tw-mt-0.5 ${icon.color}`}>
+        <Icon name={icon.name} size={18} />
       </div>
-      <div className="tw-flex-1 tw-min-w-0">
-        <div className="tw-text-sm tw-font-medium tw-text-fg">
-          {data.title}
-        </div>
-        {data.description && (
-          <div className="tw-text-xs tw-text-fg-muted tw-mt-0.5">
-            {data.description}
-          </div>
-        )}
+      <div class="tw-flex-1 tw-min-w-0">
+        <div class="tw-text-sm tw-text-fg">{data.title}</div>
+        {data.description && <div class="tw-text-xs tw-text-fg-muted tw-mt-0.5">{data.description}</div>}
       </div>
-      <IconButton
-        size="sm"
-        variant="ghost"
-        aria-label="Dismiss notification"
-        onClick={() => onDismiss(data.id)}
-      >
+      <IconButton size="sm" aria-label="Dismiss notification" onClick={() => onDismiss(data.id)}>
         <Icon name="x" size={14} />
       </IconButton>
     </div>

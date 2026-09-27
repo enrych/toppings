@@ -1,4 +1,3 @@
-/** @jsxImportSource preact */
 import type { ComponentChildren } from "preact";
 import { useEffect, useRef, useState } from "preact/hooks";
 

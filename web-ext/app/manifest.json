@@ -24,10 +24,7 @@
       "matches": [
         "https://www.youtube.com/*"
       ],
-      "run_at": "document_end",
-      "css": [
-        "/content.css"
-      ]
+      "run_at": "document_end"
     }
   ],
   "default_locale": "en",

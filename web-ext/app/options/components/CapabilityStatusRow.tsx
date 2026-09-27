@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "preact/hooks";
+import Button from "@/ui/primitives/Button";
 import { EXTENSION_VERSION } from "@/lib/version";
 import type { CapabilityStatus } from "@/kernel/dom/capabilities";
 import { addFeatureReport } from "@/kernel/dom/featureReports";
@@ -71,35 +72,27 @@ export default function CapabilityStatusRow({
   };
 
   return (
-    <div className="tw-w-full tw-flex tw-items-center tw-justify-between tw-gap-4 tw-py-3">
-      {/* Label + status badge */}
-      <div className="tw-flex tw-flex-col tw-gap-0.5">
+    <div class="tw-w-full tw-flex tw-items-center tw-justify-between tw-gap-4 tw-py-3">
+      <div class="tw-flex tw-flex-col tw-gap-0.5">
         <span
-          className={`tw-text-[15px] tw-font-medium tw-leading-tight ${
+          class={`tw-text-[15px] tw-font-medium tw-leading-tight ${
             status === "unsupported" ? "tw-text-fg-muted" : "tw-text-fg"
           }`}
         >
           {label}
         </span>
-        <div className="tw-flex tw-items-center tw-gap-1.5">
+        <div class="tw-flex tw-items-center tw-gap-1.5">
           <span
-            className={`tw-inline-block tw-w-2 tw-h-2 tw-rounded-full tw-flex-shrink-0 ${config.dot}`}
+            class={`tw-inline-block tw-w-2 tw-h-2 tw-rounded-full tw-flex-shrink-0 ${config.dot}`}
           />
-          <span className="tw-text-xs tw-text-fg-subtle">{config.text}</span>
+          <span class="tw-text-xs tw-text-fg-subtle">{config.text}</span>
         </div>
       </div>
 
-      {/* Report button — only shown when unsupported */}
       {status === "unsupported" && (
-        <button
-          type="button"
-          onClick={() => void handleReport()}
-          disabled={reported}
-          title={reported ? "Report submitted — we'll notify you when it's fixed" : "Report this feature as unavailable"}
-          className="tw-flex-shrink-0 tw-text-xs tw-font-medium tw-text-fg-subtle tw-border tw-border-border-default tw-rounded-md tw-px-2.5 tw-py-1 hover:tw-bg-surface-hover hover:tw-text-fg tw-transition-colors disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
-        >
-          {reported ? "Reported ✓" : "Report"}
-        </button>
+        <Button size="sm" onClick={() => void handleReport()} disabled={reported} title={reported ? "Reported. The next update will tell you when it works again." : "Report this feature as unavailable"}>
+          {reported ? "Reported" : "Report"}
+        </Button>
       )}
     </div>
   );

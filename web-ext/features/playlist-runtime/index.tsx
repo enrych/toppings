@@ -1,4 +1,3 @@
-/** @jsxImportSource preact */
 import type { Feature } from "@/kernel/features";
 import { mount } from "@/kernel/dom/mount";
 import { setCapabilityStatus } from "@/kernel/dom/capabilities";

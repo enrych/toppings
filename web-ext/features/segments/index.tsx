@@ -1,4 +1,3 @@
-/** @jsxImportSource preact */
 import type { Feature } from "@/kernel/features";
 import { bindKeys } from "@/kernel/keys";
 import { mount, mountInline } from "@/kernel/dom/mount";

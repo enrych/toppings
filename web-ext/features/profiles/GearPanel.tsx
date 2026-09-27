@@ -1,4 +1,3 @@
-/** @jsxImportSource preact */
 import type { Profile } from "./profiles";
 
 export interface QuickToggle {

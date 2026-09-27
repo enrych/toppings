@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "preact/hooks";
+import Button from "@/ui/primitives/Button";
 import PageHeader from "@/ui/layout/PageHeader";
 import Section from "@/ui/layout/Section";
 import Card from "@/ui/layout/Card";
@@ -59,40 +60,24 @@ export default function Watch() {
 
   return (
     <>
-      <PageHeader
-        title="Watch"
-        description="Settings for the YouTube watch page — playback rate, seek, and loop controls."
-      />
+      <PageHeader title="Watch" description="Playback rate, seek, and segments on the watch page." />
 
       {recovered.map((r) => (
-        <div
-          key={r.primitiveId}
-          className="tw-flex tw-items-start tw-justify-between tw-gap-4 tw-p-4 tw-rounded-xl tw-border tw-border-green-500/30 tw-bg-green-500/10"
-        >
-          <div className="tw-flex tw-flex-col tw-gap-0.5">
-            <span className="tw-text-sm tw-font-semibold tw-text-green-400">
-              A feature you reported is now working 🎉
-            </span>
-            <span className="tw-text-xs tw-text-fg-subtle">
-              <code className="tw-font-mono">{r.primitiveId}</code> is now
-              supported on your YouTube. You can re-scan to confirm.
+        <div key={r.primitiveId} class="tw-flex tw-items-start tw-justify-between tw-gap-4 tw-p-4 tw-mb-6 tw-rounded-xl tw-bg-success-bg">
+          <div class="tw-flex tw-flex-col tw-gap-0.5">
+            <span class="tw-text-sm tw-font-medium tw-text-success-fg">A feature you reported works again</span>
+            <span class="tw-text-xs tw-text-fg-muted">
+              <code>{r.primitiveId}</code> now resolves on your YouTube.
             </span>
           </div>
-          <button
-            type="button"
-            onClick={() => void dismiss(r.primitiveId)}
-            className="tw-flex-shrink-0 tw-text-xs tw-text-fg-subtle hover:tw-text-fg tw-transition-colors"
-            aria-label="Dismiss"
-          >
-            ✕
-          </button>
+          <Button size="sm" variant="ghost" onClick={() => void dismiss(r.primitiveId)}>Dismiss</Button>
         </div>
       ))}
 
-      <div className="tw-flex tw-flex-col tw-gap-8">
+      <div class="tw-flex tw-flex-col tw-gap-8">
         <Section
           id="playback-rate"
-          title="Playback Rate"
+          title="Playback rate"
           description="Custom rate options and the default rate applied when a video starts."
         >
           <Card>
@@ -116,7 +101,7 @@ export default function Watch() {
               initialValue={value.customRates.join(", ")}
               validator={isRateList}
               errorMessage={`Comma-separated rates between ${MIN_RATE} and ${MAX_RATE}, including 1`}
-              inputWidthClass="tw-w-72"
+              widthClass="tw-w-72"
               onChange={(v) => update({ customRates: parseRates(v) ?? [] })}
             />
             <Input
@@ -158,9 +143,9 @@ export default function Watch() {
         </Section>
 
         <Section
-          id="loop"
+          id="segments"
           title="Segments"
-          description="Define multiple time-range segments on any video and play them in sequence."
+          description="Time-range segments on any video, played in sequence."
         >
           <Card>
             <Select<AutoLoad>
@@ -200,12 +185,12 @@ export default function Watch() {
 
         <Section
           id="feature-availability"
-          title="Feature Availability"
-          description="Shows which features are active on your YouTube. YouTube's interface varies by account — if something shows as unavailable, tap Report to notify the developer."
+          title="Feature availability"
+          description="Which features work on your YouTube. Its layout varies by account; report anything shown as unavailable."
         >
           <Card>
             {isLoading ? (
-              <div className="tw-py-4 tw-text-sm tw-text-fg-subtle tw-text-center">
+              <div class="tw-py-4 tw-text-sm tw-text-fg-subtle tw-text-center">
                 Checking features…
               </div>
             ) : (

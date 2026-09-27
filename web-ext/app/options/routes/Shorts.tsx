@@ -1,4 +1,3 @@
-import React from "react";
 import { useSettings } from "@/kernel/useSettings";
 import { shortsSettings } from "@/features/shorts/settings";
 import PageHeader from "@/ui/layout/PageHeader";
@@ -17,7 +16,7 @@ export default function Shorts() {
     <>
       <PageHeader title="Shorts" description="Settings for the YouTube Shorts player." />
 
-      <div className="tw-flex tw-flex-col tw-gap-8">
+      <div class="tw-flex tw-flex-col tw-gap-8">
         <Section title="Behavior" description="How Shorts playback responds.">
           <Card>
             <Switch

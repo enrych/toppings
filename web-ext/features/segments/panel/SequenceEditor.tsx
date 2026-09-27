@@ -1,4 +1,3 @@
-/** @jsxImportSource preact */
 import { useRef, useState } from "preact/hooks";
 import { colorForIndex, formatTimestamp } from "../format";
 import type { PlayStep, SegmentConfig } from "../types";

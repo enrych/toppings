@@ -1,10 +1,4 @@
-import React, {
-  ChangeEvent,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useId, useRef, useState } from "preact/hooks";
 import Field from "./Field";
 import Icon from "@/ui/primitives/Icon";
 
@@ -17,108 +11,51 @@ interface InputProps {
   validator?: (value: string) => boolean;
   errorMessage?: string;
   onChange: (value: string) => void;
-  inputWidthClass?: string;
+  widthClass?: string;
 }
 
-export default function Input({
-  label,
-  description,
-  hint,
-  initialValue,
-  placeholder = "Enter value",
-  validator,
-  errorMessage,
-  onChange,
-  inputWidthClass = "tw-w-44",
-}: InputProps) {
+type Status = "idle" | "checking" | "valid" | "invalid";
+
+// Commits after a short pause in typing, and only when the value validates,
+// so storage never sees a half-typed number.
+export default function Input({ label, description, hint, initialValue, placeholder, validator, errorMessage, onChange, widthClass = "tw-w-44" }: InputProps) {
   const id = useId();
   const [value, setValue] = useState(initialValue);
-  const [status, setStatus] = useState<"idle" | "loading" | "valid" | "invalid">(
-    "idle",
-  );
-  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [status, setStatus] = useState<Status>("idle");
+  const timer = useRef<ReturnType<typeof setTimeout>>();
 
-  useEffect(() => {
-    return () => {
-      if (debounceTimer.current) clearTimeout(debounceTimer.current);
-    };
-  }, []);
+  useEffect(() => setValue(initialValue), [initialValue]);
+  useEffect(() => () => clearTimeout(timer.current), []);
 
-  // Keep input value in sync if the source store updates externally.
-  useEffect(() => {
-    setValue(initialValue);
-  }, [initialValue]);
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const next = e.target.value;
+  const onInput = (next: string) => {
     setValue(next);
-    if (debounceTimer.current) clearTimeout(debounceTimer.current);
-
-    if (!validator) {
+    clearTimeout(timer.current);
+    if (!validator) return onChange(next);
+    setStatus("checking");
+    timer.current = setTimeout(() => {
+      if (!validator(next)) return setStatus("invalid");
+      setStatus("valid");
       onChange(next);
-      return;
-    }
-
-    setStatus("loading");
-    debounceTimer.current = setTimeout(() => {
-      const ok = validator(next);
-      if (ok) {
-        setStatus("valid");
-        onChange(next);
-        setTimeout(() => setStatus("idle"), 1200);
-      } else {
-        setStatus("invalid");
-      }
+      timer.current = setTimeout(() => setStatus("idle"), 1200);
     }, 500);
   };
 
   return (
-    <Field
-      label={label}
-      description={description}
-      hint={hint}
-      htmlFor={id}
-      error={status === "invalid" ? errorMessage ?? "Invalid value" : undefined}
-    >
-      <div className="tw-relative tw-inline-flex tw-items-center">
+    <Field label={label} description={description} hint={hint} htmlFor={id} error={status === "invalid" ? (errorMessage ?? "Invalid value") : undefined}>
+      <div class="tw-relative tw-inline-flex tw-items-center">
         <input
           id={id}
           type="text"
-          className={`${inputWidthClass} tw-px-3 tw-py-2 tw-bg-bg tw-text-fg tw-text-sm tw-rounded-md tw-border tw-border-border-strong focus:tw-outline-none focus:tw-border-accent focus:tw-ring-2 focus:tw-ring-accent/30 tw-transition-colors`}
+          class={`${widthClass} tw-h-9 tw-px-3 tw-rounded-lg tw-bg-surface-hover tw-text-fg tw-text-sm tw-border tw-border-transparent focus:tw-outline-none focus:tw-border-accent tw-transition-colors`}
           placeholder={placeholder}
           value={value}
-          onChange={handleChange}
+          onInput={(e) => onInput(e.currentTarget.value)}
         />
         {status !== "idle" && (
-          <span className="tw-absolute tw-right-2 tw-top-1/2 -tw-translate-y-1/2 tw-pointer-events-none">
-            {status === "loading" && (
-              <svg
-                className="tw-animate-spin tw-h-4 tw-w-4 tw-text-accent"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-              >
-                <circle
-                  className="tw-opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="tw-opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                />
-              </svg>
-            )}
-            {status === "valid" && (
-              <Icon name="check" size={16} className="tw-text-success-fg" />
-            )}
-            {status === "invalid" && (
-              <Icon name="x" size={16} className="tw-text-danger-fg" />
-            )}
+          <span class="tw-absolute tw-right-2 tw-pointer-events-none">
+            {status === "checking" && <span class="tw-block tw-w-3.5 tw-h-3.5 tw-rounded-full tw-border-2 tw-border-fg-subtle tw-border-t-accent tw-animate-spin" />}
+            {status === "valid" && <Icon name="check" size={16} class="tw-text-success-fg" />}
+            {status === "invalid" && <Icon name="x" size={16} class="tw-text-danger-fg" />}
           </span>
         )}
       </div>

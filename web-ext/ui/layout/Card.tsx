@@ -1,18 +1,9 @@
-import React, { ReactNode } from "react";
+import type { ComponentChildren } from "preact";
 
-interface CardProps {
-  children: ReactNode;
-  className?: string;
-}
-
-export default function Card({ children, className = "" }: CardProps) {
+export default function Card({ children, class: className = "" }: { children: ComponentChildren; class?: string }) {
   return (
-    <div
-      className={`tw-bg-surface tw-border tw-border-border-default tw-rounded-xl ${className}`}
-    >
-      <div className="tw-px-5 tw-py-1 tw-divide-y tw-divide-border-subtle">
-        {children}
-      </div>
+    <div class={`tw-bg-surface tw-border tw-border-border-subtle tw-rounded-xl ${className}`}>
+      <div class="tw-px-5 tw-py-1 tw-divide-y tw-divide-border-subtle">{children}</div>
     </div>
   );
 }

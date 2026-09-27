@@ -1,38 +1,24 @@
-import { useContext, useEffect } from "react";
-import StoreContext from "@/lib/storeContext";
+import { useEffect } from "preact/hooks";
+import { useSettings } from "@/kernel/useSettings";
+import { appSettings, type ThemePreference } from "@/app/settings";
 
-export type ThemePreference = "system" | "dark" | "light";
-type ResolvedTheme = "dark" | "light";
+export type { ThemePreference };
 
-function resolveTheme(pref: ThemePreference): ResolvedTheme {
-  if (pref === "system") {
-    if (
-      typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-color-scheme: light)").matches
-    ) {
-      return "light";
-    }
-    return "dark";
-  }
-  return pref;
-}
+const resolve = (pref: ThemePreference): "dark" | "light" =>
+  pref === "system" ? (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark") : pref;
 
-function applyTheme(theme: ResolvedTheme) {
-  if (typeof document === "undefined") return;
-  document.documentElement.setAttribute("data-theme", theme);
-}
-
+// Stamps the resolved theme on <html>, which is where the CSS tokens key off.
 export function useTheme() {
-  const ctx = useContext(StoreContext)!;
-  const pref: ThemePreference = ctx.store.ui?.theme ?? "system";
+  const { value, update } = useSettings(appSettings);
 
   useEffect(() => {
-    applyTheme(resolveTheme(pref));
+    const apply = () => document.documentElement.setAttribute("data-theme", resolve(value.theme));
+    apply();
+    if (value.theme !== "system") return;
+    const media = window.matchMedia("(prefers-color-scheme: light)");
+    media.addEventListener("change", apply);
+    return () => media.removeEventListener("change", apply);
+  }, [value.theme]);
 
-    if (pref !== "system" || typeof window === "undefined") return;
-    const mql = window.matchMedia("(prefers-color-scheme: light)");
-    const onChange = () => applyTheme(resolveTheme("system"));
-    mql.addEventListener?.("change", onChange);
-    return () => mql.removeEventListener?.("change", onChange);
-  }, [pref]);
+  return { theme: value.theme, setTheme: (theme: ThemePreference) => update({ theme }) };
 }

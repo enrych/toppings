@@ -1,4 +1,3 @@
-/** @jsxImportSource preact */
 import { themeTokens } from "@/kernel/dom/theme";
 import type { Profile } from "./profiles";
 import type { QuickToggle } from "./GearPanel";

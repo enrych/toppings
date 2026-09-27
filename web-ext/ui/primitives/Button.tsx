@@ -1,67 +1,41 @@
-import { cn } from "@/ui/cn";
-import React, { forwardRef } from "react";
+import type { ComponentChildren } from "preact";
 
-type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
-type ButtonSize = "sm" | "md" | "lg";
+export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
+export type ButtonSize = "sm" | "md";
 
-const VARIANT_CLASSES: Record<ButtonVariant, string> = {
-  primary:
-    "tw-bg-accent tw-text-accent-fg tw-border tw-border-accent hover:tw-bg-accent-hover hover:tw-border-accent-hover disabled:tw-opacity-50 disabled:tw-cursor-not-allowed",
-  secondary:
-    "tw-bg-transparent tw-text-fg tw-border tw-border-border-strong hover:tw-bg-surface-hover disabled:tw-opacity-40 disabled:tw-cursor-not-allowed",
-  ghost:
-    "tw-bg-transparent tw-text-fg-muted tw-border tw-border-transparent hover:tw-bg-surface-hover hover:tw-text-fg disabled:tw-opacity-40 disabled:tw-cursor-not-allowed",
-  danger:
-    "tw-bg-danger-bg tw-text-danger-fg tw-border tw-border-danger-fg/30 hover:tw-bg-danger-bg hover:tw-border-danger-fg/60 disabled:tw-opacity-40 disabled:tw-cursor-not-allowed",
+// Pill buttons, filled or tonal, as YouTube draws its own.
+const VARIANT: Record<ButtonVariant, string> = {
+  primary: "tw-bg-fg tw-text-bg hover:tw-opacity-90",
+  secondary: "tw-bg-surface-hover tw-text-fg hover:tw-bg-border-default",
+  ghost: "tw-text-fg-muted hover:tw-bg-surface-hover hover:tw-text-fg",
+  danger: "tw-bg-danger-bg tw-text-danger-fg hover:tw-opacity-90",
 };
 
-const SIZE_CLASSES: Record<ButtonSize, string> = {
-  sm: "tw-px-2.5 tw-py-1 tw-text-xs",
-  md: "tw-px-3.5 tw-py-2 tw-text-sm",
-  lg: "tw-px-5 tw-py-2.5 tw-text-base",
+const SIZE: Record<ButtonSize, string> = {
+  sm: "tw-h-8 tw-px-3 tw-text-[13px]",
+  md: "tw-h-9 tw-px-4 tw-text-sm",
 };
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps {
   variant?: ButtonVariant;
   size?: ButtonSize;
-  fullWidth?: boolean;
-  leadingIcon?: React.ReactNode;
-  trailingIcon?: React.ReactNode;
+  icon?: ComponentChildren;
+  class?: string;
+  title?: string;
+  disabled?: boolean;
+  onClick?: () => void;
+  children?: ComponentChildren;
 }
 
-const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  {
-    variant = "secondary",
-    size = "md",
-    fullWidth = false,
-    leadingIcon,
-    trailingIcon,
-    className = "",
-    children,
-    type = "button",
-    ...rest
-  },
-  ref,
-) {
+export default function Button({ variant = "secondary", size = "md", icon, class: className = "", children, ...rest }: ButtonProps) {
   return (
     <button
-      ref={ref}
-      type={type}
-      className={cn(
-        "tw-inline-flex tw-items-center tw-justify-center tw-gap-2 tw-rounded-md tw-font-medium tw-transition-colors tw-duration-150 focus-visible:tw-outline-none focus-visible:tw-ring-2 focus-visible:tw-ring-accent/50 focus-visible:tw-ring-offset-2 focus-visible:tw-ring-offset-bg",
-        VARIANT_CLASSES[variant],
-        SIZE_CLASSES[size],
-        fullWidth && "tw-w-full",
-        className,
-      )}
+      type="button"
+      class={`tw-inline-flex tw-items-center tw-justify-center tw-gap-2 tw-rounded-full tw-font-medium tw-whitespace-nowrap tw-transition-colors focus-visible:tw-outline-none focus-visible:tw-ring-2 focus-visible:tw-ring-accent disabled:tw-opacity-40 disabled:tw-cursor-not-allowed ${VARIANT[variant]} ${SIZE[size]} ${className}`}
       {...rest}
     >
-      {leadingIcon && <span className="tw-flex">{leadingIcon}</span>}
+      {icon}
       {children}
-      {trailingIcon && <span className="tw-flex">{trailingIcon}</span>}
     </button>
   );
-});
-
-export default Button;
-export type { ButtonVariant, ButtonSize };
+}

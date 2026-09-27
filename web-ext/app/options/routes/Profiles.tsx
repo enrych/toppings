@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "preact/hooks";
+import Button from "@/ui/primitives/Button";
 import PageHeader from "@/ui/layout/PageHeader";
 import Section from "@/ui/layout/Section";
 import Card from "@/ui/layout/Card";
@@ -71,10 +72,9 @@ function ProfileEditor({
   const isUnsupported = (id: string) => getStatus(id) === "unsupported";
 
   return (
-    <div className="tw-p-4 tw-flex tw-flex-col tw-gap-4">
-      {/* Name */}
-      <div className="tw-flex tw-flex-col tw-gap-1">
-        <label className="tw-text-sm tw-font-medium tw-text-fg">
+    <div class="tw-p-4 tw-flex tw-flex-col tw-gap-4">
+            <div class="tw-flex tw-flex-col tw-gap-1">
+        <label class="tw-text-sm tw-font-medium tw-text-fg">
           Profile name
         </label>
         <input
@@ -83,20 +83,18 @@ function ProfileEditor({
           onChange={(e) => setName(e.currentTarget.value)}
           placeholder="e.g. Study session"
           maxLength={40}
-          className="tw-w-full tw-rounded-lg tw-border tw-border-border-default tw-bg-surface tw-px-3 tw-py-2 tw-text-sm tw-text-fg placeholder:tw-text-fg-subtle focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-accent/50"
+          class="tw-w-full tw-h-9 tw-rounded-lg tw-bg-surface-hover tw-px-3 tw-text-sm tw-text-fg placeholder:tw-text-fg-subtle tw-border tw-border-transparent focus:tw-outline-none focus:tw-border-accent"
         />
       </div>
 
-      {/* Watch scope */}
-      <div className="tw-flex tw-flex-col tw-gap-2">
-        <span className="tw-text-xs tw-font-semibold tw-uppercase tw-tracking-wider tw-text-fg-subtle">
+            <div class="tw-flex tw-flex-col tw-gap-2">
+        <span class="tw-text-xs tw-font-medium tw-uppercase tw-tracking-wider tw-text-fg-subtle">
           Watch page
         </span>
 
-        <div className="tw-bg-surface tw-border tw-border-border-default tw-rounded-xl tw-divide-y tw-divide-border-subtle">
-          {/* Layout */}
-          <div
-            className={`tw-px-4 ${isUnsupported("watch.layout") ? "tw-opacity-50" : ""}`}
+        <div class="tw-bg-surface tw-border tw-border-border-subtle tw-rounded-xl tw-divide-y tw-divide-border-subtle">
+                    <div
+            class={`tw-px-4 ${isUnsupported("watch.layout") ? "tw-opacity-50" : ""}`}
           >
             <Select<PlayerLayout>
               label="Player Layout"
@@ -114,9 +112,8 @@ function ProfileEditor({
             />
           </div>
 
-          {/* Sidebar */}
-          <div
-            className={`tw-px-4 ${isUnsupported("watch.sidebar") ? "tw-opacity-50 tw-pointer-events-none" : ""}`}
+                    <div
+            class={`tw-px-4 ${isUnsupported("watch.sidebar") ? "tw-opacity-50 tw-pointer-events-none" : ""}`}
           >
             <Switch
               label="Recommendations Sidebar"
@@ -130,9 +127,8 @@ function ProfileEditor({
             />
           </div>
 
-          {/* Comments */}
-          <div
-            className={`tw-px-4 ${isUnsupported("watch.comments") ? "tw-opacity-50 tw-pointer-events-none" : ""}`}
+                    <div
+            class={`tw-px-4 ${isUnsupported("watch.comments") ? "tw-opacity-50 tw-pointer-events-none" : ""}`}
           >
             <Switch
               label="Comments Section"
@@ -146,9 +142,8 @@ function ProfileEditor({
             />
           </div>
 
-          {/* End cards */}
-          <div
-            className={`tw-px-4 ${isUnsupported("watch.endCards") ? "tw-opacity-50 tw-pointer-events-none" : ""}`}
+                    <div
+            class={`tw-px-4 ${isUnsupported("watch.endCards") ? "tw-opacity-50 tw-pointer-events-none" : ""}`}
           >
             <Switch
               label="End Screen Cards"
@@ -164,13 +159,12 @@ function ProfileEditor({
         </div>
       </div>
 
-      {/* Home scope */}
-      <div className="tw-flex tw-flex-col tw-gap-2">
-        <span className="tw-text-xs tw-font-semibold tw-uppercase tw-tracking-wider tw-text-fg-subtle">
+            <div class="tw-flex tw-flex-col tw-gap-2">
+        <span class="tw-text-xs tw-font-medium tw-uppercase tw-tracking-wider tw-text-fg-subtle">
           Home page
         </span>
-        <div className="tw-bg-surface tw-border tw-border-border-default tw-rounded-xl tw-divide-y tw-divide-border-subtle">
-          <div className="tw-px-4">
+        <div class="tw-bg-surface tw-border tw-border-border-subtle tw-rounded-xl tw-divide-y tw-divide-border-subtle">
+          <div class="tw-px-4">
             <Select<ThumbnailMode>
               label="Feed Thumbnails"
               description="Show, hide, or blur thumbnail images in the home feed."
@@ -183,7 +177,7 @@ function ProfileEditor({
               onChange={(v) => set("home.thumbnails", { mode: v })}
             />
           </div>
-          <div className="tw-px-4">
+          <div class="tw-px-4">
             <Switch
               label="Home Feed"
               description="Show or hide the entire home page feed."
@@ -191,7 +185,7 @@ function ProfileEditor({
               onToggle={(v) => set("home.feed", { visible: v })}
             />
           </div>
-          <div className="tw-px-4">
+          <div class="tw-px-4">
             <Switch
               label="Shorts Shelf"
               description="Show or hide the Shorts row in the home feed."
@@ -202,13 +196,12 @@ function ProfileEditor({
         </div>
       </div>
 
-      {/* Search scope */}
-      <div className="tw-flex tw-flex-col tw-gap-2">
-        <span className="tw-text-xs tw-font-semibold tw-uppercase tw-tracking-wider tw-text-fg-subtle">
+            <div class="tw-flex tw-flex-col tw-gap-2">
+        <span class="tw-text-xs tw-font-medium tw-uppercase tw-tracking-wider tw-text-fg-subtle">
           Search
         </span>
-        <div className="tw-bg-surface tw-border tw-border-border-default tw-rounded-xl tw-divide-y tw-divide-border-subtle">
-          <div className="tw-px-4">
+        <div class="tw-bg-surface tw-border tw-border-border-subtle tw-rounded-xl tw-divide-y tw-divide-border-subtle">
+          <div class="tw-px-4">
             <Select<ThumbnailMode>
               label="Result Thumbnails"
               description="Show, hide, or blur thumbnails in search results."
@@ -221,7 +214,7 @@ function ProfileEditor({
               onChange={(v) => set("search.thumbnails", { mode: v })}
             />
           </div>
-          <div className="tw-px-4">
+          <div class="tw-px-4">
             <Switch
               label="Video Metadata"
               description="Show or hide view count and date below search results."
@@ -229,7 +222,7 @@ function ProfileEditor({
               onToggle={(v) => set("search.metadata", { visible: v })}
             />
           </div>
-          <div className="tw-px-4">
+          <div class="tw-px-4">
             <Switch
               label="Shorts in Search"
               description="Show or hide the Shorts shelf in search results."
@@ -240,13 +233,12 @@ function ProfileEditor({
         </div>
       </div>
 
-      {/* Shorts shelf (cross-page) */}
-      <div className="tw-flex tw-flex-col tw-gap-2">
-        <span className="tw-text-xs tw-font-semibold tw-uppercase tw-tracking-wider tw-text-fg-subtle">
+            <div class="tw-flex tw-flex-col tw-gap-2">
+        <span class="tw-text-xs tw-font-medium tw-uppercase tw-tracking-wider tw-text-fg-subtle">
           Shorts
         </span>
-        <div className="tw-bg-surface tw-border tw-border-border-default tw-rounded-xl tw-divide-y tw-divide-border-subtle">
-          <div className="tw-px-4">
+        <div class="tw-bg-surface tw-border tw-border-border-subtle tw-rounded-xl tw-divide-y tw-divide-border-subtle">
+          <div class="tw-px-4">
             <Switch
               label="Shorts Shelf (everywhere)"
               description="Hide the Shorts shelf across home, search, and other pages."
@@ -257,23 +249,11 @@ function ProfileEditor({
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="tw-flex tw-items-center tw-justify-end tw-gap-2 tw-pt-1">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="tw-text-sm tw-text-fg-subtle hover:tw-text-fg tw-px-3 tw-py-1.5 tw-rounded-lg hover:tw-bg-surface-hover tw-transition-colors"
-        >
-          Cancel
-        </button>
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={!name.trim() || isSaving}
-          className="tw-text-sm tw-font-medium tw-text-[--color-accent-fg] tw-bg-accent tw-px-4 tw-py-1.5 tw-rounded-lg hover:tw-opacity-90 tw-transition-opacity disabled:tw-opacity-40 disabled:tw-cursor-not-allowed"
-        >
-          {isSaving ? "Saving…" : "Save Profile"}
-        </button>
+            <div class="tw-flex tw-items-center tw-justify-end tw-gap-2 tw-pt-1">
+        <Button variant="ghost" onClick={onCancel}>Cancel</Button>
+        <Button variant="primary" onClick={handleSave} disabled={!name.trim() || isSaving}>
+          {isSaving ? "Saving…" : "Save profile"}
+        </Button>
       </div>
     </div>
   );
@@ -311,34 +291,26 @@ function PresetCard({ profile, isActive, onActivate }: PresetCardProps) {
     .join(" · ");
 
   return (
-    <div className="tw-flex tw-items-center tw-justify-between tw-gap-4 tw-py-3">
-      <div className="tw-flex tw-flex-col tw-gap-0.5">
-        <div className="tw-flex tw-items-center tw-gap-2">
-          <span className="tw-text-[15px] tw-font-medium tw-text-fg">
+    <div class="tw-flex tw-items-center tw-justify-between tw-gap-4 tw-py-3">
+      <div class="tw-flex tw-flex-col tw-gap-0.5">
+        <div class="tw-flex tw-items-center tw-gap-2">
+          <span class="tw-text-[15px] tw-font-medium tw-text-fg">
             {profile.name}
           </span>
-          <span className="tw-text-[10px] tw-font-semibold tw-uppercase tw-tracking-wider tw-text-fg-subtle tw-border tw-border-border-default tw-rounded tw-px-1.5 tw-py-0.5">
+          <span class="tw-text-[10px] tw-font-medium tw-uppercase tw-tracking-wider tw-text-fg-muted tw-bg-surface-hover tw-rounded tw-px-1.5 tw-py-0.5">
             Built-in
           </span>
           {isActive && (
-            <span className="tw-text-[10px] tw-font-semibold tw-uppercase tw-tracking-wider tw-text-accent tw-border tw-border-accent/40 tw-rounded tw-px-1.5 tw-py-0.5">
+            <span class="tw-text-[10px] tw-font-medium tw-uppercase tw-tracking-wider tw-text-accent tw-bg-info-bg tw-rounded tw-px-1.5 tw-py-0.5">
               Active
             </span>
           )}
         </div>
-        <span className="tw-text-xs tw-text-fg-subtle">{summaryParts}</span>
+        <span class="tw-text-xs tw-text-fg-subtle">{summaryParts}</span>
       </div>
-      <button
-        type="button"
-        onClick={onActivate}
-        className={`tw-flex-shrink-0 tw-text-sm tw-font-medium tw-px-3 tw-py-1.5 tw-rounded-lg tw-transition-colors ${
-          isActive
-            ? "tw-text-fg-subtle tw-border tw-border-border-default hover:tw-bg-surface-hover"
-            : "tw-text-[--color-accent-fg] tw-bg-accent hover:tw-opacity-90"
-        }`}
-      >
+      <Button size="sm" variant={isActive ? "secondary" : "primary"} onClick={onActivate}>
         {isActive ? "Deactivate" : "Activate"}
-      </button>
+      </Button>
     </div>
   );
 }
@@ -359,57 +331,30 @@ function CustomProfileCard({
   onDelete,
 }: CustomProfileCardProps) {
   return (
-    <div className="tw-flex tw-items-center tw-justify-between tw-gap-4 tw-py-3">
-      <div className="tw-flex tw-flex-col tw-gap-0.5">
-        <div className="tw-flex tw-items-center tw-gap-2">
-          <span className="tw-text-[15px] tw-font-medium tw-text-fg">
+    <div class="tw-flex tw-items-center tw-justify-between tw-gap-4 tw-py-3">
+      <div class="tw-flex tw-flex-col tw-gap-0.5">
+        <div class="tw-flex tw-items-center tw-gap-2">
+          <span class="tw-text-[15px] tw-font-medium tw-text-fg">
             {profile.name}
           </span>
           {isActive && (
-            <span className="tw-text-[10px] tw-font-semibold tw-uppercase tw-tracking-wider tw-text-accent tw-border tw-border-accent/40 tw-rounded tw-px-1.5 tw-py-0.5">
+            <span class="tw-text-[10px] tw-font-medium tw-uppercase tw-tracking-wider tw-text-accent tw-bg-info-bg tw-rounded tw-px-1.5 tw-py-0.5">
               Active
             </span>
           )}
         </div>
-        <span className="tw-text-xs tw-text-fg-subtle">
+        <span class="tw-text-xs tw-text-fg-subtle">
           {Object.keys(profile.primitives).length} primitive
           {Object.keys(profile.primitives).length !== 1 ? "s" : ""} configured
         </span>
       </div>
-      <div className="tw-flex tw-items-center tw-gap-2 tw-flex-shrink-0">
-        <button
-          type="button"
-          onClick={() => exportProfile(profile)}
-          title="Export as JSON"
-          className="tw-text-sm tw-text-fg-subtle tw-border tw-border-border-default tw-rounded-lg tw-px-2.5 tw-py-1 hover:tw-bg-surface-hover hover:tw-text-fg tw-transition-colors"
-        >
-          Export
-        </button>
-        <button
-          type="button"
-          onClick={onEdit}
-          className="tw-text-sm tw-text-fg-subtle tw-border tw-border-border-default tw-rounded-lg tw-px-2.5 tw-py-1 hover:tw-bg-surface-hover hover:tw-text-fg tw-transition-colors"
-        >
-          Edit
-        </button>
-        <button
-          type="button"
-          onClick={onDelete}
-          className="tw-text-sm tw-text-fg-subtle tw-border tw-border-border-default tw-rounded-lg tw-px-2.5 tw-py-1 hover:tw-bg-surface-hover hover:tw-text-danger-fg tw-transition-colors"
-        >
-          Delete
-        </button>
-        <button
-          type="button"
-          onClick={onActivate}
-          className={`tw-text-sm tw-font-medium tw-px-3 tw-py-1.5 tw-rounded-lg tw-transition-colors ${
-            isActive
-              ? "tw-text-fg-subtle tw-border tw-border-border-default hover:tw-bg-surface-hover"
-              : "tw-text-[--color-accent-fg] tw-bg-accent hover:tw-opacity-90"
-          }`}
-        >
+      <div class="tw-flex tw-items-center tw-gap-2 tw-flex-shrink-0">
+        <Button size="sm" variant="ghost" title="Export as JSON" onClick={() => exportProfile(profile)}>Export</Button>
+        <Button size="sm" variant="ghost" onClick={onEdit}>Edit</Button>
+        <Button size="sm" variant="ghost" onClick={onDelete}>Delete</Button>
+        <Button size="sm" variant={isActive ? "secondary" : "primary"} onClick={onActivate}>
           {isActive ? "Deactivate" : "Activate"}
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -486,9 +431,8 @@ export default function Profiles() {
         description="Switch your entire YouTube experience in one tap. Built-in presets are ready to use; create custom profiles to mix and match any combination."
       />
 
-      <div className="tw-flex tw-flex-col tw-gap-8">
-        {/* Built-in presets */}
-        <Section title="Built-in Presets" description="Curated by Toppings — activate in one tap, no configuration needed.">
+      <div class="tw-flex tw-flex-col tw-gap-8">
+                <Section title="Built-in Presets" description="Curated by Toppings — activate in one tap, no configuration needed.">
           <Card>
             {presets.map((p) => (
               <PresetCard
@@ -501,22 +445,18 @@ export default function Profiles() {
           </Card>
         </Section>
 
-        {/* Custom profiles */}
-        <Section
+                <Section
           title="My Profiles"
           description="Create your own mix of YouTube experience settings."
-          headerActions={
+          actions={
             editor.type === "closed" ? (
-              <div className="tw-flex tw-items-center tw-gap-2">
-                <label
-                  title="Import profile from JSON"
-                  className="tw-text-sm tw-text-fg-subtle tw-border tw-border-border-default tw-rounded-lg tw-px-3 tw-py-1.5 hover:tw-bg-surface-hover hover:tw-text-fg tw-transition-colors tw-cursor-pointer"
-                >
+              <div class="tw-flex tw-items-center tw-gap-2">
+                <label title="Import profile from JSON" class="tw-inline-flex tw-items-center tw-h-8 tw-px-3 tw-rounded-full tw-text-[13px] tw-font-medium tw-bg-surface-hover tw-text-fg hover:tw-bg-border-default tw-cursor-pointer tw-transition-colors">
                   Import
                   <input
                     type="file"
                     accept=".json,application/json"
-                    className="tw-hidden"
+                    class="tw-hidden"
                     onChange={async (e) => {
                       const file = e.currentTarget.files?.[0];
                       if (!file) return;
@@ -535,20 +475,13 @@ export default function Profiles() {
                     }}
                   />
                 </label>
-                <button
-                  type="button"
-                  onClick={() => setEditor({ type: "create" })}
-                  className="tw-text-sm tw-font-medium tw-text-[--color-accent-fg] tw-bg-accent tw-px-3 tw-py-1.5 tw-rounded-lg hover:tw-opacity-90 tw-transition-opacity"
-                >
-                  + New Profile
-                </button>
+                <Button size="sm" variant="primary" onClick={() => setEditor({ type: "create" })}>New profile</Button>
               </div>
             ) : null
           }
         >
           <Card>
-            {/* Inline create editor */}
-            {editor.type === "create" && (
+                        {editor.type === "create" && (
               <ProfileEditor
                 initial={{ primitives: blankPrimitives() }}
                 onSave={handleCreate}
@@ -558,7 +491,7 @@ export default function Profiles() {
             )}
 
             {custom.length === 0 && editor.type !== "create" ? (
-              <div className="tw-py-8 tw-text-center tw-text-sm tw-text-fg-subtle">
+              <div class="tw-py-8 tw-text-center tw-text-sm tw-text-fg-subtle">
                 No custom profiles yet. Create one with the button above.
               </div>
             ) : (

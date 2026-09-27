@@ -1,4 +1,4 @@
-import React, { useId, useState } from "react";
+import { useId } from "preact/hooks";
 import Field from "./Field";
 
 interface SwitchProps {
@@ -9,43 +9,34 @@ interface SwitchProps {
   onToggle: (isEnabled: boolean) => void;
 }
 
-export default function Switch({
-  label,
-  description,
-  hint,
-  isEnabled,
-  onToggle,
-}: SwitchProps) {
-  const [checked, setChecked] = useState(isEnabled);
+// YouTube's toggle: a track that tints to the accent with a white knob.
+export function Toggle({ on, onClick, id, label }: { on: boolean; onClick: () => void; id?: string; label?: string }) {
+  return (
+    <button
+      id={id}
+      type="button"
+      role="switch"
+      aria-checked={on}
+      aria-label={label}
+      onClick={onClick}
+      class="tw-relative tw-inline-flex tw-h-[14px] tw-w-[36px] tw-flex-shrink-0 tw-rounded-full tw-transition-colors tw-duration-150 focus-visible:tw-outline-none focus-visible:tw-ring-2 focus-visible:tw-ring-accent"
+      style={{ background: on ? "color-mix(in srgb, var(--color-accent) 50%, transparent)" : "var(--color-fg-subtle)" }}
+    >
+      <span
+        aria-hidden="true"
+        class={`tw-pointer-events-none tw-absolute tw-top-1/2 -tw-translate-y-1/2 tw-h-5 tw-w-5 tw-rounded-full tw-shadow-md tw-transition-transform tw-duration-150 ${
+          on ? "tw-bg-accent tw-translate-x-4" : "tw-bg-surface-2 tw-translate-x-0"
+        }`}
+      />
+    </button>
+  );
+}
+
+export default function Switch({ label, description, hint, isEnabled, onToggle }: SwitchProps) {
   const id = useId();
-
-  const handleChange = () => {
-    const next = !checked;
-    setChecked(next);
-    onToggle(next);
-  };
-
   return (
     <Field label={label} description={description} hint={hint} htmlFor={id}>
-      <button
-        id={id}
-        type="button"
-        role="switch"
-        aria-checked={checked}
-        onClick={handleChange}
-        className={`tw-relative tw-inline-flex tw-h-5 tw-w-[34px] tw-flex-shrink-0 tw-cursor-pointer tw-rounded-full tw-transition-colors tw-duration-[240ms] tw-ease-out focus-visible:tw-outline-none focus-visible:tw-ring-2 focus-visible:tw-ring-accent/50 focus-visible:tw-ring-offset-2 focus-visible:tw-ring-offset-bg ${
-          checked
-            ? "tw-bg-accent"
-            : "tw-bg-surface-hover tw-border tw-border-border-default"
-        }`}
-      >
-        <span
-          aria-hidden="true"
-          className={`tw-pointer-events-none tw-absolute tw-top-[2px] tw-left-[2px] tw-inline-block tw-h-4 tw-w-4 tw-transform tw-rounded-full tw-transition-transform tw-duration-[240ms] tw-ease-out ${
-            checked ? "tw-bg-[--color-accent-fg] tw-translate-x-[14px]" : "tw-bg-fg tw-translate-x-0"
-          }`}
-        />
-      </button>
+      <Toggle id={id} on={isEnabled} onClick={() => onToggle(!isEnabled)} />
     </Field>
   );
 }

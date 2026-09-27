@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "preact/hooks";
 import type { Settings } from "./settings";
 
-// React binding for a settings slice, for the popup and options pages.
+// Component binding for a settings slice, for the popup and options pages.
 export function useSettings<T extends object>(settings: Settings<T>): {
   value: T;
   update: (patch: Partial<T>) => void;

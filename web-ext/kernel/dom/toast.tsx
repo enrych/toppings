@@ -1,4 +1,3 @@
-/** @jsxImportSource preact */
 import { mount } from "./mount";
 
 const style = `

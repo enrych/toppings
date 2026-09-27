@@ -1,4 +1,3 @@
-/** @jsxImportSource preact */
 
 export interface ControlsProps {
   autoScroll: boolean;

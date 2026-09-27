@@ -1,4 +1,3 @@
-/** @jsxImportSource preact */
 
 // State is shown by fill, never by colour, the same way YouTube's own
 // control-bar toggles do it and the only cue that survives colour-blindness.

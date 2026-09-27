@@ -1,4 +1,3 @@
-/** @jsxImportSource preact */
 import { useRef } from "preact/hooks";
 import { colorForIndex } from "./format";
 import type { Segment, SegmentId } from "./types";
