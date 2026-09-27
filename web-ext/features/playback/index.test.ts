@@ -28,7 +28,7 @@ const chips = () => [...document.querySelectorAll(".ytp-variable-speed-panel-chi
 
 let unmount: (() => void) | undefined | void;
 const mountPlayback = async () => {
-  unmount = await playback.mount({ route });
+  unmount = await playback.mount({ signal: new AbortController().signal, route });
 };
 
 async function openSpeedPanel() {

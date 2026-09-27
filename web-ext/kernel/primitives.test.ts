@@ -40,6 +40,14 @@ describe("runPrimitives", () => {
     expect(box().style.display).toBe("");
   });
 
+  test("acts on the live page, not one YouTube keeps hidden after navigating away", () => {
+    document.body.innerHTML = `<ytd-browse hidden><div class="box" id="parked"></div></ytd-browse><div class="box" id="live"></div>`;
+    const run = runPrimitives([hide], { "watch.box": { visible: false } }, "watch");
+    expect(document.getElementById("parked")!.style.display).toBe("");
+    expect(document.getElementById("live")!.style.display).toBe("none");
+    run.stop();
+  });
+
   test("ignores primitives for other routes and absent values", () => {
     const run = runPrimitives([hide, blur], {}, "watch");
     expect(box().style.display).toBe("");

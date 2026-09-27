@@ -36,11 +36,20 @@ afterEach(() => {
 });
 
 const mountOn = async () => {
-  unmount = await createSegments({ storage }).mount({ route });
+  unmount = await createSegments({ storage }).mount({ signal: new AbortController().signal, route });
   await tick();
 };
 
 describe("segments", () => {
+  test("stays off, keys included, when switched off", async () => {
+    await chrome.storage.sync.set({ "settings:segments": { enabled: false } });
+    await mountOn();
+    press("z");
+    await tick();
+    expect(document.getElementById("tppng-segment-button")).toBeNull();
+    expect(document.getElementById("tppng-segment-panel")).toBeNull();
+  });
+
   test("mounts a control-bar button, and the toggle key shows the panel and markers", async () => {
     await mountOn();
     expect(button().getAttribute("aria-pressed")).toBe("false");

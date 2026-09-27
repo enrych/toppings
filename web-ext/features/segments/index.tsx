@@ -24,6 +24,7 @@ export function createSegments({ storage }: SegmentsDeps): Feature {
     async mount({ route }) {
       if (route.name !== "watch" || !route.videoId) return;
       const settings = await segmentsSettings.get();
+      if (!settings.enabled) return;
       const [player, controls, bar, below] = await Promise.all([resolveVideo(), resolveRightControls(), resolveProgressBar(), resolveBelowPlayer()]);
       void setCapabilityStatus("watch.player", "watch", player);
       void setCapabilityStatus("watch.rightControls", "watch", controls);

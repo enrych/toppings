@@ -46,20 +46,22 @@ export function resolveTarget(strategies: readonly PrimitiveStrategy[], { timeou
   if (found || strategies.length === 0) return Promise.resolve(found ?? UNRESOLVED);
 
   return new Promise((resolve) => {
-    let frame: number | undefined;
+    let pending: ReturnType<typeof setTimeout> | undefined;
     const finish = (resolution: PrimitiveResolution) => {
       observer.disconnect();
       clearTimeout(timer);
-      if (frame !== undefined) cancelAnimationFrame(frame);
+      clearTimeout(pending);
       resolve(resolution);
     };
     const check = () => {
-      frame = undefined;
+      pending = undefined;
       const match = findLive(strategies);
       if (match) finish(match);
     };
+    // Batched on a timer rather than an animation frame, which never comes in
+    // a background tab and would leave a page opened there unresolved.
     const observer = new MutationObserver(() => {
-      frame ??= requestAnimationFrame(check);
+      pending ??= setTimeout(check, 16);
     });
     observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden", "class", "style"] });
     const timer = setTimeout(() => finish(UNRESOLVED), timeout);

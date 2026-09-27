@@ -14,28 +14,36 @@ function navigator() {
 }
 
 describe("bootFeatures", () => {
-  test("a navigation during a slow mount stops the rest of the old one", async () => {
+  test("a mount that finishes after the next navigation is undone", async () => {
     const nav = navigator();
     let release!: () => void;
-    const mountedAfter: string[] = [];
-    let slowUnmounts = 0;
-    const slow: Feature = {
-      id: "slow",
-      routes: ["watch"],
-      mount: () => new Promise((r) => (release = () => r(() => slowUnmounts++))),
-    };
-    const later: Feature = { id: "later", routes: ["watch"], mount: ({ route }) => void mountedAfter.push(route.name) };
-    bootFeatures([slow, later], nav.onNavigate);
+    let unmounts = 0;
+    const slow: Feature = { id: "slow", routes: ["watch"], mount: () => new Promise((r) => (release = () => r(() => unmounts++))) };
+    bootFeatures([slow], nav.onNavigate);
 
     nav.go(watch);
     await settle();
-    const firstRelease = release;
+    const stale = release;
     nav.go({ name: "home" });
-    firstRelease();
+    stale();
     await settle();
+    expect(unmounts).toBe(1);
+  });
 
-    expect(slowUnmounts).toBe(1);
-    expect(mountedAfter).toEqual([]);
+  test("features mount without waiting for each other, and see the navigation end", async () => {
+    const nav = navigator();
+    let signal: AbortSignal | undefined;
+    let quickMounted = false;
+    const slow: Feature = { id: "slow", routes: ["watch"], mount: (ctx) => new Promise(() => void (signal = ctx.signal)) };
+    const quick: Feature = { id: "quick", routes: ["watch"], mount: () => void (quickMounted = true) };
+    bootFeatures([slow, quick], nav.onNavigate);
+
+    nav.go(watch);
+    await settle();
+    expect(quickMounted).toBe(true);
+    expect(signal?.aborted).toBe(false);
+    nav.go({ name: "home" });
+    expect(signal?.aborted).toBe(true);
   });
 
   test("the previous route's features unmount on navigation", async () => {

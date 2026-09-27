@@ -38,7 +38,7 @@ describe("shorts", () => {
   for (const [name, html] of Object.entries(layouts)) {
     test(`puts the two controls in the action column (${name} layout)`, async () => {
       document.body.innerHTML = html;
-      const unmount = await shorts.mount({ route });
+      const unmount = await shorts.mount({ signal: new AbortController().signal, route });
       const buttons = [...controls().querySelectorAll("button")].map((b) => b.textContent);
       expect(buttons).toEqual(["Auto", "1.5×"]);
       unmount?.();
@@ -48,7 +48,7 @@ describe("shorts", () => {
 
   test("seek keys move the playhead by the configured amount", async () => {
     await shortsSettings.set({ seekForward: 7 });
-    const unmount = await shorts.mount({ route });
+    const unmount = await shorts.mount({ signal: new AbortController().signal, route });
     press("d");
     expect(video().currentTime).toBe(37);
     press("a");
@@ -58,7 +58,7 @@ describe("shorts", () => {
 
   test("the rate key toggles between 1 and the configured rate", async () => {
     await shortsSettings.set({ toggleRate: 2 });
-    const unmount = await shorts.mount({ route });
+    const unmount = await shorts.mount({ signal: new AbortController().signal, route });
     press("x");
     expect(video().playbackRate).toBe(2);
     press("x");
@@ -68,7 +68,7 @@ describe("shorts", () => {
 
   test("advances to the next reel when one ends", async () => {
     const next = countNextClicks();
-    const unmount = await shorts.mount({ route });
+    const unmount = await shorts.mount({ signal: new AbortController().signal, route });
     video().dispatchEvent(new Event("ended"));
     expect(next.count).toBe(1);
     unmount?.();
@@ -78,7 +78,7 @@ describe("shorts", () => {
     document.body.insertAdjacentHTML("afterbegin", `<ytd-watch-flexy hidden>${panel("PAmodern_transcript_view", "HIDDEN")}</ytd-watch-flexy>`);
     document.querySelector("ytd-shorts")!.insertAdjacentHTML("beforeend", panel("engagement-panel-comments-section", "EXPANDED"));
     const next = countNextClicks();
-    const unmount = await shorts.mount({ route });
+    const unmount = await shorts.mount({ signal: new AbortController().signal, route });
     video().dispatchEvent(new Event("ended"));
     expect(next.count).toBe(0);
     unmount?.();
@@ -87,7 +87,7 @@ describe("shorts", () => {
   test("ignores a panel left open on a parked watch page", async () => {
     document.body.insertAdjacentHTML("afterbegin", `<ytd-watch-flexy hidden>${panel("engagement-panel-comments-section", "EXPANDED")}</ytd-watch-flexy>`);
     const next = countNextClicks();
-    const unmount = await shorts.mount({ route });
+    const unmount = await shorts.mount({ signal: new AbortController().signal, route });
     video().dispatchEvent(new Event("ended"));
     expect(next.count).toBe(1);
     unmount?.();
@@ -96,14 +96,14 @@ describe("shorts", () => {
   test("advances in a narrow window, where YouTube hides the navigation buttons", async () => {
     document.querySelector<HTMLElement>("#navigation-button-down")!.style.display = "none";
     const next = countNextClicks();
-    const unmount = await shorts.mount({ route });
+    const unmount = await shorts.mount({ signal: new AbortController().signal, route });
     video().dispatchEvent(new Event("ended"));
     expect(next.count).toBe(1);
     unmount?.();
   });
 
   test("the Auto button turns auto-scroll off and persists it", async () => {
-    const unmount = await shorts.mount({ route });
+    const unmount = await shorts.mount({ signal: new AbortController().signal, route });
     controls().querySelector("button")!.click();
     await new Promise((r) => setTimeout(r, 0));
     expect((await shortsSettings.get()).autoScroll).toBe(false);
@@ -115,7 +115,7 @@ describe("shorts", () => {
 
   test("does nothing when disabled", async () => {
     await shortsSettings.set({ enabled: false });
-    await shorts.mount({ route });
+    await shorts.mount({ signal: new AbortController().signal, route });
     expect(document.getElementById("tppng-shorts-controls")).toBeNull();
   });
 });

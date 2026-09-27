@@ -10,7 +10,7 @@ function fakeVideo(duration = 100): HTMLVideoElement {
   return video;
 }
 
-const settings = { autoLoad: "off" as const, nudgeBaseStep: 1, nudgeMultiplier: 2, nudgeMaxStep: 4 };
+const settings = { enabled: true, autoLoad: "off" as const, nudgeBaseStep: 1, nudgeMultiplier: 2, nudgeMaxStep: 4 };
 let toasts: string[];
 let video: HTMLVideoElement;
 let store: ReturnType<typeof openVideoSegments>;

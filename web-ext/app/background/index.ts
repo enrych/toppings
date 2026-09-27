@@ -9,6 +9,11 @@ import { migrateLegacyStore } from "./migrations";
 servePlaylistRuntime();
 openOptions.handle(() => chrome.runtime.openOptionsPage());
 
+// Also on every start, not only on install: on a new device, sync can deliver
+// the old settings after the install event has already run. Each slice is
+// migrated once, so repeating this is harmless.
+void migrateLegacyStore();
+
 chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   if (reason !== "install" && reason !== "update") return;
   if (process.env.NODE_ENV === "production") {

@@ -7,14 +7,16 @@ import { playback } from "@/features/playback";
 import { profiles } from "@/features/profiles";
 import { segments } from "@/features/segments";
 
-let enabled = true;
-const booted = bootFeatures([playlistRuntime, shorts, playback, profiles, segments], onNavigate, { enabled: () => enabled });
-
+// Booted only once the master switch is known: the first navigation mounts
+// at once, and with the switch off it must not, say, apply the default rate.
 void appSettings.get().then((app) => {
-  enabled = app.enabled;
-  booted.refresh();
-});
-appSettings.subscribe((app) => {
-  enabled = app.enabled;
-  booted.refresh();
+  let enabled = app.enabled;
+  const booted = bootFeatures([playlistRuntime, shorts, playback, profiles, segments], onNavigate, { enabled: () => enabled });
+
+  // The app slice also holds the theme, which features do not read.
+  appSettings.subscribe((next) => {
+    if (next.enabled === enabled) return;
+    enabled = next.enabled;
+    booted.refresh();
+  });
 });

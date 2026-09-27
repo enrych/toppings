@@ -4,6 +4,8 @@ export type Unmount = () => void;
 
 export interface FeatureContext {
   route: Route;
+  // Aborted by the next navigation, for a mount with slow steps to stop early.
+  signal: AbortSignal;
 }
 
 // A feature declares where it runs and how to start and stop. The kernel
@@ -28,29 +30,34 @@ export interface Booted {
 
 export function bootFeatures(features: readonly Feature[], onNavigate: (listener: (route: Route) => void) => void, { enabled = () => true }: BootOptions = {}): Booted {
   const mounted = new Map<string, Unmount>();
-  let generation = 0;
+  let navigation: AbortController | undefined;
   let current: Route | undefined;
 
   const navigate = async (route: Route) => {
     current = route;
-    const own = ++generation;
+    navigation?.abort();
+    const own = (navigation = new AbortController());
     for (const [id, unmount] of mounted) {
       mounted.delete(id);
       unmount();
     }
     if (!enabled()) return;
-    for (const feature of features) {
-      if (own !== generation) return;
-      if (!feature.routes.includes(route.name)) continue;
-      try {
-        const unmount = await feature.mount({ route });
-        // A navigation that happened while mounting owns the page now.
-        if (own !== generation) unmount?.();
-        else if (unmount) mounted.set(feature.id, unmount);
-      } catch (error) {
-        console.error(`[toppings] ${feature.id} failed to mount`, error);
-      }
-    }
+    // Started together, so one feature waiting on the network or on an element
+    // that never renders holds up none of the others.
+    await Promise.all(
+      features
+        .filter((feature) => feature.routes.includes(route.name))
+        .map(async (feature) => {
+          try {
+            const unmount = await feature.mount({ route, signal: own.signal });
+            // A navigation that happened while mounting owns the page now.
+            if (own.signal.aborted) unmount?.();
+            else if (unmount) mounted.set(feature.id, unmount);
+          } catch (error) {
+            console.error(`[toppings] ${feature.id} failed to mount`, error);
+          }
+        }),
+    );
   };
 
   onNavigate((route) => void navigate(route));

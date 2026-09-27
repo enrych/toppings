@@ -21,7 +21,7 @@ const press = (key: string) => document.body.dispatchEvent(new KeyboardEvent("ke
 
 let unmount: (() => void) | undefined | void;
 const mountOn = async (route: typeof watch | typeof home) => {
-  unmount = await profiles.mount({ route });
+  unmount = await profiles.mount({ signal: new AbortController().signal, route });
 };
 
 beforeEach(async () => {

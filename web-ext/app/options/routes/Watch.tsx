@@ -151,6 +151,12 @@ export default function Watch() {
           description="Time-range segments on any video, played in sequence."
         >
           <Card>
+            <Switch
+              label="Segments"
+              description="The segments button, panel and markers, and their shortcuts."
+              isEnabled={segments.value.enabled}
+              onToggle={(enabled) => segments.update({ enabled })}
+            />
             <Select<AutoLoad>
               label="Auto-load on page open"
               description="Whether to automatically restore segments when you open a video. Per-video pins (set in the player panel) override this setting."

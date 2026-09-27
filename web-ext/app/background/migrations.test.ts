@@ -42,11 +42,18 @@ describe("migrateLegacyStore", () => {
     expect(await appSettings.get()).toEqual({ enabled: false, theme: "light" });
     expect(await playbackSettings.get()).toEqual({ enabled: true, defaultRate: 1.5, toggleRate: 2, rateStep: 0.5, seekBackward: 10, seekForward: 20, customRates: [1, 1.5] });
     expect(await shortsSettings.get()).toMatchObject({ enabled: false, autoScroll: false, toggleRate: 1.75, seekBackward: 5 });
-    expect(await segmentsSettings.get()).toEqual({ autoLoad: "last-used", nudgeBaseStep: 2, nudgeMultiplier: 3, nudgeMaxStep: 8 });
+    expect(await segmentsSettings.get()).toEqual({ enabled: true, autoLoad: "last-used", nudgeBaseStep: 2, nudgeMultiplier: 3, nudgeMaxStep: 8 });
     expect(await profilesSettings.get()).toEqual({ gearMenu: true, nativeSettings: false });
     expect((await profileStore.get()).activeProfileId).toBe("preset:focus");
     expect(await keybindings.get()).toEqual({ "playback.toggleRate": "T", "playback.increaseRate": "W", "playback.seekBackward": "A", "playback.seekForward": "D", "segments.toggle": "L", "segments.fresh": "Shift+Z", "segments.nudgeStartBackward": "Shift+Q", "shorts.toggleRate": "X" });
     expect(Object.keys(await chrome.storage.sync.get()).filter((k) => !k.startsWith("settings:"))).toEqual([]);
+  });
+
+  test("a watch page switched off keeps segments off too", async () => {
+    await chrome.storage.sync.set({ preferences: { watch: { ...legacy.preferences.watch, isEnabled: false } } });
+    await migrateLegacyStore();
+    expect((await playbackSettings.get()).enabled).toBe(false);
+    expect((await segmentsSettings.get()).enabled).toBe(false);
   });
 
   test("a fresh install keeps every default", async () => {

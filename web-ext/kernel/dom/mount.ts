@@ -6,41 +6,46 @@ export interface Mounted {
   unmount(): void;
 }
 
-// Injected UI renders inside a shadow root, so YouTube's stylesheet and ours
-// cannot reach each other.
-export function mount(id: string, parent: Element, ui: ComponentChild, position: "append" | "prepend" = "append"): Mounted {
-  document.getElementById(id)?.remove();
-  const host = document.createElement("div");
-  host.id = id;
-  const root = host.attachShadow({ mode: "open" });
-  render(ui, root);
+const liveHosts = new WeakSet<Element>();
+
+// A host with this id that nothing here owns was left by the content script of
+// an extension version since reloaded, and is replaced. One that is owned
+// belongs to another navigation's mount, which removes its own host when the
+// kernel undoes it; removing it here would take the live page's UI with it.
+function removeOrphan(id: string): void {
+  const existing = document.getElementById(id);
+  if (existing && !liveHosts.has(existing)) existing.remove();
+}
+
+function track(host: HTMLElement, render: (ui: ComponentChild) => void, parent: Element, position: "append" | "prepend"): Mounted {
+  liveHosts.add(host);
   parent[position](host);
   return {
     host,
-    update(next) {
-      render(next, root);
-    },
+    update: render,
     unmount() {
-      render(null, root);
+      render(null);
+      liveHosts.delete(host);
       host.remove();
     },
   };
 }
 
+// Injected UI renders inside a shadow root, so YouTube's stylesheet and ours
+// cannot reach each other.
+export function mount(id: string, parent: Element, ui: ComponentChild, position: "append" | "prepend" = "append"): Mounted {
+  removeOrphan(id);
+  const host = document.createElement("div");
+  host.id = id;
+  const root = host.attachShadow({ mode: "open" });
+  render(ui, root);
+  return track(host, (next) => render(next, root), parent, position);
+}
+
 // For UI that should take YouTube's own styling (a .ytp-button, a menu row):
 // no shadow root, and the caller shapes the host element.
 export function mountInline(host: HTMLElement, parent: Element, ui: ComponentChild, position: "append" | "prepend" = "append"): Mounted {
-  if (host.id) document.getElementById(host.id)?.remove();
+  if (host.id) removeOrphan(host.id);
   render(ui, host);
-  parent[position](host);
-  return {
-    host,
-    update(next) {
-      render(next, host);
-    },
-    unmount() {
-      render(null, host);
-      host.remove();
-    },
-  };
+  return track(host, (next) => render(next, host), parent, position);
 }

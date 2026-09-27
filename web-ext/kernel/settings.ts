@@ -55,8 +55,7 @@ export function defineSettings<T extends object>(
 }
 
 // Runs once per slice: copies the value out of the pre-kernel store shape
-// when the slice has never been written. Called before the legacy store is
-// resynced with its defaults, which would drop the old key.
+// when the slice has never been written.
 export async function migrateSettings(slices: Settings<object>[]): Promise<void> {
   const stores = {
     sync: (await chrome.storage.sync.get(undefined)) as Record<string, unknown>,

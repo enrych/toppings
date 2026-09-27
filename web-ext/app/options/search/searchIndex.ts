@@ -37,6 +37,7 @@ export const SEARCH_INDEX: SearchEntry[] = [
   { label: "Playback rate step", description: "Amount the rate changes on the increase and decrease shortcuts.", segment: "watch", sectionId: "playback-rate", page: "Watch", section: "Playback rate" },
   { label: "Seek backward", description: "Seconds to seek backward.", segment: "watch", sectionId: "seek", page: "Watch", section: "Seek" },
   { label: "Seek forward", description: "Seconds to seek forward.", segment: "watch", sectionId: "seek", page: "Watch", section: "Seek" },
+  { label: "Segments", description: "The segments button, panel and markers, and their shortcuts.", segment: "watch", sectionId: "segments", page: "Watch", section: "Segments" },
   { label: "Auto-load on page open", description: "Restore segments when you open a video.", segment: "watch", sectionId: "segments", page: "Watch", section: "Segments" },
   { label: "Nudge step", description: "Seconds a segment edge moves on the first nudge.", segment: "watch", sectionId: "segments", page: "Watch", section: "Segments" },
   { label: "Nudge multiplier", description: "How much the step grows on repeated nudges.", segment: "watch", sectionId: "segments", page: "Watch", section: "Segments" },

@@ -33,6 +33,11 @@ export interface PrimitiveRun {
   stop(): void;
 }
 
+// Pages YouTube keeps alive after navigating away sit under a hidden
+// ancestor. Being on screen cannot be the test, since hiding is what many
+// primitives do.
+const onLivePage = (element: Element) => !element.closest("[hidden]");
+
 // Keeps a set of values applied to the page until stopped: YouTube re-renders
 // feeds as they scroll and moves the player between containers, so a single
 // pass would drift out of date within seconds.
@@ -44,10 +49,12 @@ export function runPrimitives(primitives: readonly Primitive[], initial: Primiti
   let frame: number | undefined;
 
   const matches = (p: Primitive): HTMLElement[] => {
-    const selector = p.strategies.join(", ");
-    if (p.all) return [...document.querySelectorAll<HTMLElement>(selector)];
-    const first = document.querySelector<HTMLElement>(selector);
-    return first ? [first] : [];
+    if (p.all) return [...document.querySelectorAll<HTMLElement>(p.strategies.join(", "))].filter(onLivePage);
+    for (const strategy of p.strategies) {
+      const element = [...document.querySelectorAll<HTMLElement>(strategy)].find(onLivePage);
+      if (element) return [element];
+    }
+    return [];
   };
 
   const apply = () => {

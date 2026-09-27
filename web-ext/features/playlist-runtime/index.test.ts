@@ -34,7 +34,7 @@ describe("playlist runtime", () => {
   for (const [name, html] of Object.entries(layouts)) {
     test(`renders the runtimes into the ${name} layout`, async () => {
       document.body.innerHTML = html;
-      const unmount = await feature().mount({ route: playlistRoute });
+      const unmount = await feature().mount({ signal: new AbortController().signal, route: playlistRoute });
       await settle();
 
       const host = document.getElementById("tppng-playlist-runtime");
@@ -49,7 +49,7 @@ describe("playlist runtime", () => {
 
   test("lands under the byline, not in a hidden channel page left behind by navigation", async () => {
     document.body.innerHTML = `<ytd-browse page-subtype="channels" hidden><yt-page-header-renderer><yt-content-metadata-view-model></yt-content-metadata-view-model></yt-page-header-renderer></ytd-browse>${layouts["header card"]}`;
-    const unmount = await feature().mount({ route: playlistRoute });
+    const unmount = await feature().mount({ signal: new AbortController().signal, route: playlistRoute });
     const host = document.getElementById("tppng-playlist-runtime")!;
     expect(host.parentElement!.className).toBe("metadata-text-wrapper");
     expect(host.previousElementSibling!.tagName.toLowerCase()).toBe("ytd-playlist-byline-renderer");
@@ -58,7 +58,7 @@ describe("playlist runtime", () => {
 
   test("adds a badge to the playlist panel on a watch page", async () => {
     document.body.innerHTML = `<ytd-playlist-panel-renderer><div id="header"><div id="header-description"><h3>Neural networks</h3><div id="publisher-container">3Blue1Brown · 2/10</div></div></div></ytd-playlist-panel-renderer>`;
-    const unmount = await feature().mount({ route: { name: "watch", videoId: "v1", playlistId: "PL1" } });
+    const unmount = await feature().mount({ signal: new AbortController().signal, route: { name: "watch", videoId: "v1", playlistId: "PL1" } });
     await settle();
     const badge = document.getElementById("tppng-watch-playlist-runtime");
     expect(badge!.parentElement!.id).toBe("header-description");
@@ -69,7 +69,7 @@ describe("playlist runtime", () => {
 
   test("takes YouTube's separator and text colour in the page-header layout", async () => {
     document.body.innerHTML = layouts["page header"];
-    const unmount = await feature().mount({ route: playlistRoute });
+    const unmount = await feature().mount({ signal: new AbortController().signal, route: playlistRoute });
     await settle();
     const host = document.getElementById("tppng-playlist-runtime")!;
     expect(host.shadowRoot!.textContent).toContain("3:37:34 total•21:45 avg");
@@ -80,7 +80,7 @@ describe("playlist runtime", () => {
   test("mounts without waiting for the runtime, holding the space with a skeleton", async () => {
     document.body.innerHTML = layouts["header card"];
     let answer!: (r: typeof runtime) => void;
-    const unmount = await feature({ getRuntime: () => new Promise((r) => (answer = r)) }).mount({ route: playlistRoute });
+    const unmount = await feature({ getRuntime: () => new Promise((r) => (answer = r)) }).mount({ signal: new AbortController().signal, route: playlistRoute });
     const root = document.getElementById("tppng-playlist-runtime")!.shadowRoot!;
     expect(root.querySelector(".bone")).not.toBeNull();
     answer(runtime);
@@ -92,14 +92,14 @@ describe("playlist runtime", () => {
 
   test("removes the skeleton when the runtime cannot be fetched", async () => {
     document.body.innerHTML = layouts["header card"];
-    await feature({ getRuntime: async () => null }).mount({ route: playlistRoute });
+    await feature({ getRuntime: async () => null }).mount({ signal: new AbortController().signal, route: playlistRoute });
     await settle();
     expect(document.getElementById("tppng-playlist-runtime")).toBeNull();
   });
 
   test("removes the skeleton when asking for the runtime throws", async () => {
     document.body.innerHTML = layouts["header card"];
-    await feature({ getRuntime: () => Promise.reject(new Error("offline")) }).mount({ route: playlistRoute });
+    await feature({ getRuntime: () => Promise.reject(new Error("offline")) }).mount({ signal: new AbortController().signal, route: playlistRoute });
     await settle();
     expect(document.getElementById("tppng-playlist-runtime")).toBeNull();
   });
@@ -107,7 +107,7 @@ describe("playlist runtime", () => {
   test("draws nothing when the runtime arrives after navigating away", async () => {
     document.body.innerHTML = layouts["header card"];
     let answer!: (r: typeof runtime) => void;
-    const unmount = await feature({ getRuntime: () => new Promise((r) => (answer = r)) }).mount({ route: playlistRoute });
+    const unmount = await feature({ getRuntime: () => new Promise((r) => (answer = r)) }).mount({ signal: new AbortController().signal, route: playlistRoute });
     unmount?.();
     answer(runtime);
     await settle();
@@ -116,19 +116,19 @@ describe("playlist runtime", () => {
 
   test("skips mixes in the watch page's playlist panel", async () => {
     document.body.innerHTML = `<ytd-playlist-panel-renderer><div id="header"><div id="header-description"></div></div></ytd-playlist-panel-renderer>`;
-    await feature().mount({ route: { name: "watch", videoId: "v1", playlistId: "RDv1" } });
+    await feature().mount({ signal: new AbortController().signal, route: { name: "watch", videoId: "v1", playlistId: "RDv1" } });
     expect(document.getElementById("tppng-watch-playlist-runtime")).toBeNull();
   });
 
   test("does nothing when disabled", async () => {
     document.body.innerHTML = layouts.sidebar;
-    await feature({ isEnabled: async () => false }).mount({ route: playlistRoute });
+    await feature({ isEnabled: async () => false }).mount({ signal: new AbortController().signal, route: playlistRoute });
     expect(document.getElementById("tppng-playlist-runtime")).toBeNull();
   });
 
   test("skips Watch Later and Liked", async () => {
     document.body.innerHTML = layouts.sidebar;
-    await feature().mount({ route: { name: "playlist", playlistId: "WL", system: true } });
+    await feature().mount({ signal: new AbortController().signal, route: { name: "playlist", playlistId: "WL", system: true } });
     expect(document.getElementById("tppng-playlist-runtime")).toBeNull();
   });
 
@@ -140,7 +140,7 @@ describe("playlist runtime", () => {
         calls.push(refresh);
         return refresh ? { ...runtime, totalRuntime: 60, averageRuntime: 6 } : runtime;
       },
-    }).mount({ route: playlistRoute });
+    }).mount({ signal: new AbortController().signal, route: playlistRoute });
     await settle();
 
     const root = document.getElementById("tppng-playlist-runtime")!.shadowRoot!;
@@ -155,7 +155,7 @@ describe("playlist runtime", () => {
 
   test("a refresh that fails keeps showing the last runtime", async () => {
     document.body.innerHTML = layouts.sidebar;
-    await feature({ getRuntime: async (_, refresh) => (refresh ? Promise.reject(new Error("offline")) : runtime) }).mount({ route: playlistRoute });
+    await feature({ getRuntime: async (_, refresh) => (refresh ? Promise.reject(new Error("offline")) : runtime) }).mount({ signal: new AbortController().signal, route: playlistRoute });
     await settle();
     const root = document.getElementById("tppng-playlist-runtime")!.shadowRoot!;
     root.querySelector("button")!.click();

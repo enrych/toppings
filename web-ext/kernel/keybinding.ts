@@ -63,12 +63,12 @@ export function matchesBinding(event: KeyboardEvent, binding: string): boolean {
   );
 }
 
-// YouTube's comment box is a contenteditable, not a textarea. A key typed into
-// a field inside one of Toppings' shadow roots reaches the document retargeted
-// to the shadow host, so the field is found through the roots' focus instead.
+// A key typed into a field inside one of Toppings' shadow roots reaches the
+// document retargeted to the shadow host, so the field is found through the
+// roots' focus instead.
 export function isTypingTarget(target: EventTarget | null): boolean {
   let el = target as HTMLElement | null;
   while (el?.shadowRoot?.activeElement) el = el.shadowRoot.activeElement as HTMLElement;
   if (!el) return false;
-  return el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT" || el.isContentEditable || el.matches("#contenteditable-root.yt-formatted-string");
+  return el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT" || el.isContentEditable;
 }
