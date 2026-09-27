@@ -7,6 +7,8 @@ const HEADER_STRATEGIES = [
   "yt-page-header-renderer yt-content-metadata-view-model",
   "ytd-playlist-header-renderer .metadata-action-bar",
   "ytd-playlist-sidebar-primary-info-renderer #stats",
+  "yt-page-header-renderer",
+  "ytd-playlist-header-renderer",
 ] as const;
 
 export function resolvePlaylistHeader(): Promise<PrimitiveResolution> {

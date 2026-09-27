@@ -3,8 +3,8 @@ import type { Storage } from "@/lib/store";
 import { bootFeatures } from "@/kernel/features";
 import { onNavigate } from "@/youtube/route";
 import { playlistRuntime } from "@/features/playlist-runtime";
+import { shorts } from "@/features/shorts";
 
-import onShortsPage from "@/features/shorts/page";
 import onWatchPage from "@/features/playback/watch";
 import onYoutubePage from "@/features/profiles/youtubePage";
 import { setupNativeSettings } from "@/features/profiles/nativeSettings";
@@ -12,7 +12,6 @@ import { EXTENSION_CONTEXT_SCOPE } from "@/lib/protocol";
 import { EXTENSION_MESSAGE_EVENT, EXTENSION_MESSAGE_TYPE } from "@/lib/protocol";
 
 const scopeHandlers: Record<string, Function> = {
-  [EXTENSION_CONTEXT_SCOPE.SHORTS]: onShortsPage,
   [EXTENSION_CONTEXT_SCOPE.WATCH]: onWatchPage,
   [EXTENSION_CONTEXT_SCOPE.YOUTUBE]: onYoutubePage,
 };
@@ -59,4 +58,4 @@ chrome.runtime.sendMessage(
 );
 chrome.runtime.onMessage.addListener(runApp);
 
-bootFeatures([playlistRuntime], onNavigate);
+bootFeatures([playlistRuntime, shorts], onNavigate);

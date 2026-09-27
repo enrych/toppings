@@ -1,90 +1,68 @@
 import React from "react";
+import { useSettings } from "@/kernel/useSettings";
+import { shortsSettings } from "@/features/shorts/settings";
 import PageHeader from "@/ui/layout/PageHeader";
 import Section from "@/ui/layout/Section";
 import Card from "@/ui/layout/Card";
 import Switch from "@/ui/form/Switch";
 import Input from "@/ui/form/Input";
-import { useChromeStorageSync } from "@/lib/useChromeStorageSync";
+
+const isRate = (v: string) => Number.isFinite(Number(v)) && Number(v) >= 0.0625 && Number(v) <= 16;
+const isSeconds = (v: string) => Number.isFinite(Number(v)) && Number(v) >= 0;
 
 export default function Shorts() {
-  const { store, update } = useChromeStorageSync();
-  const s = store.preferences.shorts;
+  const { value, update } = useSettings(shortsSettings);
 
   return (
     <>
-      <PageHeader
-        title="Shorts"
-        description="Settings for the YouTube Shorts player."
-      />
+      <PageHeader title="Shorts" description="Settings for the YouTube Shorts player." />
 
       <div className="tw-flex tw-flex-col tw-gap-8">
         <Section title="Behavior" description="How Shorts playback responds.">
           <Card>
             <Switch
-              label="Auto-Scroll"
-              description="Automatically scroll to the next reel when one ends."
-              isEnabled={s.reelAutoScroll.value}
-              onToggle={(isEnabled) => {
-                update((draft) => {
-                  draft.preferences.shorts.reelAutoScroll.value = isEnabled;
-                });
-              }}
+              label="Shorts features"
+              description="Auto-scroll, seek and rate controls on Shorts."
+              isEnabled={value.enabled}
+              onToggle={(enabled) => update({ enabled })}
+            />
+            <Switch
+              label="Auto-scroll"
+              description="Continue to the next Short when one ends."
+              isEnabled={value.autoScroll}
+              onToggle={(autoScroll) => update({ autoScroll })}
             />
           </Card>
         </Section>
 
-        <Section
-          title="Playback Rate"
-          description="Toggle between normal speed and a custom rate."
-        >
+        <Section title="Playback rate" description="Toggle between normal speed and a custom rate.">
           <Card>
             <Input
-              label="Toggle Playback Rate"
-              description="Rate to switch to when pressing the toggle shortcut."
-              initialValue={s.togglePlaybackRate.value}
-              validator={(v) => {
-                const n = parseFloat(v);
-                return Number.isFinite(n) && n >= 0.0625 && n <= 16;
-              }}
+              label="Toggle playback rate"
+              description="Rate to switch to with the toggle button or shortcut."
+              initialValue={String(value.toggleRate)}
+              validator={isRate}
               errorMessage="Must be between 0.0625 and 16"
-              onChange={(value) => {
-                update((draft) => {
-                  draft.preferences.shorts.togglePlaybackRate.value = value;
-                });
-              }}
+              onChange={(v) => update({ toggleRate: Number(v) })}
             />
           </Card>
         </Section>
 
-        <Section title="Seek" description="How far to jump on seek shortcuts.">
+        <Section title="Seek" description="How far to jump on the seek shortcuts.">
           <Card>
             <Input
-              label="Seek Backward"
+              label="Seek backward"
               description="Seconds to seek backward."
-              initialValue={s.seekBackward.value}
-              validator={(v) => {
-                const n = parseFloat(v);
-                return Number.isFinite(n) && n >= 0;
-              }}
-              onChange={(value) => {
-                update((draft) => {
-                  draft.preferences.shorts.seekBackward.value = value;
-                });
-              }}
+              initialValue={String(value.seekBackward)}
+              validator={isSeconds}
+              onChange={(v) => update({ seekBackward: Number(v) })}
             />
             <Input
-              label="Seek Forward"
+              label="Seek forward"
               description="Seconds to seek forward."
-              initialValue={s.seekForward.value}
-              validator={(v) => {
-                const n = parseFloat(v);
-                return Number.isFinite(n) && n >= 0;
-              }}
-              onChange={(value) => {
-                update((draft) => {
-                  draft.preferences.shorts.seekForward.value = value;
-                });
-              }}
+              initialValue={String(value.seekForward)}
+              validator={isSeconds}
+              onChange={(v) => update({ seekForward: Number(v) })}
             />
           </Card>
         </Section>

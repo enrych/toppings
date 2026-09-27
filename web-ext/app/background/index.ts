@@ -9,11 +9,8 @@ import { getCapabilityStatus } from "@/kernel/dom/capabilities";
 import { getContext } from "./context";
 import { URLS } from "@/lib/urls";
 import { EXTENSION_MESSAGE_EVENT, EXTENSION_MESSAGE_TYPE } from "@/lib/protocol";
-import { migrateSettings } from "@/kernel/settings";
 import { servePlaylistRuntime } from "@/features/playlist-runtime/background";
-import { playlistRuntimeSettings } from "@/features/playlist-runtime/settings";
-
-const featureSettings = [playlistRuntimeSettings];
+import { migrateLegacyStore } from "./migrations";
 
 servePlaylistRuntime();
 
@@ -31,7 +28,7 @@ async function onInitialize({ reason }: InitializeDetails): Promise<void> {
       void chrome.runtime.setUninstallURL(URLS.FAREWELL);
     }
     // Before the resync, which drops legacy keys the slices still read.
-    await migrateSettings(featureSettings);
+    await migrateLegacyStore();
     void syncStorageWithDefaults();
     // Read purely for its side effect: this is what writes the default profile
     // store on a fresh install.
