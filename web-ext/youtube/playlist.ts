@@ -1,15 +1,19 @@
 import { resolveTarget, type PrimitiveResolution } from "@/kernel/dom/resolve";
 
-// YouTube serves two playlist layouts: the page-header one, whose class names
-// are generated so only the custom elements are matched, and the older
-// sidebar one.
+// Scoped to the playlist page: YouTube keeps the page you came from alive but
+// hidden, and a channel page carries a yt-page-header-renderer of its own.
+// Course playlists get a header card, whose "10 videos · Last updated" block
+// is the first strategy; regular playlists get the page header, whose
+// "Playlist · 34 videos · views" block is the second; the rest are fallbacks.
+const PLAYLIST_PAGE = "ytd-browse[page-subtype='playlist']";
 const HEADER_STRATEGIES = [
-  "yt-page-header-renderer yt-content-metadata-view-model",
-  "ytd-playlist-header-renderer .metadata-action-bar",
-  "ytd-playlist-sidebar-primary-info-renderer #stats",
-  "yt-page-header-renderer",
-  "ytd-playlist-header-renderer",
-] as const;
+  `${PLAYLIST_PAGE} ytd-playlist-header-renderer .metadata-text-wrapper`,
+  `${PLAYLIST_PAGE} yt-page-header-renderer yt-content-metadata-view-model`,
+  `${PLAYLIST_PAGE} ytd-playlist-header-renderer .metadata-action-bar`,
+  `${PLAYLIST_PAGE} ytd-playlist-sidebar-primary-info-renderer #stats`,
+  `${PLAYLIST_PAGE} yt-page-header-renderer`,
+  `${PLAYLIST_PAGE} ytd-playlist-header-renderer`,
+];
 
 export function resolvePlaylistHeader(): Promise<PrimitiveResolution> {
   return resolveTarget(HEADER_STRATEGIES);

@@ -15,7 +15,6 @@
     "check": "bun run type-check && bun test"
   },
   "dependencies": {
-    "element-ready": "^7.0.0",
     "preact": "^10.29.8"
   },
   "devDependencies": {

@@ -1,13 +1,16 @@
 import { afterEach, describe, expect, test } from "bun:test";
 import { createPlaylistRuntime } from "./index";
 
-// The two playlist header layouts YouTube serves, reduced to what the feature
+// The playlist header layouts YouTube serves, reduced to what the feature
 // resolves against.
 const layouts = {
-  "page header": `<ytd-browse><yt-page-header-renderer><div class="ytPageHeaderViewModelHost">
+  "header card": `<ytd-browse page-subtype="playlist"><ytd-playlist-header-renderer><div class="metadata-action-bar">
+      <div class="metadata-text-wrapper"><ytd-playlist-byline-renderer>10 videos</ytd-playlist-byline-renderer></div>
+    </div></ytd-playlist-header-renderer></ytd-browse>`,
+  "page header": `<ytd-browse page-subtype="playlist"><yt-page-header-renderer><div class="ytPageHeaderViewModelHost">
       <yt-content-metadata-view-model class="ytContentMetadataViewModelHost"><span>10 videos</span></yt-content-metadata-view-model>
     </div></yt-page-header-renderer></ytd-browse>`,
-  sidebar: `<ytd-playlist-header-renderer><div class="metadata-action-bar"><div>10 videos</div></div></ytd-playlist-header-renderer>`,
+  sidebar: `<ytd-browse page-subtype="playlist"><ytd-playlist-sidebar-primary-info-renderer><div id="stats">10 videos</div></ytd-playlist-sidebar-primary-info-renderer></ytd-browse>`,
 };
 
 const runtime = { playlistId: "PL1", totalVideos: 10, totalRuntime: 13054, averageRuntime: 1305 };
@@ -42,6 +45,15 @@ describe("playlist runtime", () => {
       expect(document.getElementById("tppng-playlist-runtime")).toBeNull();
     });
   }
+
+  test("lands under the byline, not in a hidden channel page left behind by navigation", async () => {
+    document.body.innerHTML = `<ytd-browse page-subtype="channels" hidden><yt-page-header-renderer><yt-content-metadata-view-model></yt-content-metadata-view-model></yt-page-header-renderer></ytd-browse>${layouts["header card"]}`;
+    const unmount = await feature().mount({ route: playlistRoute });
+    const host = document.getElementById("tppng-playlist-runtime")!;
+    expect(host.parentElement!.className).toBe("metadata-text-wrapper");
+    expect(host.previousElementSibling!.tagName.toLowerCase()).toBe("ytd-playlist-byline-renderer");
+    unmount?.();
+  });
 
   test("adds a badge to the playlist panel on a watch page", async () => {
     document.body.innerHTML = `<ytd-playlist-panel-renderer><div id="header"><div id="header-description"><h3>Neural networks</h3><div id="publisher-container">3Blue1Brown · 2/10</div></div></div></ytd-playlist-panel-renderer>`;

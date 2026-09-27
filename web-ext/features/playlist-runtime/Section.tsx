@@ -13,7 +13,7 @@ export interface SectionProps {
 // the playlist's thumbnail.
 const styles = `
   :host { display: block; }
-  .line { display: flex; align-items: center; gap: 6px; margin-top: 8px; font: 400 12px/18px Roboto, Arial, sans-serif; color: inherit; opacity: .8; }
+  .line { display: flex; align-items: center; gap: 6px; margin-top: 4px; font: 400 12px/18px Roboto, Arial, sans-serif; color: inherit; opacity: .8; }
   .line img { width: 14px; height: 14px; }
   .dot { opacity: .7; }
   .refresh {
