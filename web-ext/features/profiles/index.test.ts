@@ -4,7 +4,7 @@ import { profilesSettings } from "./settings";
 import { createProfile, getActiveProfile, setActiveProfileId } from "./store";
 
 const watchPage = `
-  <div id="movie_player">
+  <div id="movie_player" class="html5-video-player">
     <video></video>
     <button class="ytp-settings-button"></button>
     <div class="ytp-settings-menu"><div class="ytp-panel"><div class="ytp-panel-menu"><div class="ytp-menuitem">Quality</div></div></div></div>
@@ -111,6 +111,21 @@ describe("profiles", () => {
     unmount?.();
     unmount = undefined;
     expect(document.getElementById("tppng-gear-entry")).toBeNull();
+  });
+
+  test("unmounting with the menu closed restores YouTube's own settings panel", async () => {
+    await profilesSettings.set({ gearMenu: true });
+    await mountOn(watch);
+    document.querySelector<HTMLElement>(".ytp-settings-button")!.click();
+    await tick();
+    document.getElementById("tppng-gear-entry")!.click();
+    await tick();
+    const mainPanel = document.querySelector<HTMLElement>(".ytp-settings-menu .ytp-panel")!;
+    expect(mainPanel.style.display).toBe("none");
+    document.querySelector<HTMLElement>(".ytp-settings-menu")!.style.display = "none";
+    unmount?.();
+    unmount = undefined;
+    expect(mainPanel.style.display).toBe("");
   });
 
   test("native settings adds a guide link and an overlay", async () => {

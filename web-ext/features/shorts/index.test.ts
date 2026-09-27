@@ -5,11 +5,11 @@ import { shortsSettings } from "./settings";
 // The older layout with is-active and #actions inside the renderer, and the
 // newer one with a reused renderer and an extracted action bar.
 const layouts = {
-  active: `<ytd-reel-video-renderer is-active><video></video><div id="actions"></div></ytd-reel-video-renderer>
-    <div id="navigation-button-down"><button aria-label="Next video"></button></div>`,
-  extracted: `<ytd-reel-video-renderer id="reel-video-renderer"><div id="shorts-player"><video></video></div></ytd-reel-video-renderer>
+  active: `<ytd-shorts><ytd-reel-video-renderer is-active><video></video><div id="actions"></div></ytd-reel-video-renderer>
+    <div id="navigation-button-down"><button aria-label="Next video"></button></div></ytd-shorts>`,
+  extracted: `<ytd-shorts><ytd-reel-video-renderer id="reel-video-renderer"><div id="shorts-player"><video></video></div></ytd-reel-video-renderer>
     <div><reel-action-bar-view-model><like-button-view-model></like-button-view-model></reel-action-bar-view-model></div>
-    <div id="navigation-button-down"><button aria-label="Next video"></button></div>`,
+    <div id="navigation-button-down"><button aria-label="Next video"></button></div></ytd-shorts>`,
 };
 const reel = layouts.active;
 
@@ -76,7 +76,7 @@ describe("shorts", () => {
 
   test("stays on the reel while a panel is open, behind a parked watch page's panels", async () => {
     document.body.insertAdjacentHTML("afterbegin", `<ytd-watch-flexy hidden>${panel("PAmodern_transcript_view", "HIDDEN")}</ytd-watch-flexy>`);
-    document.body.insertAdjacentHTML("beforeend", panel("engagement-panel-comments-section", "EXPANDED"));
+    document.querySelector("ytd-shorts")!.insertAdjacentHTML("beforeend", panel("engagement-panel-comments-section", "EXPANDED"));
     const next = countNextClicks();
     const unmount = await shorts.mount({ route });
     video().dispatchEvent(new Event("ended"));
@@ -86,6 +86,15 @@ describe("shorts", () => {
 
   test("ignores a panel left open on a parked watch page", async () => {
     document.body.insertAdjacentHTML("afterbegin", `<ytd-watch-flexy hidden>${panel("engagement-panel-comments-section", "EXPANDED")}</ytd-watch-flexy>`);
+    const next = countNextClicks();
+    const unmount = await shorts.mount({ route });
+    video().dispatchEvent(new Event("ended"));
+    expect(next.count).toBe(1);
+    unmount?.();
+  });
+
+  test("advances in a narrow window, where YouTube hides the navigation buttons", async () => {
+    document.querySelector<HTMLElement>("#navigation-button-down")!.style.display = "none";
     const next = countNextClicks();
     const unmount = await shorts.mount({ route });
     video().dispatchEvent(new Event("ended"));

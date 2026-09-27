@@ -4,7 +4,7 @@ import { playbackSettings } from "./settings";
 
 const SPEED_ICON = "M12 1c1.44 0 2.87.28 4.21.83a11 11 0 0 1 3.45 2.27";
 const page = (label = "Playback speed", normal = "Normal") => `
-  <div id="movie_player">
+  <div id="movie_player" class="html5-video-player">
     <video></video>
     <button class="ytp-settings-button"></button>
     <div class="ytp-settings-menu">
@@ -112,6 +112,14 @@ describe("playback", () => {
     await mountPlayback();
     await openSpeedPanel();
     expect(chips().map((b) => b.textContent)).toEqual(["1.0"]);
+  });
+
+  test("the speed row follows a rate set while the menu is closed", async () => {
+    document.querySelector<HTMLElement>(".ytp-settings-menu")!.style.display = "none";
+    await playbackSettings.set({ toggleRate: 2 });
+    await mountPlayback();
+    press("x");
+    expect(document.querySelector(".ytp-menuitem-content")!.textContent).toBe("2");
   });
 
   test("the speed row keeps YouTube's own word for 1x in any language", async () => {

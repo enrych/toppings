@@ -1,4 +1,4 @@
-import { findTarget, resolveTarget, type PrimitiveResolution } from "@/kernel/dom/resolve";
+import { findWithin, resolveTarget, type PrimitiveResolution } from "@/kernel/dom/resolve";
 
 // YouTube reuses one reel renderer for every Short in the newer layout and
 // extracts the action bar next to it; the older layout marked the visible
@@ -28,12 +28,18 @@ const NEXT_REEL_STRATEGIES = ["#navigation-button-down button"] as const;
 
 const OPEN_PANEL_STRATEGIES = ["ytd-engagement-panel-section-list-renderer[visibility='ENGAGEMENT_PANEL_VISIBILITY_EXPANDED']"] as const;
 
-export function nextReelButton(): HTMLButtonElement | null {
-  return findTarget(NEXT_REEL_STRATEGIES).element as HTMLButtonElement | null;
+// A watch page left in the background keeps its own engagement panels, so
+// reel controls are looked up in the Shorts page the playing reel is on.
+function shortsPageOf(reel: Element): ParentNode {
+  return reel.closest("ytd-shorts") ?? document;
+}
+
+export function nextReelButton(reel: Element): HTMLButtonElement | null {
+  return findWithin(shortsPageOf(reel), NEXT_REEL_STRATEGIES).element as HTMLButtonElement | null;
 }
 
 // Advancing would close an open comments, description or audio panel under
 // the user.
-export function isReelPanelOpen(): boolean {
-  return findTarget(OPEN_PANEL_STRATEGIES).resolved;
+export function isReelPanelOpen(reel: Element): boolean {
+  return findWithin(shortsPageOf(reel), OPEN_PANEL_STRATEGIES).resolved;
 }

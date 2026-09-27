@@ -30,11 +30,11 @@ export const shorts: Feature = {
       if (autoScroll) unloop = setTimeout(() => video.removeAttribute("loop"), 400);
     };
     const onEnded = () => {
-      if (!autoScroll || isReelPanelOpen()) {
+      if (!autoScroll || isReelPanelOpen(video)) {
         void video.play();
         return;
       }
-      nextReelButton()?.click();
+      nextReelButton(video)?.click();
     };
     video.addEventListener("playing", onPlaying);
     video.addEventListener("ended", onEnded);

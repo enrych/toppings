@@ -85,7 +85,7 @@ async function hookGearMenu(page: PageControls) {
 
   const onOpen = () =>
     setTimeout(() => {
-      const parts = settingsMenu();
+      const parts = settingsMenu(button.element);
       if (!parts) return;
       const { menu, mainPanel, mainList } = parts;
 
@@ -145,7 +145,7 @@ async function hookGearMenu(page: PageControls) {
     button.element.removeEventListener("click", onOpen);
     document.getElementById(GEAR_ENTRY_ID)?.remove();
     document.getElementById(GEAR_PANEL_ID)?.remove();
-    const parts = settingsMenu();
+    const parts = settingsMenu(button.element);
     if (parts) parts.mainPanel.style.display = "";
   };
 }

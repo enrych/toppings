@@ -26,8 +26,15 @@ function findLive(strategies: readonly PrimitiveStrategy[]): PrimitiveResolution
 
 const UNRESOLVED: PrimitiveResolution = { resolved: false, element: null, strategyIndex: null };
 
-export function findTarget(strategies: readonly PrimitiveStrategy[]): PrimitiveResolution {
-  return findLive(strategies) ?? UNRESOLVED;
+// For looking inside a root that was itself resolved live. There YouTube hides
+// elements on purpose (a closed menu, buttons a narrow layout tucks away), and
+// those still count.
+export function findWithin(root: ParentNode, strategies: readonly PrimitiveStrategy[]): PrimitiveResolution {
+  for (let i = 0; i < strategies.length; i++) {
+    const element = root.querySelector(strategies[i]);
+    if (element) return { resolved: true, element, strategyIndex: i };
+  }
+  return UNRESOLVED;
 }
 
 // Strategies are ordered by preference, and the first to match a live element

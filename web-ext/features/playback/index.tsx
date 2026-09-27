@@ -3,7 +3,6 @@ import type { Feature } from "@/kernel/features";
 import { bindKeys } from "@/kernel/keys";
 import { mount } from "@/kernel/dom/mount";
 import { setCapabilityStatus } from "@/kernel/dom/capabilities";
-import { settingsMenu } from "@/youtube/guide";
 import {
   findSpeedRow,
   ratePanelChips,
@@ -35,7 +34,7 @@ export const playback: Feature = {
 
     const setRate = (rate: number) => {
       video.playbackRate = clamp(rate);
-      const row = findSpeedRow();
+      const row = findSpeedRow(video);
       if (row.resolved) showRateInSpeedRow(row.element, video.playbackRate);
     };
     setRate(settings.defaultRate);
@@ -54,7 +53,7 @@ export const playback: Feature = {
       seekForward: () => seek("forward", settings.seekForward),
     });
 
-    const unhookMenu = settings.customRates.length ? await hookRatePanel(settings.customRates, video, setRate) : undefined;
+    const unhookMenu = await hookSettingsMenu(settings.customRates, video, setRate);
 
     return () => {
       unbindKeys();
@@ -84,7 +83,7 @@ async function mountSeekFlash() {
 
 // YouTube builds the settings menu lazily on first open and the speed panel
 // on each entry, so both are hooked by click rather than resolved up front.
-async function hookRatePanel(rates: number[], video: HTMLVideoElement, setRate: (rate: number) => void) {
+async function hookSettingsMenu(rates: number[], video: HTMLVideoElement, setRate: (rate: number) => void) {
   const button = await resolveSettingsButton();
   void setCapabilityStatus("watch.settingsButton", "watch", button);
   if (!button.resolved) return;
@@ -105,16 +104,22 @@ async function hookRatePanel(rates: number[], video: HTMLVideoElement, setRate: 
   };
 
   let speedRow: Element | null = null;
+  let speedRowReported = false;
+  let pending: ReturnType<typeof setTimeout> | undefined;
   const onSettings = () => {
-    // The row exists only once the menu has rendered, which happens on this same click.
-    setTimeout(() => {
-      if (!settingsMenu()) return;
-      const found = findSpeedRow();
-      void setCapabilityStatus("watch.speedRow", "watch", found);
+    clearTimeout(pending);
+    // The row exists only once the menu has rendered, which happens on this same
+    // click, and the menu can be opened before YouTube has built every row.
+    pending = setTimeout(() => {
+      const found = findSpeedRow(video);
+      if (!speedRowReported) {
+        void setCapabilityStatus("watch.speedRow", "watch", found);
+        speedRowReported = found.resolved;
+      }
       if (!found.resolved) return;
       const row = found.element;
       showRateInSpeedRow(row, video.playbackRate);
-      if (row !== speedRow) {
+      if (rates.length && row !== speedRow) {
         speedRow?.removeEventListener("click", onSpeedRow);
         row.addEventListener("click", onSpeedRow);
         speedRow = row;
@@ -124,6 +129,7 @@ async function hookRatePanel(rates: number[], video: HTMLVideoElement, setRate: 
   button.element.addEventListener("click", onSettings);
 
   return () => {
+    clearTimeout(pending);
     button.element.removeEventListener("click", onSettings);
     speedRow?.removeEventListener("click", onSpeedRow);
   };
