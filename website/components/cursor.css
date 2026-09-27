@@ -12,7 +12,7 @@
   width: 6px;
   height: 6px;
   margin: -3px 0 0 -3px;
-  background: var(--red);
+  background: var(--ember-glow);
 }
 
 .cursor-ring {
@@ -33,15 +33,15 @@
   width: 64px;
   height: 64px;
   margin: -32px 0 0 -32px;
-  border-color: var(--red);
-  background: rgba(255, 0, 51, 0.08);
+  border-color: var(--ember-glow);
+  background: rgba(234, 123, 44, 0.08);
 }
 
 .cursor-ring.is-down {
   width: 28px;
   height: 28px;
   margin: -14px 0 0 -14px;
-  border-color: var(--red);
+  border-color: var(--ember-glow);
 }
 
 .cursor-dot {
