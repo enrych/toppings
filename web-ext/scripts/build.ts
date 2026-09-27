@@ -4,7 +4,7 @@ import postcss from "postcss";
 import tailwindcss from "tailwindcss";
 import { BRAND_METADATA } from "../lib/brand";
 import { URLS } from "../lib/urls";
-import { EXTENSION_VERSION } from "../lib/version";
+import { EXTENSION_VERSION, MANIFEST_VERSION } from "../lib/version";
 import tailwindConfig from "../tailwind.config";
 
 const production = process.argv.includes("--production");
@@ -86,7 +86,8 @@ async function copyStatic() {
 async function writeManifest() {
   const manifest = await Bun.file("app/manifest.json").json();
   delete manifest.$schema;
-  manifest.version = EXTENSION_VERSION;
+  manifest.version = MANIFEST_VERSION;
+  if (MANIFEST_VERSION !== EXTENSION_VERSION) manifest.version_name = EXTENSION_VERSION;
   manifest.homepage_url = URLS.HOMEPAGE;
 
   if (firefox) {

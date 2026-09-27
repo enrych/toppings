@@ -11,6 +11,7 @@ import { getActiveProfile, getAllProfiles, setActiveProfileId, subscribeProfiles
 import type { Profile } from "@/features/profiles/profiles";
 import { routeFor, type Route } from "@/youtube/route";
 import { URLS } from "@/lib/urls";
+import { EXTENSION_VERSION } from "@/lib/version";
 import { YOUTUBE_HOSTNAME_SUFFIX } from "@/youtube/urls";
 
 const WIDTH = 340;
@@ -77,7 +78,6 @@ export default function App() {
   const shorts = useSettings(shortsSettings);
   const tab = useActiveTab();
   const { profiles, activeId, activate } = useProfiles();
-  const version = chrome.runtime.getManifest().version;
   const onYouTube = tab.route !== null;
 
   return (
@@ -85,7 +85,7 @@ export default function App() {
       <header class="tw-flex tw-items-center tw-gap-3 tw-px-4 tw-h-14 tw-border-b tw-border-border-subtle">
         <img src="/assets/icons/icon48.png" alt="" class="tw-w-7 tw-h-7" />
         <div class="tw-flex-1 tw-font-display tw-text-xl tw-leading-none">Toppings</div>
-        <span class="tw-text-[11px] tw-text-fg-subtle">v{version}</span>
+        <span class="tw-text-[11px] tw-text-fg-subtle">v{EXTENSION_VERSION}</span>
       </header>
 
       <div class="tw-flex tw-items-center tw-gap-2.5 tw-px-4 tw-py-3 tw-bg-surface tw-border-b tw-border-border-subtle">

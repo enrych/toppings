@@ -76,7 +76,7 @@ A slice is read with its defaults merged in, which is also how a new setting rea
 ## 6. MANIFEST AND VERSIONING
 
 - `app/manifest.json` is the **MV3 source of truth**. The MV2 Firefox variant is generated at build time by the transform in `scripts/build.ts` (flips `manifest_version`, folds `host_permissions` into `permissions`, renames `action` → `browser_action`, flattens `web_accessible_resources`). Never hand-maintain a second manifest; extend the transform.
-- Version lives in `lib/version.ts` as `EXTENSION_VERSION` and is injected into the manifest at build time. It is also mirrored in `website/lib/site.ts` (`site.version`) on release — update both.
+- Version lives in `lib/version.ts` as `EXTENSION_VERSION` and is injected into the manifest at build time; a pre-release suffix (`4.0.0-alpha`) goes to `version_name`, since `version` takes only numbers. It is mirrored in `website/lib/site.ts` (`site.version`) only on a store release — update both then.
 
 ---
 

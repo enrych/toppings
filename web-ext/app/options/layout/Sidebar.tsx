@@ -4,6 +4,7 @@ import Tooltip from "@/ui/primitives/Tooltip";
 import { useChromeStorageLocal } from "@/lib/useChromeStorageLocal";
 import { BRAND_METADATA } from "@/lib/brand";
 import { CHROME_STORAGE_LOCAL_KEY } from "@/lib/storageKeys";
+import { EXTENSION_VERSION } from "@/lib/version";
 import { useTheme } from "@/ui/useTheme";
 import { OPTIONS_ICON_SRC, OPTIONS_PAGES } from "../data";
 import { hrefFor, useRoute } from "../router";
@@ -11,7 +12,6 @@ import SidebarThemeToggle from "./SidebarThemeToggle";
 import OptionsSearch from "../search/OptionsSearch";
 
 export default function Sidebar() {
-  const version = chrome.runtime.getManifest().version;
   const [collapsed, setCollapsed] = useChromeStorageLocal<boolean>(CHROME_STORAGE_LOCAL_KEY.OPTIONS_SIDEBAR_COLLAPSED, false);
   const { theme, setTheme } = useTheme();
   const active = useRoute();
@@ -25,7 +25,7 @@ export default function Sidebar() {
           {!collapsed && (
             <div class="tw-min-w-0">
               <div class="tw-font-display tw-text-xl tw-leading-none tw-text-fg tw-truncate">{BRAND_METADATA.NAME}</div>
-              <div class="tw-text-[11px] tw-text-fg-subtle tw-mt-1">v{version}</div>
+              <div class="tw-text-[11px] tw-text-fg-subtle tw-mt-1">v{EXTENSION_VERSION}</div>
             </div>
           )}
         </div>
