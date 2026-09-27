@@ -1,5 +1,5 @@
-// First colour is YouTube's red so the primary segment feels native.
-const SEGMENT_COLORS = ["#ff3333", "#3ea6ff", "#4caf50", "#ff9800", "#9c27b0", "#00bcd4", "#f5c518"];
+// No red: segments sit on YouTube's red progress fill and would vanish into it.
+const SEGMENT_COLORS = ["#3ea6ff", "#f5c518", "#4caf50", "#ff9800", "#ab47bc", "#00bcd4", "#ec407a"];
 
 export function colorForIndex(i: number): string {
   return SEGMENT_COLORS[i % SEGMENT_COLORS.length];
