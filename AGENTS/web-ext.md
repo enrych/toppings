@@ -57,7 +57,7 @@ Live verification covers both browsers. Chromium: Playwright loading the built `
 
 `app/popup/` and `app/options/` are Preact pages (`preact/hooks`; `preact/compat` only for portals). Options routes by hash (`app/options/router.ts`); the search box (`app/options/search/`) locates a result by its rendered label, so a copy edit in a page must land in `searchIndex.ts` too.
 
-The theme (`ui/theme.css`) is YouTube's own palette and Roboto stack in both modes, on `--color-*` tokens that `tailwind.config.ts` exposes as `tw-` utilities. Tailwind runs prefixed and without preflight; `ui/base.css` is the reset. Tailwind's opacity modifiers (`tw-bg-accent/50`) do nothing on these variable colours — use `color-mix` in a style attribute instead.
+The pages wear the Toppings brand, shared with the website: ink, bone and ember on `--color-*` tokens in `ui/theme.css`, Gloock for display (`tw-font-display`) and Instrument Sans for text, both bundled in `assets/fonts` so the popup never calls a third party. Only what Toppings draws inside YouTube takes YouTube's palette (`kernel/dom/theme.ts`). Tailwind runs prefixed and without preflight; `ui/base.css` is the reset, and sets the font on `body` because Chrome gives extension pages' body its own system font. Tailwind's opacity modifiers (`tw-bg-accent/50`) do nothing on these variable colours — use `color-mix` in a style attribute instead.
 
 ---
 

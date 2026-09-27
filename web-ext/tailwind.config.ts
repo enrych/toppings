@@ -31,9 +31,8 @@ export default {
         "info-fg": "var(--color-info-fg)",
         "warning-bg": "var(--color-warning-bg)",
         "warning-fg": "var(--color-warning-fg)",
-        brand: "var(--color-brand)",
       },
-      fontFamily: { sans: ["Roboto", "Arial", "sans-serif"] },
+      fontFamily: { sans: ["Instrument Sans", "system-ui", "sans-serif"], display: ["Gloock", "Georgia", "serif"] },
     },
   },
 } satisfies Config;

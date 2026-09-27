@@ -1,5 +1,21 @@
 @import "./theme.css";
 
+/* Bundled rather than fetched from Google Fonts, so opening the popup never
+   calls a third party. */
+@font-face {
+  font-family: Gloock;
+  src: url("/assets/fonts/gloock-400.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Instrument Sans";
+  src: url("/assets/fonts/instrument-sans.woff2") format("woff2");
+  font-weight: 400 600;
+  font-display: swap;
+}
+
 /* Tailwind runs without preflight because its utilities also land inside
    YouTube's page, so extension pages carry this small reset of their own. */
 *,
@@ -17,7 +33,10 @@ html {
   text-rendering: optimizeLegibility;
 }
 
+/* Set on body too: Chrome gives extension pages' body its own system font,
+   which would otherwise win over the one inherited from html. */
 body {
+  font-family: var(--font-sans);
   margin: 0;
   background: var(--color-bg);
   color: var(--color-fg);

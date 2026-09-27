@@ -1,65 +1,66 @@
-/* YouTube's own palette (its --yt-sys-color-baseline tokens), so the popup and
-   options pages read as part of YouTube rather than as a second product. */
+/* Toppings' own look, shared with the website: ink, bone and ember, with
+   Gloock for display and Instrument Sans for everything else. Only what
+   Toppings draws inside YouTube takes YouTube's palette. */
 :root,
 [data-theme="dark"] {
   color-scheme: dark;
 
-  --color-bg: #0f0f0f;
-  --color-surface: #212121;
-  --color-surface-2: #282828;
-  --color-surface-hover: rgba(255, 255, 255, 0.1);
+  --color-bg: #0b0b0c;
+  --color-surface: #141415;
+  --color-surface-2: #1b1b1d;
+  --color-surface-hover: rgba(234, 229, 216, 0.06);
 
-  --color-fg: #f1f1f1;
-  --color-fg-muted: #aaaaaa;
-  --color-fg-subtle: #717171;
+  --color-fg: #eae5d8;
+  --color-fg-muted: rgba(234, 229, 216, 0.62);
+  --color-fg-subtle: rgba(234, 229, 216, 0.38);
 
-  --color-border-subtle: rgba(255, 255, 255, 0.1);
-  --color-border-default: rgba(255, 255, 255, 0.2);
-  --color-border-strong: rgba(255, 255, 255, 0.3);
+  --color-border-subtle: rgba(234, 229, 216, 0.08);
+  --color-border-default: rgba(234, 229, 216, 0.12);
+  --color-border-strong: rgba(234, 229, 216, 0.22);
 
-  --color-accent: #3ea6ff;
-  --color-accent-hover: #65b8ff;
-  --color-accent-fg: #0f0f0f;
-  --color-brand: #ff0000;
+  --color-accent: #ea7b2c;
+  --color-accent-hover: #c2531e;
+  --color-accent-fg: #0b0b0c;
 
-  --color-danger-bg: rgba(255, 77, 79, 0.15);
-  --color-danger-fg: #ff7b7d;
-  --color-success-bg: rgba(46, 160, 67, 0.15);
-  --color-success-fg: #5fd77a;
-  --color-info-bg: rgba(62, 166, 255, 0.15);
-  --color-info-fg: #3ea6ff;
-  --color-warning-bg: rgba(255, 196, 0, 0.15);
+  --color-danger-bg: rgba(255, 77, 79, 0.14);
+  --color-danger-fg: #ff8a7a;
+  --color-success-bg: rgba(46, 160, 67, 0.14);
+  --color-success-fg: #7fd99a;
+  --color-info-bg: rgba(234, 123, 44, 0.12);
+  --color-info-fg: #ea7b2c;
+  --color-warning-bg: rgba(255, 196, 0, 0.14);
   --color-warning-fg: #ffd457;
 
-  --font-sans: Roboto, Arial, sans-serif;
+  --font-sans: "Instrument Sans", system-ui, sans-serif;
+  --font-display: Gloock, Georgia, serif;
 }
 
 [data-theme="light"] {
   color-scheme: light;
 
-  --color-bg: #ffffff;
+  --color-bg: #faf7f0;
   --color-surface: #ffffff;
-  --color-surface-2: #f2f2f2;
-  --color-surface-hover: rgba(0, 0, 0, 0.05);
+  --color-surface-2: #f3eee3;
+  --color-surface-hover: rgba(11, 11, 12, 0.05);
 
-  --color-fg: #0f0f0f;
-  --color-fg-muted: #606060;
-  --color-fg-subtle: #909090;
+  --color-fg: #0b0b0c;
+  --color-fg-muted: rgba(11, 11, 12, 0.66);
+  --color-fg-subtle: rgba(11, 11, 12, 0.45);
 
-  --color-border-subtle: rgba(0, 0, 0, 0.1);
-  --color-border-default: rgba(0, 0, 0, 0.1);
-  --color-border-strong: rgba(0, 0, 0, 0.2);
+  --color-border-subtle: rgba(11, 11, 12, 0.08);
+  --color-border-default: rgba(11, 11, 12, 0.12);
+  --color-border-strong: rgba(11, 11, 12, 0.2);
 
-  --color-accent: #065fd4;
-  --color-accent-hover: #0556bf;
+  --color-accent: #c2531e;
+  --color-accent-hover: #a5461a;
   --color-accent-fg: #ffffff;
 
   --color-danger-bg: rgba(204, 0, 0, 0.08);
-  --color-danger-fg: #cc0000;
+  --color-danger-fg: #b3261e;
   --color-success-bg: rgba(46, 160, 67, 0.1);
   --color-success-fg: #1b7f37;
-  --color-info-bg: rgba(6, 95, 212, 0.08);
-  --color-info-fg: #065fd4;
+  --color-info-bg: rgba(194, 83, 30, 0.08);
+  --color-info-fg: #c2531e;
   --color-warning-bg: rgba(179, 122, 0, 0.1);
   --color-warning-fg: #8a5a00;
 }

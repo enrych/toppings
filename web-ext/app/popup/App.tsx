@@ -84,7 +84,7 @@ export default function App() {
     <div class="tw-flex tw-flex-col tw-overflow-hidden tw-bg-bg tw-text-fg tw-rounded-xl" style={{ width: WIDTH }}>
       <header class="tw-flex tw-items-center tw-gap-3 tw-px-4 tw-h-14 tw-border-b tw-border-border-subtle">
         <img src="/assets/icons/icon48.png" alt="" class="tw-w-7 tw-h-7" />
-        <div class="tw-flex-1 tw-text-lg tw-font-medium tw-leading-none">Toppings</div>
+        <div class="tw-flex-1 tw-font-display tw-text-xl tw-leading-none">Toppings</div>
         <span class="tw-text-[11px] tw-text-fg-subtle">v{version}</span>
       </header>
 

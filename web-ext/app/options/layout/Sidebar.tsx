@@ -24,7 +24,7 @@ export default function Sidebar() {
           <img src={OPTIONS_ICON_SRC} alt={collapsed ? BRAND_METADATA.NAME : ""} class="tw-w-7 tw-h-7 tw-flex-shrink-0" />
           {!collapsed && (
             <div class="tw-min-w-0">
-              <div class="tw-text-lg tw-leading-none tw-font-medium tw-text-fg tw-truncate">{BRAND_METADATA.NAME}</div>
+              <div class="tw-font-display tw-text-xl tw-leading-none tw-text-fg tw-truncate">{BRAND_METADATA.NAME}</div>
               <div class="tw-text-[11px] tw-text-fg-subtle tw-mt-1">v{version}</div>
             </div>
           )}
