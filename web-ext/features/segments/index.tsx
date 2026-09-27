@@ -36,7 +36,7 @@ export function createSegments({ storage }: SegmentsDeps): Feature {
 
       const button = controls.resolved ? mountInline(segmentButtonHost(), controls.element, <SegmentButton active={false} />, "prepend") : undefined;
       if (button) button.host.onclick = () => void session.toggle();
-      // Markers hang above the bar; YouTube's container clips them otherwise.
+      // The handles rest above the bar, which YouTube would otherwise clip.
       const track = bar.element as HTMLElement | null;
       if (track) track.style.overflow = "visible";
       const markers = track ? mount("tppng-segment-markers", track, null) : undefined;

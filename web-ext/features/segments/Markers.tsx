@@ -20,40 +20,31 @@ const EPSILON_PCT = 0.2;
 const MERGE_THRESHOLD_PCT = 1.5;
 const MERGE_HOLD_MS = 500;
 
-// The host covers YouTube's 6px progress-bar container. The visible bar is
-// 4px tall inside it and grows to 6px on hover, so the tint is centred at 4px
-// and the cut line spans the full container.
-const style = `
-  :host { position: absolute; inset: 0; pointer-events: none; z-index: 40; }
-  .range {
-    position: absolute; top: 50%; height: 4px; transform: translateY(-50%);
-    background: var(--seg); opacity: .45; border-radius: 1px;
-  }
-  .marker {
-    position: absolute; top: 0; bottom: 0; width: 0;
-    color: var(--seg); cursor: ew-resize; touch-action: none; pointer-events: none;
-  }
-  .grab { position: absolute; left: -8px; width: 16px; top: -14px; bottom: -4px; pointer-events: all; }
-  .cut { position: absolute; left: -1px; width: 2px; top: -3px; bottom: -3px; background: currentColor; border-radius: 1px; box-shadow: 0 0 0 .5px rgba(0,0,0,.35); }
-  .head { position: absolute; left: -6px; bottom: calc(100% + 2px); filter: drop-shadow(0 1px 1px rgba(0,0,0,.5)); }
+// Mounted inside YouTube's progress bar, which stacks its progress lists at
+// 32, chapter marks at 40 and the playhead dot at 43: at 42 the markers sit
+// under the dot. Everything is drawn above the bar, never on it, so the bar
+// and its chapter gaps stay exactly as YouTube draws them.
+const markerStyle = `
+  :host { position: absolute; inset: 0; z-index: 42; pointer-events: none; }
+  .rail { position: absolute; bottom: calc(100% + 3px); height: 2px; background: var(--seg); opacity: .75; border-radius: 1px; }
+  .marker { position: absolute; bottom: 100%; width: 0; height: 0; color: var(--seg); }
+  .head { position: absolute; left: -7px; bottom: 1px; filter: drop-shadow(0 1px 1.5px rgba(0,0,0,.6)); transition: transform .12s ease, filter .12s ease; transform-origin: 50% 100%; }
   .head svg { display: block; }
-  .marker:hover .head, .marker[data-dragging] .head, .marker:hover .cut, .marker[data-dragging] .cut { filter: brightness(1.25); }
-  .marker[data-merging] .cut, .marker[data-merging] .head { animation: pulse .4s ease-in-out infinite alternate; }
+  .grab { position: absolute; left: -10px; width: 20px; bottom: -2px; height: 16px; cursor: ew-resize; touch-action: none; pointer-events: all; }
+  .marker:hover .head, .marker[data-dragging] .head { transform: scale(1.15); filter: drop-shadow(0 1px 2px rgba(0,0,0,.7)) brightness(1.15); }
+  .marker[data-merging] .head { animation: pulse .4s ease-in-out infinite alternate; }
   @keyframes pulse { from { filter: brightness(1); } to { filter: brightness(1.9); } }
 `;
 
-// Editors draw in and out points as a trapezoid head on a line through the
-// timeline: the line is the exact cut, the head is what you grab.
-function Handle() {
+// An editor's in or out point: a trapezoid whose narrow edge sits on the
+// timeline at the exact cut.
+function Head() {
   return (
-    <>
-      <span class="head">
-        <svg width="12" height="8" viewBox="0 0 12 8">
-          <path d="M1 0H11A1 1 0 0 1 11.8 1.6L8 8H4L.2 1.6A1 1 0 0 1 1 0Z" fill="currentColor" />
-        </svg>
-      </span>
-      <span class="cut" />
-    </>
+    <span class="head">
+      <svg width="14" height="9" viewBox="0 0 14 9">
+        <path d="M1.2 0H12.8A1.2 1.2 0 0 1 13.9 1.7L9.6 8.4A1.2 1.2 0 0 1 8.6 9H5.4A1.2 1.2 0 0 1 4.4 8.4L.1 1.7A1.2 1.2 0 0 1 1.2 0Z" fill="currentColor" stroke="rgba(0,0,0,.35)" stroke-width=".6" />
+      </svg>
+    </span>
   );
 }
 
@@ -131,11 +122,11 @@ export function Markers({ segments, duration, track, onPreview, onSeek, onCommit
 
   return (
     <>
-      <style>{style}</style>
+      <style>{markerStyle}</style>
       {sorted.map((segment, index) => (
         <div
-          key={`${segment.id}-range`}
-          class="range"
+          key={`${segment.id}-rail`}
+          class="rail"
           style={{ "--seg": colorForIndex(index), left: `${pct(segment.startTime)}%`, width: `${pct(segment.endTime) - pct(segment.startTime)}%` }}
         />
       ))}
@@ -149,7 +140,7 @@ export function Markers({ segments, duration, track, onPreview, onSeek, onCommit
             data-merging={merge.current && (merge.current.keepId === segment.id || merge.current.removeId === segment.id) ? "" : undefined}
             style={{ "--seg": colorForIndex(index), left: `${pct(role === "start" ? segment.startTime : segment.endTime)}%` }}
           >
-            <Handle />
+            <Head />
             <span
               class="grab"
               title={`Segment ${index + 1} ${role === "start" ? "in" : "out"} point. Drag to adjust.`}

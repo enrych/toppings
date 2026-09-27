@@ -16,8 +16,10 @@ export function resolveRightControls(): Promise<PrimitiveResolution> {
   return resolveTarget(["div.ytp-right-controls"]);
 }
 
+// The bar itself, not its container: it is the stacking context YouTube
+// layers its progress fill, chapter marks and playhead dot in.
 export function resolveProgressBar(): Promise<PrimitiveResolution> {
-  return resolveTarget(["div.ytp-progress-bar-container"]);
+  return resolveTarget(["div.ytp-progress-bar-container div.ytp-progress-bar", "div.ytp-progress-bar-container"]);
 }
 
 // Where a panel goes to sit under the player, above the title.
