@@ -2,7 +2,7 @@ import type { Feature } from "@/kernel/features";
 import { bindKeys } from "@/kernel/keys";
 import { mount } from "@/kernel/dom/mount";
 import { setCapabilityStatus } from "@/kernel/dom/capabilities";
-import { isCommentsPanelOpen, nextReelButton, resolveReelActionBar, resolveReelVideo } from "@/youtube/shorts";
+import { isReelPanelOpen, nextReelButton, resolveReelActionBar, resolveReelVideo } from "@/youtube/shorts";
 import { Controls } from "./Controls";
 import { shortsKeys } from "./keys";
 import { shortsSettings } from "./settings";
@@ -30,7 +30,7 @@ export const shorts: Feature = {
       if (autoScroll) unloop = setTimeout(() => video.removeAttribute("loop"), 400);
     };
     const onEnded = () => {
-      if (!autoScroll || isCommentsPanelOpen()) {
+      if (!autoScroll || isReelPanelOpen()) {
         void video.play();
         return;
       }

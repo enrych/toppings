@@ -1,4 +1,4 @@
-import { resolveTarget, type PrimitiveResolution } from "@/kernel/dom/resolve";
+import { findTarget, resolveTarget, type PrimitiveResolution } from "@/kernel/dom/resolve";
 
 // YouTube reuses one reel renderer for every Short in the newer layout and
 // extracts the action bar next to it; the older layout marked the visible
@@ -23,14 +23,17 @@ export function resolveReelActionBar(): Promise<PrimitiveResolution> {
   return resolveTarget(ACTION_BAR_STRATEGIES);
 }
 
+// The button's label is localised; its container's id is not.
+const NEXT_REEL_STRATEGIES = ["#navigation-button-down button"] as const;
+
+const OPEN_PANEL_STRATEGIES = ["ytd-engagement-panel-section-list-renderer[visibility='ENGAGEMENT_PANEL_VISIBILITY_EXPANDED']"] as const;
+
 export function nextReelButton(): HTMLButtonElement | null {
-  return document.querySelector("[aria-label='Next video']");
+  return findTarget(NEXT_REEL_STRATEGIES) as HTMLButtonElement | null;
 }
 
-// Advancing while the comments panel is open would close it under the user.
-export function isCommentsPanelOpen(): boolean {
-  return (
-    document.querySelector("ytd-engagement-panel-section-list-renderer")?.getAttribute("visibility") ===
-    "ENGAGEMENT_PANEL_VISIBILITY_EXPANDED"
-  );
+// Advancing would close an open comments, description or audio panel under
+// the user.
+export function isReelPanelOpen(): boolean {
+  return findTarget(OPEN_PANEL_STRATEGIES) !== null;
 }

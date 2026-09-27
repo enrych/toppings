@@ -6,10 +6,10 @@ import { shortsSettings } from "./settings";
 // newer one with a reused renderer and an extracted action bar.
 const layouts = {
   active: `<ytd-reel-video-renderer is-active><video></video><div id="actions"></div></ytd-reel-video-renderer>
-    <button aria-label="Next video"></button>`,
+    <div id="navigation-button-down"><button aria-label="Next video"></button></div>`,
   extracted: `<ytd-reel-video-renderer id="reel-video-renderer"><div id="shorts-player"><video></video></div></ytd-reel-video-renderer>
     <div><reel-action-bar-view-model><like-button-view-model></like-button-view-model></reel-action-bar-view-model></div>
-    <button aria-label="Next video"></button>`,
+    <div id="navigation-button-down"><button aria-label="Next video"></button></div>`,
 };
 const reel = layouts.active;
 
@@ -17,6 +17,13 @@ const route = { name: "shorts", shortId: "s1" } as const;
 const press = (key: string) => document.body.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
 const video = () => document.querySelector("video") as HTMLVideoElement;
 const controls = () => document.getElementById("tppng-shorts-controls")!.shadowRoot!;
+const panel = (target: string, visibility: "EXPANDED" | "HIDDEN") =>
+  `<ytd-engagement-panel-section-list-renderer target-id="${target}" visibility="ENGAGEMENT_PANEL_VISIBILITY_${visibility}"></ytd-engagement-panel-section-list-renderer>`;
+const countNextClicks = () => {
+  const clicks = { count: 0 };
+  document.querySelector("#navigation-button-down button")!.addEventListener("click", () => clicks.count++);
+  return clicks;
+};
 
 beforeEach(async () => {
   await chrome.storage.sync.clear();
@@ -60,11 +67,29 @@ describe("shorts", () => {
   });
 
   test("advances to the next reel when one ends", async () => {
-    let next = 0;
-    document.querySelector("[aria-label='Next video']")!.addEventListener("click", () => next++);
+    const next = countNextClicks();
     const unmount = await shorts.mount({ route });
     video().dispatchEvent(new Event("ended"));
-    expect(next).toBe(1);
+    expect(next.count).toBe(1);
+    unmount?.();
+  });
+
+  test("stays on the reel while a panel is open, behind a parked watch page's panels", async () => {
+    document.body.insertAdjacentHTML("afterbegin", `<ytd-watch-flexy hidden>${panel("PAmodern_transcript_view", "HIDDEN")}</ytd-watch-flexy>`);
+    document.body.insertAdjacentHTML("beforeend", panel("engagement-panel-comments-section", "EXPANDED"));
+    const next = countNextClicks();
+    const unmount = await shorts.mount({ route });
+    video().dispatchEvent(new Event("ended"));
+    expect(next.count).toBe(0);
+    unmount?.();
+  });
+
+  test("ignores a panel left open on a parked watch page", async () => {
+    document.body.insertAdjacentHTML("afterbegin", `<ytd-watch-flexy hidden>${panel("engagement-panel-comments-section", "EXPANDED")}</ytd-watch-flexy>`);
+    const next = countNextClicks();
+    const unmount = await shorts.mount({ route });
+    video().dispatchEvent(new Event("ended"));
+    expect(next.count).toBe(1);
     unmount?.();
   });
 
@@ -73,10 +98,9 @@ describe("shorts", () => {
     controls().querySelector("button")!.click();
     await new Promise((r) => setTimeout(r, 0));
     expect((await shortsSettings.get()).autoScroll).toBe(false);
-    let next = 0;
-    document.querySelector("[aria-label='Next video']")!.addEventListener("click", () => next++);
+    const next = countNextClicks();
     video().dispatchEvent(new Event("ended"));
-    expect(next).toBe(0);
+    expect(next.count).toBe(0);
     unmount?.();
   });
 

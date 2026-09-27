@@ -26,6 +26,10 @@ function findLive(strategies: readonly PrimitiveStrategy[]): PrimitiveResolution
 
 const UNRESOLVED: PrimitiveResolution = { resolved: false, element: null, strategyIndex: null };
 
+export function findTarget(strategies: readonly PrimitiveStrategy[]): Element | null {
+  return findLive(strategies)?.element ?? null;
+}
+
 // Strategies are ordered by preference, and the first to match a live element
 // wins. YouTube renders long after load, so this waits for the DOM to change
 // until something matches or the timeout passes. Callers record the result in
