@@ -25,8 +25,10 @@ export const profiles: Feature = {
     const settings = await profilesSettings.get();
 
     let run: PrimitiveRun | undefined;
+    let stopped = false;
     const start = async () => {
       const active = await getActiveProfile();
+      if (stopped) return;
       run?.stop();
       run = runPrimitives(PRIMITIVES, { ...active?.primitives }, route.name);
     };
@@ -47,6 +49,7 @@ export const profiles: Feature = {
     const native = settings.nativeSettings ? await mountNativeSettings(page) : undefined;
 
     return () => {
+      stopped = true;
       unsubscribe();
       unbindKeys();
       gear?.();
@@ -94,9 +97,12 @@ async function hookGearMenu(page: PageControls) {
         panel = document.createElement("div");
         panel.id = GEAR_PANEL_ID;
         panel.className = "ytp-panel";
-        panel.hidden = true;
         menu.append(panel);
       }
+      // YouTube reopens its menu on whichever panel was showing, so a menu
+      // closed from ours would come back without YouTube's own settings.
+      panel.hidden = true;
+      mainPanel.style.display = "";
       const back = () => {
         panel!.hidden = true;
         mainPanel.style.display = "";

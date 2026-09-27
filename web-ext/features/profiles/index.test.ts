@@ -113,6 +113,31 @@ describe("profiles", () => {
     expect(document.getElementById("tppng-gear-entry")).toBeNull();
   });
 
+  test("a profile switched as the page unmounts is not applied afterwards", async () => {
+    await mountOn(watch);
+    await setActiveProfileId("preset:focus");
+    unmount?.();
+    unmount = undefined;
+    await tick();
+    expect(sidebar().style.display).toBe("");
+  });
+
+  test("the gear menu reopens on YouTube's own settings after closing from the Toppings panel", async () => {
+    await profilesSettings.set({ gearMenu: true });
+    await mountOn(watch);
+    const gear = document.querySelector<HTMLElement>(".ytp-settings-button")!;
+    gear.click();
+    await tick();
+    document.getElementById("tppng-gear-entry")!.click();
+    await tick();
+    gear.click();
+    await tick();
+    gear.click();
+    await tick();
+    expect(document.querySelector<HTMLElement>(".ytp-settings-menu .ytp-panel")!.style.display).toBe("");
+    expect(document.getElementById("tppng-gear-panel")!.hidden).toBe(true);
+  });
+
   test("unmounting with the menu closed restores YouTube's own settings panel", async () => {
     await profilesSettings.set({ gearMenu: true });
     await mountOn(watch);
