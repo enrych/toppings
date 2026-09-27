@@ -17,5 +17,5 @@
 		"allowSyntheticDefaultImports": true,
 		"paths": { "@/*": ["./*"], "dom-chef-jsx/*": ["./app/content/jsx/*"] }
 	},
-	"exclude": ["node_modules", "dist", "scripts", "**/*.test.ts"]
+	"exclude": ["node_modules", "dist", "scripts", "test", "**/*.test.ts"]
 }

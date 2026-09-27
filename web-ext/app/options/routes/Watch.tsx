@@ -7,7 +7,7 @@ import Input from "@/ui/form/Input";
 import Select from "@/ui/form/Select";
 import CapabilityStatusRow from "@/features/profiles/CapabilityStatusRow";
 import { useChromeStorageSync } from "@/lib/useChromeStorageSync";
-import { useCapabilityCache } from "@/features/profiles/useCapabilityCache";
+import { useCapabilityCache } from "@/kernel/dom/useCapabilities";
 import { isCustomPlaybackRatesList } from "@/app/options/validators";
 import {
   getUndismissedRecovered,

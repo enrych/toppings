@@ -1,11 +1,6 @@
 import { EXTENSION_CONTEXT_SCOPE } from "@/lib/protocol";
-import { YOUTUBE_QUERY_PARAM, YOUTUBE_SYSTEM_PLAYLIST_ID, YOUTUBE_URL_PATH } from "@/lib/youtube";
-import { fetchPlaylist } from "@/features/playlist/api";
+import { YOUTUBE_QUERY_PARAM, YOUTUBE_URL_PATH } from "@/lib/youtube";
 import { getStorage, Storage } from "@/lib/store";
-import {
-  getCachedPlaylist,
-  setCachedPlaylist,
-} from "@/features/playlist/cache";
 
 export type YoutubeContext = BaseContext & {
   scope: typeof EXTENSION_CONTEXT_SCOPE.YOUTUBE;
@@ -31,25 +26,8 @@ export type WatchPayload = {
 
 export type PlaylistContext = BaseContext & {
   scope: typeof EXTENSION_CONTEXT_SCOPE.PLAYLIST;
-  payload: ValidPlaylistPayload | InvalidPlaylistPayload;
+  payload: { playlistId: string | null };
 };
-
-export type ValidPlaylistPayload = {
-  playlistId: string;
-  averageRuntime: number;
-  totalRuntime: number;
-  totalVideos: number;
-};
-
-export type InvalidPlaylistPayload = {
-  playlistId:
-  | typeof YOUTUBE_SYSTEM_PLAYLIST_ID.WATCH_LATER
-  | typeof YOUTUBE_SYSTEM_PLAYLIST_ID.LIKED
-  | string
-  | null;
-};
-
-export type PlaylistResponse = PlaylistContext;
 
 export type ShortsContext = BaseContext & {
   scope: typeof EXTENSION_CONTEXT_SCOPE.SHORTS;
@@ -78,56 +56,11 @@ export const getContext = async (rawURL: string): Promise<Context> => {
       store,
     } as const;
   } else if (url.pathname.startsWith(YOUTUBE_URL_PATH.PLAYLIST)) {
-    const playlistId = url.searchParams.get(YOUTUBE_QUERY_PARAM.PLAYLIST_ID);
-
-    if (
-      !playlistId ||
-      playlistId === YOUTUBE_SYSTEM_PLAYLIST_ID.WATCH_LATER ||
-      playlistId === YOUTUBE_SYSTEM_PLAYLIST_ID.LIKED
-    ) {
-      return {
-        scope: EXTENSION_CONTEXT_SCOPE.PLAYLIST,
-        payload: { playlistId },
-        store,
-      } as const;
-    }
-
-    try {
-      // Check cache before hitting the API.
-      const cached = await getCachedPlaylist(playlistId);
-      if (cached) {
-        return {
-          scope: EXTENSION_CONTEXT_SCOPE.PLAYLIST,
-          payload: cached,
-          store,
-        } as const;
-      }
-
-      const response = await fetchPlaylist(playlistId);
-
-      if (!response.ok) {
-        throw new Error("Failed fetching playlist data");
-      }
-
-      const body = (await response.json()) as PlaylistResponse;
-
-      // Persist to cache for subsequent visits.
-      if (body.scope === EXTENSION_CONTEXT_SCOPE.PLAYLIST && "totalRuntime" in body.payload) {
-        void setCachedPlaylist(playlistId, body.payload as ValidPlaylistPayload);
-      }
-
-      return {
-        ...body,
-        store,
-      } as const;
-    } catch (error) {
-      console.error("Failed fetching playlist data", error);
-      return {
-        scope: EXTENSION_CONTEXT_SCOPE.PLAYLIST,
-        payload: { playlistId },
-        store,
-      } as const;
-    }
+    return {
+      scope: EXTENSION_CONTEXT_SCOPE.PLAYLIST,
+      payload: { playlistId: url.searchParams.get(YOUTUBE_QUERY_PARAM.PLAYLIST_ID) },
+      store,
+    } as const;
   } else if (url.pathname.startsWith(YOUTUBE_URL_PATH.SHORTS)) {
     const shortId =
       url.pathname.split("/")[2] || null;

@@ -65,9 +65,6 @@ export const DEFAULT_STORE = {
         autoLoad: "off" as "off" | "last-used" | "default",
       },
     },
-    [EXTENSION_CONTEXT_SCOPE.PLAYLIST]: {
-      isEnabled: true as boolean,
-    },
     [EXTENSION_CONTEXT_SCOPE.SHORTS]: {
       isEnabled: true as boolean,
       togglePlaybackRate: {

@@ -4,7 +4,7 @@ import {
   clearCapabilityCache,
   type CapabilityCacheEntry,
   type CapabilityStatus,
-} from "./capabilityCache";
+} from "./capabilities";
 
 export type CapabilityMap = Map<string, CapabilityCacheEntry>;
 

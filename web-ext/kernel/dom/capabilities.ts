@@ -1,7 +1,7 @@
 import { EXTENSION_VERSION } from "@/lib/version";
 import { withStore } from "@/lib/indexedDb";
 import { BROWSER_STORAGE_IDB_STORE } from "@/lib/storageKeys";
-import type { PrimitiveResolution } from "./primitives/resolve";
+import type { PrimitiveResolution } from "./resolve";
 
 export type CapabilityStatus = "supported" | "unsupported" | "untested";
 

@@ -25,7 +25,7 @@ export const SEARCH_INDEX: SearchEntry[] = [
   { label: "Re-scan Capabilities", description: "Clears the cached feature compatibility check.", path: "/", page: "General", section: "Feature Diagnostics" },
   { label: "Watch Page", description: "Enable or disable all Toppings features on the watch page.", path: "/", page: "General", section: "YouTube Pages" },
   { label: "Shorts", description: "Enable or disable Toppings on Shorts.", path: "/", page: "General", section: "YouTube Pages" },
-  { label: "Playlist", description: "Enable or disable runtime statistics on playlist pages.", path: "/", page: "General", section: "YouTube Pages" },
+  { label: "Playlist", description: "Enable or disable runtime statistics on playlist pages.", path: "/playlist", page: "Playlist", section: "Runtime Statistics" },
 
   { label: "Default Playback Rate", description: "Rate applied to every video on load. 1 = Normal.", path: "/watch", sectionId: "playback-rate", page: "Watch", section: "Playback Rate" },
   { label: "Custom Playback Rates", description: "Comma-separated rates for the player speed menu.", path: "/watch", sectionId: "playback-rate", page: "Watch", section: "Playback Rate" },

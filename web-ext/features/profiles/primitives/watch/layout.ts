@@ -1,5 +1,5 @@
-import { resolveTarget } from "../resolve";
-import { setCapabilityStatus } from "../../capabilityCache";
+import { resolveTarget } from "@/kernel/dom/resolve";
+import { setCapabilityStatus } from "@/kernel/dom/capabilities";
 import type { PlayerLayout } from "../../profiles";
 
 // YouTube keeps the player in #player-container-outer normally and moves it

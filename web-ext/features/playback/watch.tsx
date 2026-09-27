@@ -17,8 +17,8 @@ import {
 import { isTypingTarget, matchesBinding } from "@/lib/keybinding";
 import { WatchContext } from "@/app/background/context";
 import { Storage } from "@/lib/store";
-import { resolveTarget } from "@/features/profiles/primitives/resolve";
-import { setCapabilityStatus } from "@/features/profiles/capabilityCache";
+import { resolveTarget } from "@/kernel/dom/resolve";
+import { setCapabilityStatus } from "@/kernel/dom/capabilities";
 import { applyWatchProfile } from "@/features/profiles/applyProfile";
 import {
   getCustomProfiles,
@@ -29,7 +29,6 @@ import { BUILT_IN_PRESETS } from "@/features/profiles/profiles";
 import { CHROME_STORAGE_LOCAL_KEY } from "@/lib/storageKeys";
 import { showPageToast } from "@/lib/pageToast";
 import { injectGearMenuEntry } from "@/features/profiles/gearMenu";
-import { getCachedPlaylist } from "@/features/playlist/cache";
 import { formatDuration } from "@/lib/duration";
 
 // Each array is ordered most-likely-variant first, and resolveTarget walks it in
@@ -149,54 +148,7 @@ const onWatchPage = async (ctx: WatchContext) => {
   // re-run this whole function against the same page.
   chrome.storage.onChanged.removeListener(onProfileStoreChanged);
   chrome.storage.onChanged.addListener(onProfileStoreChanged);
-
-  const listId = new URL(window.location.href).searchParams.get("list");
-  if (listId) {
-    void injectPlaylistRuntimeInWatchPanel(listId);
-  }
 };
-
-const WATCH_PANEL_RUNTIME_ID = "tppng-watch-playlist-runtime";
-
-const WATCH_PLAYLIST_PANEL_STRATEGIES = [
-  "#playlist-container .ytd-playlist-panel-renderer #header",
-  "ytd-playlist-panel-renderer #header",
-  "#secondary ytd-playlist-panel-renderer #header-title",
-  "#secondary ytd-playlist-panel-renderer",
-] as const;
-
-async function injectPlaylistRuntimeInWatchPanel(playlistId: string): Promise<void> {
-  const data = await getCachedPlaylist(playlistId);
-  if (!data) return; // Nothing cached until the user has opened the playlist page itself.
-
-  const panelResolution = await resolveTarget(WATCH_PLAYLIST_PANEL_STRATEGIES);
-  if (!panelResolution.resolved) return;
-
-  const header = panelResolution.element as HTMLElement;
-
-  // SPA navigation re-runs this against a header that may already carry a badge.
-  header.querySelector(`#${WATCH_PANEL_RUNTIME_ID}`)?.remove();
-
-  const badge = document.createElement("div");
-  badge.id = WATCH_PANEL_RUNTIME_ID;
-  badge.style.cssText = `
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 11px;
-    color: var(--yt-spec-text-secondary, rgba(255,255,255,0.7));
-    margin-top: 4px;
-    font-family: "YouTube Sans","Roboto",sans-serif;
-  `;
-
-  badge.innerHTML = `
-    <span title="Total playlist runtime">⏱ ${formatDuration(data.totalRuntime)}</span>
-    <span style="opacity:0.4">·</span>
-    <span title="Average video runtime">avg ${formatDuration(data.averageRuntime)}</span>
-  `;
-
-  header.appendChild(badge);
-}
 
 const onProfileStoreChanged = (
   changes: Record<string, chrome.storage.StorageChange>,

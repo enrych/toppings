@@ -6,7 +6,7 @@ import Switch from "@/ui/form/Switch";
 import Select from "@/ui/form/Select";
 import { useChromeStorageSync } from "@/lib/useChromeStorageSync";
 import { useToast } from "@/ui/feedback/ToastProvider";
-import { useCapabilityCache } from "@/features/profiles/useCapabilityCache";
+import { useCapabilityCache } from "@/kernel/dom/useCapabilities";
 import { setExtensionIcon } from "@/lib/browser";
 import { ThemePreference } from "@/ui/useTheme";
 
@@ -181,16 +181,6 @@ export default function General() {
               onToggle={(isEnabled) => {
                 update((draft) => {
                   draft.preferences.shorts.isEnabled = isEnabled;
-                });
-              }}
-            />
-            <Switch
-              label="Playlist"
-              description="Show runtime statistics on playlist pages."
-              isEnabled={store.preferences.playlist.isEnabled}
-              onToggle={(isEnabled) => {
-                update((draft) => {
-                  draft.preferences.playlist.isEnabled = isEnabled;
                 });
               }}
             />

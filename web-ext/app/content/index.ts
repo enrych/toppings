@@ -1,7 +1,9 @@
 import type { Context } from "@/app/background/context";
 import type { Storage } from "@/lib/store";
+import { bootFeatures } from "@/kernel/features";
+import { onNavigate } from "@/youtube/route";
+import { playlistRuntime } from "@/features/playlist-runtime";
 
-import onPlaylistPage from "@/features/playlist/page";
 import onShortsPage from "@/features/shorts/page";
 import onWatchPage from "@/features/playback/watch";
 import onYoutubePage from "@/features/profiles/youtubePage";
@@ -10,7 +12,6 @@ import { EXTENSION_CONTEXT_SCOPE } from "@/lib/protocol";
 import { EXTENSION_MESSAGE_EVENT, EXTENSION_MESSAGE_TYPE } from "@/lib/protocol";
 
 const scopeHandlers: Record<string, Function> = {
-  [EXTENSION_CONTEXT_SCOPE.PLAYLIST]: onPlaylistPage,
   [EXTENSION_CONTEXT_SCOPE.SHORTS]: onShortsPage,
   [EXTENSION_CONTEXT_SCOPE.WATCH]: onWatchPage,
   [EXTENSION_CONTEXT_SCOPE.YOUTUBE]: onYoutubePage,
@@ -34,10 +35,8 @@ function runApp(message: any): undefined {
 
     const handler = scopeHandlers[scope];
 
-    if (!handler) {
-      console.warn("[Toppings] No content script handler for scope:", scope);
-      return;
-    }
+    // Scopes without a handler here belong to features that run on the kernel.
+    if (!handler) return;
 
     // The YOUTUBE scope has no preferences entry — it's always enabled when the
     // extension is enabled (checked above via store.isExtensionEnabled).
@@ -59,3 +58,5 @@ chrome.runtime.sendMessage(
   runApp,
 );
 chrome.runtime.onMessage.addListener(runApp);
+
+bootFeatures([playlistRuntime], onNavigate);

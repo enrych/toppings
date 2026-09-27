@@ -5,7 +5,7 @@ import Card from "@/ui/layout/Card";
 import Switch from "@/ui/form/Switch";
 import Select from "@/ui/form/Select";
 import { useToast } from "@/ui/feedback/ToastProvider";
-import { useCapabilityCache } from "@/features/profiles/useCapabilityCache";
+import { useCapabilityCache } from "@/kernel/dom/useCapabilities";
 import {
   getAllProfiles,
   getActiveProfile,

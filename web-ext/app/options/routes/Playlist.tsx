@@ -1,33 +1,30 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useSettings } from "@/kernel/useSettings";
+import { playlistRuntimeSettings } from "@/features/playlist-runtime/settings";
 import PageHeader from "@/ui/layout/PageHeader";
 import Section from "@/ui/layout/Section";
 import Card from "@/ui/layout/Card";
+import Switch from "@/ui/form/Switch";
 
 export default function Playlist() {
+  const { value, update } = useSettings(playlistRuntimeSettings);
+
   return (
     <>
-      <PageHeader
-        title="Playlist"
-        description="Settings for YouTube playlist pages."
-      />
+      <PageHeader title="Playlist" description="Settings for YouTube playlist pages." />
 
       <div className="tw-flex tw-flex-col tw-gap-8">
         <Section
           title="Runtime Statistics"
-          description="When enabled, the total and average runtime for a playlist appears at the top of the page."
+          description="The total and average runtime of a playlist, shown at the top of the page."
         >
           <Card>
-            <p className="tw-text-sm tw-text-fg-muted tw-py-3">
-              The Playlist feature toggle lives on the{" "}
-              <Link
-                to="/"
-                className="tw-text-accent hover:tw-text-accent-hover"
-              >
-                General
-              </Link>{" "}
-              page. There are no other playlist-specific settings yet.
-            </p>
+            <Switch
+              label="Runtime statistics"
+              description="Show runtime statistics on playlist pages."
+              isEnabled={value.enabled}
+              onToggle={(enabled) => update({ enabled })}
+            />
           </Card>
         </Section>
       </div>

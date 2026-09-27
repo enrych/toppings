@@ -1,5 +1,5 @@
-import { resolveTarget } from "@/features/profiles/primitives/resolve";
-import { setCapabilityStatus } from "@/features/profiles/capabilityCache";
+import { resolveTarget } from "@/kernel/dom/resolve";
+import { setCapabilityStatus } from "@/kernel/dom/capabilities";
 
 const STRATEGIES = [
   "ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-shorts])",
