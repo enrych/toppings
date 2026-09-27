@@ -1,4 +1,5 @@
-import { colorForIndex, formatTimestamp } from "../format";
+import { formatClock } from "@/lib/duration";
+import { colorForIndex } from "../format";
 import type { SegmentConfig } from "../types";
 
 export interface SegmentListProps {
@@ -20,7 +21,7 @@ export function SegmentList({ config, onAdd, onRemove, onCount, onRate }: Segmen
       {sorted.map((segment, index) => (
         <div class="segment" key={segment.id} style={{ "--seg": colorForIndex(index) }}>
           <span class="index">{index + 1}</span>
-          <span class="range">{formatTimestamp(segment.startTime)} → {formatTimestamp(segment.endTime)}</span>
+          <span class="range">{formatClock(segment.startTime)} → {formatClock(segment.endTime)}</span>
           {segment.label && <span class="note">{segment.label}</span>}
           {step && (
             <label class="field" title="Loop count (0 = infinite)">

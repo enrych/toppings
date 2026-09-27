@@ -1,5 +1,6 @@
 import { useRef, useState } from "preact/hooks";
-import { colorForIndex, formatTimestamp } from "../format";
+import { formatClock } from "@/lib/duration";
+import { colorForIndex } from "../format";
 import type { PlayStep, SegmentConfig } from "../types";
 
 export interface StepActions {
@@ -44,7 +45,7 @@ function StepRow({ config, step, index, actions }: { config: SegmentConfig; step
             const segment = config.segments.find((s) => s.id === segmentId);
             const position = segment ? sorted.indexOf(segment) : -1;
             const label = position >= 0 ? `Seg ${position + 1}` : "?";
-            const range = segment ? ` (${formatTimestamp(segment.startTime)}→${formatTimestamp(segment.endTime)})` : "";
+            const range = segment ? ` (${formatClock(segment.startTime)}→${formatClock(segment.endTime)})` : "";
             return (
               <span
                 key={`${segmentId}-${chipIndex}`}

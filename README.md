@@ -67,7 +67,7 @@ To load it in Chrome, open `chrome://extensions`, turn on Developer mode, click 
 
 `bun run check` type-checks and runs the tests. `bun run build` makes a production build.
 
-A dev build asks the local Worker for playlist runtimes, so start the backend too if you're working on that feature.
+Every build, dev included, asks the live API at `toppings.enry.ch/api` for playlist runtimes, so you don't need the backend running. To work on the Worker itself, point a build at it with `TOPPINGS_API=http://127.0.0.1:8787/api bun run dev`.
 
 ### Backend
 

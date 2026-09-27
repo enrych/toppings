@@ -36,8 +36,7 @@ describe("playlist runtime", () => {
       const host = document.getElementById("tppng-playlist-runtime");
       expect(host).not.toBeNull();
       const text = host!.shadowRoot!.textContent;
-      expect(text).toContain("Average 21 minutes, 45 seconds");
-      expect(text).toContain("Total 3 hours, 37 minutes, 34 seconds");
+      expect(text).toContain("3:37:34 total·21:45 avg");
 
       unmount?.();
       expect(document.getElementById("tppng-playlist-runtime")).toBeNull();
@@ -45,10 +44,11 @@ describe("playlist runtime", () => {
   }
 
   test("adds a badge to the playlist panel on a watch page", async () => {
-    document.body.innerHTML = `<ytd-playlist-panel-renderer><div id="header"></div></ytd-playlist-panel-renderer>`;
+    document.body.innerHTML = `<ytd-playlist-panel-renderer><div id="header"><div id="header-description"><h3>Neural networks</h3><div id="publisher-container">3Blue1Brown · 2/10</div></div></div></ytd-playlist-panel-renderer>`;
     const unmount = await feature().mount({ route: { name: "watch", videoId: "v1", playlistId: "PL1" } });
     const badge = document.getElementById("tppng-watch-playlist-runtime");
-    expect(badge!.shadowRoot!.textContent).toContain("3 hours, 37 minutes, 34 seconds");
+    expect(badge!.parentElement!.id).toBe("header-description");
+    expect(badge!.shadowRoot!.textContent).toContain("3:37:34 total·21:45 avg");
     unmount?.();
     expect(document.getElementById("tppng-watch-playlist-runtime")).toBeNull();
   });
@@ -80,6 +80,6 @@ describe("playlist runtime", () => {
     await new Promise((r) => setTimeout(r, 0));
 
     expect(calls).toEqual([false, true]);
-    expect(root.textContent).toContain("Total 1 minute");
+    expect(root.textContent).toContain("1:00 total");
   });
 });

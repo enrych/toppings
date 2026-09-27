@@ -1,32 +1,9 @@
-export function formatDuration(seconds: number): string {
-  const days = Math.floor(seconds / 86400);
-  const hours = Math.floor((seconds % 86400) / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const remainingSeconds = seconds % 60;
-
-  const parts: string[] = [];
-
-  if (days > 0) {
-    parts.push(`${days} day${days !== 1 ? "s" : ""}`);
-  }
-
-  if (hours > 0) {
-    parts.push(`${hours} hour${hours !== 1 ? "s" : ""}`);
-  }
-
-  if (minutes > 0) {
-    parts.push(`${minutes} minute${minutes !== 1 ? "s" : ""}`);
-  }
-
-  if (remainingSeconds > 0) {
-    parts.push(
-      `${remainingSeconds} second${remainingSeconds !== 1 ? "s" : ""}`,
-    );
-  }
-
-  if (parts.length === 0) {
-    parts.push("0 seconds");
-  }
-
-  return parts.join(", ");
+// YouTube's own clock format: 3:37:34, 21:45, 0:08.
+export function formatClock(seconds: number): string {
+  const s = Math.floor(seconds);
+  const m = Math.floor(s / 60);
+  const h = Math.floor(m / 60);
+  const ss = String(s % 60).padStart(2, "0");
+  const mm = String(m % 60).padStart(2, "0");
+  return h > 0 ? `${h}:${mm}:${ss}` : `${m}:${ss}`;
 }

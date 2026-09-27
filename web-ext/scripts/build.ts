@@ -39,6 +39,7 @@ async function bundleScripts() {
       sourcemap: production ? "none" : "linked",
       define: {
         "process.env.NODE_ENV": JSON.stringify(production ? "production" : "development"),
+        "process.env.TOPPINGS_API": JSON.stringify(process.env.TOPPINGS_API ?? "https://toppings.enry.ch/api"),
         // Firefox's chrome.* namespace is callback-only under MV2 and returns
         // undefined when called for a promise; its browser.* namespace is the
         // same API with promises, which is how the code calls it.

@@ -1,12 +1,13 @@
 import { CHROME_STORAGE_LOCAL_KEY } from "@/lib/storageKeys";
 import { getPlaylistRuntime, type PlaylistRuntime } from "./messages";
 
-const API_BASE =
-  process.env.NODE_ENV === "development" ? "http://127.0.0.1:8787/api" : "https://toppings.enry.ch/api";
+// Set at build time; `TOPPINGS_API=http://127.0.0.1:8787/api bun run dev`
+// points a build at a local Worker.
+const API_BASE = process.env.TOPPINGS_API;
 
-// Cached so a playlist page visit does not hit the API every time; a refresh
-// from the page evicts the entry.
-const CACHE_TTL_MS = 30 * 60 * 1000;
+// A playlist's runtime changes only when videos are added or removed, so a
+// day-old answer is nearly always right; the refresh button bypasses it.
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 interface CacheEntry {
   data: PlaylistRuntime;

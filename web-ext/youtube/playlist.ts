@@ -15,12 +15,13 @@ export function resolvePlaylistHeader(): Promise<PrimitiveResolution> {
   return resolveTarget(HEADER_STRATEGIES);
 }
 
-// The playlist panel beside the player on a watch page.
+// The title block of the playlist panel beside the player on a watch page:
+// playlist name, then the "channel · 2/10" line.
 const WATCH_PANEL_STRATEGIES = [
-  "#playlist-container .ytd-playlist-panel-renderer #header",
+  "#secondary ytd-playlist-panel-renderer #header-description",
+  "ytd-playlist-panel-renderer #header-description",
+  "ytd-playlist-panel-renderer #header-contents",
   "ytd-playlist-panel-renderer #header",
-  "#secondary ytd-playlist-panel-renderer #header-title",
-  "#secondary ytd-playlist-panel-renderer",
 ] as const;
 
 export function resolveWatchPlaylistPanel(): Promise<PrimitiveResolution> {

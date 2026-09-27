@@ -1,5 +1,4 @@
-import { themeTokens } from "@/kernel/dom/theme";
-import { formatDuration } from "@/lib/duration";
+import { formatClock } from "@/lib/duration";
 import type { PlaylistRuntime } from "./messages";
 
 export interface SectionProps {
@@ -9,35 +8,31 @@ export interface SectionProps {
   onRefresh: () => void;
 }
 
+// A metadata line like YouTube's own "10 videos · Last updated" beside it.
+// The colour is inherited, because the header card tints its text to match
+// the playlist's thumbnail.
 const styles = `
-  ${themeTokens}
-  .card {
-    display: flex; align-items: center; gap: 12px; margin-top: 8px; padding: 10px 14px; border-radius: 12px;
-    background: var(--tp-additive); color: var(--tp-text); font: 12px/1.5 var(--tp-font);
-  }
-  .card img { width: 20px; height: 20px; }
-  .title { font-weight: 500; font-size: 13px; }
-  .stats { display: flex; gap: 14px; color: var(--tp-text-2); }
-  .stats b { color: var(--tp-text); font-weight: 500; }
+  :host { display: block; }
+  .line { display: flex; align-items: center; gap: 6px; margin-top: 8px; font: 400 12px/18px Roboto, Arial, sans-serif; color: inherit; opacity: .8; }
+  .line img { width: 14px; height: 14px; }
+  .dot { opacity: .7; }
   .refresh {
-    margin-left: auto; width: 28px; height: 28px; border: 0; border-radius: 50%; cursor: pointer;
-    background: transparent; color: var(--tp-text-2); font-size: 15px;
+    display: grid; place-items: center; width: 22px; height: 22px; margin-left: 2px; padding: 0;
+    border: 0; border-radius: 50%; background: transparent; color: inherit; cursor: pointer; font-size: 13px;
   }
-  .refresh:hover { background: var(--tp-additive); color: var(--tp-text); }
+  .refresh:hover { background: rgba(255, 255, 255, .1); }
   .refresh:disabled { opacity: .5; cursor: default; }
 `;
 
 export function Section({ runtime, iconUrl, refreshing, onRefresh }: SectionProps) {
   return (
-    <div class="card">
+    <div class="line">
       <style>{styles}</style>
-      <img src={iconUrl} alt="" />
-      <span class="title">Toppings</span>
-      <span class="stats">
-        <span>Total <b>{formatDuration(runtime.totalRuntime)}</b></span>
-        <span>Average <b>{formatDuration(runtime.averageRuntime)}</b></span>
-      </span>
-      <button class="refresh" title="Refresh playlist data" disabled={refreshing} onClick={onRefresh}>
+      <img src={iconUrl} alt="Toppings" title="Toppings" />
+      <span title="Total playlist runtime">{formatClock(runtime.totalRuntime)} total</span>
+      <span class="dot">·</span>
+      <span title="Average video runtime">{formatClock(runtime.averageRuntime)} avg</span>
+      <button class="refresh" title="Refresh playlist runtime" disabled={refreshing} onClick={onRefresh}>
         ↻
       </button>
     </div>
