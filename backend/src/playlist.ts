@@ -6,14 +6,16 @@ import { errorMessage, HttpError } from "./http";
 export async function getPlaylistRuntime(playlistId: string, apiKey: string) {
   let totalVideos = 0;
   const durations: Promise<number>[] = [];
+  let failed = false;
 
   for await (const videoIds of fetchVideoIdsByPage(playlistId, apiKey)) {
     totalVideos += videoIds.length;
     const duration = fetchDurationSeconds(videoIds, apiKey);
-    // Handled by the Promise.all below; this only keeps an early failure
-    // from surfacing as an unhandled rejection while later pages load.
-    duration.catch(() => {});
+    // The Promise.all below reports the failure; noting it here stops paging
+    // through a list whose answer is already lost, each page costing quota.
+    duration.catch(() => (failed = true));
     durations.push(duration);
+    if (failed) break;
   }
   const totalRuntime = (await Promise.all(durations)).reduce((sum, seconds) => sum + seconds, 0);
 
@@ -56,12 +58,13 @@ async function fetchDurationSeconds(videoIds: string[], apiKey: string): Promise
   return total;
 }
 
-// YouTube writes durations as ISO 8601, e.g. PT1H2M3S, with any part optional.
+// YouTube writes durations as ISO 8601, e.g. PT1H2M3S or P1DT2H for a video
+// over a day, with any part optional; P0D is a live or upcoming stream.
 function toSeconds(isoDuration: string): number {
-  const match = /PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?/.exec(isoDuration);
+  const match = /^P(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?$/.exec(isoDuration);
   if (!match) return 0;
-  const [, hours = "0", minutes = "0", seconds = "0"] = match;
-  return Number(hours) * 3600 + Number(minutes) * 60 + Number(seconds);
+  const [, days = "0", hours = "0", minutes = "0", seconds = "0"] = match;
+  return Number(days) * 86400 + Number(hours) * 3600 + Number(minutes) * 60 + Number(seconds);
 }
 
 // The Data API answers 404 for a playlist that is private or deleted.
