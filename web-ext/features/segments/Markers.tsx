@@ -24,27 +24,33 @@ const MERGE_HOLD_MS = 500;
 // 32, chapter marks at 40 and the playhead dot at 43: at 42 the markers sit
 // under the dot. Everything is drawn above the bar, never on it, so the bar
 // and its chapter gaps stay exactly as YouTube draws them.
+// No filters, strokes or transforms: at this size each one leaves the
+// shape soft once it is rasterised at a fractional position.
 const markerStyle = `
   :host { position: absolute; inset: 0; z-index: 42; pointer-events: none; }
-  .rail { position: absolute; bottom: calc(100% + 3px); height: 2px; background: var(--seg); opacity: .75; border-radius: 1px; }
+  .rail { position: absolute; bottom: calc(100% + 3px); height: 2px; background: var(--seg); opacity: .7; }
   .marker { position: absolute; bottom: 100%; width: 0; height: 0; color: var(--seg); }
-  .head { position: absolute; left: -7px; bottom: 1px; filter: drop-shadow(0 1px 1.5px rgba(0,0,0,.6)); transition: transform .12s ease, filter .12s ease; transform-origin: 50% 100%; }
+  .head { position: absolute; left: -6px; bottom: 3px; }
   .head svg { display: block; }
+  .needle { position: absolute; left: -1px; bottom: 0; width: 2px; height: 3px; background: currentColor; }
   .grab { position: absolute; left: -10px; width: 20px; bottom: -2px; height: 16px; cursor: ew-resize; touch-action: none; pointer-events: all; }
-  .marker:hover .head, .marker[data-dragging] .head { transform: scale(1.15); filter: drop-shadow(0 1px 2px rgba(0,0,0,.7)) brightness(1.15); }
-  .marker[data-merging] .head { animation: pulse .4s ease-in-out infinite alternate; }
-  @keyframes pulse { from { filter: brightness(1); } to { filter: brightness(1.9); } }
+  .marker:hover, .marker[data-dragging] { color: color-mix(in srgb, var(--seg) 75%, white); }
+  .marker[data-merging] .head, .marker[data-merging] .needle { animation: pulse .4s ease-in-out infinite alternate; }
+  @keyframes pulse { from { opacity: 1; } to { opacity: .35; } }
 `;
 
-// An editor's in or out point: a trapezoid whose narrow edge sits on the
-// timeline at the exact cut.
-function Head() {
+// An editor's in or out point: a trapezoid pin standing on the timeline, its
+// needle on the exact cut.
+function Pin() {
   return (
-    <span class="head">
-      <svg width="14" height="9" viewBox="0 0 14 9">
-        <path d="M1.2 0H12.8A1.2 1.2 0 0 1 13.9 1.7L9.6 8.4A1.2 1.2 0 0 1 8.6 9H5.4A1.2 1.2 0 0 1 4.4 8.4L.1 1.7A1.2 1.2 0 0 1 1.2 0Z" fill="currentColor" stroke="rgba(0,0,0,.35)" stroke-width=".6" />
-      </svg>
-    </span>
+    <>
+      <span class="head">
+        <svg width="12" height="8" viewBox="0 0 12 8">
+          <path d="M1 0H11A1 1 0 0 1 11.8 1.6L8 8H4L.2 1.6A1 1 0 0 1 1 0Z" fill="currentColor" />
+        </svg>
+      </span>
+      <span class="needle" />
+    </>
   );
 }
 
@@ -140,7 +146,7 @@ export function Markers({ segments, duration, track, onPreview, onSeek, onCommit
             data-merging={merge.current && (merge.current.keepId === segment.id || merge.current.removeId === segment.id) ? "" : undefined}
             style={{ "--seg": colorForIndex(index), left: `${pct(role === "start" ? segment.startTime : segment.endTime)}%` }}
           >
-            <Head />
+            <Pin />
             <span
               class="grab"
               title={`Segment ${index + 1} ${role === "start" ? "in" : "out"} point. Drag to adjust.`}

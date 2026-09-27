@@ -1,5 +1,6 @@
-// No red: segments sit on YouTube's red progress fill and would vanish into it.
-const SEGMENT_COLORS = ["#3ea6ff", "#f5c518", "#4caf50", "#ff9800", "#ab47bc", "#00bcd4", "#ec407a"];
+// The first segment takes YouTube's own red (its playhead dot and played fill)
+// so a single loop reads as part of the player.
+const SEGMENT_COLORS = ["#ff0033", "#3ea6ff", "#f5c518", "#4caf50", "#ab47bc", "#00bcd4", "#ff9800"];
 
 export function colorForIndex(i: number): string {
   return SEGMENT_COLORS[i % SEGMENT_COLORS.length];
