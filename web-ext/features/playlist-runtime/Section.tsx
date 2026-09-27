@@ -1,8 +1,10 @@
 import { formatClock } from "@/lib/duration";
 import type { PlaylistRuntime } from "./messages";
+import { skeletonStyle } from "./skeleton";
 
 export interface SectionProps {
-  runtime: PlaylistRuntime;
+  // null while the runtime is on its way.
+  runtime: PlaylistRuntime | null;
   iconUrl: string;
   refreshing: boolean;
   onRefresh: () => void;
@@ -13,7 +15,7 @@ export interface SectionProps {
 // the playlist's thumbnail.
 const styles = `
   :host { display: block; }
-  .line { display: flex; align-items: center; gap: 6px; margin-top: 4px; font: 400 12px/18px Roboto, Arial, sans-serif; color: inherit; opacity: .8; }
+  .line { display: flex; align-items: center; gap: 6px; margin-top: 4px; min-height: 22px; font: 400 12px/18px Roboto, Arial, sans-serif; color: inherit; opacity: .8; }
   .line img { width: 14px; height: 14px; }
   .dot { opacity: .7; }
   .refresh {
@@ -22,6 +24,7 @@ const styles = `
   }
   .refresh:hover { background: rgba(255, 255, 255, .1); }
   .refresh:disabled { opacity: .5; cursor: default; }
+  ${skeletonStyle}
 `;
 
 export function Section({ runtime, iconUrl, refreshing, onRefresh }: SectionProps) {
@@ -29,12 +32,18 @@ export function Section({ runtime, iconUrl, refreshing, onRefresh }: SectionProp
     <div class="line">
       <style>{styles}</style>
       <img src={iconUrl} alt="Toppings" title="Toppings" />
-      <span title="Total playlist runtime">{formatClock(runtime.totalRuntime)} total</span>
-      <span class="dot">·</span>
-      <span title="Average video runtime">{formatClock(runtime.averageRuntime)} avg</span>
-      <button class="refresh" title="Refresh playlist runtime" disabled={refreshing} onClick={onRefresh}>
-        ↻
-      </button>
+      {runtime ? (
+        <>
+          <span title="Total playlist runtime">{formatClock(runtime.totalRuntime)} total</span>
+          <span class="dot">·</span>
+          <span title="Average video runtime">{formatClock(runtime.averageRuntime)} avg</span>
+          <button class="refresh" title="Refresh playlist runtime" disabled={refreshing} onClick={onRefresh}>
+            ↻
+          </button>
+        </>
+      ) : (
+        <span class="bone" style={{ width: "150px" }} aria-label="Loading playlist runtime" />
+      )}
     </div>
   );
 }

@@ -27,10 +27,7 @@ export function createPlaylistRuntime(deps: PlaylistRuntimeDeps): Feature {
       void setCapabilityStatus("playlist.runtime", "playlist", header);
       if (!header.resolved) return;
 
-      const runtime = await deps.getRuntime(playlistId, false);
-      if (!runtime) return;
-
-      const view = (state: { runtime: PlaylistRuntime; refreshing: boolean }) => (
+      const view = (state: { runtime: PlaylistRuntime | null; refreshing: boolean }) => (
         <Section
           runtime={state.runtime}
           iconUrl={deps.iconUrl()}
@@ -42,7 +39,13 @@ export function createPlaylistRuntime(deps: PlaylistRuntimeDeps): Feature {
           }}
         />
       );
-      const section = mount("tppng-playlist-runtime", header.element, view({ runtime, refreshing: false }));
+      const section = mount("tppng-playlist-runtime", header.element, view({ runtime: null, refreshing: false }));
+      const runtime = await deps.getRuntime(playlistId, false);
+      if (!runtime) {
+        section.unmount();
+        return;
+      }
+      section.update(view({ runtime, refreshing: false }));
       return () => section.unmount();
     },
   };
@@ -52,9 +55,13 @@ export function createPlaylistRuntime(deps: PlaylistRuntimeDeps): Feature {
     if (!playlistId || !(await deps.isEnabled())) return;
     const panel = await resolveWatchPlaylistPanel();
     if (!panel.resolved) return;
+    const badge = mount("tppng-watch-playlist-runtime", panel.element, <Badge runtime={null} />);
     const runtime = await deps.getRuntime(playlistId, false);
-    if (!runtime) return;
-    const badge = mount("tppng-watch-playlist-runtime", panel.element, <Badge runtime={runtime} />);
+    if (!runtime) {
+      badge.unmount();
+      return;
+    }
+    badge.update(<Badge runtime={runtime} />);
     return () => badge.unmount();
   }
 }

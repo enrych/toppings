@@ -65,6 +65,26 @@ describe("playlist runtime", () => {
     expect(document.getElementById("tppng-watch-playlist-runtime")).toBeNull();
   });
 
+  test("holds the space with a skeleton until the runtime arrives", async () => {
+    document.body.innerHTML = layouts["header card"];
+    let answer!: (r: typeof runtime) => void;
+    const mounting = feature({ getRuntime: () => new Promise((r) => (answer = r)) }).mount({ route: playlistRoute });
+    await new Promise((r) => setTimeout(r, 0));
+    const root = document.getElementById("tppng-playlist-runtime")!.shadowRoot!;
+    expect(root.querySelector(".bone")).not.toBeNull();
+    answer(runtime);
+    const unmount = await mounting;
+    expect(root.querySelector(".bone")).toBeNull();
+    expect(root.textContent).toContain("3:37:34 total");
+    unmount?.();
+  });
+
+  test("removes the skeleton when the runtime cannot be fetched", async () => {
+    document.body.innerHTML = layouts["header card"];
+    await feature({ getRuntime: async () => null }).mount({ route: playlistRoute });
+    expect(document.getElementById("tppng-playlist-runtime")).toBeNull();
+  });
+
   test("does nothing when disabled", async () => {
     document.body.innerHTML = layouts.sidebar;
     await feature({ isEnabled: async () => false }).mount({ route: playlistRoute });
