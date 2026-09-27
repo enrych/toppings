@@ -21,7 +21,7 @@ interface SelectProps<T extends string> {
 export default function Select<T extends string>({ label, description, hint, value, options, onChange }: SelectProps<T>) {
   const id = useId();
   const [open, setOpen] = useState(false);
-  const [active, setActive] = useState(Math.max(0, options.findIndex((o) => o.value === value)));
+  const [active, setActive] = useState(0);
   const root = useRef<HTMLDivElement>(null);
   const selected = options.find((o) => o.value === value);
 
@@ -34,6 +34,11 @@ export default function Select<T extends string>({ label, description, hint, val
     return () => document.removeEventListener("mousedown", onDown);
   }, [open]);
 
+  const show = () => {
+    setActive(Math.max(0, options.findIndex((o) => o.value === value)));
+    setOpen(true);
+  };
+
   const pick = (next: T) => {
     onChange(next);
     setOpen(false);
@@ -42,12 +47,12 @@ export default function Select<T extends string>({ label, description, hint, val
   const onKeyDown = (e: KeyboardEvent) => {
     if (e.key === "ArrowDown" || e.key === "ArrowUp") {
       e.preventDefault();
-      if (!open) return setOpen(true);
+      if (!open) return show();
       setActive((i) => (i + (e.key === "ArrowDown" ? 1 : -1) + options.length) % options.length);
     } else if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       if (open) pick(options[active].value);
-      else setOpen(true);
+      else show();
     } else if (e.key === "Escape") setOpen(false);
   };
 
@@ -59,7 +64,7 @@ export default function Select<T extends string>({ label, description, hint, val
           type="button"
           aria-haspopup="listbox"
           aria-expanded={open}
-          onClick={() => setOpen((o) => !o)}
+          onClick={() => (open ? setOpen(false) : show())}
           onKeyDown={onKeyDown}
           class="tw-h-9 tw-w-44 tw-flex tw-items-center tw-justify-between tw-gap-2 tw-px-3 tw-rounded-lg tw-bg-surface-hover tw-text-fg tw-text-sm hover:tw-bg-border-default focus-visible:tw-outline-none focus-visible:tw-ring-2 focus-visible:tw-ring-accent tw-transition-colors"
         >

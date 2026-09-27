@@ -23,19 +23,29 @@ export default function Input({ label, description, hint, initialValue, placehol
   const [value, setValue] = useState(initialValue);
   const [status, setStatus] = useState<Status>("idle");
   const timer = useRef<ReturnType<typeof setTimeout>>();
+  const pending = useRef<() => boolean>();
 
   useEffect(() => setValue(initialValue), [initialValue]);
-  useEffect(() => () => clearTimeout(timer.current), []);
+  useEffect(() => () => {
+    clearTimeout(timer.current);
+    pending.current?.();
+  }, []);
 
   const onInput = (next: string) => {
     setValue(next);
     clearTimeout(timer.current);
     if (!validator) return onChange(next);
     setStatus("checking");
-    timer.current = setTimeout(() => {
-      if (!validator(next)) return setStatus("invalid");
-      setStatus("valid");
+    const commit = () => {
+      pending.current = undefined;
+      if (!validator(next)) return false;
       onChange(next);
+      return true;
+    };
+    pending.current = commit;
+    timer.current = setTimeout(() => {
+      if (!commit()) return setStatus("invalid");
+      setStatus("valid");
       timer.current = setTimeout(() => setStatus("idle"), 1200);
     }, 500);
   };

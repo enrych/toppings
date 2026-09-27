@@ -5,9 +5,9 @@ import Section from "@/ui/layout/Section";
 import Card from "@/ui/layout/Card";
 import Switch from "@/ui/form/Switch";
 import Input from "@/ui/form/Input";
+import { isSeconds } from "@/app/options/validators";
 
 const isRate = (v: string) => Number.isFinite(Number(v)) && Number(v) >= 0.0625 && Number(v) <= 16;
-const isSeconds = (v: string) => Number.isFinite(Number(v)) && Number(v) >= 0;
 
 export default function Shorts() {
   const { value, update } = useSettings(shortsSettings);
@@ -54,6 +54,7 @@ export default function Shorts() {
               description="Seconds to seek backward."
               initialValue={String(value.seekBackward)}
               validator={isSeconds}
+              errorMessage="Must be more than 0"
               onChange={(v) => update({ seekBackward: Number(v) })}
             />
             <Input
@@ -61,6 +62,7 @@ export default function Shorts() {
               description="Seconds to seek forward."
               initialValue={String(value.seekForward)}
               validator={isSeconds}
+              errorMessage="Must be more than 0"
               onChange={(v) => update({ seekForward: Number(v) })}
             />
           </Card>

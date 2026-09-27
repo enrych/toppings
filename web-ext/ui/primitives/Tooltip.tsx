@@ -47,8 +47,9 @@ export default function Tooltip({ children, text, side = "right" }: TooltipProps
       class="tw-relative tw-inline-flex tw-items-center"
       onMouseEnter={() => setVisible(true)}
       onMouseLeave={() => setVisible(false)}
-      onFocus={() => setVisible(true)}
-      onBlur={() => setVisible(false)}
+      // focus and blur do not bubble, so a focusable child would never open it.
+      onFocusIn={() => setVisible(true)}
+      onFocusOut={() => setVisible(false)}
       // A click that changes the DOM under the cursor never fires mouseleave.
       onClick={() => setVisible(false)}
     >

@@ -1,5 +1,5 @@
-import { describe, expect, test } from "bun:test";
-import { parseProfileJson } from "./importExport";
+import { describe, expect, spyOn, test } from "bun:test";
+import { exportProfile, parseProfileJson } from "./importExport";
 
 describe("parseProfileJson", () => {
   test("accepts a bare name and primitives object", () => {
@@ -16,5 +16,19 @@ describe("parseProfileJson", () => {
     expect(parseProfileJson([])).toMatchObject({ ok: false });
     expect(parseProfileJson({ primitives: {} })).toMatchObject({ ok: false });
     expect(parseProfileJson({ name: "x", primitives: [] })).toMatchObject({ ok: false });
+  });
+});
+
+describe("exportProfile", () => {
+  test("keeps the download URL alive past the click", () => {
+    const create = spyOn(URL, "createObjectURL").mockReturnValue("blob:profile");
+    const revoke = spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
+    const click = spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+    exportProfile({ id: "p", name: "Study", isPreset: false, createdAt: 0, primitives: {} });
+    expect(click).toHaveBeenCalledTimes(1);
+    expect(revoke).not.toHaveBeenCalled();
+    create.mockRestore();
+    revoke.mockRestore();
+    click.mockRestore();
   });
 });

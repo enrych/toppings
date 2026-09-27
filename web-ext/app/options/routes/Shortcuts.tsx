@@ -16,27 +16,32 @@ const GROUPS: { group: KeyGroup; description: string }[] = [
   { group: profilesKeys, description: "Anywhere on YouTube." },
 ];
 
-// Every feature's actions, straight from its key registry.
 export default function Shortcuts() {
   const { value: stored, update } = useSettings(keybindings);
 
   return (
     <>
-      <PageHeader title="Shortcuts" description="Click a shortcut to record a new one. Backspace or Escape clears it." />
+      <PageHeader title="Shortcuts" description="Click a shortcut to record a new one. Backspace clears it; Escape cancels." />
 
       <div class="tw-flex tw-flex-col tw-gap-8">
         {GROUPS.map(({ group, description }) => (
           <Section key={group.id} id={group.id} title={group.title} description={description}>
             <Card>
-              {Object.entries(group.keys).map(([key, definition]) => (
-                <Keybinding
-                  key={key}
-                  label={definition.label}
-                  description={definition.description}
-                  value={bindingOf(group, key, stored)}
-                  onChange={(binding) => update({ [actionId(group, key)]: binding })}
-                />
-              ))}
+              {Object.entries(group.keys).map(([key, definition]) => {
+                const id = actionId(group, key);
+                return (
+                  <Keybinding
+                    key={key}
+                    label={definition.label}
+                    description={definition.description}
+                    value={bindingOf(group, key, stored)}
+                    onChange={(binding) => update({ [id]: binding })}
+                    // The slice merges on write, so an override is dropped by
+                    // writing undefined, which bindingOf reads as the default.
+                    onReset={stored[id] == null ? undefined : () => update({ [id]: undefined })}
+                  />
+                );
+              })}
             </Card>
           </Section>
         ))}

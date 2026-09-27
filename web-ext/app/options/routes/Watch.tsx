@@ -7,6 +7,7 @@ import Input from "@/ui/form/Input";
 import Select from "@/ui/form/Select";
 import Switch from "@/ui/form/Switch";
 import CapabilityStatusRow from "@/app/options/components/CapabilityStatusRow";
+import { isNudgeMax, isNudgeStep, isSeconds } from "@/app/options/validators";
 import { useSettings } from "@/kernel/useSettings";
 import { useCapabilityCache } from "@/kernel/dom/useCapabilities";
 import { MAX_RATE, MIN_RATE, parseRates, playbackSettings } from "@/features/playback/settings";
@@ -35,7 +36,6 @@ const WATCH_PRIMITIVES: { id: string; label: string }[] = [
 
 const isRate = (v: string) => Number.isFinite(Number(v)) && Number(v) >= MIN_RATE && Number(v) <= MAX_RATE;
 const isStep = (v: string) => Number.isFinite(Number(v)) && Number(v) > 0 && Number(v) <= MAX_RATE;
-const isSeconds = (v: string) => Number.isFinite(Number(v)) && Number(v) >= 0;
 const isRateList = (v: string) => parseRates(v) !== undefined;
 
 function useRecoveredFeatures() {
@@ -131,6 +131,7 @@ export default function Watch() {
               description="Seconds to seek backward."
               initialValue={String(value.seekBackward)}
               validator={isSeconds}
+              errorMessage="Must be more than 0"
               onChange={(v) => update({ seekBackward: Number(v) })}
             />
             <Input
@@ -138,6 +139,7 @@ export default function Watch() {
               description="Seconds to seek forward."
               initialValue={String(value.seekForward)}
               validator={isSeconds}
+              errorMessage="Must be more than 0"
               onChange={(v) => update({ seekForward: Number(v) })}
             />
           </Card>
@@ -164,7 +166,8 @@ export default function Watch() {
               label="Nudge step"
               description="Seconds a segment edge moves on the first nudge."
               initialValue={String(segments.value.nudgeBaseStep)}
-              validator={isSeconds}
+              validator={(v) => isNudgeStep(v, segments.value.nudgeMaxStep)}
+              errorMessage="Must be more than 0 and no more than the nudge maximum"
               onChange={(v) => segments.update({ nudgeBaseStep: Number(v) })}
             />
             <Input
@@ -178,7 +181,8 @@ export default function Watch() {
               label="Nudge maximum"
               description="Largest step a repeated nudge can reach, in seconds."
               initialValue={String(segments.value.nudgeMaxStep)}
-              validator={isSeconds}
+              validator={(v) => isNudgeMax(v, segments.value.nudgeBaseStep)}
+              errorMessage="Must be at least the nudge step"
               onChange={(v) => segments.update({ nudgeMaxStep: Number(v) })}
             />
           </Card>

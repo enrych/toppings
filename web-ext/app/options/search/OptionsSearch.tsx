@@ -9,9 +9,11 @@ function Highlighted({ text, indices }: { text: string; indices: number[] }) {
 }
 
 // Results are located by their rendered label: a field's <label> first, then
-// a section heading, so a row wins over the section that contains it.
-function findByLabel(label: string): HTMLElement | null {
-  for (const el of document.querySelectorAll<HTMLElement>("label, h2")) {
+// a section heading, so a row wins over the section that contains it. The
+// search stays inside the entry's section, because the Shortcuts page repeats
+// labels across groups.
+function findByLabel(label: string, scope: ParentNode): HTMLElement | null {
+  for (const el of scope.querySelectorAll<HTMLElement>("label, h2")) {
     if (el.textContent?.trim() !== label) continue;
     return el.closest<HTMLElement>("section, [class*='tw-py-3']") ?? el;
   }
@@ -40,7 +42,8 @@ export default function OptionsSearch() {
     navigate(entry.segment);
     // The row exists only once the page has rendered.
     setTimeout(() => {
-      const target = findByLabel(entry.label) ?? (entry.sectionId ? document.getElementById(entry.sectionId) : null);
+      const section = entry.sectionId ? document.getElementById(entry.sectionId) : null;
+      const target = findByLabel(entry.label, section ?? document) ?? section;
       if (target) flash(target);
     }, 150);
   };

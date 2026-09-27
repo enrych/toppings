@@ -1,4 +1,4 @@
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useId, useRef, useState } from "preact/hooks";
 import Button from "@/ui/primitives/Button";
 import PageHeader from "@/ui/layout/PageHeader";
 import Section from "@/ui/layout/Section";
@@ -14,6 +14,7 @@ import {
   createProfile,
   updateProfile,
   deleteProfile,
+  subscribeProfiles,
 } from "@/features/profiles/store";
 import {
   exportProfile,
@@ -49,6 +50,7 @@ function ProfileEditor({
   onCancel,
   getStatus,
 }: ProfileEditorProps) {
+  const nameId = useId();
   const [name, setName] = useState(initial.name ?? "");
   const [primitives, setPrimitives] = useState<ProfilePrimitiveConfig>(
     initial.primitives ?? blankPrimitives(),
@@ -74,10 +76,11 @@ function ProfileEditor({
   return (
     <div class="tw-p-4 tw-flex tw-flex-col tw-gap-4">
             <div class="tw-flex tw-flex-col tw-gap-1">
-        <label class="tw-text-sm tw-font-medium tw-text-fg">
+        <label for={nameId} class="tw-text-sm tw-font-medium tw-text-fg">
           Profile name
         </label>
         <input
+          id={nameId}
           type="text"
           value={name}
           onChange={(e) => setName(e.currentTarget.value)}
@@ -372,6 +375,7 @@ export default function Profiles() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [editor, setEditor] = useState<EditorMode>({ type: "closed" });
+  const importInput = useRef<HTMLInputElement>(null);
 
   const load = async () => {
     const [all, active] = await Promise.all([
@@ -384,6 +388,7 @@ export default function Profiles() {
 
   useEffect(() => {
     void load();
+    return subscribeProfiles(() => void load());
   }, []);
 
   const handleActivate = async (id: string) => {
@@ -432,7 +437,7 @@ export default function Profiles() {
       />
 
       <div class="tw-flex tw-flex-col tw-gap-8">
-                <Section title="Built-in Presets" description="Curated by Toppings — activate in one tap, no configuration needed.">
+                <Section title="Built-in presets" description="Curated by Toppings — activate in one tap, no configuration needed.">
           <Card>
             {presets.map((p) => (
               <PresetCard
@@ -446,35 +451,36 @@ export default function Profiles() {
         </Section>
 
                 <Section
-          title="My Profiles"
+          title="My profiles"
           description="Create your own mix of YouTube experience settings."
           actions={
             editor.type === "closed" ? (
               <div class="tw-flex tw-items-center tw-gap-2">
-                <label title="Import profile from JSON" class="tw-inline-flex tw-items-center tw-h-8 tw-px-3 tw-rounded-full tw-text-[13px] tw-font-medium tw-bg-surface-hover tw-text-fg hover:tw-bg-border-default tw-cursor-pointer tw-transition-colors">
-                  Import
-                  <input
-                    type="file"
-                    accept=".json,application/json"
-                    class="tw-hidden"
-                    onChange={async (e) => {
-                      const file = e.currentTarget.files?.[0];
-                      if (!file) return;
-                      const result = await importProfileFromFile(file);
-                      e.currentTarget.value = "";
-                      if (!result.ok) {
-                        toast.error("Import failed", result.message);
-                        return;
-                      }
-                      await createProfile({
-                        name: result.name,
-                        primitives: result.primitives,
-                      });
-                      await load();
-                      toast.success(`"${result.name}" imported`);
-                    }}
-                  />
-                </label>
+                <Button size="sm" title="Import profile from JSON" onClick={() => importInput.current?.click()}>Import</Button>
+                <input
+                  ref={importInput}
+                  type="file"
+                  accept=".json,application/json"
+                  hidden
+                  onChange={async (e) => {
+                    // currentTarget is null once the handler first awaits.
+                    const input = e.currentTarget;
+                    const file = input.files?.[0];
+                    input.value = "";
+                    if (!file) return;
+                    const result = await importProfileFromFile(file);
+                    if (!result.ok) {
+                      toast.error("Import failed", result.message);
+                      return;
+                    }
+                    await createProfile({
+                      name: result.name,
+                      primitives: result.primitives,
+                    });
+                    await load();
+                    toast.success(`"${result.name}" imported`);
+                  }}
+                />
                 <Button size="sm" variant="primary" onClick={() => setEditor({ type: "create" })}>New profile</Button>
               </div>
             ) : null

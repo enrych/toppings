@@ -11,7 +11,9 @@ export function exportProfile(profile: Profile): void {
   link.href = url;
   link.download = `toppings-profile-${slugify(profile.name)}.json`;
   link.click();
-  URL.revokeObjectURL(url);
+  // Firefox starts the download after click() returns, and revoking the URL
+  // in the same task cancels it.
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 export type ImportResult = { ok: true; name: string; primitives: ProfilePrimitiveConfig } | { ok: false; message: string };
