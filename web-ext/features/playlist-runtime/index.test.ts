@@ -8,7 +8,7 @@ const layouts = {
       <div class="metadata-text-wrapper"><ytd-playlist-byline-renderer>10 videos</ytd-playlist-byline-renderer></div>
     </div></ytd-playlist-header-renderer></ytd-browse>`,
   "page header": `<ytd-browse page-subtype="playlist"><yt-page-header-renderer><div class="ytPageHeaderViewModelHost">
-      <yt-content-metadata-view-model class="ytContentMetadataViewModelHost"><span>10 videos</span></yt-content-metadata-view-model>
+      <yt-content-metadata-view-model class="ytContentMetadataViewModelHost"><div><span class="ytContentMetadataViewModelMetadataText">Playlist</span><span class="ytContentMetadataViewModelDelimiter">•</span><span class="ytContentMetadataViewModelMetadataText" style="color: rgb(170, 170, 170)">10 videos</span></div></yt-content-metadata-view-model>
     </div></yt-page-header-renderer></ytd-browse>`,
   sidebar: `<ytd-browse page-subtype="playlist"><ytd-playlist-sidebar-primary-info-renderer><div id="stats">10 videos</div></ytd-playlist-sidebar-primary-info-renderer></ytd-browse>`,
 };
@@ -19,7 +19,6 @@ function feature(overrides: Partial<Parameters<typeof createPlaylistRuntime>[0]>
   return createPlaylistRuntime({
     getRuntime: async () => runtime,
     isEnabled: async () => true,
-    iconUrl: () => "icon.png",
     ...overrides,
   });
 }
@@ -39,7 +38,7 @@ describe("playlist runtime", () => {
       const host = document.getElementById("tppng-playlist-runtime");
       expect(host).not.toBeNull();
       const text = host!.shadowRoot!.textContent;
-      expect(text).toContain("3:37:34 total·21:45 avg");
+      expect(text).toMatch(/3:37:34 total•?21:45 avg/);
 
       unmount?.();
       expect(document.getElementById("tppng-playlist-runtime")).toBeNull();
@@ -60,9 +59,18 @@ describe("playlist runtime", () => {
     const unmount = await feature().mount({ route: { name: "watch", videoId: "v1", playlistId: "PL1" } });
     const badge = document.getElementById("tppng-watch-playlist-runtime");
     expect(badge!.parentElement!.id).toBe("header-description");
-    expect(badge!.shadowRoot!.textContent).toContain("3:37:34 total·21:45 avg");
+    expect(badge!.shadowRoot!.textContent).toContain("3:37:34 total21:45 avg");
     unmount?.();
     expect(document.getElementById("tppng-watch-playlist-runtime")).toBeNull();
+  });
+
+  test("takes YouTube's separator and text colour in the page-header layout", async () => {
+    document.body.innerHTML = layouts["page header"];
+    const unmount = await feature().mount({ route: playlistRoute });
+    const host = document.getElementById("tppng-playlist-runtime")!;
+    expect(host.shadowRoot!.textContent).toContain("3:37:34 total•21:45 avg");
+    expect(host.style.color).toBe("rgb(170, 170, 170)");
+    unmount?.();
   });
 
   test("holds the space with a skeleton until the runtime arrives", async () => {
@@ -109,9 +117,11 @@ describe("playlist runtime", () => {
 
     const root = document.getElementById("tppng-playlist-runtime")!.shadowRoot!;
     root.querySelector("button")!.click();
+    expect(root.querySelector(".bone")).not.toBeNull();
     await new Promise((r) => setTimeout(r, 0));
 
     expect(calls).toEqual([false, true]);
+    expect(root.querySelector(".bone")).toBeNull();
     expect(root.textContent).toContain("1:00 total");
   });
 });

@@ -1,3 +1,4 @@
+import { credit } from "@/kernel/dom/credit";
 
 // State is shown by fill, never by colour, the same way YouTube's own
 // control-bar toggles do it and the only cue that survives colour-blindness.
@@ -24,7 +25,7 @@ export function segmentButtonHost(): HTMLButtonElement {
 
 export function styleSegmentButton(host: HTMLButtonElement, active: boolean, label: string | null): void {
   host.setAttribute("aria-pressed", String(active));
-  host.title = label ? `Segments — ${label}` : "Segments";
+  host.title = credit(label ? `Segments: ${label}` : "Segments");
   host.style.opacity = active ? "1" : "0.7";
   host.style.background = active ? "rgba(255,255,255,.15)" : "";
   host.style.borderRadius = active ? "4px" : "";

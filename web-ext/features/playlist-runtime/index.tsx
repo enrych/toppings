@@ -1,16 +1,15 @@
 import type { Feature } from "@/kernel/features";
 import { mount } from "@/kernel/dom/mount";
 import { setCapabilityStatus } from "@/kernel/dom/capabilities";
-import { resolvePlaylistHeader, resolveWatchPlaylistPanel } from "@/youtube/playlist";
-import { Badge } from "./Badge";
+import { adoptTextStyle } from "@/kernel/dom/adoptTextStyle";
+import { metadataTextIn, resolvePlaylistHeader, resolveWatchPlaylistPanel } from "@/youtube/playlist";
 import { getPlaylistRuntime, type PlaylistRuntime } from "./messages";
-import { Section } from "./Section";
+import { RuntimeLine } from "./RuntimeLine";
 import { playlistRuntimeSettings } from "./settings";
 
 export interface PlaylistRuntimeDeps {
   getRuntime(playlistId: string, refresh: boolean): Promise<PlaylistRuntime | null>;
   isEnabled(): Promise<boolean>;
-  iconUrl(): string;
 }
 
 export function createPlaylistRuntime(deps: PlaylistRuntimeDeps): Feature {
@@ -27,25 +26,26 @@ export function createPlaylistRuntime(deps: PlaylistRuntimeDeps): Feature {
       void setCapabilityStatus("playlist.runtime", "playlist", header);
       if (!header.resolved) return;
 
-      const view = (state: { runtime: PlaylistRuntime | null; refreshing: boolean }) => (
-        <Section
-          runtime={state.runtime}
-          iconUrl={deps.iconUrl()}
-          refreshing={state.refreshing}
+      const { sample, separator } = metadataTextIn(header.element);
+      const view = (runtime: PlaylistRuntime | null) => (
+        <RuntimeLine
+          runtime={runtime}
+          separator={separator}
           onRefresh={async () => {
-            section.update(view({ runtime: state.runtime, refreshing: true }));
+            section.update(view(null));
             const fresh = await deps.getRuntime(playlistId, true);
-            section.update(view({ runtime: fresh ?? state.runtime, refreshing: false }));
+            section.update(view(fresh ?? runtime));
           }}
         />
       );
-      const section = mount("tppng-playlist-runtime", header.element, view({ runtime: null, refreshing: false }));
+      const section = mount("tppng-playlist-runtime", header.element, view(null));
+      adoptTextStyle(section.host, sample);
       const runtime = await deps.getRuntime(playlistId, false);
       if (!runtime) {
         section.unmount();
         return;
       }
-      section.update(view({ runtime, refreshing: false }));
+      section.update(view(runtime));
       return () => section.unmount();
     },
   };
@@ -55,13 +55,15 @@ export function createPlaylistRuntime(deps: PlaylistRuntimeDeps): Feature {
     if (!playlistId || !(await deps.isEnabled())) return;
     const panel = await resolveWatchPlaylistPanel();
     if (!panel.resolved) return;
-    const badge = mount("tppng-watch-playlist-runtime", panel.element, <Badge runtime={null} />);
+    const { sample, separator } = metadataTextIn(panel.element);
+    const badge = mount("tppng-watch-playlist-runtime", panel.element, <RuntimeLine runtime={null} separator={separator} />);
+    adoptTextStyle(badge.host, sample);
     const runtime = await deps.getRuntime(playlistId, false);
     if (!runtime) {
       badge.unmount();
       return;
     }
-    badge.update(<Badge runtime={runtime} />);
+    badge.update(<RuntimeLine runtime={runtime} separator={separator} />);
     return () => badge.unmount();
   }
 }
@@ -69,5 +71,4 @@ export function createPlaylistRuntime(deps: PlaylistRuntimeDeps): Feature {
 export const playlistRuntime = createPlaylistRuntime({
   getRuntime: (playlistId, refresh) => getPlaylistRuntime.send({ playlistId, refresh }),
   isEnabled: async () => (await playlistRuntimeSettings.get()).enabled,
-  iconUrl: () => chrome.runtime.getURL("assets/icons/icon128.png"),
 });

@@ -1,3 +1,4 @@
+import { credit } from "@/kernel/dom/credit";
 
 export interface ControlsProps {
   autoScroll: boolean;
@@ -20,10 +21,10 @@ export function Controls({ autoScroll, fastRate, isFast, onToggleAutoScroll, onT
   return (
     <div class="stack">
       <style>{styles}</style>
-      <button class={autoScroll ? "on" : ""} title="Auto-scroll to the next Short" aria-pressed={autoScroll} onClick={onToggleAutoScroll}>
+      <button class={autoScroll ? "on" : ""} title={credit("Auto-scroll to the next Short")} aria-pressed={autoScroll} onClick={onToggleAutoScroll}>
         Auto
       </button>
-      <button class={isFast ? "on" : ""} title="Toggle playback rate" aria-pressed={isFast} onClick={onToggleRate}>
+      <button class={isFast ? "on" : ""} title={credit("Toggle playback rate")} aria-pressed={isFast} onClick={onToggleRate}>
         {fastRate}×
       </button>
     </div>

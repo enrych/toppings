@@ -1,4 +1,5 @@
 import { useRef } from "preact/hooks";
+import { credit } from "@/kernel/dom/credit";
 import { colorForIndex } from "./format";
 import type { Segment, SegmentId } from "./types";
 
@@ -149,7 +150,7 @@ export function Markers({ segments, duration, track, onPreview, onSeek, onCommit
             <Pin />
             <span
               class="grab"
-              title={`Segment ${index + 1} ${role === "start" ? "in" : "out"} point. Drag to adjust.`}
+              title={credit(`Segment ${index + 1} ${role === "start" ? "in" : "out"} point, drag to adjust`)}
               onPointerDown={(e) => onPointerDown(e, segment.id, role)}
               onPointerMove={onPointerMove}
               onPointerUp={onPointerUp}
