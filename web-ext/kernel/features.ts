@@ -40,6 +40,7 @@ export function bootFeatures(features: readonly Feature[], onNavigate: (listener
     }
     if (!enabled()) return;
     for (const feature of features) {
+      if (own !== generation) return;
       if (!feature.routes.includes(route.name)) continue;
       try {
         const unmount = await feature.mount({ route });

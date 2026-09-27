@@ -30,10 +30,22 @@ async function readCache(playlistId: string): Promise<PlaylistRuntime | null> {
 }
 
 async function fetchRuntime(playlistId: string): Promise<PlaylistRuntime | null> {
-  const response = await fetch(`${API_BASE}/v1/playlist/${playlistId}`, { headers: { Accept: "application/json" } });
+  const response = await fetch(`${API_BASE}/v1/playlist/${encodeURIComponent(playlistId)}`, { headers: { Accept: "application/json" } });
   if (!response.ok) return null;
   const body = (await response.json()) as { payload: PlaylistRuntime };
   return body.payload;
+}
+
+// YouTube announces a hard load more than once, so the same playlist is often
+// asked for again before its first answer is back.
+const inFlight = new Map<string, Promise<PlaylistRuntime | null>>();
+
+async function fetchAndCache(playlistId: string): Promise<PlaylistRuntime | null> {
+  const data = await fetchRuntime(playlistId);
+  // An empty answer means the API could not see the list, not that it is empty.
+  if (!data || data.totalVideos === 0) return null;
+  await chrome.storage.local.set({ [cacheKey(playlistId)]: { data, cachedAt: Date.now() } satisfies CacheEntry });
+  return data;
 }
 
 export function servePlaylistRuntime(): void {
@@ -42,8 +54,11 @@ export function servePlaylistRuntime(): void {
       const cached = await readCache(playlistId);
       if (cached) return cached;
     }
-    const data = await fetchRuntime(playlistId);
-    if (data) await chrome.storage.local.set({ [cacheKey(playlistId)]: { data, cachedAt: Date.now() } satisfies CacheEntry });
-    return data;
+    let pending = inFlight.get(playlistId);
+    if (!pending) {
+      pending = fetchAndCache(playlistId).finally(() => inFlight.delete(playlistId));
+      inFlight.set(playlistId, pending);
+    }
+    return pending;
   });
 }

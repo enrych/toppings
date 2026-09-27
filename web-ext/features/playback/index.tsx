@@ -66,6 +66,7 @@ export const playback: Feature = {
 
 async function mountSeekFlash() {
   const host = await resolveMoviePlayer();
+  void setCapabilityStatus("watch.moviePlayer", "watch", host);
   if (!host.resolved) return;
   let timer: ReturnType<typeof setTimeout> | undefined;
   const ui = mount("tppng-seek-flash", host.element, <SeekFlash side="forward" seconds={0} visible={false} />);

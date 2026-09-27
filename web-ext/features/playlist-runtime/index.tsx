@@ -1,8 +1,9 @@
-import type { Feature } from "@/kernel/features";
+import type { Feature, Unmount } from "@/kernel/features";
 import { mount } from "@/kernel/dom/mount";
 import { setCapabilityStatus } from "@/kernel/dom/capabilities";
 import { adoptTextStyle } from "@/kernel/dom/adoptTextStyle";
 import { metadataTextIn, resolvePlaylistHeader, resolveWatchPlaylistPanel } from "@/youtube/playlist";
+import { isSystemPlaylist } from "@/youtube/route";
 import { getPlaylistRuntime, type PlaylistRuntime } from "./messages";
 import { RuntimeLine } from "./RuntimeLine";
 import { playlistRuntimeSettings } from "./settings";
@@ -17,54 +18,50 @@ export function createPlaylistRuntime(deps: PlaylistRuntimeDeps): Feature {
     id: "playlist-runtime",
     routes: ["playlist", "watch"],
     async mount({ route }) {
-      if (route.name === "watch") return mountBadge(route.playlistId);
-      if (route.name !== "playlist" || !route.playlistId || route.system) return;
-      if (!(await deps.isEnabled())) return;
-      const playlistId = route.playlistId;
+      if (route.name !== "playlist" && route.name !== "watch") return;
+      const { playlistId } = route;
+      if (!playlistId || isSystemPlaylist(playlistId) || !(await deps.isEnabled())) return;
 
+      if (route.name === "watch") {
+        const panel = await resolveWatchPlaylistPanel();
+        if (!panel.resolved) return;
+        return showRuntime("tppng-watch-playlist-runtime", panel.element, playlistId, false);
+      }
       const header = await resolvePlaylistHeader();
       void setCapabilityStatus("playlist.runtime", "playlist", header);
       if (!header.resolved) return;
-
-      const { sample, separator } = metadataTextIn(header.element);
-      const view = (runtime: PlaylistRuntime | null) => (
-        <RuntimeLine
-          runtime={runtime}
-          separator={separator}
-          onRefresh={async () => {
-            section.update(view(null));
-            const fresh = await deps.getRuntime(playlistId, true);
-            section.update(view(fresh ?? runtime));
-          }}
-        />
-      );
-      const section = mount("tppng-playlist-runtime", header.element, view(null));
-      adoptTextStyle(section.host, sample);
-      const runtime = await deps.getRuntime(playlistId, false);
-      if (!runtime) {
-        section.unmount();
-        return;
-      }
-      section.update(view(runtime));
-      return () => section.unmount();
+      return showRuntime("tppng-playlist-runtime", header.element, playlistId, true);
     },
   };
 
-  // On a watch page opened from a playlist, a one-line badge in the panel header.
-  async function mountBadge(playlistId: string | null) {
-    if (!playlistId || !(await deps.isEnabled())) return;
-    const panel = await resolveWatchPlaylistPanel();
-    if (!panel.resolved) return;
-    const { sample, separator } = metadataTextIn(panel.element);
-    const badge = mount("tppng-watch-playlist-runtime", panel.element, <RuntimeLine runtime={null} separator={separator} />);
-    adoptTextStyle(badge.host, sample);
-    const runtime = await deps.getRuntime(playlistId, false);
-    if (!runtime) {
-      badge.unmount();
-      return;
-    }
-    badge.update(<RuntimeLine runtime={runtime} separator={separator} />);
-    return () => badge.unmount();
+  // Returns as soon as the skeleton is up: features mount one after another,
+  // so waiting here would hold every later feature behind the network.
+  function showRuntime(id: string, container: Element, playlistId: string, refreshable: boolean): Unmount {
+    const { sample, separator } = metadataTextIn(container);
+    let mounted = true;
+    let shown: PlaylistRuntime | null = null;
+
+    const view = (runtime: PlaylistRuntime | null) => (
+      <RuntimeLine runtime={runtime} separator={separator} onRefresh={refreshable && runtime ? () => void load(true) : undefined} />
+    );
+    const line = mount(id, container, view(null));
+    adoptTextStyle(line.host, sample);
+    const remove = () => {
+      if (!mounted) return;
+      mounted = false;
+      line.unmount();
+    };
+
+    const load = async (refresh: boolean) => {
+      line.update(view(null));
+      const runtime = await deps.getRuntime(playlistId, refresh).catch(() => null);
+      if (!mounted) return;
+      shown = runtime ?? shown;
+      if (shown) line.update(view(shown));
+      else remove();
+    };
+    void load(false);
+    return remove;
   }
 }
 

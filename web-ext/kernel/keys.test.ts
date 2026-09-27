@@ -46,6 +46,19 @@ describe("key bindings", () => {
     expect(count).toBe(0);
   });
 
+  test("keys are ignored while typing in a field inside a shadow root", () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const input = host.attachShadow({ mode: "open" }).appendChild(document.createElement("input"));
+    input.focus();
+    let count = 0;
+    const unbind = bindKeys(group, { go: () => count++, back: () => {} });
+    // Dispatched from the host, as a browser retargets it on leaving the shadow root.
+    press("g", {}, host);
+    unbind();
+    expect(count).toBe(0);
+  });
+
   test("a stored binding overrides the default", async () => {
     await keybindings.set({ [actionId(group, "go")]: "K" });
     expect(bindingOf(group, "go", await keybindings.get())).toBe("K");

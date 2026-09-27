@@ -21,8 +21,7 @@ export function routeFor(url: URL): Route {
   }
   if (pathname.startsWith(YOUTUBE_URL_PATH.PLAYLIST)) {
     const playlistId = searchParams.get(YOUTUBE_QUERY_PARAM.PLAYLIST_ID);
-    const system = playlistId === YOUTUBE_SYSTEM_PLAYLIST_ID.WATCH_LATER || playlistId === YOUTUBE_SYSTEM_PLAYLIST_ID.LIKED;
-    return { name: "playlist", playlistId, system };
+    return { name: "playlist", playlistId, system: isSystemPlaylist(playlistId) };
   }
   if (pathname.startsWith(YOUTUBE_URL_PATH.SHORTS)) {
     return { name: "shorts", shortId: pathname.split("/")[2] || null };
@@ -30,6 +29,16 @@ export function routeFor(url: URL): Route {
   if (pathname === "/") return { name: "home" };
   if (pathname.startsWith("/results")) return { name: "search" };
   return { name: "other" };
+}
+
+// Watch Later and Liked belong to the viewer and mixes (RD…) are generated per
+// viewer, so none of them is a list anyone else, like the Data API, can read.
+export function isSystemPlaylist(playlistId: string | null): boolean {
+  return (
+    playlistId === YOUTUBE_SYSTEM_PLAYLIST_ID.WATCH_LATER ||
+    playlistId === YOUTUBE_SYSTEM_PLAYLIST_ID.LIKED ||
+    !!playlistId?.startsWith(YOUTUBE_SYSTEM_PLAYLIST_ID.MIX_PREFIX)
+  );
 }
 
 // YouTube is a single-page app; it announces each completed navigation with

@@ -13,6 +13,7 @@ describe("routeFor", () => {
     expect(at("/playlist?list=PL1")).toEqual({ name: "playlist", playlistId: "PL1", system: false });
     expect(at("/playlist?list=WL")).toEqual({ name: "playlist", playlistId: "WL", system: true });
     expect(at("/playlist?list=LL")).toMatchObject({ system: true });
+    expect(at("/playlist?list=RDdQw4w9WgXcQ")).toMatchObject({ system: true });
   });
 
   test("shorts carry the short id", () => {

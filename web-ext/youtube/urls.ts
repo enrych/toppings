@@ -14,4 +14,5 @@ export const YOUTUBE_QUERY_PARAM = {
 export const YOUTUBE_SYSTEM_PLAYLIST_ID = {
   WATCH_LATER: "WL",
   LIKED: "LL",
+  MIX_PREFIX: "RD",
 } as const;

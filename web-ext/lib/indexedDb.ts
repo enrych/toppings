@@ -5,7 +5,6 @@ const DB_NAME = "toppings";
 /** Object stores the extension needs, with their key paths. */
 const REQUIRED_STORES: ReadonlyArray<readonly [string, string]> = [
   [BROWSER_STORAGE_IDB_STORE.VIDEO_PREFERENCE, "videoId"],
-  [BROWSER_STORAGE_IDB_STORE.CAPABILITY_CACHE, "primitiveId"],
   [BROWSER_STORAGE_IDB_STORE.LOOP_SEGMENT, "videoId"],
   [BROWSER_STORAGE_IDB_STORE.SEGMENT_DATA, "videoId"],
 ];
