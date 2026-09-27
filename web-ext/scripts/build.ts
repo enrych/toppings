@@ -100,7 +100,12 @@ async function writeManifest() {
     manifest.web_accessible_resources = manifest.web_accessible_resources.flatMap(
       (resource: { resources: string[] }) => resource.resources,
     );
-    manifest.browser_specific_settings = { gecko: { id: BRAND_METADATA.ID } };
+    // Mozilla requires declaring data that leaves the device, shown to the user
+    // at install. The playlist runtime sends the ID of the playlist being
+    // viewed to Toppings' server, which it counts as browsing activity.
+    manifest.browser_specific_settings = {
+      gecko: { id: BRAND_METADATA.ID, data_collection_permissions: { required: ["browsingActivity"] } },
+    };
   }
 
   await Bun.write(`${DIST}/manifest.json`, JSON.stringify(manifest, null, 2));
