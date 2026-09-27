@@ -22,10 +22,14 @@ export class SegmentEngine {
   private originalRate: number | null = null;
   private appliedRate: number | null = null;
   private _active = false;
+  private isHeld: () => boolean;
 
-  constructor(video: HTMLVideoElement, config: SegmentConfig) {
+  // isHeld pauses the engine while the video is not the content, as during a
+  // mid-roll ad, which YouTube plays in this same element on its own clock.
+  constructor(video: HTMLVideoElement, config: SegmentConfig, isHeld: () => boolean = () => false) {
     this.video = video;
     this.config = config;
+    this.isHeld = isHeld;
   }
 
   start(): void {
@@ -106,6 +110,7 @@ export class SegmentEngine {
   }
 
   private onTimeUpdate(): void {
+    if (this.isHeld()) return;
     // A tick queued before a seek reports the new position before the seeking
     // event has had a chance to adopt it.
     if (this.video.seeking) return;
@@ -137,6 +142,7 @@ export class SegmentEngine {
   // one segment is where an adjacent or enclosing one starts, and adopting it
   // there would reset the step's count or loop it forever.
   private onSeeking(): void {
+    if (this.isHeld()) return;
     const ct = this.video.currentTime;
     const current = this.resolveCurrentSegment();
     if (current && ct >= current.startTime && ct < current.endTime) return;
@@ -181,6 +187,7 @@ export class SegmentEngine {
   }
 
   private seekToCurrentSegment(): void {
+    if (this.isHeld()) return;
     const seg = this.resolveCurrentSegment();
     if (seg && this.video.duration > 0) {
       const seekTo = Math.max(0, Math.min(seg.startTime, this.video.duration));

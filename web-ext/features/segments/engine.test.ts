@@ -117,6 +117,26 @@ describe("SegmentEngine", () => {
     expect(video.currentTime).toBe(99.9);
   });
 
+  test("a mid-roll ad in the same video is left alone, and segments resume after it", () => {
+    const video = fakeVideo();
+    let ad = false;
+    const engine = new SegmentEngine(video, config([{ id: "a", startTime: 40, endTime: 60 }], [{ segmentIds: ["a"], playbackRate: 0.5 }]), () => ad);
+    engine.start();
+    playTo(video, 45);
+    ad = true;
+    video.playbackRate = 1;
+    seekTo(video, 3);
+    playTo(video, 20);
+    expect(video.currentTime).toBe(20);
+    expect(video.playbackRate).toBe(1);
+    ad = false;
+    playTo(video, 45);
+    expect(video.currentTime).toBe(45);
+    expect(video.playbackRate).toBe(0.5);
+    playTo(video, 60);
+    expect(video.currentTime).toBe(40);
+  });
+
   test("stop leaves a rate the user chose alone", () => {
     const video = fakeVideo();
     const engine = new SegmentEngine(video, config([{ id: "a", startTime: 0, endTime: 50 }], [{ segmentIds: ["a"] }]));

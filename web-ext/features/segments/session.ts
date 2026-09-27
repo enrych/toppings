@@ -92,7 +92,7 @@ export class SegmentSession {
   activate(config: SegmentConfig): boolean {
     if (this.disposed || !this.ready) return false;
     this.engine?.stop();
-    this.engine = new SegmentEngine(this.deps.video, config);
+    this.engine = new SegmentEngine(this.deps.video, config, () => isAdShowing(this.deps.video));
     this.engine.start();
     this.set({ active: true, config });
     return true;
