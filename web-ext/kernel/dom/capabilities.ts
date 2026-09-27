@@ -46,7 +46,13 @@ export async function setCapabilityStatus(primitiveId: string, scope: PrimitiveS
   };
   // Swallowed: a content script outliving an extension reload can no longer
   // reach storage, and a lost entry only costs a re-check on the next page.
-  await chrome.storage.local.set({ [PREFIX + primitiveId]: entry }).catch(() => {});
+  // An unchanged entry is not rewritten, since each write wakes the background.
+  try {
+    const key = PREFIX + primitiveId;
+    const stored = (await chrome.storage.local.get(key))[key] as CapabilityCacheEntry | undefined;
+    const unchanged = stored?.status === entry.status && stored.resolvedStrategyIndex === entry.resolvedStrategyIndex && stored.extensionVersion === entry.extensionVersion;
+    if (!unchanged) await chrome.storage.local.set({ [key]: entry });
+  } catch {}
 }
 
 async function capabilityKeys(): Promise<string[]> {

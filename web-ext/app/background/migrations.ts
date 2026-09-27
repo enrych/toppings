@@ -52,5 +52,7 @@ const LEGACY_KEYS = ["isExtensionEnabled", "ui", "preferences"];
 
 export async function migrateLegacyStore(): Promise<void> {
   await migrateSettings([appSettings, playlistRuntimeSettings, shortsSettings, playbackSettings, profilesSettings, profileStore, segmentsSettings, legacyKeybindings]);
-  await chrome.storage.sync.remove(LEGACY_KEYS);
+  // Only when present: this runs at every background start, and each removal
+  // counts against sync's write quota.
+  if (Object.keys(await chrome.storage.sync.get(LEGACY_KEYS)).length) await chrome.storage.sync.remove(LEGACY_KEYS);
 }

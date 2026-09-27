@@ -79,7 +79,7 @@ export class SegmentSession {
     } catch (error) {
       console.error("[toppings] segment storage unavailable", error);
     }
-    this.activate(lastUsed ?? createFreshConfig(this.duration));
+    this.activate(lastUsed ? this.clampToDuration(lastUsed) : createFreshConfig(this.duration));
   }
 
   fresh(): void {

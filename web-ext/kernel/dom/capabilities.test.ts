@@ -17,6 +17,15 @@ describe("capability cache", () => {
     expect((await getAllCapabilityEntries()).map((e) => e.primitiveId).sort()).toEqual(["watch.player", "watch.ratePanel"]);
   });
 
+  test("an unchanged status is not rewritten", async () => {
+    await setCapabilityStatus("watch.player", "watch", found);
+    const key = "toppings:capability:watch.player";
+    const first = (await chrome.storage.local.get(key))[key];
+    await new Promise((r) => setTimeout(r, 5));
+    await setCapabilityStatus("watch.player", "watch", found);
+    expect((await chrome.storage.local.get(key))[key].lastCheckedAt).toBe(first.lastCheckedAt);
+  });
+
   test("clearing removes only capability entries", async () => {
     await chrome.storage.local.set({ other: 1 });
     await setCapabilityStatus("watch.player", "watch", found);

@@ -1,5 +1,6 @@
 import { getFeatureReports, markRecovered, removeFeatureReport } from "@/kernel/dom/featureReports";
-import { getCapabilityStatus } from "@/kernel/dom/capabilities";
+import type { CapabilityCacheEntry } from "@/kernel/dom/capabilities";
+import { CHROME_STORAGE_LOCAL_KEY } from "@/lib/storageKeys";
 import { URLS } from "@/lib/urls";
 import { appSettings } from "@/app/settings";
 import { servePlaylistRuntime } from "@/features/playlist-runtime/background";
@@ -21,7 +22,6 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
     void chrome.runtime.setUninstallURL(URLS.FAREWELL);
   }
   await migrateLegacyStore();
-  if (reason === "update") void checkRecoveredFeatures();
 });
 
 // The toolbar icon greys out while the master switch is off.
@@ -35,12 +35,19 @@ function setIcon(enabled: boolean): void {
 void appSettings.get().then((app) => setIcon(app.enabled));
 appSettings.subscribe((app) => setIcon(app.enabled));
 
-// An update can add selector strategies that fix a primitive the user reported,
-// so anything now resolving is marked recovered for the options page to surface.
-async function checkRecoveredFeatures(): Promise<void> {
-  for (const report of await getFeatureReports()) {
-    if ((await getCapabilityStatus(report.primitiveId)) !== "supported") continue;
-    await markRecovered(report.primitiveId);
-    await removeFeatureReport(report.primitiveId);
+// A reported primitive that a content script now finds is marked recovered
+// for the options page to surface; after an update adds strategies, that is
+// the first YouTube page the new version loads.
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area !== "local") return;
+  for (const [key, change] of Object.entries(changes)) {
+    const entry = change.newValue as CapabilityCacheEntry | undefined;
+    if (key.startsWith(CHROME_STORAGE_LOCAL_KEY.CAPABILITY_PREFIX) && entry?.status === "supported") void resolveReport(entry.primitiveId);
   }
+});
+
+async function resolveReport(primitiveId: string): Promise<void> {
+  if (!(await getFeatureReports()).some((report) => report.primitiveId === primitiveId)) return;
+  await markRecovered(primitiveId);
+  await removeFeatureReport(primitiveId);
 }

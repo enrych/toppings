@@ -37,6 +37,11 @@ describe("legacy migration", () => {
     expect((await slice.get()).enabled).toBe(true);
   });
 
+  test("two writes in the same tick both land", async () => {
+    await Promise.all([slice.set({ enabled: false }), slice.set({ size: 9 })]);
+    expect(await slice.get()).toEqual({ enabled: false, size: 9 });
+  });
+
   test("writes nothing when there is no legacy value", async () => {
     await migrateSettings([slice]);
     expect(await chrome.storage.sync.get()).toEqual({});

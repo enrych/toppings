@@ -9,7 +9,8 @@ import { segments } from "@/features/segments";
 
 // Booted only once the master switch is known: the first navigation mounts
 // at once, and with the switch off it must not, say, apply the default rate.
-void appSettings.get().then((app) => {
+// A read that fails leaves the defaults, so Toppings still runs.
+void appSettings.get().catch(() => appSettings.defaults).then((app) => {
   let enabled = app.enabled;
   const booted = bootFeatures([playlistRuntime, shorts, playback, profiles, segments], onNavigate, { enabled: () => enabled });
 

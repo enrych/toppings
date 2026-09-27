@@ -27,6 +27,9 @@ export function defineSettings<T extends object>(
 ): Settings<T> {
   const key = `settings:${id}`;
   const storage = chrome.storage[area];
+  // Writes are merged into what is stored, so two made in the same tick would
+  // both merge into the same old value and one would be lost; they queue.
+  let writing = Promise.resolve();
 
   const get = async (): Promise<T> => {
     const stored = await storage.get(key);
@@ -39,9 +42,13 @@ export function defineSettings<T extends object>(
     defaults,
     legacy,
     get,
-    async set(patch) {
-      const current = await get();
-      await storage.set({ [key]: { ...current, ...patch } });
+    set(patch) {
+      const write = writing.then(async () => {
+        const current = await get();
+        await storage.set({ [key]: { ...current, ...patch } });
+      });
+      writing = write.catch(() => {});
+      return write;
     },
     subscribe(listener) {
       const onChanged = (changes: Record<string, chrome.storage.StorageChange>, changedArea: string) => {

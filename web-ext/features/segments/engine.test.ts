@@ -137,6 +137,33 @@ describe("SegmentEngine", () => {
     expect(video.currentTime).toBe(40);
   });
 
+  test("a segment starting past the video's end does not seek forever", async () => {
+    const video = fakeVideo(100);
+    let time = 0;
+    let seeks = 0;
+    // Browsers fire seeking for every seek, the engine's own included.
+    Object.defineProperty(video, "currentTime", {
+      configurable: true,
+      get: () => time,
+      set: (t: number) => {
+        time = t;
+        if (++seeks < 50) queueMicrotask(() => video.dispatchEvent(new Event("seeking")));
+      },
+    });
+    const engine = new SegmentEngine(video, config([{ id: "a", startTime: 120, endTime: 140 }], [{ segmentIds: ["a"] }]));
+    engine.start();
+    await new Promise((r) => setTimeout(r, 0));
+    expect(seeks).toBeLessThan(3);
+  });
+
+  test("scrubbing a segment outside the sequence leaves the playhead there", () => {
+    const video = fakeVideo(200);
+    const engine = new SegmentEngine(video, config([{ id: "a", startTime: 10, endTime: 20 }, { id: "b", startTime: 50, endTime: 60 }, { id: "loose", startTime: 30, endTime: 40 }], [{ segmentIds: ["a", "b"] }]));
+    engine.start();
+    seekTo(video, 32);
+    expect(video.currentTime).toBe(32);
+  });
+
   test("stop leaves a rate the user chose alone", () => {
     const video = fakeVideo();
     const engine = new SegmentEngine(video, config([{ id: "a", startTime: 0, endTime: 50 }], [{ segmentIds: ["a"] }]));

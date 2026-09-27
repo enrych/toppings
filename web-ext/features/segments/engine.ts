@@ -23,6 +23,8 @@ export class SegmentEngine {
   private appliedRate: number | null = null;
   private _active = false;
   private isHeld: () => boolean;
+  // A segment outside the sequence that the user seeked into, being edited.
+  private scrubbing: Segment | null = null;
 
   // isHeld pauses the engine while the video is not the content, as during a
   // mid-roll ad, which YouTube plays in this same element on its own clock.
@@ -111,6 +113,11 @@ export class SegmentEngine {
 
   private onTimeUpdate(): void {
     if (this.isHeld()) return;
+    if (this.scrubbing) {
+      const ct = this.video.currentTime;
+      if (ct >= this.scrubbing.startTime && ct < this.scrubbing.endTime) return;
+      this.scrubbing = null;
+    }
     // A tick queued before a seek reports the new position before the seeking
     // event has had a chance to adopt it.
     if (this.video.seeking) return;
@@ -144,11 +151,19 @@ export class SegmentEngine {
   private onSeeking(): void {
     if (this.isHeld()) return;
     const ct = this.video.currentTime;
+    const contains = (s: Segment) => ct >= s.startTime && ct < s.endTime;
+    this.scrubbing = null;
     const current = this.resolveCurrentSegment();
-    if (current && ct >= current.startTime && ct < current.endTime) return;
+    if (current && contains(current)) return;
     if (this.adoptSegmentAt(ct)) return;
+    // A segment outside the sequence is one being edited; scrubbing it stays put.
+    this.scrubbing = this.config.segments.find(contains) ?? null;
+    if (this.scrubbing) return;
     const ahead = [...this.config.segments].sort((a, b) => a.startTime - b.startTime).filter((s) => s.startTime >= ct);
     for (const segment of ahead) {
+      // The engine's own seek toward a segment past the video's end lands short
+      // of it; seeking there again would never stop.
+      if (segment.id === current?.id) return;
       if (this.adoptSegment(segment.id)) {
         this.seekToCurrentSegment();
         return;
