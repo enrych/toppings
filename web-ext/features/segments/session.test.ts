@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test } from "bun:test";
+import { beforeEach, describe, expect, spyOn, test } from "bun:test";
 import { createFreshConfig } from "./factories";
 import { SegmentSession } from "./session";
 import { memorySegmentStorage, openVideoSegments } from "./store";
@@ -97,6 +97,77 @@ describe("SegmentSession", () => {
     expect(session.state.config!.segments).toHaveLength(1);
     expect(session.state.config!.segments[0].endTime).toBe(100);
     expect(session.state.config!.sequence[0].segmentIds).toEqual([a.id]);
+  });
+
+  test("save as named keeps the config it was saved from", async () => {
+    await session.toggle();
+    await session.saveNamed("First");
+    await session.updateSaved(session.state.config!.id, { shortcutKey: "Ctrl+1" });
+    session.load(session.state.saved[0]);
+    video.currentTime = 20;
+    session.setStart();
+    await session.saveNamed("Second");
+    expect(session.state.saved.map((c) => c.label)).toEqual(["First", "Second"]);
+    expect(session.state.saved[0].segments[0].startTime).toBe(0);
+    expect(session.state.saved[1].segments[0].startTime).toBe(20);
+    expect(session.state.saved.map((c) => c.shortcutKey)).toEqual(["Ctrl+1", ""]);
+  });
+
+  test("nothing activates once disposed, even if storage answers later", async () => {
+    const config = createFreshConfig(100);
+    await store.saveConfig({ ...config, segments: [{ ...config.segments[0], startTime: 10, endTime: 20 }] });
+    await store.setDefaultConfig(config.id);
+    const restoring = new SegmentSession({ video, store, settings: { ...settings, autoLoad: "default" }, toast: (m) => toasts.push(m) });
+    video.currentTime = 50;
+    const pending = restoring.restore();
+    restoring.dispose();
+    await pending;
+    expect(restoring.state.active).toBe(false);
+    expect(video.currentTime).toBe(50);
+    expect(toasts).not.toContain("↺ Segments restored");
+
+    const toggling = new SegmentSession({ video, store, settings, toast: () => undefined });
+    const toggled = toggling.toggle();
+    toggling.dispose();
+    await toggled;
+    expect(toggling.state.active).toBe(false);
+  });
+
+  test("segments stay off until the video has a finite duration", async () => {
+    Object.defineProperty(video, "duration", { value: NaN, configurable: true });
+    await session.toggle();
+    session.fresh();
+    expect(session.state.active).toBe(false);
+    expect(await store.getLastUsed()).toBeNull();
+
+    Object.defineProperty(video, "duration", { value: Infinity, configurable: true });
+    await session.toggle();
+    expect(session.state.active).toBe(false);
+  });
+
+  test("segments stay off while an ad plays in the video", async () => {
+    const player = document.createElement("div");
+    player.className = "html5-video-player ad-showing";
+    player.append(video);
+    await session.toggle();
+    expect(session.state.active).toBe(false);
+    player.classList.remove("ad-showing");
+    await session.toggle();
+    expect(session.state.active).toBe(true);
+  });
+
+  test("toggle still starts a fresh slate when storage fails", async () => {
+    const failing = new SegmentSession({
+      video,
+      store: { ...store, getLastUsed: () => Promise.reject(new Error("blocked")) },
+      settings,
+      toast: () => undefined,
+    });
+    const logged = spyOn(console, "error").mockImplementation(() => undefined);
+    await failing.toggle();
+    expect(logged).toHaveBeenCalled();
+    logged.mockRestore();
+    expect(failing.state.active).toBe(true);
   });
 
   test("the save key clears the last-used slate while inactive", async () => {

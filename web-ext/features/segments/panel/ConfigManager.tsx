@@ -1,4 +1,4 @@
-import { useState } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 import type { SegmentConfig } from "../types";
 
 export interface ConfigManagerProps {
@@ -56,6 +56,11 @@ interface SavedRowProps {
 
 function SavedRow({ config, isDefault, isLoaded, onLoad, onRename, onShortcut, onSetDefault, onDelete }: SavedRowProps) {
   const [draft, setDraft] = useState<string | null>(null);
+  const draftInput = useRef<HTMLInputElement>(null);
+  const isRenaming = draft !== null;
+  useEffect(() => {
+    if (isRenaming) draftInput.current?.select();
+  }, [isRenaming]);
 
   if (draft !== null) {
     const commit = () => {
@@ -67,7 +72,7 @@ function SavedRow({ config, isDefault, isLoaded, onLoad, onRename, onShortcut, o
         <input
           class="input text"
           value={draft}
-          ref={(el) => el?.select()}
+          ref={draftInput}
           onInput={(e) => setDraft(e.currentTarget.value)}
           onKeyDown={(e) => {
             e.stopPropagation();

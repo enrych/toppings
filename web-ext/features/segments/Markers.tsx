@@ -1,4 +1,4 @@
-import { useRef } from "preact/hooks";
+import { useEffect, useRef } from "preact/hooks";
 import { credit } from "@/kernel/dom/credit";
 import { colorForIndex } from "./format";
 import type { Segment, SegmentId } from "./types";
@@ -67,16 +67,17 @@ export function Markers({ segments, duration, track, onPreview, onSeek, onCommit
     if (merge.current) clearTimeout(merge.current.timer);
     merge.current = null;
   };
+  useEffect(() => clearMerge, []);
 
-  const clamp = (raw: number, id: SegmentId, role: Role) => {
-    const index = sorted.findIndex((s) => s.id === id);
-    const own = sorted[index];
+  // The segment's own bounds are applied last so they win over a neighbour
+  // that overlaps it.
+  const clamp = (raw: number, own: Segment, index: number, role: Role) => {
     if (role === "start") {
-      const floor = sorted[index - 1] ? pct(sorted[index - 1].endTime) : 0;
-      return Math.max(floor + EPSILON_PCT, Math.min(raw, pct(own.endTime) - EPSILON_PCT));
+      const floor = sorted[index - 1] ? pct(sorted[index - 1].endTime) + EPSILON_PCT : 0;
+      return Math.max(0, Math.min(Math.max(raw, floor), pct(own.endTime) - EPSILON_PCT));
     }
-    const ceiling = sorted[index + 1] ? pct(sorted[index + 1].startTime) : 100;
-    return Math.min(ceiling - EPSILON_PCT, Math.max(raw, pct(own.startTime) + EPSILON_PCT));
+    const ceiling = sorted[index + 1] ? pct(sorted[index + 1].startTime) - EPSILON_PCT : 100;
+    return Math.min(100, Math.max(Math.min(raw, ceiling), pct(own.startTime) + EPSILON_PCT));
   };
 
   // Holding a marker against its neighbour for a moment merges the two.
@@ -97,6 +98,7 @@ export function Markers({ segments, duration, track, onPreview, onSeek, onCommit
       ...candidate,
       timer: setTimeout(() => {
         merge.current = null;
+        drag.current = null;
         onMerge(candidate.keepId, candidate.removeId);
       }, MERGE_HOLD_MS),
     };
@@ -112,8 +114,10 @@ export function Markers({ segments, duration, track, onPreview, onSeek, onCommit
   const onPointerMove = (e: PointerEvent) => {
     if (!drag.current || !duration) return;
     const { id, role } = drag.current;
+    const index = sorted.findIndex((s) => s.id === id);
+    if (index === -1) return;
     const rect = track.getBoundingClientRect();
-    const at = clamp(((e.clientX - rect.left) / rect.width) * 100, id, role);
+    const at = clamp(((e.clientX - rect.left) / rect.width) * 100, sorted[index], index, role);
     const time = (at / 100) * duration;
     onPreview(segments.map((s) => (s.id === id ? { ...s, [role === "start" ? "startTime" : "endTime"]: time } : s)));
     if (role === "start") onSeek(time);
@@ -123,7 +127,7 @@ export function Markers({ segments, duration, track, onPreview, onSeek, onCommit
   const onPointerUp = () => {
     if (!drag.current) return;
     drag.current = null;
-    if (merge.current === null) clearMerge();
+    clearMerge();
     onCommit();
   };
 

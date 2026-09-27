@@ -85,3 +85,8 @@ export function syncRatePanel(panel: Element, rate: number): void {
     slider.setAttribute("aria-valuetext", rate.toFixed(2));
   }
 }
+
+// Ads play in the content's own <video>; YouTube marks the player meanwhile.
+export function isAdShowing(video: Element): boolean {
+  return video.closest(".html5-video-player")?.classList.contains("ad-showing") ?? false;
+}

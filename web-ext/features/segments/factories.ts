@@ -4,8 +4,6 @@ function randomId(): string {
   return crypto.randomUUID();
 }
 
-// Callers that do not yet know the duration pass 0 and are responsible for
-// rewriting endTime once the video's metadata loads.
 export function createFreshConfig(videoDuration: number): SegmentConfig {
   const segId = randomId();
   const stepId = randomId();

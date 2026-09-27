@@ -18,8 +18,9 @@ export class SegmentEngine {
   private video: HTMLVideoElement;
   private config: SegmentConfig;
   private state: EngineState = initialState();
-  private listener: (() => void) | null = null;
+  private detach: (() => void) | null = null;
   private originalRate: number | null = null;
+  private appliedRate: number | null = null;
   private _active = false;
 
   constructor(video: HTMLVideoElement, config: SegmentConfig) {
@@ -35,32 +36,28 @@ export class SegmentEngine {
 
     // Never seek when the playhead already sits inside a segment: enabling
     // segments mid-playback should not jump the video out from under the user.
-    const ct = this.video.currentTime;
-    const alreadyInside = this.config.segments.find(
-      (s) => ct >= s.startTime && ct <= s.endTime,
-    );
-    if (alreadyInside) {
-      this.reconcileStateToCurrentTime();
-    } else {
-      this.seekToCurrentSegment();
-    }
+    if (!this.adoptSegmentAt(this.video.currentTime)) this.seekToCurrentSegment();
 
-    this.listener = () => this.onTimeUpdate();
-    this.video.addEventListener("timeupdate", this.listener);
+    const onTimeUpdate = () => this.onTimeUpdate();
+    const onSeeking = () => this.onSeeking();
+    this.video.addEventListener("timeupdate", onTimeUpdate);
+    this.video.addEventListener("seeking", onSeeking);
+    this.detach = () => {
+      this.video.removeEventListener("timeupdate", onTimeUpdate);
+      this.video.removeEventListener("seeking", onSeeking);
+    };
   }
 
   stop(): void {
-    if (this.listener) {
-      this.video.removeEventListener("timeupdate", this.listener);
-      this.listener = null;
-    }
-    if (
-      this.originalRate !== null &&
-      this.video.playbackRate !== this.originalRate
-    ) {
+    this.detach?.();
+    this.detach = null;
+    // Only undo a rate the engine set and nobody has changed since, so a speed
+    // the user picked while segments ran survives turning them off.
+    if (this.originalRate !== null && this.appliedRate === this.video.playbackRate) {
       this.video.playbackRate = this.originalRate;
     }
     this.originalRate = null;
+    this.appliedRate = null;
     this._active = false;
   }
 
@@ -72,11 +69,18 @@ export class SegmentEngine {
   // config on every pointer move, does not restart playback on every frame.
   setConfig(config: SegmentConfig): void {
     this.config = config;
-    if (this._active) {
-      this.reconcileStateToCurrentTime();
-    } else {
+    if (!this._active) {
       this.state = initialState();
+      return;
     }
+    // An edit that leaves the playhead outside the segment it was in restarts
+    // that segment, rather than the next tick advancing past what is being edited.
+    const current = this.resolveCurrentSegment();
+    const ct = this.video.currentTime;
+    if (current && ct >= current.startTime && ct <= current.endTime) return;
+    if (this.adoptSegmentAt(ct)) return;
+    if (!current) this.state = initialState();
+    this.seekToCurrentSegment();
   }
 
   getCurrentSegment(): Segment | null {
@@ -102,52 +106,47 @@ export class SegmentEngine {
   }
 
   private onTimeUpdate(): void {
+    // A tick queued before a seek reports the new position before the seeking
+    // event has had a chance to adopt it.
+    if (this.video.seeking) return;
     const seg = this.resolveCurrentSegment();
     if (!seg) return;
 
     const rate = this.getEffectiveRate();
     if (rate !== null && Math.abs(this.video.playbackRate - rate) > 0.001) {
       this.video.playbackRate = rate;
+      this.appliedRate = this.video.playbackRate;
     }
 
     const ct = this.video.currentTime;
 
     // 0.3 s short of the true end: seeking into the unmuxed tail of a YouTube
-    // stream can stall playback rather than fire the next timeupdate.
-    const safeEnd = Math.min(
-      seg.endTime,
-      this.video.duration > 0 ? this.video.duration - 0.3 : seg.endTime,
-    );
-
-    if (ct >= seg.startTime && ct < safeEnd) return;
-
-    // A manual seek into another segment adopts that segment instead of being
-    // yanked back — otherwise the engine would fight the user's own seeking.
-    const seekedInto = this.config.segments.find(
-      (s) => s.id !== seg.id && ct >= s.startTime && ct <= s.endTime,
-    );
-    if (seekedInto) {
-      this.updateStateToSegment(seekedInto.id);
-      return;
-    }
+    // stream can stall playback rather than fire the next timeupdate. A segment
+    // lying wholly in that tail plays to its real end instead.
+    const tail = this.video.duration - 0.3;
+    const safeEnd = tail > seg.startTime ? Math.min(seg.endTime, tail) : seg.endTime;
 
     if (ct >= safeEnd) {
       this.advance();
-    } else {
-      this.snapToNearestSegmentForward(ct);
+    } else if (ct < seg.startTime) {
+      this.seekToCurrentSegment();
     }
   }
 
-  private snapToNearestSegmentForward(currentTime: number): void {
-    const sorted = [...this.config.segments].sort(
-      (a, b) => a.startTime - b.startTime,
-    );
-    const next = sorted.find((s) => s.startTime >= currentTime);
-    if (next) {
-      this.video.currentTime = next.startTime;
-    } else {
-      const last = sorted[sorted.length - 1];
-      if (last) this.video.currentTime = last.startTime;
+  // Only a seek adopts another segment: during playback, reaching the end of
+  // one segment is where an adjacent or enclosing one starts, and adopting it
+  // there would reset the step's count or loop it forever.
+  private onSeeking(): void {
+    const ct = this.video.currentTime;
+    const current = this.resolveCurrentSegment();
+    if (current && ct >= current.startTime && ct < current.endTime) return;
+    if (this.adoptSegmentAt(ct)) return;
+    const ahead = [...this.config.segments].sort((a, b) => a.startTime - b.startTime).filter((s) => s.startTime >= ct);
+    for (const segment of ahead) {
+      if (this.adoptSegment(segment.id)) {
+        this.seekToCurrentSegment();
+        return;
+      }
     }
   }
 
@@ -181,25 +180,6 @@ export class SegmentEngine {
     this.seekToCurrentSegment();
   }
 
-  private reconcileStateToCurrentTime(): void {
-    const ct = this.video.currentTime;
-    const containingSeg = this.config.segments.find(
-      (s) => ct >= s.startTime && ct <= s.endTime,
-    );
-    if (containingSeg) {
-      for (let si = 0; si < this.config.sequence.length; si++) {
-        const step = this.config.sequence[si];
-        const segIdx = step.segmentIds.indexOf(containingSeg.id);
-        if (segIdx !== -1) {
-          this.state = { stepIndex: si, iterationInStep: 0, segmentIndexInStep: segIdx };
-          return;
-        }
-      }
-    }
-    this.state = initialState();
-    this.seekToCurrentSegment();
-  }
-
   private seekToCurrentSegment(): void {
     const seg = this.resolveCurrentSegment();
     if (seg && this.video.duration > 0) {
@@ -208,15 +188,23 @@ export class SegmentEngine {
     }
   }
 
-  private updateStateToSegment(segId: SegmentId): void {
-    for (let si = 0; si < this.config.sequence.length; si++) {
-      const step = this.config.sequence[si];
-      const segIdx = step.segmentIds.indexOf(segId);
+  // Half-open, so a boundary shared by two segments belongs to the later one.
+  private adoptSegmentAt(time: number): boolean {
+    return this.config.segments.some((s) => time >= s.startTime && time < s.endTime && this.adoptSegment(s.id));
+  }
+
+  // The current step is tried first so moving within it keeps its iteration.
+  private adoptSegment(segId: SegmentId): boolean {
+    const { stepIndex, iterationInStep } = this.state;
+    const order = [stepIndex, ...this.config.sequence.map((_, i) => i).filter((i) => i !== stepIndex)];
+    for (const si of order) {
+      const segIdx = this.config.sequence[si]?.segmentIds.indexOf(segId) ?? -1;
       if (segIdx !== -1) {
-        this.state = { stepIndex: si, iterationInStep: 0, segmentIndexInStep: segIdx };
-        return;
+        this.state = { stepIndex: si, iterationInStep: si === stepIndex ? iterationInStep : 0, segmentIndexInStep: segIdx };
+        return true;
       }
     }
+    return false;
   }
 
   private resolveCurrentSegment(): Segment | null {

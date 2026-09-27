@@ -65,9 +65,17 @@ export function createSegments({ storage }: SegmentsDeps): Feature {
       const unsubscribe = session.subscribe(draw);
       draw();
 
-      const restore = () => void session.restore();
-      if (video.readyState >= 1 && video.duration) restore();
-      else video.addEventListener("loadedmetadata", restore, { once: true });
+      // Retried as playback goes on, because a pre-roll ad loads its own
+      // metadata into the video first and holds it until the ad is over.
+      const restore = () => {
+        if (!session.ready) return;
+        video.removeEventListener("loadedmetadata", restore);
+        video.removeEventListener("timeupdate", restore);
+        void session.restore();
+      };
+      video.addEventListener("loadedmetadata", restore);
+      video.addEventListener("timeupdate", restore);
+      restore();
 
       const unbindKeys = bindKeys(segmentsKeys, {
         toggle: () => void session.toggle(),
@@ -92,6 +100,7 @@ export function createSegments({ storage }: SegmentsDeps): Feature {
       return () => {
         document.removeEventListener("keydown", onSavedShortcut);
         video.removeEventListener("loadedmetadata", restore);
+        video.removeEventListener("timeupdate", restore);
         unbindKeys();
         unsubscribe();
         session.dispose();

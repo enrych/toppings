@@ -1,4 +1,4 @@
-import { useState } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 import { generateConfigLabel } from "../factories";
 import type { SegmentAutoLoadPin, SegmentConfig } from "../types";
 import { Menu } from "./Menu";
@@ -30,6 +30,11 @@ function describePin(pin: SegmentAutoLoadPin): { icon: string; title: string } {
 
 export function Header({ config, saved, pin, collapsed, onLoad, onPin, onSaveDefault, onSaveNamed, onManage, onCollapse }: HeaderProps) {
   const [naming, setNaming] = useState<string | null>(null);
+  const nameInput = useRef<HTMLInputElement>(null);
+  const isNaming = naming !== null;
+  useEffect(() => {
+    if (isNaming) nameInput.current?.select();
+  }, [isNaming]);
   const pinInfo = describePin(pin);
 
   return (
@@ -88,7 +93,7 @@ export function Header({ config, saved, pin, collapsed, onLoad, onPin, onSaveDef
             class="input text"
             value={naming}
             placeholder="Config name…"
-            ref={(el) => el?.select()}
+            ref={nameInput}
             onInput={(e) => setNaming(e.currentTarget.value)}
             onKeyDown={(e) => {
               e.stopPropagation();

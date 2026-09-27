@@ -1,3 +1,4 @@
+import { isAdShowing } from "@/youtube/player";
 import { SegmentEngine } from "./engine";
 import { createFreshConfig, removeSegmentFromConfig, updateSegmentTimes } from "./factories";
 import type { SegmentsSettings } from "./settings";
@@ -24,6 +25,7 @@ type Direction = "forward" | "backward";
 
 const MIN_SEGMENT = 0.1;
 const NUDGE_RESET_GAP_MS = 600;
+const NOT_READY = "Segments need a loaded video, not an ad or a live stream";
 
 // Owns one video's segment state: what is loaded, whether it plays, and every
 // change to it. UI and keys call in; the session persists and notifies.
@@ -31,6 +33,7 @@ export class SegmentSession {
   state: SessionState = { active: false, config: null, saved: [], defaultId: null, pin: null };
 
   private engine: SegmentEngine | null = null;
+  private disposed = false;
   private listeners = new Set<() => void>();
   private nudge = { marker: null as Marker | null, direction: null as Direction | null, step: 1, at: 0 };
 
@@ -50,11 +53,15 @@ export class SegmentSession {
     }
   }
 
+  // A pre-roll ad plays in the same <video>, so its duration is the ad's and
+  // any segment clamped or created against it would be cut to the ad's length.
+  get ready(): boolean {
+    return Number.isFinite(this.deps.video.duration) && this.deps.video.duration > 0 && !isAdShowing(this.deps.video);
+  }
+
   async restore(): Promise<void> {
     const config = await this.deps.store.autoLoadConfig(this.deps.settings.autoLoad);
-    if (!config) return;
-    this.activate(this.clampToDuration(config));
-    this.deps.toast("↺ Segments restored");
+    if (config && this.activate(this.clampToDuration(config))) this.deps.toast("↺ Segments restored");
   }
 
   async toggle(): Promise<void> {
@@ -62,19 +69,33 @@ export class SegmentSession {
       this.deactivate();
       return;
     }
-    this.activate((await this.deps.store.getLastUsed()) ?? createFreshConfig(this.duration));
+    if (!this.ready) {
+      this.deps.toast(NOT_READY);
+      return;
+    }
+    let lastUsed: SegmentConfig | null = null;
+    try {
+      lastUsed = await this.deps.store.getLastUsed();
+    } catch (error) {
+      console.error("[toppings] segment storage unavailable", error);
+    }
+    this.activate(lastUsed ?? createFreshConfig(this.duration));
   }
 
   fresh(): void {
-    this.activate(createFreshConfig(this.duration));
-    this.deps.toast("Fresh segments slate");
+    if (this.activate(createFreshConfig(this.duration))) this.deps.toast("Fresh segments slate");
+    else this.deps.toast(NOT_READY);
   }
 
-  activate(config: SegmentConfig): void {
+  // Also refuses after dispose, since restore and toggle resume from storage
+  // reads that can finish after the user has navigated away.
+  activate(config: SegmentConfig): boolean {
+    if (this.disposed || !this.ready) return false;
     this.engine?.stop();
     this.engine = new SegmentEngine(this.deps.video, config);
     this.engine.start();
     this.set({ active: true, config });
+    return true;
   }
 
   deactivate(): void {
@@ -85,8 +106,7 @@ export class SegmentSession {
   }
 
   load(config: SegmentConfig): void {
-    this.activate(this.clampToDuration(config));
-    this.deps.toast(`Segments: ${config.label}`);
+    this.deps.toast(this.activate(this.clampToDuration(config)) ? `Segments: ${config.label}` : NOT_READY);
   }
 
   mutate(update: (config: SegmentConfig) => SegmentConfig): void {
@@ -166,7 +186,8 @@ export class SegmentSession {
 
   async saveNamed(label: string): Promise<void> {
     if (!this.state.config || !label.trim()) return;
-    const config = { ...this.state.config, label: label.trim(), updatedAt: Date.now() };
+    const now = Date.now();
+    const config = { ...this.state.config, id: crypto.randomUUID(), label: label.trim(), shortcutKey: "", createdAt: now, updatedAt: now };
     await this.deps.store.saveConfig(config);
     await this.refreshSaved();
     this.commit(config);
@@ -196,6 +217,7 @@ export class SegmentSession {
   }
 
   dispose(): void {
+    this.disposed = true;
     this.engine?.stop();
     this.engine = null;
     this.listeners.clear();

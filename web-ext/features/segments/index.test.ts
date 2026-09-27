@@ -70,6 +70,52 @@ describe("segments", () => {
     expect(markers()).toHaveLength(4);
   });
 
+  test("adding a segment on a slate that fills the video splits it instead of nesting one inside", async () => {
+    await mountOn();
+    button().click();
+    await tick();
+    [...panel().querySelectorAll("button")].find((b) => b.textContent === "+ Add Segment")!.click();
+    await tick();
+    expect([...panel().querySelectorAll(".range")].map((r) => r.textContent)).toEqual(["0:00 → 1:40", "1:40 → 3:20"]);
+  });
+
+  test("the config name field keeps what is typed", async () => {
+    await mountOn();
+    button().click();
+    await tick();
+    [...panel().querySelectorAll("button")].find((b) => b.textContent === "Save ▾")!.click();
+    await tick();
+    [...panel().querySelectorAll("button")].find((b) => b.textContent === "Save as Named Config…")!.click();
+    await tick();
+    const input = panel().querySelector<HTMLInputElement>("input.text")!;
+    expect([input.selectionStart, input.selectionEnd]).toEqual([0, input.value.length]);
+    input.value = "Verse";
+    input.dispatchEvent(new InputEvent("input", { bubbles: true }));
+    await tick();
+    expect(input.selectionStart).toBe(input.selectionEnd);
+  });
+
+  test("auto-load waits out a pre-roll ad rather than clamping to its length", async () => {
+    const store = openVideoSegments(storage, "v1");
+    const config = { ...createFreshConfig(200), label: "Intro" };
+    await store.saveConfig(config);
+    await store.setDefaultConfig(config.id);
+    await chrome.storage.sync.set({ "settings:segments": { autoLoad: "default" } });
+    const player = document.getElementById("movie_player")!;
+    player.className = "html5-video-player ad-showing";
+    const video = document.querySelector("video")!;
+    Object.defineProperty(video, "duration", { value: 15, configurable: true });
+    await mountOn();
+    expect(button().getAttribute("aria-pressed")).toBe("false");
+
+    player.classList.remove("ad-showing");
+    Object.defineProperty(video, "duration", { value: 200, configurable: true });
+    video.dispatchEvent(new Event("timeupdate"));
+    await tick();
+    expect(button().getAttribute("aria-pressed")).toBe("true");
+    expect(panel().querySelector(".range")?.textContent).toBe("0:00 → 3:20");
+  });
+
   test("auto-load restores the default config on mount", async () => {
     const store = openVideoSegments(storage, "v1");
     const config = { ...createFreshConfig(200), label: "Intro" };

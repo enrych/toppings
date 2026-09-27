@@ -1,7 +1,7 @@
 import { useState } from "preact/hooks";
 import { addSegmentToConfig, removeSegmentFromConfig, splitSegmentAtTime } from "../factories";
 import type { SegmentSession } from "../session";
-import type { PlayStep, SegmentConfig } from "../types";
+import type { PlayStep, Segment, SegmentConfig } from "../types";
 import { ConfigManager } from "./ConfigManager";
 import { Header } from "./Header";
 import { SegmentList } from "./SegmentList";
@@ -14,16 +14,18 @@ export interface PanelProps {
 }
 
 // Splits the segment under the playhead when there is one, else appends a
-// short segment after the last.
+// short segment after the last, else halves the last: the markers clamp each
+// segment against its neighbours and assume none overlap.
 function addSegment(config: SegmentConfig, time: number, duration: number): SegmentConfig {
   const sorted = [...config.segments].sort((a, b) => a.startTime - b.startTime);
   const under = sorted.find((s) => time > s.startTime + 0.1 && time < s.endTime - 0.1);
   const split = under ? splitSegmentAtTime(config, under.id, time) : null;
   if (split) return split;
-  const last = sorted[sorted.length - 1];
-  const start = Math.max(0, last ? Math.min(last.endTime, duration - 2) : 0);
+  const last = sorted.reduce<Segment | undefined>((latest, s) => (latest && latest.endTime >= s.endTime ? latest : s), undefined);
+  const start = last ? last.endTime : 0;
+  if (last && duration - start < 1) return splitSegmentAtTime(config, last.id, (last.startTime + last.endTime) / 2) ?? config;
   const end = Math.min(start + Math.min(30, (duration - start) * 0.5), duration);
-  return addSegmentToConfig(config, start, Math.max(start + 1, end));
+  return addSegmentToConfig(config, start, Math.min(duration, Math.max(start + 1, end)));
 }
 
 export function Panel({ session, playhead }: PanelProps) {
