@@ -123,7 +123,7 @@ if (watching) {
     clearTimeout(timer);
     timer = setTimeout(() => build().catch(console.error), 150);
   };
-  for (const dir of ["app", "features", "kernel", "lib", "ui", "youtube"]) {
+  for (const dir of ["app", "assets", "features", "kernel", "lib", "ui", "youtube"]) {
     (async () => {
       for await (const _ of watch(dir, { recursive: true })) rebuild();
     })();
