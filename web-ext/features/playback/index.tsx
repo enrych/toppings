@@ -35,8 +35,6 @@ export const playback: Feature = {
 
     const setRate = (rate: number) => {
       video.playbackRate = clamp(rate);
-      const row = findSpeedRow(video);
-      if (row.resolved) showRateInSpeedRow(row.element, video.playbackRate);
     };
     setRate(settings.defaultRate);
 
@@ -85,27 +83,42 @@ async function mountSeekFlash() {
 
 // YouTube builds the settings menu lazily on first open and the speed panel
 // on each entry, so both are hooked by click rather than resolved up front.
+// It only redraws them from its own state, which a rate set straight on the
+// <video> never reaches, so they follow the video's ratechange instead.
 async function hookSettingsMenu(rates: number[], video: HTMLVideoElement, setRate: (rate: number) => void) {
   const button = await resolveSettingsButton();
   void setCapabilityStatus("watch.settingsButton", "watch", button);
   if (!button.resolved) return;
 
+  let redrawPanel: (() => void) | null = null;
   const onSpeedRow = async () => {
     const panel = await resolveRatePanel();
     void setCapabilityStatus("watch.ratePanel", "watch", panel);
     if (!panel.resolved) return;
-    const chips = ratePanelChips(panel.element);
-    if (!chips) return;
+    const chips = rates.length ? ratePanelChips(panel.element) : null;
     const draw = () => {
+      if (!panel.element.isConnected) return void (redrawPanel = null);
       syncRatePanel(panel.element, video.playbackRate);
-      render(<RateChips rates={rates} current={video.playbackRate} onPick={(rate) => { setRate(rate); draw(); }} />, chips);
+      if (chips) render(<RateChips rates={rates} current={video.playbackRate} onPick={setRate} />, chips);
     };
-    chips.replaceChildren();
-    chips.style.flexWrap = "wrap";
+    if (chips) {
+      chips.replaceChildren();
+      chips.style.flexWrap = "wrap";
+    }
+    redrawPanel = draw;
     draw();
   };
 
+  // Kept rather than looked up: while a submenu is open YouTube takes the main
+  // list out of the page, and the row must still be current when it returns.
   let speedRow: Element | null = null;
+  const onRateChange = () => {
+    const row = speedRow ?? findSpeedRow(video).element;
+    if (row) showRateInSpeedRow(row, video.playbackRate);
+    redrawPanel?.();
+  };
+  video.addEventListener("ratechange", onRateChange);
+
   let speedRowReported = false;
   let pending: ReturnType<typeof setTimeout> | undefined;
   const onSettings = () => {
@@ -121,7 +134,7 @@ async function hookSettingsMenu(rates: number[], video: HTMLVideoElement, setRat
       if (!found.resolved) return;
       const row = found.element;
       showRateInSpeedRow(row, video.playbackRate);
-      if (rates.length && row !== speedRow) {
+      if (row !== speedRow) {
         speedRow?.removeEventListener("click", onSpeedRow);
         row.addEventListener("click", onSpeedRow);
         speedRow = row;
@@ -132,6 +145,7 @@ async function hookSettingsMenu(rates: number[], video: HTMLVideoElement, setRat
 
   return () => {
     clearTimeout(pending);
+    video.removeEventListener("ratechange", onRateChange);
     button.element.removeEventListener("click", onSettings);
     speedRow?.removeEventListener("click", onSpeedRow);
   };

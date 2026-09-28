@@ -53,6 +53,7 @@ describe("playback", () => {
   test("applies the default rate on mount", async () => {
     await playbackSettings.set({ defaultRate: 1.25 });
     await mountPlayback();
+    await tick();
     expect(video().playbackRate).toBe(1.25);
     expect(document.querySelector(".ytp-menuitem-content")!.textContent).toBe("1.25");
   });
@@ -75,6 +76,7 @@ describe("playback", () => {
     await mountPlayback();
     press("w");
     press("w");
+    await tick();
     expect(video().playbackRate).toBe(1.125);
     expect(document.querySelector(".ytp-menuitem-content")!.textContent).toBe("1.125");
   });
@@ -102,6 +104,7 @@ describe("playback", () => {
     expect(chips().map((b) => b.getAttribute("aria-pressed"))).toEqual(["true", "false", "false"]);
 
     (chips()[2] as HTMLElement).click();
+    await tick();
     expect(video().playbackRate).toBe(3);
     expect(chips()[2].getAttribute("aria-pressed")).toBe("true");
     expect(document.querySelector(".ytp-variable-speed-panel-display span")!.textContent).toBe("3.00x");
@@ -117,6 +120,29 @@ describe("playback", () => {
     expect(chips()[1].getAttribute("aria-pressed")).toBe("true");
   });
 
+  test("an open speed panel follows a rate changed by shortcut", async () => {
+    await playbackSettings.set({ customRates: [1, 2], toggleRate: 2 });
+    await mountPlayback();
+    await openSpeedPanel();
+    press("x");
+    await tick();
+    expect(document.querySelector(".ytp-variable-speed-panel-display span")!.textContent).toBe("2.00x");
+    expect(chips()[1].getAttribute("aria-pressed")).toBe("true");
+  });
+
+  test("the speed row is current when YouTube puts the main list back after a submenu", async () => {
+    await playbackSettings.set({ toggleRate: 2 });
+    await mountPlayback();
+    await openSpeedPanel();
+    const mainList = document.querySelector(".ytp-panel-menu")!;
+    const parent = mainList.parentElement!;
+    mainList.remove();
+    press("x");
+    await tick();
+    parent.prepend(mainList);
+    expect(mainList.querySelector(".ytp-menuitem-content")!.textContent).toBe("2");
+  });
+
   test("without custom rates the panel is left to YouTube", async () => {
     await mountPlayback();
     await openSpeedPanel();
@@ -128,6 +154,7 @@ describe("playback", () => {
     await playbackSettings.set({ toggleRate: 2 });
     await mountPlayback();
     press("x");
+    await tick();
     expect(document.querySelector(".ytp-menuitem-content")!.textContent).toBe("2");
   });
 
@@ -136,12 +163,16 @@ describe("playback", () => {
     await playbackSettings.set({ defaultRate: 1.25, toggleRate: 2 });
     await mountPlayback();
     const value = () => document.querySelector(".ytp-menuitem-content")!.textContent;
+    await tick();
     expect(value()).toBe("1.25");
     press("x");
+    await tick();
     expect(value()).toBe("Standard");
     press("x");
+    await tick();
     expect(value()).toBe("2");
     press("x");
+    await tick();
     expect(value()).toBe("Standard");
   });
 

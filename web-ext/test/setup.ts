@@ -2,6 +2,18 @@ import { GlobalRegistrator } from "@happy-dom/global-registrator";
 
 GlobalRegistrator.register();
 
+// Browsers fire ratechange, as a queued task, whenever playbackRate changes;
+// happy-dom never does, and features follow the event rather than their own writes.
+const rate = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, "playbackRate")!;
+Object.defineProperty(HTMLMediaElement.prototype, "playbackRate", {
+  ...rate,
+  set(this: HTMLMediaElement, value: number) {
+    const changed = value !== rate.get!.call(this);
+    rate.set!.call(this, value);
+    if (changed) setTimeout(() => this.dispatchEvent(new Event("ratechange")), 0);
+  },
+});
+
 type ChangeListener = (changes: Record<string, { oldValue?: unknown; newValue?: unknown }>, area: string) => void;
 const listeners = new Set<ChangeListener>();
 
