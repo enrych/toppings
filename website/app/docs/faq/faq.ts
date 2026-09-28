@@ -2,7 +2,9 @@ export const faq: readonly { q: string; a: readonly string[] }[] = [
   {
     q: "Does Toppings collect any data?",
     a: [
-      "No. There are no analytics, no telemetry and no accounts. The extension asks for two permissions: youtube.com, so it can add controls to the player, and storage, so your settings survive restarts.",
+      "No. There are no analytics, no telemetry and no accounts. The extension asks for youtube.com, so it can add controls to the player; storage, so your settings survive restarts; alarms, so schedules can switch profiles on time; and scripting, so an update reaches YouTube tabs you already have open. Chrome also lists offscreen, a hidden page used only to check your location for a place schedule.",
+      "Toppings never asks for your location up front. If you add a place schedule, your browser asks the way a website would, and the places you save stay on your device.",
+      "One feature talks to our server. Playlist runtime sends the playlist's ID to toppings.enry.ch/api, which looks up the video durations YouTube's page doesn't show. Nothing else leaves your browser.",
       "The source is on GitHub under GPL-3.0 if you'd rather check than trust.",
     ],
   },
@@ -13,9 +15,9 @@ export const faq: readonly { q: string; a: readonly string[] }[] = [
     ],
   },
   {
-    q: "How does Audio mode work?",
+    q: "How do I listen without the video?",
     a: [
-      "It hides the video and keeps the audio. The visible area becomes a black screen, a waveform visualizer, or an image of your choosing. Timeline, chapters, speed and shortcuts keep working.",
+      "Press B, click the headphones button beside the player's controls, or pick Audio in the popup. It covers the video with a waveform that moves with the sound, while the controls, progress bar and seeking keep working. Press B again to go back to what you had before.",
     ],
   },
   {
@@ -33,8 +35,15 @@ export const faq: readonly { q: string; a: readonly string[] }[] = [
   {
     q: "What are profiles?",
     a: [
-      "Named bundles of YouTube settings: sidebar, comments, end cards, Shorts shelf, feed thumbnails and more. Two presets ship, Audio and Focus. Create your own, then switch from the popup, a shortcut, or the player's gear menu.",
+      "Named bundles of YouTube settings: sidebar, comments, end cards, Shorts shelf, feed thumbnails and more. Two presets ship, Audio and Focus. Create your own, then switch from the popup, the player's gear menu, or a shortcut; every profile can have its own.",
       "Each custom profile can be exported to a JSON file and imported elsewhere. Imports are validated, so a bad file can't corrupt your settings.",
+    ],
+  },
+  {
+    q: "Can a profile turn on by itself?",
+    a: [
+      "Yes, with a schedule: during set hours on chosen days, or while you're at a place you saved. When it ends, you get back the profile you had before. If you switch profiles yourself in the middle, your choice stands until the schedule ends.",
+      "While a schedule is in charge, the toolbar icon shows the profile's first letter; five minutes before a change it counts down instead, and YouTube tabs show a short note. You can skip a schedule for the rest of its window from the popup.",
     ],
   },
   {

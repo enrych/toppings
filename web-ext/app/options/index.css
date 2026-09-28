@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "../../ui/base.css";
+
+.tppng-search-highlight {
+  background: var(--color-accent);
+  color: var(--color-accent-fg);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+@keyframes tppng-section-flash {
+  0% { background: transparent; }
+  20% { background: color-mix(in srgb, var(--color-accent) 20%, transparent); border-radius: 8px; }
+  100% { background: transparent; }
+}
+
+.tppng-section-flash {
+  animation: tppng-section-flash 900ms ease-out forwards;
+}

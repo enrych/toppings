@@ -1,160 +1,106 @@
-# Toppings on YouTube
+<p align="center">
+  <img src="assets/logo-transparent.png" alt="" width="96" height="96" />
+</p>
 
-A customizable browser extension that gives you total control over YouTube—track playlist runtimes, fine-tune playback speed, auto-scroll Shorts, set custom seek durations, and more. Take control of your YouTube like never before.
+<h1 align="center">Toppings</h1>
 
----
+<p align="center">
+  <strong>Your YouTube, your way.</strong><br />
+  A free, open-source browser extension that adds the controls YouTube's player is missing.
+</p>
 
-## Why Toppings?
-
-- **Track Playlist Runtimes**: Know exactly how much time you’ll spend binging playlists.
-- **Custom Playback Controls**: Set precise playback speeds and seek durations.
-- **Auto-Scroll Shorts**: Enjoy an uninterrupted flow of Shorts with automatic scrolling.
-- **Deep Personalization**: Tailor every feature to fit your workflow with custom keybindings.
-- **Privacy-First**: No data collection—your browsing remains yours.
-
----
-
-## Get Started
-
-- **[Download for Chrome](https://chrome.google.com/webstore/detail/toppings/aemiblppibhggpgijajindcmmomboibl)**
-- **[Download for Firefox](https://addons.mozilla.org/en-US/firefox/addon/toppings/)**
+<p align="center">
+  <a href="https://toppings.enry.ch">toppings.enry.ch</a> ·
+  <a href="https://chrome.google.com/webstore/detail/toppings/aemiblppibhggpgijajindcmmomboibl">Chrome Web Store</a> ·
+  <a href="https://addons.mozilla.org/en-US/firefox/addon/toppings/">Firefox Add-ons</a>
+</p>
 
 ---
 
-## Development
+I built Toppings because YouTube's player is missing things I wanted every day. It's a side project, it's free, and it stays that way. Everything it adds looks like YouTube, follows YouTube's light or dark theme, and gets out of the way.
 
-Here’s how to set up Toppings for local development:
+## What it does
 
-### Prerequisites
+- **Profiles.** Presets that reshape YouTube in one switch. *Audio* covers the video with a waveform that moves with the sound and leaves the player's controls alone; press B to flip it on and off. *Focus* hides the sidebar, comments and end cards. You can make your own, give each its own shortcut, and export or import them as JSON.
+- **Schedules.** Turn a profile on during set hours (say Audio on weekdays 9 to 6) or while you're at a saved place, and back off afterwards. The toolbar badge and a note on YouTube tell you when a schedule takes over or is about to.
+- **Loop segments.** Mark in and out points and loop a section. You can also line up several segments, each with its own loop count and speed.
+- **Custom playback rates.** Speeds YouTube doesn't offer, from 0.0625× to 16×, right in the player's own speed panel.
+- **Toggle rate.** One key flips between 1× and your preferred fast rate.
+- **Seek shortcuts.** Jump back and forward by however many seconds you like.
+- **Shorts auto-scroll.** Moves on to the next Short when one ends.
+- **Playlist runtime.** Shows the total and average runtime at the top of every playlist.
 
-Ensure the following tools are installed:
+Every shortcut can be rebound. The defaults are listed at [toppings.enry.ch/docs/keybindings](https://toppings.enry.ch/docs/keybindings).
 
-- [Bun](https://bun.sh/)
-- [Git](https://git-scm.com/)
-- A [Google API Key](https://console.developers.google.com/) with access to the YouTube API
+## Privacy
 
-### 📁 Project Structure
+There are no accounts, no analytics and no trackers. Your settings live in your browser's extension storage. The one exception is playlist runtime. YouTube's page doesn't expose video durations, so the extension sends the playlist ID to a small Cloudflare Worker at `toppings.enry.ch/api`, which asks the YouTube Data API. That's all it sends.
 
-The repository is organized into three main directories:
+## Docs
 
-1. **web-ext**: Contains the browser extension code.
-2. **backend**: Server-side logic built with Cloudflare Workers.
-3. **website**: The official homepage of the Toppings extension, built with Next.js.
+- [Getting started](https://toppings.enry.ch/docs)
+- [Keybindings](https://toppings.enry.ch/docs/keybindings)
+- [FAQ](https://toppings.enry.ch/docs/faq)
+- [Changelog](https://toppings.enry.ch/docs/changelog)
 
----
+## Hacking on it
 
-### 🏡 Local Development Setup
+The repo holds three projects, each on [Bun](https://bun.sh):
 
-#### Setting Up the Extension
+| Folder | What it is |
+| --- | --- |
+| [`web-ext/`](web-ext) | The extension, for Chrome (MV3) and Firefox (MV2) from one codebase |
+| [`backend/`](backend) | The Cloudflare Worker behind `/api` |
+| [`website/`](website) | [toppings.enry.ch](https://toppings.enry.ch), a static Next.js export on Cloudflare Pages |
 
-1. Clone the repository:
+If you use a coding agent, point it at [`AGENTS.md`](AGENTS.md) first. That file holds the house rules, and each project has its own scoped notes.
 
-   ```bash
-   git clone https://github.com/enrych/toppings.git
-   cd toppings/web-ext
-   ```
+### Extension
 
-2. Install dependencies:
+```bash
+cd web-ext
+bun install
+bun run dev            # builds dist/ for Chrome and rebuilds on change
+bun run dev:firefox    # same, as a Firefox MV2 build
+```
 
-   ```bash
-   bun install
-   ```
+To load it in Chrome, open `chrome://extensions`, turn on Developer mode, click **Load unpacked** and pick `web-ext/dist`. In Firefox, open `about:debugging`, go to **This Firefox**, click **Load Temporary Add-on** and pick `web-ext/dist/manifest.json`.
 
-3. Start development mode:
+`bun run check` type-checks and runs the tests. `bun run build` makes a production build.
 
-   For Chrome:
+Every build, dev included, asks the live API at `toppings.enry.ch/api` for playlist runtimes, so you don't need the backend running. To work on the Worker itself, point a build at it with `TOPPINGS_API=http://127.0.0.1:8787/api bun run dev`.
 
-   ```bash
-   bun run dev
-   ```
+### Backend
 
-   For Firefox:
+You need a [YouTube Data API v3 key](https://console.cloud.google.com/apis/library/youtube.googleapis.com).
 
-   ```bash
-   bun run dev:firefox
-   ```
+```bash
+cd backend
+bun install
+echo "YOUTUBE_DATA_API_V3_KEY=your-key" > .dev.vars   # gitignored
+bun run dev            # wrangler dev on http://127.0.0.1:8787
+```
 
----
+### Website
 
-#### Setting Up the Server (Optional)
+```bash
+cd website
+bun install
+bun run dev
+```
 
-Some features require backend functionality. You can run the server locally using Cloudflare Workers.
+`bun run check` runs the type-check and lint. `bun run build` writes the static site to `out/`.
 
-1. Navigate to the backend directory:
+Pushes to `main` deploy the website and the backend. The extension ships to the stores by hand.
 
-   ```bash
-   cd ../backend
-   ```
+## Bugs, ideas, help
 
-2. Install `wrangler` (if not already installed):
+Found something broken or have an idea? [Open an issue](https://github.com/enrych/toppings/issues). YouTube changes its page often, so if a feature shows as unavailable in the options page, the **Report** button there fills in most of the issue for you.
 
-   ```bash
-   npm install -g wrangler
-   ```
+## Add a topping
 
-3. Add your Google YouTube API secret in `.dev.vars`:
-
-   ```env
-   GOOGLE_SECRET=your-google-youtube-api-key
-   ```
-
-4. Start the server:
-
-   ```bash
-   wrangler dev
-   ```
-
----
-
-#### Running the Website
-
-1. Navigate to the `website` directory:
-
-   ```bash
-   cd ../website
-   ```
-
-2. Install dependencies:
-
-   ```bash
-   bun install
-   ```
-
-3. Start the development server:
-
-   ```bash
-   bun run dev
-   ```
-
----
-
-## Feedback and Support
-
-Feedback is always welcome! If you enjoy Toppings, consider:
-
-- Leaving a ⭐ on [GitHub](https://github.com/enrych/toppings)
-- Reviewing on:
-  - [Chrome Web Store](https://chrome.google.com/webstore/detail/toppings/aemiblppibhggpgijajindcmmomboibl)
-  - [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/toppings/)
-
-Use these channels to get involved:
-
-- **Discussions**: For questions or feature ideas, join the [GitHub Discussions](https://github.com/enrych/toppings/discussions).
-- **Issues**: Report bugs or request features in the [Issues](https://github.com/enrych/toppings/issues) section.
-- **Wiki**: Find detailed documentation in the [GitHub wiki](https://github.com/enrych/toppings/wiki).
-
----
-
-## Support the Project
-
-Toppings is free and open-source. If you find it helpful, consider supporting the development through [sponsorships](https://darhkvoyd.me/sponsor).
-
-Your support helps improve Toppings and keeps it sustainable.
-
----
+Toppings is free and always will be. If it saves you time, you can [add a topping](https://darhkvoyd.me/sponsor) to keep it going. A ⭐ here or a review on the [Chrome Web Store](https://chrome.google.com/webstore/detail/toppings/aemiblppibhggpgijajindcmmomboibl) or [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/toppings/) helps a lot too.
 
 ## License
 
-Toppings is licensed under the [GPL-3.0 License](./LICENSE). You’re free to use, modify, and distribute the extension as long as your work complies with the GPL-3.0 terms.
-
-Happy coding! 😊
+[GPL-3.0](LICENSE). Fork it, change it, ship it. Keep it open.

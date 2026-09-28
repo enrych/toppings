@@ -28,9 +28,9 @@
   background: var(--ink);
 }
 
-/* Legibility veil sits under the lamp so the ember light reads as the top-most
-   layer. It pools softly behind the headline glyphs instead of walling off the
-   left half, so the watch page stays recognisable under the type. */
+/* Legibility veil: it pools softly behind the headline glyphs instead of
+   walling off the left half, so the watch page stays recognisable under the
+   type. */
 .scrim {
   background:
     radial-gradient(58% 52% at 26% 40%, rgba(11, 11, 12, 0.82), transparent 100%),

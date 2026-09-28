@@ -11,7 +11,7 @@ A Cloudflare Worker serving `https://toppings.enry.ch/api/*` for the extension. 
 
 ## Contract with the extension
 
-`web-ext/app/background/api.ts` calls these; change them together.
+`web-ext/features/playlist-runtime/background.ts` calls these; change them together.
 
 - `GET /api/ping` → `"pong"`
 - `GET /api/v1/playlist/:playlistId` → `{ scope: "playlist", payload: { playlistId, totalVideos, totalRuntime, averageRuntime } }`, runtimes in seconds. Errors are `{ status, error }` with the same HTTP status.

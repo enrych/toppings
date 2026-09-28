@@ -1,0 +1,74 @@
+export const MODIFIER_KEYS = ["Ctrl", "Alt", "Shift", "Meta"] as const;
+export type ModifierKey = (typeof MODIFIER_KEYS)[number];
+
+const MODIFIER_KEY_VALUES = new Set([
+  "Control", "Alt", "Shift", "Meta",
+  "CapsLock", "NumLock", "ScrollLock",
+]);
+
+const MODIFIER_SYMBOLS: Record<ModifierKey, string> = {
+  Ctrl: "⌃",
+  Alt: "⌥",
+  Shift: "⇧",
+  Meta: "⌘",
+};
+
+export function formatBindingDisplay(combo: string): string {
+  if (!combo) return "";
+  return combo
+    .split("+")
+    .map((part) => MODIFIER_SYMBOLS[part as ModifierKey] ?? part)
+    .join("");
+}
+
+// null for a modifier-only or non-alphanumeric press, which callers treat as
+// "keep listening" rather than as a binding.
+export function recordBinding(e: KeyboardEvent): string | null {
+  if (MODIFIER_KEY_VALUES.has(e.key)) return null;
+  const baseKey = e.key.toUpperCase();
+  if (!/^[A-Z0-9]$/.test(baseKey)) return null;
+
+  const modState: Record<ModifierKey, boolean> = {
+    Ctrl: e.ctrlKey,
+    Alt: e.altKey,
+    Shift: e.shiftKey,
+    Meta: e.metaKey,
+  };
+  const parts: string[] = MODIFIER_KEYS.filter((m) => modState[m]);
+  parts.push(baseKey);
+
+  return parts.join("+");
+}
+
+// Modifiers must match exactly, so a binding of "Q" deliberately does not fire
+// while Shift is held — that combo belongs to "Shift+Q".
+export function matchesBinding(event: KeyboardEvent, binding: string): boolean {
+  if (!binding) return false;
+
+  const parts = binding.split("+");
+  const storedKey = parts[parts.length - 1].toUpperCase();
+  const mods = new Set(parts.slice(0, -1).map((name) => MODIFIER_KEYS.find((m) => m.toLowerCase() === name.toLowerCase())));
+  if (mods.has(undefined)) return false;
+
+  const modState: Record<ModifierKey, boolean> = {
+    Ctrl: event.ctrlKey,
+    Alt: event.altKey,
+    Shift: event.shiftKey,
+    Meta: event.metaKey,
+  };
+
+  return (
+    event.key.toUpperCase() === storedKey &&
+    MODIFIER_KEYS.every((m) => mods.has(m) === modState[m])
+  );
+}
+
+// A key typed into a field inside one of Toppings' shadow roots reaches the
+// document retargeted to the shadow host, so the field is found through the
+// roots' focus instead.
+export function isTypingTarget(target: EventTarget | null): boolean {
+  let el = target as HTMLElement | null;
+  while (el?.shadowRoot?.activeElement) el = el.shadowRoot.activeElement as HTMLElement;
+  if (!el) return false;
+  return el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT" || el.isContentEditable;
+}

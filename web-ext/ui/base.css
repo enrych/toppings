@@ -1,0 +1,102 @@
+@import "./theme.css";
+
+/* Bundled rather than fetched from Google Fonts, so opening the popup never
+   calls a third party. */
+@font-face {
+  font-family: Gloock;
+  src: url("/assets/fonts/gloock-400.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Instrument Sans";
+  src: url("/assets/fonts/instrument-sans.woff2") format("woff2");
+  font-weight: 400 600;
+  font-display: swap;
+}
+
+/* Tailwind runs without preflight because its utilities also land inside
+   YouTube's page, so extension pages carry this small reset of their own. */
+*,
+::before,
+::after {
+  box-sizing: border-box;
+  border: 0 solid var(--color-border-default);
+}
+
+html {
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Set on body too: Chrome gives extension pages' body its own system font,
+   which would otherwise win over the one inherited from html. */
+body {
+  font-family: var(--font-sans);
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-fg);
+}
+
+h1, h2, h3, p {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+button, input, select {
+  font: inherit;
+  color: inherit;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+}
+
+button, [role="button"] {
+  cursor: pointer;
+}
+
+:disabled {
+  cursor: default;
+}
+
+img, svg {
+  display: block;
+  vertical-align: middle;
+}
+
+[hidden] {
+  display: none;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-default);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-strong);
+}

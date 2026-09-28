@@ -1,13 +1,23 @@
 import { errorMessage, HttpError } from "./http";
 
+// Playlist pages come one after another, since each page's token arrives
+// with the page before it, but a page's durations need nothing further, so
+// they are fetched while the next page loads rather than before it.
 export async function getPlaylistRuntime(playlistId: string, apiKey: string) {
   let totalVideos = 0;
-  let totalRuntime = 0;
+  const durations: Promise<number>[] = [];
+  let failed = false;
 
   for await (const videoIds of fetchVideoIdsByPage(playlistId, apiKey)) {
     totalVideos += videoIds.length;
-    totalRuntime += await fetchDurationSeconds(videoIds, apiKey);
+    const duration = fetchDurationSeconds(videoIds, apiKey);
+    // The Promise.all below reports the failure; noting it here stops paging
+    // through a list whose answer is already lost, each page costing quota.
+    duration.catch(() => (failed = true));
+    durations.push(duration);
+    if (failed) break;
   }
+  const totalRuntime = (await Promise.all(durations)).reduce((sum, seconds) => sum + seconds, 0);
 
   return {
     playlistId,
@@ -48,12 +58,13 @@ async function fetchDurationSeconds(videoIds: string[], apiKey: string): Promise
   return total;
 }
 
-// YouTube writes durations as ISO 8601, e.g. PT1H2M3S, with any part optional.
+// YouTube writes durations as ISO 8601, e.g. PT1H2M3S or P1DT2H for a video
+// over a day, with any part optional; P0D is a live or upcoming stream.
 function toSeconds(isoDuration: string): number {
-  const match = /PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?/.exec(isoDuration);
+  const match = /^P(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?$/.exec(isoDuration);
   if (!match) return 0;
-  const [, hours = "0", minutes = "0", seconds = "0"] = match;
-  return Number(hours) * 3600 + Number(minutes) * 60 + Number(seconds);
+  const [, days = "0", hours = "0", minutes = "0", seconds = "0"] = match;
+  return Number(days) * 86400 + Number(hours) * 3600 + Number(minutes) * 60 + Number(seconds);
 }
 
 // The Data API answers 404 for a playlist that is private or deleted.

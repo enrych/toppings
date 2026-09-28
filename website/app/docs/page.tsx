@@ -42,7 +42,7 @@ export default function Install() {
           list.
         </li>
         <li>
-          Open any video and press <code>B</code> for Audio mode. Settings live in the options page:
+          Open any video. The controls sit next to YouTube&apos;s own; the Audio and Focus presets are in the popup. Settings live in the options page:
           right-click the toolbar icon → <em>Options</em>.
         </li>
       </ol>
