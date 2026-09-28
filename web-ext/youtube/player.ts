@@ -75,15 +75,19 @@ export function ratePanelChips(panel: Element): HTMLElement | null {
 // YouTube only redraws its panel from its own state, which a rate set
 // straight on the <video> never reaches.
 export function syncRatePanel(panel: Element, rate: number): void {
-  const display = panel.querySelector(".ytp-variable-speed-panel-display span");
-  if (display) display.textContent = `${rate.toFixed(2)}x`;
+  for (const text of panel.querySelectorAll(".ytp-variable-speed-panel-display span, .ytp-speedslider-text")) text.textContent = `${rate.toFixed(2)}x`;
   const slider = panel.querySelector<HTMLInputElement>(".ytp-speedslider");
-  if (slider) {
-    if (Number(slider.max) < rate) slider.max = String(rate);
-    slider.value = String(rate);
-    slider.setAttribute("aria-valuenow", String(rate));
-    slider.setAttribute("aria-valuetext", rate.toFixed(2));
-  }
+  if (!slider) return;
+  if (Number(slider.max) < rate) slider.max = String(rate);
+  if (Number(slider.min) > rate) slider.min = String(rate);
+  slider.value = String(rate);
+  slider.setAttribute("aria-valuemin", slider.min);
+  slider.setAttribute("aria-valuemax", slider.max);
+  slider.setAttribute("aria-valuenow", String(rate));
+  slider.setAttribute("aria-valuetext", rate.toFixed(2));
+  // The filled part of the track is drawn from this, not from the value.
+  const filled = (rate - Number(slider.min)) / (Number(slider.max) - Number(slider.min));
+  slider.style.setProperty("--yt-slider-shape-gradient-percent", `${Math.min(1, Math.max(0, filled)) * 100}%`);
 }
 
 // Ads play in the content's own <video>; YouTube marks the player meanwhile.

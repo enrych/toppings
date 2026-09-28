@@ -109,6 +109,7 @@ describe("playback", () => {
     expect(chips()[2].getAttribute("aria-pressed")).toBe("true");
     expect(document.querySelector(".ytp-variable-speed-panel-display span")!.textContent).toBe("3.00x");
     expect(document.querySelector<HTMLInputElement>(".ytp-speedslider")!.value).toBe("3");
+    expect(document.querySelector<HTMLInputElement>(".ytp-speedslider")!.style.getPropertyValue("--yt-slider-shape-gradient-percent")).toBe("100%");
   });
 
   test("the panel reflects a rate set by keyboard", async () => {
@@ -128,6 +129,17 @@ describe("playback", () => {
     await tick();
     expect(document.querySelector(".ytp-variable-speed-panel-display span")!.textContent).toBe("2.00x");
     expect(chips()[1].getAttribute("aria-pressed")).toBe("true");
+    expect(document.querySelector<HTMLInputElement>(".ytp-speedslider")!.style.getPropertyValue("--yt-slider-shape-gradient-percent")).toBe("100%");
+  });
+
+  test("the slider's filled track sits where the rate is, YouTube's way", async () => {
+    await playbackSettings.set({ customRates: [1, 1.5] });
+    await mountPlayback();
+    await openSpeedPanel();
+    (chips()[1] as HTMLElement).click();
+    await tick();
+    const fill = document.querySelector<HTMLInputElement>(".ytp-speedslider")!.style.getPropertyValue("--yt-slider-shape-gradient-percent");
+    expect(parseFloat(fill)).toBeCloseTo(71.43, 1);
   });
 
   test("the speed row is current when YouTube puts the main list back after a submenu", async () => {
