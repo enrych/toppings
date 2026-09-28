@@ -2,7 +2,7 @@ export const faq: readonly { q: string; a: readonly string[] }[] = [
   {
     q: "Does Toppings collect any data?",
     a: [
-      "No. There are no analytics, no telemetry and no accounts. The extension asks for youtube.com, so it can add controls to the player; storage, so your settings survive restarts; and alarms, so schedules can switch profiles on time. Chrome also lists offscreen, a hidden page used only to check your location for a place schedule.",
+      "No. There are no analytics, no telemetry and no accounts. The extension asks for youtube.com, so it can add controls to the player; storage, so your settings survive restarts; alarms, so schedules can switch profiles on time; and scripting, so an update reaches YouTube tabs you already have open. Chrome also lists offscreen, a hidden page used only to check your location for a place schedule.",
       "Toppings never asks for your location up front. If you add a place schedule, your browser asks the way a website would, and the places you save stay on your device.",
       "One feature talks to our server. Playlist runtime sends the playlist's ID to toppings.enry.ch/api, which looks up the video durations YouTube's page doesn't show. Nothing else leaves your browser.",
       "The source is on GitHub under GPL-3.0 if you'd rather check than trust.",

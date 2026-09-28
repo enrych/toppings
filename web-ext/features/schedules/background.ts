@@ -1,12 +1,13 @@
 import { appSettings } from "@/app/settings";
 import { readPositionInBackground } from "@/lib/location";
 import { getProfileById, profileStore, setActiveProfileId } from "@/features/profiles/store";
-import { clock, currentEnd, isInWindow, placesHere, scheduleInCharge, upcomingChanges } from "./rules";
+import { clock, currentEnd, isInWindow, nextChangeAt, placesHere, scheduleInCharge, upcomingChanges } from "./rules";
 import { schedulesStore, type Place, type Schedule } from "./settings";
 import { scheduleState, type ScheduleState } from "./state";
 import { skipSchedule } from "./messages";
 
 const TICK_ALARM = "schedules";
+const CHANGE_ALARM = "schedules-change";
 const LOCATION_ALARM = "schedules-location";
 const LOCATION_EVERY_MINUTES = 5;
 // A fix vaguer than this cannot tell one building from the next.
@@ -17,10 +18,12 @@ const BADGE_COLOR = "#c2531e";
 let ticking = Promise.resolve();
 
 export function runSchedules(): void {
-  chrome.alarms.create(TICK_ALARM, { periodInMinutes: 1 });
-  chrome.alarms.create(LOCATION_ALARM, { periodInMinutes: LOCATION_EVERY_MINUTES });
+  // Created once: re-creating on every wake of the background would restart
+  // the countdown, and a background woken often would never see it fire.
+  void ensureAlarm(TICK_ALARM, 1);
+  void ensureAlarm(LOCATION_ALARM, LOCATION_EVERY_MINUTES);
   chrome.alarms.onAlarm.addListener((alarm) => {
-    if (alarm.name === TICK_ALARM) queueTick();
+    if (alarm.name === TICK_ALARM || alarm.name === CHANGE_ALARM) queueTick();
     if (alarm.name === LOCATION_ALARM) void checkLocation();
   });
   schedulesStore.subscribe(() => {
@@ -34,6 +37,10 @@ export function runSchedules(): void {
   });
   queueTick();
   void checkLocation();
+}
+
+async function ensureAlarm(name: string, periodInMinutes: number): Promise<void> {
+  if (!(await chrome.alarms.get(name))) await chrome.alarms.create(name, { periodInMinutes });
 }
 
 // Only while a place schedule exists, so nobody else is ever asked where they are.
@@ -118,6 +125,10 @@ export async function tick(now: Date): Promise<void> {
       : "";
   patch.status = status;
   await scheduleState.set(patch);
+
+  // The one-minute tick is a safety net; this lands on the change itself.
+  const change = nextChangeAt(schedules, now, LEAD_MINUTES);
+  if (change) await chrome.alarms.create(CHANGE_ALARM, { when: change.getTime() });
 
   const badge = soon ? `${Math.max(1, Math.ceil((soon.at.getTime() - now.getTime()) / 60_000))}m` : next ? (await nameOf(next.profileId)).charAt(0).toUpperCase() : "";
   await showBadge(badge, status);

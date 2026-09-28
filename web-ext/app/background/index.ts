@@ -22,7 +22,18 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
     void chrome.runtime.setUninstallURL(URLS.FAREWELL);
   }
   await migrateLegacyStore();
+  await startInOpenTabs();
 });
+
+// Tabs open across an install or update have no working Toppings until they
+// reload, since the old content script is cut off; this starts the new one.
+async function startInOpenTabs(): Promise<void> {
+  for (const tab of await chrome.tabs.query({ url: "https://www.youtube.com/*" })) {
+    if (tab.id === undefined) continue;
+    // A discarded or still-loading tab refuses; it gets the script when it loads.
+    void chrome.scripting.executeScript({ target: { tabId: tab.id, allFrames: true }, files: ["/content.js"] }).catch(() => {});
+  }
+}
 
 // The toolbar icon greys out while the master switch is off.
 function setIcon(enabled: boolean): void {

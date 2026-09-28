@@ -45,6 +45,7 @@
   "permissions": [
     "alarms",
     "offscreen",
+    "scripting",
     "storage"
   ],
   "short_name": "Toppings",

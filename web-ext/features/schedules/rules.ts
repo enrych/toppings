@@ -97,4 +97,18 @@ export function upcomingChanges(schedules: readonly Schedule[], now: Date, leadM
   return changes;
 }
 
+// The next moment anything happens: a heads-up, a start or an end.
+export function nextChangeAt(schedules: readonly Schedule[], now: Date, leadMinutes: number): Date | null {
+  const lead = leadMinutes * MINUTE;
+  const moments: number[] = [];
+  for (const schedule of schedules) {
+    if (!schedule.enabled || schedule.rule.kind !== "time") continue;
+    const start = nextStart(schedule.rule, now);
+    const end = currentEnd(schedule.rule, now);
+    for (const moment of [start, end]) if (moment) moments.push(moment.getTime() - lead, moment.getTime());
+  }
+  const future = moments.filter((moment) => moment > now.getTime());
+  return future.length ? new Date(Math.min(...future)) : null;
+}
+
 export const clock = (date: Date) => `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;

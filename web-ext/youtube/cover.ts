@@ -7,6 +7,7 @@ export type CoverMode = "black" | "visualizer" | "custom";
 // pre-play thumbnail; below the spinner (18) and the controls (59), so the
 // player stays fully usable while the video cannot be seen.
 const COVER_Z_INDEX = "17";
+const COVER_ATTRIBUTE = "data-tppng-cover";
 
 interface Cover {
   mode: CoverMode;
@@ -28,6 +29,7 @@ export function showCover(player: HTMLElement, mode: CoverMode): void {
   removeCover(player);
 
   const element = document.createElement("div");
+  element.setAttribute(COVER_ATTRIBUTE, "");
   Object.assign(element.style, { position: "absolute", inset: "0", zIndex: COVER_Z_INDEX, background: "#000 center / cover no-repeat", pointerEvents: "none" });
   player.append(element);
   const cover: Cover = { mode, element };
@@ -53,9 +55,10 @@ export function showCover(player: HTMLElement, mode: CoverMode): void {
 export function removeCover(player: HTMLElement): void {
   const cover = covers.get(player);
   cover?.stop?.();
-  cover?.element.remove();
   if (cover) imageCovers.delete(cover.element);
   covers.delete(player);
+  // Also any left by a content script an update cut off, frozen mid-frame.
+  for (const stale of player.querySelectorAll(`:scope > [${COVER_ATTRIBUTE}]`)) stale.remove();
 }
 
 function paintImage(element: HTMLElement, image: unknown): void {

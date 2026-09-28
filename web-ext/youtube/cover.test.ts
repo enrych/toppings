@@ -30,6 +30,15 @@ describe("watch.visuals", () => {
     expect(covers()).toHaveLength(0);
   });
 
+  test("a cover left by an earlier copy of the script is replaced, not stacked", () => {
+    const stale = document.createElement("div");
+    stale.setAttribute("data-tppng-cover", "");
+    player().append(stale);
+    watchVisuals.apply(player(), { value: "black" });
+    expect(player().querySelectorAll("[data-tppng-cover]")).toHaveLength(1);
+    expect(stale.isConnected).toBe(false);
+  });
+
   test("reset removes the cover", () => {
     watchVisuals.apply(player(), { value: "black" });
     watchVisuals.reset(player());

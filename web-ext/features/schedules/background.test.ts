@@ -6,7 +6,12 @@ import { schedulesStore, type Schedule } from "./settings";
 import { scheduleState } from "./state";
 
 const badge = { text: "", title: "" };
+const alarms = new Map<string, { when?: number; periodInMinutes?: number }>();
 Object.assign(chrome, {
+  alarms: {
+    create: async (name: string, info: { when?: number; periodInMinutes?: number }) => void alarms.set(name, info),
+    get: async (name: string) => (alarms.has(name) ? { name, ...alarms.get(name) } : undefined),
+  },
   action: {
     setBadgeText: async ({ text }: { text: string }) => void (badge.text = text),
     setBadgeBackgroundColor: async () => {},
@@ -49,6 +54,13 @@ describe("schedule runner", () => {
     expect(await active()).toBeNull();
     await tick(at("18:00"));
     expect(await active()).toBeNull();
+  });
+
+  test("sets an alarm for the next change, so it lands on time rather than at the next minute's tick", async () => {
+    await tick(at("08:00"));
+    expect(alarms.get("schedules-change")?.when).toBe(at("08:55").getTime());
+    await tick(at("08:56"));
+    expect(alarms.get("schedules-change")?.when).toBe(at("09:00").getTime());
   });
 
   test("warns once ahead of a start, counting down on the badge", async () => {

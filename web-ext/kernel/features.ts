@@ -26,14 +26,19 @@ export interface BootOptions {
 export interface Booted {
   // Re-runs the current route, e.g. after the enabled switch flips.
   refresh(): void;
+  // Unmounts everything and ignores later navigations, for handing the page
+  // to a newer copy of the content script.
+  stop(): void;
 }
 
 export function bootFeatures(features: readonly Feature[], onNavigate: (listener: (route: Route) => void) => void, { enabled = () => true }: BootOptions = {}): Booted {
   const mounted = new Map<string, Unmount>();
   let navigation: AbortController | undefined;
   let current: Route | undefined;
+  let stopped = false;
 
   const navigate = async (route: Route) => {
+    if (stopped) return;
     current = route;
     navigation?.abort();
     const own = (navigation = new AbortController());
@@ -41,7 +46,7 @@ export function bootFeatures(features: readonly Feature[], onNavigate: (listener
       mounted.delete(id);
       unmount();
     }
-    if (!enabled()) return;
+    if (!enabled() || stopped) return;
     // Started together, so one feature waiting on the network or on an element
     // that never renders holds up none of the others.
     await Promise.all(
@@ -64,6 +69,14 @@ export function bootFeatures(features: readonly Feature[], onNavigate: (listener
   return {
     refresh() {
       if (current) void navigate(current);
+    },
+    stop() {
+      stopped = true;
+      navigation?.abort();
+      for (const [id, unmount] of mounted) {
+        mounted.delete(id);
+        unmount();
+      }
     },
   };
 }

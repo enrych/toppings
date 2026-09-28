@@ -46,6 +46,22 @@ describe("bootFeatures", () => {
     expect(signal?.aborted).toBe(true);
   });
 
+  test("stop unmounts everything and ignores later navigations", async () => {
+    const nav = navigator();
+    let mounts = 0;
+    let unmounts = 0;
+    const feature: Feature = { id: "f", routes: ["watch", "home"], mount: () => (mounts++, () => unmounts++) };
+    const booted = bootFeatures([feature], nav.onNavigate);
+    nav.go(watch);
+    await settle();
+    booted.stop();
+    expect(unmounts).toBe(1);
+    nav.go({ name: "home" });
+    booted.refresh();
+    await settle();
+    expect(mounts).toBe(1);
+  });
+
   test("the previous route's features unmount on navigation", async () => {
     const nav = navigator();
     let unmounts = 0;

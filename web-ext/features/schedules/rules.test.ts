@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { clock, currentEnd, isInWindow, nextStart, placesHere, scheduleInCharge, upcomingChanges } from "./rules";
+import { clock, currentEnd, isInWindow, nextChangeAt, nextStart, placesHere, scheduleInCharge, upcomingChanges } from "./rules";
 import type { Place, Schedule, TimeRule } from "./settings";
 
 // 2026-09-28 is a Monday; dates are local, like the rules.
@@ -58,6 +58,16 @@ describe("heads-up", () => {
     expect(upcomingChanges([work], on(28, "08:56"), 5, null).map((c) => [c.change, clock(c.at)])).toEqual([["start", "09:00"]]);
     expect(upcomingChanges([work], on(28, "08:50"), 5, null)).toEqual([]);
     expect(upcomingChanges([work], on(28, "17:57"), 5, work).map((c) => [c.change, clock(c.at)])).toEqual([["end", "18:00"]]);
+  });
+});
+
+describe("next change", () => {
+  test("is the next heads-up, start or end, whichever comes first", () => {
+    const work = schedule("w", weekdays);
+    expect(nextChangeAt([work], on(28, "08:00"), 5)).toEqual(on(28, "08:55"));
+    expect(nextChangeAt([work], on(28, "08:56"), 5)).toEqual(on(28, "09:00"));
+    expect(nextChangeAt([work], on(28, "12:00"), 5)).toEqual(on(28, "17:55"));
+    expect(nextChangeAt([], on(28, "12:00"), 5)).toBeNull();
   });
 });
 
