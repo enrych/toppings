@@ -36,7 +36,6 @@ export const PRESET_AUDIO: Profile = {
   createdAt: 0,
   primitives: {
     "watch.visuals": { value: "visualizer" },
-    "watch.sidebar": { visible: false },
   },
 };
 
