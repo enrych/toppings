@@ -7,6 +7,7 @@ import Switch from "@/ui/form/Switch";
 import Select, { type SelectOption } from "@/ui/form/Select";
 import Field from "@/ui/form/Field";
 import { useToast } from "@/ui/feedback/ToastProvider";
+import Schedules from "@/app/options/components/Schedules";
 import { useCapabilityCache } from "@/kernel/dom/useCapabilities";
 import { useChromeStorageLocal } from "@/lib/useChromeStorageLocal";
 import { CHROME_STORAGE_LOCAL_KEY } from "@/lib/storageKeys";
@@ -24,7 +25,6 @@ import {
   importProfileFromFile,
 } from "@/features/profiles/importExport";
 import {
-  BUILT_IN_PRESETS,
   type Profile,
   type ProfilePrimitiveConfig,
   type ThumbnailMode,
@@ -602,6 +602,8 @@ export default function Profiles() {
             )}
           </Card>
         </Section>
+
+        <Schedules profiles={profiles} />
       </div>
     </>
   );

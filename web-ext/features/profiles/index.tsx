@@ -1,18 +1,15 @@
 import { render } from "preact";
 import type { Feature } from "@/kernel/features";
 import { bindKeys } from "@/kernel/keys";
-import { mount, mountInline } from "@/kernel/dom/mount";
+import { mountInline } from "@/kernel/dom/mount";
 import { runPrimitives, type PrimitiveRun } from "@/kernel/primitives";
 import type { RouteName } from "@/youtube/route";
 import { PRIMITIVES, watchComments, watchEndCards, watchSidebar, type Visibility } from "@/youtube/primitives";
-import { resolveRightControls, resolveSettingsButton } from "@/youtube/player";
-import { resolveGuideSettingsSection, settingsMenu } from "@/youtube/guide";
+import { resolveRightControls, resolveSettingsButton, settingsMenu } from "@/youtube/player";
 import { showToast } from "@/kernel/dom/toast";
 import { GearEntry, GearPanel, type QuickToggle } from "./GearPanel";
-import { GuideLink, NativeSettings } from "./NativeSettings";
 import { AudioButton, audioButtonHost, setAudioButtonState } from "./AudioButton";
 import { profileToggleKeys, profilesKeys } from "./keys";
-import { openOptions } from "./messages";
 import { BUILT_IN_PRESETS, PRESET_AUDIO, type Profile } from "./profiles";
 import { profilesSettings } from "./settings";
 import { getActiveProfile, getAllProfiles, getCustomProfiles, setActiveProfileId, subscribeProfiles, toggleProfile } from "./store";
@@ -73,7 +70,6 @@ export const profiles: Feature = {
       });
     }
     const gear = route.name === "watch" && settings.gearMenu ? await hookGearMenu(page) : undefined;
-    const native = settings.nativeSettings ? await mountNativeSettings(page) : undefined;
 
     return () => {
       stopped = true;
@@ -82,7 +78,6 @@ export const profiles: Feature = {
       unbindToggles();
       audio?.unmount();
       gear?.();
-      native?.();
       run?.stop();
     };
   },
@@ -204,60 +199,5 @@ async function hookGearMenu(page: PageControls) {
     document.getElementById(GEAR_PANEL_ID)?.remove();
     const parts = settingsMenu(button.element);
     if (parts) parts.mainPanel.style.display = "";
-  };
-}
-
-async function mountNativeSettings(page: PageControls) {
-  const guide = await resolveGuideSettingsSection();
-  if (!guide.resolved) return;
-
-  let open = false;
-  let all: Profile[] = [];
-  let activeId: string | null = null;
-  const overlay = mount("tppng-native-settings", document.body, view());
-  const link = mount("tppng-guide-link", guide.element, <GuideLink onOpen={() => void show()} />);
-  // The guide is a Polymer repeat that drops foreign children when it
-  // re-renders, so the link is put back whenever that happens.
-  const keepLink = new MutationObserver(() => {
-    if (!link.host.isConnected) guide.element.append(link.host);
-  });
-  keepLink.observe(guide.element, { childList: true });
-
-  function view() {
-    return (
-      <NativeSettings
-        open={open}
-        profiles={all}
-        activeProfileId={activeId}
-        toggles={page.toggles()}
-        onPick={async (id) => {
-          await setActiveProfileId(id);
-          await refresh();
-        }}
-        onToggle={(id, visible) => {
-          page.setVisible(id, visible);
-          overlay.update(view());
-        }}
-        onOpenOptions={() => void openOptions.send()}
-        onClose={() => {
-          open = false;
-          overlay.update(view());
-        }}
-      />
-    );
-  }
-  async function refresh() {
-    [all, activeId] = [await getAllProfiles(), (await getActiveProfile())?.id ?? null];
-    overlay.update(view());
-  }
-  async function show() {
-    open = true;
-    await refresh();
-  }
-
-  return () => {
-    keepLink.disconnect();
-    overlay.unmount();
-    link.unmount();
   };
 }

@@ -90,3 +90,10 @@ export function syncRatePanel(panel: Element, rate: number): void {
 export function isAdShowing(video: Element): boolean {
   return video.closest(".html5-video-player")?.classList.contains("ad-showing") ?? false;
 }
+
+export function settingsMenu(inPlayer: Element): { menu: HTMLElement; mainPanel: HTMLElement; mainList: HTMLElement } | null {
+  const menu = findWithin(playerOf(inPlayer), [".ytp-settings-menu"]).element as HTMLElement | null;
+  const mainPanel = menu?.querySelector<HTMLElement>(".ytp-panel");
+  const mainList = mainPanel?.querySelector<HTMLElement>(".ytp-panel-menu");
+  return menu && mainPanel && mainList ? { menu, mainPanel, mainList } : null;
+}

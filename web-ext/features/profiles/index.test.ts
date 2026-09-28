@@ -178,22 +178,6 @@ describe("profiles", () => {
     expect(mainPanel.style.display).toBe("");
   });
 
-  test("native settings adds a guide link and an overlay", async () => {
-    await profilesSettings.set({ nativeSettings: true });
-    await mountOn(watch);
-    const link = document.getElementById("tppng-guide-link")!;
-    expect(link.shadowRoot!.textContent).toContain("Toppings");
-    link.shadowRoot!.querySelector<HTMLElement>(".link")!.click();
-    await tick();
-    const overlay = document.getElementById("tppng-native-settings")!.shadowRoot!;
-    expect(overlay.querySelector(".overlay")).not.toBeNull();
-    [...overlay.querySelectorAll<HTMLElement>(".chip")].find((c) => c.textContent === "Audio")!.click();
-    await tick();
-    expect((await getActiveProfile())?.id).toBe("preset:audio");
-    overlay.querySelector<HTMLElement>(".back")!.click();
-    expect(overlay.querySelector(".overlay")).toBeNull();
-  });
-
   test("home route leaves watch primitives alone", async () => {
     await setActiveProfileId("preset:focus");
     await mountOn(home);

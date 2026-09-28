@@ -9,6 +9,8 @@ import { playbackSettings } from "@/features/playback/settings";
 import { shortsSettings } from "@/features/shorts/settings";
 import { getActiveProfile, getAllProfiles, setActiveProfileId, subscribeProfiles } from "@/features/profiles/store";
 import type { Profile } from "@/features/profiles/profiles";
+import { scheduleState } from "@/features/schedules/state";
+import { skipSchedule } from "@/features/schedules/messages";
 import { routeFor, type Route } from "@/youtube/route";
 import { URLS } from "@/lib/urls";
 import { EXTENSION_VERSION } from "@/lib/version";
@@ -76,6 +78,7 @@ export default function App() {
   const app = useSettings(appSettings);
   const playback = useSettings(playbackSettings);
   const shorts = useSettings(shortsSettings);
+  const schedule = useSettings(scheduleState).value;
   const tab = useActiveTab();
   const { profiles, activeId, activate } = useProfiles();
   const onYouTube = tab.route !== null;
@@ -127,6 +130,17 @@ export default function App() {
             );
           })}
         </div>
+        {app.value.enabled && schedule.status && (
+          <div class="tw-flex tw-items-center tw-gap-2 tw-pb-1 tw-pt-1">
+            <span aria-hidden class="tw-inline-block tw-w-1.5 tw-h-1.5 tw-rounded-full tw-bg-accent tw-flex-shrink-0" />
+            <span role="status" class="tw-min-w-0 tw-flex-1 tw-text-[11px] tw-text-fg-muted tw-truncate" title={schedule.status}>{schedule.status}</span>
+            {schedule.inCharge !== null && (
+              <button type="button" title="Skip this schedule for now" class="tw-text-[11px] tw-text-fg-muted hover:tw-text-fg" onClick={() => void skipSchedule.send()}>
+                Skip
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       <nav class="tw-flex tw-border-t tw-border-border-subtle">

@@ -62,12 +62,6 @@ export default function General() {
               onToggle={(gearMenu) => surfaces.update({ gearMenu })}
             />
             <Switch
-              label="YouTube sidebar entry"
-              description="A Toppings entry in YouTube's left navigation that opens a native-styled settings page."
-              isEnabled={surfaces.value.nativeSettings}
-              onToggle={(nativeSettings) => surfaces.update({ nativeSettings })}
-            />
-            <Switch
               label="Audio button in the player"
               description="A headphones button beside the player's controls that turns the Audio profile on and off."
               isEnabled={surfaces.value.audioButton}

@@ -2,6 +2,7 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "strict": true,
+    "noUnusedLocals": true,
     "lib": [
       "esnext",
       "dom",

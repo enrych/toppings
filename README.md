@@ -21,7 +21,8 @@ I built Toppings because YouTube's player is missing things I wanted every day. 
 
 ## What it does
 
-- **Profiles.** Presets that reshape YouTube in one switch. *Audio* covers the video with a waveform that moves with the sound and leaves the player's controls alone; press B to flip it on and off. *Focus* hides the sidebar, comments and end cards. You can make your own, and export or import them as JSON.
+- **Profiles.** Presets that reshape YouTube in one switch. *Audio* covers the video with a waveform that moves with the sound and leaves the player's controls alone; press B to flip it on and off. *Focus* hides the sidebar, comments and end cards. You can make your own, give each its own shortcut, and export or import them as JSON.
+- **Schedules.** Turn a profile on during set hours (say Audio on weekdays 9 to 6) or while you're at a saved place, and back off afterwards. The toolbar badge and a note on YouTube tell you when a schedule takes over or is about to.
 - **Loop segments.** Mark in and out points and loop a section. You can also line up several segments, each with its own loop count and speed.
 - **Custom playback rates.** Speeds YouTube doesn't offer, from 0.0625× to 16×, right in the player's own speed panel.
 - **Toggle rate.** One key flips between 1× and your preferred fast rate.

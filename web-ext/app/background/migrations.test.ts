@@ -10,7 +10,7 @@ import { keybindings } from "@/kernel/keys";
 
 const legacy = {
   isExtensionEnabled: false,
-  ui: { theme: "light", gearMenuEnabled: true, nativeSettingsEnabled: false },
+  ui: { theme: "light", gearMenuEnabled: true },
   preferences: {
     watch: {
       isEnabled: true,
@@ -43,7 +43,7 @@ describe("migrateLegacyStore", () => {
     expect(await playbackSettings.get()).toEqual({ enabled: true, defaultRate: 1.5, toggleRate: 2, rateStep: 0.5, seekBackward: 10, seekForward: 20, customRates: [1, 1.5] });
     expect(await shortsSettings.get()).toMatchObject({ enabled: false, autoScroll: false, toggleRate: 1.75, seekBackward: 5 });
     expect(await segmentsSettings.get()).toEqual({ enabled: true, autoLoad: "last-used", nudgeBaseStep: 2, nudgeMultiplier: 3, nudgeMaxStep: 8 });
-    expect(await profilesSettings.get()).toEqual({ gearMenu: true, nativeSettings: false, audioButton: true });
+    expect(await profilesSettings.get()).toEqual({ gearMenu: true, audioButton: true });
     expect((await profileStore.get()).activeProfileId).toBe("preset:focus");
     expect(await keybindings.get()).toEqual({ "playback.toggleRate": "T", "playback.increaseRate": "W", "playback.seekBackward": "A", "playback.seekForward": "D", "segments.toggle": "L", "segments.fresh": "Shift+Z", "segments.nudgeStartBackward": "Shift+Q", "shorts.toggleRate": "X" });
     expect(Object.keys(await chrome.storage.sync.get()).filter((k) => !k.startsWith("settings:"))).toEqual([]);

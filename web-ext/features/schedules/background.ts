@@ -67,7 +67,10 @@ export async function skipInCharge(now: Date): Promise<void> {
 
 export async function tick(now: Date): Promise<void> {
   const [app, { schedules, places }, state, { activeProfileId }] = await Promise.all([appSettings.get(), schedulesStore.get(), scheduleState.get(), profileStore.get()]);
-  if (!app.enabled) return showBadge("", "");
+  if (!app.enabled) {
+    if (state.status) await scheduleState.set({ status: "" });
+    return showBadge("", "");
+  }
 
   const byId = (id: string | null) => schedules.find((schedule) => schedule.id === id) ?? null;
   const skippedSchedule = byId(state.skipped?.id ?? null);
