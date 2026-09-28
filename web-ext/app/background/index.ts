@@ -5,9 +5,11 @@ import { URLS } from "@/lib/urls";
 import { appSettings } from "@/app/settings";
 import { servePlaylistRuntime } from "@/features/playlist-runtime/background";
 import { openOptions } from "@/features/profiles/messages";
+import { runSchedules } from "@/features/schedules/background";
 import { migrateLegacyStore } from "./migrations";
 
 servePlaylistRuntime();
+runSchedules();
 openOptions.handle(() => chrome.runtime.openOptionsPage());
 
 // Also on every start, not only on install: on a new device, sync can deliver

@@ -43,6 +43,8 @@
     "page": "/options/index.html"
   },
   "permissions": [
+    "alarms",
+    "offscreen",
     "storage"
   ],
   "short_name": "Toppings",

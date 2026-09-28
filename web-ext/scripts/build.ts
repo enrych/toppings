@@ -19,6 +19,7 @@ const scripts = [
   { entry: "app/content/index.ts", out: "content" },
   { entry: "app/popup/index.tsx", out: "popup/index" },
   { entry: "app/options/index.tsx", out: "options/index" },
+  { entry: "app/offscreen/index.ts", out: "offscreen/index" },
 ];
 
 const styles = [
@@ -26,7 +27,7 @@ const styles = [
   { entry: "app/options/index.css", out: "options/index.css" },
 ];
 
-const copies = ["assets", "app/popup/index.html", "app/options/index.html"];
+const copies = ["assets", "app/popup/index.html", "app/options/index.html", "app/offscreen/index.html"];
 
 async function bundleScripts() {
   for (const { entry, out } of scripts) {
@@ -37,7 +38,11 @@ async function bundleScripts() {
       target: "browser",
       format: "iife",
       sourcemap: production ? "none" : "linked",
+      // Folds branches on process.env.BROWSER away, so a Firefox build does not
+      // carry Chrome-only API calls that AMO's linter flags.
+      minify: { syntax: true },
       define: {
+        "process.env.BROWSER": JSON.stringify(firefox ? "firefox" : "chrome"),
         "process.env.NODE_ENV": JSON.stringify(production ? "production" : "development"),
         "process.env.TOPPINGS_API": JSON.stringify(process.env.TOPPINGS_API ?? "https://toppings.enry.ch/api"),
         // Firefox's chrome.* namespace is callback-only under MV2 and returns
@@ -93,7 +98,8 @@ async function writeManifest() {
   if (firefox) {
     manifest.manifest_version = 2;
     manifest.background = { scripts: ["/background.js"], persistent: false };
-    manifest.permissions = [...manifest.host_permissions, ...manifest.permissions];
+    // Offscreen documents are Chrome's; Firefox's background page needs none.
+    manifest.permissions = [...manifest.host_permissions, ...manifest.permissions.filter((permission: string) => permission !== "offscreen")];
     delete manifest.host_permissions;
     manifest.browser_action = manifest.action;
     delete manifest.action;
