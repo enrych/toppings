@@ -57,7 +57,7 @@ export default function General() {
           <Card>
             <Switch
               label="Player gear menu"
-              description="A Toppings section in the player's settings menu, with quick toggles and profiles."
+              description="A Profile row in the player's settings menu, for switching profiles without leaving the video."
               isEnabled={surfaces.value.gearMenu}
               onToggle={(gearMenu) => surfaces.update({ gearMenu })}
             />

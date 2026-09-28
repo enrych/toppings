@@ -27,7 +27,7 @@ const shortcutEntries = (group: { id: string; title: string; keys: Record<string
 export const SEARCH_INDEX: SearchEntry[] = [
   { label: "Enable Toppings", description: "When off, nothing runs on YouTube.", segment: "", page: "General", section: "Extension" },
   { label: "Appearance", description: "System, dark, or light, for the popup and this page.", segment: "", page: "General", section: "Appearance" },
-  { label: "Player gear menu", description: "A Toppings section in the player's settings menu.", segment: "", page: "General", section: "Profile surfaces" },
+  { label: "Player gear menu", description: "A Profile row in the player\'s settings menu.", segment: "", page: "General", section: "Profile surfaces" },
   { label: "Audio button in the player", description: "A headphones button that turns the Audio profile on and off.", segment: "", page: "General", section: "Profile surfaces" },
   { label: "Re-scan features", description: "Clears the cached feature compatibility check.", segment: "", page: "General", section: "Diagnostics" },
   { label: "Playback controls", description: "Default rate, rate shortcuts and seek shortcuts on the watch page.", segment: "watch", sectionId: "playback-rate", page: "Watch", section: "Playback rate" },

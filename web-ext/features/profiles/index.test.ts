@@ -8,7 +8,7 @@ const watchPage = `
   <div id="movie_player" class="html5-video-player">
     <video></video>
     <button class="ytp-settings-button"></button>
-    <div class="ytp-settings-menu"><div class="ytp-panel"><div class="ytp-panel-menu"><div class="ytp-menuitem">Quality</div></div></div></div>
+    <div class="ytp-popup ytp-settings-menu" style="width: 303px; height: 305px;"><div class="ytp-popup-content"><div class="ytp-panel" style="width: 303px; height: 305px;"><div class="ytp-panel-menu" style="height: 305px;"><div class="ytp-menuitem">Quality</div></div></div></div></div>
   </div>
   <div id="secondary"></div>
   <ytd-comments id="comments"></ytd-comments>
@@ -18,6 +18,9 @@ const watch = { name: "watch", videoId: "v", playlistId: null } as const;
 const home = { name: "home" } as const;
 const tick = () => new Promise((r) => setTimeout(r, 10));
 const sidebar = () => document.getElementById("secondary")!;
+const gearButton = () => document.querySelector<HTMLElement>(".ytp-settings-button")!;
+const popupContent = () => document.querySelector<HTMLElement>(".ytp-popup-content")!;
+const mainPanel = () => document.querySelector<HTMLElement>(".ytp-popup-content > .ytp-panel")!;
 const press = (key: string, init: KeyboardEventInit = {}) => document.body.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true, ...init }));
 
 let unmount: (() => void) | undefined | void;
@@ -108,74 +111,81 @@ describe("profiles", () => {
     expect(await getActiveProfile()).toBeNull();
   });
 
-  test("gear menu entry lists profiles and quick toggles", async () => {
+  test("the gear menu gets a native Profile row showing the active profile", async () => {
     await profilesSettings.set({ gearMenu: true });
-    await mountOn(watch);
-    document.querySelector<HTMLElement>(".ytp-settings-button")!.click();
-    await tick();
-    const entry = document.getElementById("tppng-gear-entry")!;
-    expect(entry.textContent).toContain("Toppings");
-    entry.click();
-    await tick();
-    const panel = document.getElementById("tppng-gear-panel")!;
-    expect(panel.hidden).toBe(false);
-    const labels = [...panel.querySelectorAll(".ytp-menuitem-label")].map((e) => e.textContent);
-    expect(labels).toContain("Recommendations sidebar");
-    expect(labels).toContain("Focus");
-
-    const toggle = panel.querySelector<HTMLElement>("[role=menuitemcheckbox]")!;
-    toggle.click();
-    expect(sidebar().style.display).toBe("none");
-
-    const focus = [...panel.querySelectorAll<HTMLElement>("[role=menuitemradio]")].find((e) => e.textContent === "Focus")!;
-    focus.click();
-    await tick();
-    expect((await getActiveProfile())?.id).toBe("preset:focus");
-    expect(panel.hidden).toBe(true);
-
-    unmount?.();
-    unmount = undefined;
-    expect(document.getElementById("tppng-gear-entry")).toBeNull();
-  });
-
-  test("a profile switched as the page unmounts is not applied afterwards", async () => {
-    await mountOn(watch);
     await setActiveProfileId("preset:focus");
-    unmount?.();
-    unmount = undefined;
+    await mountOn(watch);
+    gearButton().click();
     await tick();
-    expect(sidebar().style.display).toBe("");
+    const row = document.getElementById("tppng-profile-row")!;
+    expect(row.getAttribute("aria-haspopup")).toBe("true");
+    expect(row.querySelector(".ytp-menuitem-icon svg")).not.toBeNull();
+    expect(row.querySelector(".ytp-menuitem-label")!.textContent).toBe("Profile");
+    expect(row.querySelector(".ytp-menuitem-content")!.textContent).toBe("Focus");
   });
 
-  test("the gear menu reopens on YouTube's own settings after closing from the Toppings panel", async () => {
+  test("the Profile submenu takes the main panel's place, and picking goes back with the new name", async () => {
     await profilesSettings.set({ gearMenu: true });
     await mountOn(watch);
-    const gear = document.querySelector<HTMLElement>(".ytp-settings-button")!;
-    gear.click();
+    gearButton().click();
     await tick();
-    document.getElementById("tppng-gear-entry")!.click();
+    const main = mainPanel();
+    document.getElementById("tppng-profile-row")!.click();
     await tick();
-    gear.click();
+    const panel = document.getElementById("tppng-profile-panel")!;
+    expect(panel.parentElement).toBe(popupContent());
+    expect(main.isConnected).toBe(false);
+    expect(panel.querySelector(".ytp-panel-title")!.textContent).toBe("Profile");
+    const options = [...panel.querySelectorAll<HTMLElement>("[role=menuitemradio]")];
+    expect(options.map((o) => o.textContent)).toEqual(["Default", "Audio", "Focus"]);
+    expect(options[0].getAttribute("aria-checked")).toBe("true");
+
+    options[1].click();
     await tick();
-    gear.click();
-    await tick();
-    expect(document.querySelector<HTMLElement>(".ytp-settings-menu .ytp-panel")!.style.display).toBe("");
-    expect(document.getElementById("tppng-gear-panel")!.hidden).toBe(true);
+    expect((await getActiveProfile())?.id).toBe("preset:audio");
+    expect(main.parentElement).toBe(popupContent());
+    expect(document.getElementById("tppng-profile-panel")).toBeNull();
+    expect(document.querySelector("#tppng-profile-row .ytp-menuitem-content")!.textContent).toBe("Audio");
   });
 
-  test("unmounting with the menu closed restores YouTube's own settings panel", async () => {
+  test("back puts YouTube's panel back at the size YouTube gave it", async () => {
     await profilesSettings.set({ gearMenu: true });
     await mountOn(watch);
-    document.querySelector<HTMLElement>(".ytp-settings-button")!.click();
+    gearButton().click();
     await tick();
-    document.getElementById("tppng-gear-entry")!.click();
+    document.getElementById("tppng-profile-row")!.click();
     await tick();
-    const mainPanel = document.querySelector<HTMLElement>(".ytp-settings-menu .ytp-panel")!;
-    expect(mainPanel.style.display).toBe("none");
+    document.querySelector<HTMLElement>("#tppng-profile-panel .ytp-panel-back-button")!.click();
+    expect(mainPanel().getAttribute("style")).toBe("width: 303px; height: 305px;");
+    expect(document.querySelector(".ytp-settings-menu")!.getAttribute("style")).toBe("width: 303px; height: 305px;");
+  });
+
+  test("closing the menu from the submenu leaves YouTube's main panel in it for next time", async () => {
+    await profilesSettings.set({ gearMenu: true });
+    await mountOn(watch);
+    gearButton().click();
+    await tick();
+    const main = mainPanel();
+    document.getElementById("tppng-profile-row")!.click();
+    await tick();
     document.querySelector<HTMLElement>(".ytp-settings-menu")!.style.display = "none";
+    await tick();
+    expect(main.parentElement).toBe(popupContent());
+    expect(document.getElementById("tppng-profile-panel")).toBeNull();
+  });
+
+  test("unmounting takes the row out and leaves YouTube's panel in place", async () => {
+    await profilesSettings.set({ gearMenu: true });
+    await mountOn(watch);
+    gearButton().click();
+    await tick();
+    const main = mainPanel();
+    document.getElementById("tppng-profile-row")!.click();
+    await tick();
     unmount?.();
     unmount = undefined;
-    expect(mainPanel.style.display).toBe("");
+    expect(main.parentElement).toBe(popupContent());
+    expect(document.getElementById("tppng-profile-row")).toBeNull();
   });
 
   test("home route leaves watch primitives alone", async () => {

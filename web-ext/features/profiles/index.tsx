@@ -1,22 +1,16 @@
-import { render } from "preact";
 import type { Feature } from "@/kernel/features";
 import { bindKeys } from "@/kernel/keys";
 import { mountInline } from "@/kernel/dom/mount";
 import { runPrimitives, type PrimitiveRun } from "@/kernel/primitives";
-import type { RouteName } from "@/youtube/route";
-import { PRIMITIVES, watchComments, watchEndCards, watchSidebar, type Visibility } from "@/youtube/primitives";
-import { resolveRightControls, resolveSettingsButton, settingsMenu } from "@/youtube/player";
+import { PRIMITIVES } from "@/youtube/primitives";
+import { resolveRightControls } from "@/youtube/player";
 import { showToast } from "@/kernel/dom/toast";
-import { GearEntry, GearPanel, type QuickToggle } from "./GearPanel";
 import { AudioButton, audioButtonHost, setAudioButtonState } from "./AudioButton";
+import { hookGearMenu, type GearMenu } from "./gearMenu";
 import { profileToggleKeys, profilesKeys } from "./keys";
-import { BUILT_IN_PRESETS, PRESET_AUDIO, type Profile } from "./profiles";
+import { BUILT_IN_PRESETS, PRESET_AUDIO } from "./profiles";
 import { profilesSettings } from "./settings";
 import { getActiveProfile, getAllProfiles, getCustomProfiles, setActiveProfileId, subscribeProfiles, toggleProfile } from "./store";
-
-const QUICK_TOGGLES = [watchSidebar, watchComments, watchEndCards];
-const GEAR_ENTRY_ID = "tppng-gear-entry";
-const GEAR_PANEL_ID = "tppng-gear-panel";
 
 export const profiles: Feature = {
   id: "profiles",
@@ -46,19 +40,13 @@ export const profiles: Feature = {
       unbindToggles = bindKeys(profileToggleKeys(all), Object.fromEntries(all.map((profile) => [profile.id, () => void switchProfile(profile.id)])));
     };
     await bindToggles();
+    let gear: GearMenu | undefined;
     const unsubscribe = subscribeProfiles(() => {
       void start();
       void bindToggles();
+      gear?.refresh();
     });
 
-    const page: PageControls = {
-      route: route.name,
-      toggles: () =>
-        route.name === "watch"
-          ? QUICK_TOGGLES.map((p) => ({ id: p.id, label: p.label, visible: (run?.get(p.id) as Visibility | undefined)?.visible ?? true }))
-          : [],
-      setVisible: (id, visible) => run?.set(id, { visible }),
-    };
 
     const unbindKeys = bindKeys(profilesKeys, { cycle: () => void cycleProfile() });
     // Not awaited: the control bar can render late, and nothing else waits on it.
@@ -69,7 +57,7 @@ export const profiles: Feature = {
         audio?.show(audioActive);
       });
     }
-    const gear = route.name === "watch" && settings.gearMenu ? await hookGearMenu(page) : undefined;
+    gear = route.name === "watch" && settings.gearMenu ? await hookGearMenu() : undefined;
 
     return () => {
       stopped = true;
@@ -77,17 +65,11 @@ export const profiles: Feature = {
       unbindKeys();
       unbindToggles();
       audio?.unmount();
-      gear?.();
+      gear?.unmount();
       run?.stop();
     };
   },
 };
-
-interface PageControls {
-  route: RouteName;
-  toggles(): QuickToggle[];
-  setVisible(id: string, visible: boolean): void;
-}
 
 async function switchProfile(id: string): Promise<void> {
   const now = await toggleProfile(id);
@@ -124,80 +106,4 @@ async function cycleProfile(): Promise<void> {
   const next = cycle[(cycle.findIndex((p) => p.id === current) + 1) % cycle.length];
   await setActiveProfileId(next.id);
   showToast(`Profile: ${next.name}`);
-}
-
-// YouTube builds the settings menu on first open and may rebuild it, so the
-// entry is (re)attached on every click of the gear button.
-async function hookGearMenu(page: PageControls) {
-  const button = await resolveSettingsButton();
-  if (!button.resolved) return;
-
-  const onOpen = () =>
-    setTimeout(() => {
-      const parts = settingsMenu(button.element);
-      if (!parts) return;
-      const { menu, mainPanel, mainList } = parts;
-
-      let panel = menu.querySelector<HTMLElement>(`#${GEAR_PANEL_ID}`);
-      if (!panel) {
-        panel = document.createElement("div");
-        panel.id = GEAR_PANEL_ID;
-        panel.className = "ytp-panel";
-        menu.append(panel);
-      }
-      // YouTube reopens its menu on whichever panel was showing, so a menu
-      // closed from ours would come back without YouTube's own settings.
-      panel.hidden = true;
-      mainPanel.style.display = "";
-      const back = () => {
-        panel!.hidden = true;
-        mainPanel.style.display = "";
-      };
-      const draw = async (all: Profile[]) => {
-        const active = (await getActiveProfile())?.id ?? null;
-        render(
-          <GearPanel
-            toggles={page.toggles()}
-            profiles={all}
-            activeProfileId={active}
-            onToggle={(id, visible) => {
-              page.setVisible(id, visible);
-              void draw(all);
-            }}
-            onPick={async (id) => {
-              await setActiveProfileId(id);
-              back();
-            }}
-            onBack={back}
-          />,
-          panel!,
-        );
-      };
-
-      let entry = mainList.querySelector<HTMLElement>(`#${GEAR_ENTRY_ID}`);
-      if (!entry) {
-        entry = document.createElement("div");
-        entry.id = GEAR_ENTRY_ID;
-        entry.className = "ytp-menuitem";
-        entry.setAttribute("role", "menuitem");
-        entry.setAttribute("aria-haspopup", "true");
-        entry.tabIndex = 0;
-        mainList.prepend(entry);
-      }
-      render(<GearEntry />, entry);
-      entry.onclick = async () => {
-        await draw(await getAllProfiles());
-        mainPanel.style.display = "none";
-        panel!.hidden = false;
-      };
-    }, 0);
-
-  button.element.addEventListener("click", onOpen);
-  return () => {
-    button.element.removeEventListener("click", onOpen);
-    document.getElementById(GEAR_ENTRY_ID)?.remove();
-    document.getElementById(GEAR_PANEL_ID)?.remove();
-    const parts = settingsMenu(button.element);
-    if (parts) parts.mainPanel.style.display = "";
-  };
 }

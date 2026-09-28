@@ -91,9 +91,12 @@ export function isAdShowing(video: Element): boolean {
   return video.closest(".html5-video-player")?.classList.contains("ad-showing") ?? false;
 }
 
-export function settingsMenu(inPlayer: Element): { menu: HTMLElement; mainPanel: HTMLElement; mainList: HTMLElement } | null {
+// YouTube shows one panel at a time in the menu's content, swapping a
+// submenu's panel in for the main one and back.
+export function settingsMenu(inPlayer: Element): { menu: HTMLElement; content: HTMLElement; mainPanel: HTMLElement; mainList: HTMLElement } | null {
   const menu = findWithin(playerOf(inPlayer), [".ytp-settings-menu"]).element as HTMLElement | null;
-  const mainPanel = menu?.querySelector<HTMLElement>(".ytp-panel");
+  const content = menu?.querySelector<HTMLElement>(".ytp-popup-content");
+  const mainPanel = content?.querySelector<HTMLElement>(":scope > .ytp-panel");
   const mainList = mainPanel?.querySelector<HTMLElement>(".ytp-panel-menu");
-  return menu && mainPanel && mainList ? { menu, mainPanel, mainList } : null;
+  return menu && content && mainPanel && mainList ? { menu, content, mainPanel, mainList } : null;
 }
