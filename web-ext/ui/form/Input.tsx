@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from "preact/hooks";
 import Field from "./Field";
-import Icon from "@/ui/primitives/Icon";
+import Icon from "@/ui/elements/Icon";
 
 interface InputProps {
   label: string;

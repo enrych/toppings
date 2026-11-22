@@ -1,4 +1,4 @@
-# AGENTS/web-ext.md
+# web-ext/AGENTS.md
 
 Scoped rules for `web-ext/`, the Chrome and Firefox extension. Read [`../AGENTS.md`](../AGENTS.md) first — its rules, especially the comment policy, apply here in full.
 
@@ -30,7 +30,7 @@ Five entries, all under `app/` (`scripts/build.ts`):
 | `content` | `app/content/index.ts` | Injected into YouTube pages |
 | `popup` | `app/popup/index.tsx` | Toolbar popup |
 | `options` | `app/options/index.tsx` | Options page |
-| `offscreen` | `app/offscreen/index.ts` | Chrome only: a hidden page the service worker opens to read location (`lib/location.ts`) |
+| `offscreen` | `app/offscreen/index.ts` | Chrome only: a hidden page the service worker opens to read location (`features/schedules/location.ts`) |
 
 The content script does one thing: `bootFeatures([...features], onNavigate, { enabled })`. The background serves feature messages, migrates the pre-kernel store, keeps the toolbar icon in step with the master switch, and runs profile schedules (`features/schedules/background.ts`) on a one-minute alarm, with their status on the toolbar badge.
 
@@ -43,7 +43,7 @@ Every feature is one folder under `features/` exporting a `Feature` (`kernel/fea
 A feature folder holds, as needed:
 
 - `settings.ts` — its slice: `defineSettings(id, defaults, { legacy?, area? })` (`kernel/settings.ts`), stored as `settings:<id>` in `chrome.storage.sync` (or `local` for data too big or personal to roam). `legacy` maps the pre-kernel store into the slice; `migrateSettings` runs each once. Pages read a slice with `useSettings`.
-- `keys.ts` — its keyboard actions: `defineKeys({ id, title, keys })` (`kernel/keys.ts`). A feature binds handlers at mount with `bindKeys`; the user's overrides live in the `keybindings` slice by action id (`playback.seekForward`); the Shortcuts page renders every group from the registries. Data-driven shortcuts (a saved segment config's own key) are the feature's business.
+- `keys.ts` — its keyboard actions: `defineKeys({ id, title, keys })` (`kernel/keys.ts`). A feature binds handlers at mount with `bindKeys`; the user's overrides live in the `keybindings` slice by action id (`playback.seekForward`); the Shortcuts page renders every group from the registries. Data-driven shortcuts (one per profile) are registered by the feature that owns the data.
 - `messages.ts` — anything the background must do for it: `defineMessage(kind)` (`kernel/messaging.ts`), handled in a `background.ts` next to the feature.
 - `index.tsx` — the `Feature`. Where it needs a page element it asks `youtube/` (`resolveVideo`, `resolveRatePanel`, …), which wraps `resolveTarget` (`kernel/dom/resolve.ts`) around ordered selector strategies. `resolveTarget` skips elements that are not rendered, because YouTube keeps pages you left alive but hidden, and a bare `document.querySelector` can answer from one of those. Lookups inside something already resolved live (the player, the Shorts page) use `findWithin(root, strategies)` instead, which does not require visibility: there YouTube hides things on purpose, like the settings menu while closed. **Selectors live in `youtube/`, not in features.**
 - UI is Preact. `mount()` (`kernel/dom/mount.ts`) renders into a shadow root so YouTube's CSS and ours never meet; `mountInline()` renders into a host the caller shapes when the element must take YouTube's own classes (a `.ytp-button`, a settings-menu row). In-page styles read YouTube's colour tokens through `themeTokens` (`kernel/dom/theme.ts`) and so follow the page's theme. `showToast` (`kernel/dom/toast.tsx`) is the shared notice.
@@ -91,28 +91,30 @@ web-ext/
 │   ├── content/         # bootFeatures
 │   ├── offscreen/       # Chrome only: answers the background's location requests
 │   ├── options/         # Preact options page: router, layout, search, routes/
-│   ├── popup/           # Preact toolbar popup
-│   └── settings.ts      # The app slice: master switch and theme
-├── kernel/              # Feature contract, settings, keys, messaging, primitives,
-│                        # dom/ (resolve, mount, theme, toast)
-├── youtube/             # Routes, navigation, selectors per page area, the primitive catalogue
+│   └── popup/           # Preact toolbar popup
+├── kernel/              # Feature contract, settings, the app slice (master switch, theme),
+│                        # keys, messaging, primitives, dom/ (resolve, mount, theme, toast)
+├── youtube/             # Routes, navigation, selectors per page area, the primitive
+│                        # catalogue, cover/ (what a profile puts over the video)
 ├── features/            # One folder per thing the extension does
 │   ├── playback/        # Default rate, rate and seek keys, custom rates in the speed panel
 │   ├── playlist-runtime/# Runtime statistics on playlist and watch pages
 │   ├── profiles/        # Presets, profile store, gear-menu panel, native settings, import/export
-│   ├── schedules/       # Rules, the background runner, state for the badge and popup, notices
+│   ├── schedules/       # Rules, location, the background runner, state for the badge and popup, notices
 │   ├── segments/        # Engine, session, storage, markers, button, panel/
 │   └── shorts/          # Auto-scroll, rate and seek on Shorts
 ├── lib/                 # Plumbing with no YouTube or kernel knowledge: storage keys,
-│                        # location, duration, urls, version, brand
-├── ui/                  # Shared page components: form, feedback, layout, primitives, theme
+│                        # duration, urls, version, brand
+├── ui/                  # Shared page components: form, feedback, layout, elements, theme
 ├── test/                # Bun test preload
 └── scripts/             # build.ts (Bun.build + manifest transform), release.ts
 ```
 
+Imports point one way: `lib` ← `kernel` ← `youtube` ← `features` ← `app`, with `ui` beside the features, free to use `lib` and `kernel`. Nothing imports upward. The kernel knows YouTube only by the `Route` type. A feature imports another only where it is built on it (`schedules` switches `profiles`), never both ways: when one must react to the other, the dependent one subscribes, as schedules do to a deleted profile.
+
 Imports across folders use the `@/` root alias; same-folder imports stay relative. There are no barrel `index.ts` files: import the file that defines what you need. Options routes stay under `app/options/routes` because they do not map one-to-one onto features.
 
-A helper that only one feature uses lives in that feature's folder. It moves to `kernel/` when it is about running features, to `youtube/` when it is about YouTube's page, and to `lib/` only when it is neither.
+A helper that only one feature uses lives in that feature's folder, however general it looks; it moves out when a second caller appears. It moves to `kernel/` when it is about running features, to `youtube/` when it is about YouTube's page, and to `lib/` only when it is neither.
 
 ---
 
@@ -124,6 +126,6 @@ A helper that only one feature uses lives in that feature's folder. It moves to 
 - The desktop player has no double-tap seek overlay to reuse; the playback feature draws its own.
 - An install or update cuts off the content script in open tabs (Firefox unloads it; Chrome leaves it running without the extension). The background starts the new one in those tabs, and a new copy dispatches `tppng:takeover` so an older one stops (`app/content/index.ts`); removing that handshake doubles every shortcut after an update.
 - `process.env.BROWSER` is `"chrome"` or `"firefox"` at build time and branches on it are folded away, so a Firefox bundle carries no Chrome-only API calls for AMO's linter to flag.
-- Location is asked for from the options page. Chrome's manifest holds no location permission, because Chrome cannot make it optional and a required one pauses the extension for every user on update; the options page asks the way a website does, and the offscreen document inherits that grant. Firefox can make it optional, so its build declares `geolocation` under `optional_permissions` and requests it on the click (`lib/location.ts`). Neither background can prompt, so a missing grant is reported as an error, never waited on.
+- Location is asked for from the options page. Chrome's manifest holds no location permission, because Chrome cannot make it optional and a required one pauses the extension for every user on update; the options page asks the way a website does, and the offscreen document inherits that grant. Firefox can make it optional, so its build declares `geolocation` under `optional_permissions` and requests it on the click (`features/schedules/location.ts`). Neither background can prompt, so a missing grant is reported as an error, never waited on.
 - Firefox's `chrome.*` namespace is callback-only under MV2: called for a promise it returns `undefined`. The code calls `chrome.*` promise-style, and the Firefox build rewrites the global to `browser` (`scripts/build.ts`). Never pass callbacks to extension APIs, or the Firefox build breaks the other way.
 - YouTube's theme reaches shadow roots as `--yt-sys-color-baseline--*` custom properties on `<html>`; a shadow host reset with `all: initial` would discard them.

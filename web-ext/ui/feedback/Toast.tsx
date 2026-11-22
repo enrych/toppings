@@ -1,5 +1,5 @@
-import Icon, { type IconName } from "../primitives/Icon";
-import IconButton from "../primitives/IconButton";
+import Icon, { type IconName } from "../elements/Icon";
+import IconButton from "../elements/IconButton";
 
 export type ToastTone = "success" | "error" | "info";
 

@@ -1,3 +1,3 @@
-import { answerLocationRequests } from "@/lib/location";
+import { answerLocationRequests } from "@/features/schedules/location";
 
 answerLocationRequests();

@@ -1,6 +1,6 @@
 import { useEffect } from "preact/hooks";
 import { useSettings } from "@/kernel/useSettings";
-import { appSettings, type ThemePreference } from "@/app/settings";
+import { appSettings, type ThemePreference } from "@/kernel/appSettings";
 
 export type { ThemePreference };
 

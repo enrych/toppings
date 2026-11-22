@@ -1,12 +1,12 @@
-import Icon from "@/ui/primitives/Icon";
-import IconButton from "@/ui/primitives/IconButton";
-import Tooltip from "@/ui/primitives/Tooltip";
+import Icon from "@/ui/elements/Icon";
+import IconButton from "@/ui/elements/IconButton";
+import Tooltip from "@/ui/elements/Tooltip";
 import { useChromeStorageLocal } from "@/lib/useChromeStorageLocal";
 import { BRAND_METADATA } from "@/lib/brand";
 import { CHROME_STORAGE_LOCAL_KEY } from "@/lib/storageKeys";
 import { EXTENSION_VERSION } from "@/lib/version";
 import { useTheme } from "@/ui/useTheme";
-import { OPTIONS_ICON_SRC, OPTIONS_PAGES } from "../data";
+import { OPTIONS_ICON_SRC, OPTIONS_PAGES } from "../pages";
 import { hrefFor, useRoute } from "../router";
 import SidebarThemeToggle from "./SidebarThemeToggle";
 import OptionsSearch from "../search/OptionsSearch";

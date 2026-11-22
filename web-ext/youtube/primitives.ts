@@ -1,5 +1,5 @@
 import { definePrimitive, type Primitive } from "@/kernel/primitives";
-import { removeCover, showCover } from "./cover";
+import { removeCover, showCover } from "./cover/cover";
 
 export type Visibility = { visible: boolean };
 export type ThumbnailMode = "show" | "hide" | "blur";

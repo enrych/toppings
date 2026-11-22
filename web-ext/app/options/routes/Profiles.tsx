@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "preact/hooks";
-import Button from "@/ui/primitives/Button";
+import Button from "@/ui/elements/Button";
 import PageHeader from "@/ui/layout/PageHeader";
 import Section from "@/ui/layout/Section";
 import Card from "@/ui/layout/Card";
@@ -7,7 +7,7 @@ import Switch from "@/ui/form/Switch";
 import Select, { type SelectOption } from "@/ui/form/Select";
 import Field from "@/ui/form/Field";
 import { useToast } from "@/ui/feedback/ToastProvider";
-import Schedules from "@/app/options/components/Schedules";
+import Schedules from "@/app/options/routes/Schedules";
 import { useChromeStorageLocal } from "@/lib/useChromeStorageLocal";
 import { CHROME_STORAGE_LOCAL_KEY } from "@/lib/storageKeys";
 import {

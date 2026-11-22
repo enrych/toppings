@@ -1,5 +1,5 @@
 import { keybindings } from "@/kernel/keys";
-import { appSettings } from "@/app/settings";
+import { appSettings } from "@/kernel/appSettings";
 import { migrateSettings, type Settings } from "@/kernel/settings";
 import { playlistRuntimeSettings } from "@/features/playlist-runtime/settings";
 import { shortsSettings } from "@/features/shorts/settings";

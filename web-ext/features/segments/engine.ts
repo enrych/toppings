@@ -1,4 +1,4 @@
-import { MAX_RATE, MIN_RATE } from "@/features/playback/settings";
+import { MAX_RATE, MIN_RATE } from "@/youtube/player";
 import type { Segment, SegmentConfig, SegmentId } from "./types";
 
 // Decides when to seek and at what rate, and nothing else: no storage, no UI,

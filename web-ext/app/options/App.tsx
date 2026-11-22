@@ -2,7 +2,7 @@ import type { ComponentType } from "preact";
 import { useTheme } from "@/ui/useTheme";
 import { ToastProvider } from "@/ui/feedback/ToastProvider";
 import SectionNav from "@/ui/layout/SectionNav";
-import { OPTIONS_PAGES } from "./data";
+import { OPTIONS_PAGES } from "./pages";
 import { useRoute } from "./router";
 import Sidebar from "./layout/Sidebar";
 import General from "./routes/General";

@@ -2,7 +2,7 @@
 
 Single source of truth for any coding agent working in this repo: Claude Code, OpenAI Codex CLI / Codex Cloud, Google Gemini CLI, Google Antigravity, Cursor, Windsurf, opencode, Aider, goose, Factory, RooCode, JetBrains Junie, GitHub Copilot, Devin, or any other AGENTS.md-aware tool.
 
-This file holds the rules that apply **everywhere in the repo**. Anything that applies to only one project lives in a scoped file under `AGENTS/`.
+This file holds the rules that apply **everywhere in the repo**. Anything that applies to only one project lives in that project's own `AGENTS.md`.
 
 ---
 
@@ -19,7 +19,7 @@ This file holds the rules that apply **everywhere in the repo**. Anything that a
 
 | You are touching | Read this too | What it is |
 | --- | --- | --- |
-| `web-ext/` | [`AGENTS/web-ext.md`](AGENTS/web-ext.md) | Chrome/Firefox extension for YouTube |
+| `web-ext/` | [`web-ext/AGENTS.md`](web-ext/AGENTS.md) | Chrome/Firefox extension for YouTube |
 | `website/` | [`website/AGENTS.md`](website/AGENTS.md) | Next.js marketing and docs site (static export) |
 | `backend/` | [`backend/AGENTS.md`](backend/AGENTS.md) | Cloudflare Worker behind `/api` |
 | `assets/` | _(none)_ | Brand assets |
@@ -87,5 +87,5 @@ The repo predates this rule and still carries comments that break it. Do not lau
 
 ## 4. AGENT-COMPATIBILITY NOTES
 
-- **Nested AGENTS.md.** If a sub-project adds its own `AGENTS.md`, the closest one wins for files inside that sub-project. The `AGENTS/` scoped files are the preferred mechanism; use nesting only when a tool requires it.
-- **CLAUDE.md** at the repo root is a pointer to this file (`@AGENTS.md`). Keep rules here, not there.
+- **Nested AGENTS.md.** Each project keeps its rules in an `AGENTS.md` at its own root, and the closest one wins for files inside that project.
+- **CLAUDE.md** files are one-line pointers (`@AGENTS.md`) to the `AGENTS.md` beside them. Keep rules in `AGENTS.md`, not there.

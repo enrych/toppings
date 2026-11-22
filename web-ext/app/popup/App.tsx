@@ -1,10 +1,10 @@
 import { useEffect, useState } from "preact/hooks";
 import { useTheme } from "@/ui/useTheme";
 import { Toggle } from "@/ui/form/Switch";
-import Icon, { type IconName } from "@/ui/primitives/Icon";
+import Icon, { type IconName } from "@/ui/elements/Icon";
 import { useSettings } from "@/kernel/useSettings";
-import { appSettings } from "@/app/settings";
-import { OPTIONS_HTML } from "@/app/options/data";
+import { appSettings } from "@/kernel/appSettings";
+import { OPTIONS_HTML } from "@/app/options/pages";
 import { playbackSettings } from "@/features/playback/settings";
 import { shortsSettings } from "@/features/shorts/settings";
 import { getActiveProfile, getAllProfiles, setActiveProfileId, subscribeProfiles } from "@/features/profiles/store";

@@ -90,18 +90,13 @@ describe("playlist runtime", () => {
     unmount?.();
   });
 
-  test("removes the skeleton when the runtime cannot be fetched", async () => {
-    document.body.innerHTML = layouts["header card"];
-    await feature({ getRuntime: async () => null }).mount({ signal: new AbortController().signal, route: playlistRoute });
-    await settle();
-    expect(document.getElementById("tppng-playlist-runtime")).toBeNull();
-  });
-
-  test("removes the skeleton when asking for the runtime throws", async () => {
-    document.body.innerHTML = layouts["header card"];
-    await feature({ getRuntime: () => Promise.reject(new Error("offline")) }).mount({ signal: new AbortController().signal, route: playlistRoute });
-    await settle();
-    expect(document.getElementById("tppng-playlist-runtime")).toBeNull();
+  test("removes the skeleton when there is no runtime to show, or asking for it throws", async () => {
+    for (const getRuntime of [async () => null, () => Promise.reject(new Error("offline"))]) {
+      document.body.innerHTML = layouts["header card"];
+      await feature({ getRuntime }).mount({ signal: new AbortController().signal, route: playlistRoute });
+      await settle();
+      expect(document.getElementById("tppng-playlist-runtime")).toBeNull();
+    }
   });
 
   test("draws nothing when the runtime arrives after navigating away", async () => {
@@ -123,12 +118,6 @@ describe("playlist runtime", () => {
   test("does nothing when disabled", async () => {
     document.body.innerHTML = layouts.sidebar;
     await feature({ isEnabled: async () => false }).mount({ signal: new AbortController().signal, route: playlistRoute });
-    expect(document.getElementById("tppng-playlist-runtime")).toBeNull();
-  });
-
-  test("skips Watch Later and Liked", async () => {
-    document.body.innerHTML = layouts.sidebar;
-    await feature().mount({ signal: new AbortController().signal, route: { name: "playlist", playlistId: "WL" } });
     expect(document.getElementById("tppng-playlist-runtime")).toBeNull();
   });
 

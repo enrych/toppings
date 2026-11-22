@@ -1,5 +1,5 @@
-import { appSettings } from "@/app/settings";
-import { readPositionInBackground, type Position } from "@/lib/location";
+import { appSettings } from "@/kernel/appSettings";
+import { readPositionInBackground, type Position } from "@/features/schedules/location";
 import { getAllProfiles, getProfileById, profileStore, setActiveProfileId } from "@/features/profiles/store";
 import { clock, currentEnd, isInWindow, nextChangeAt, placesHere, scheduleInCharge, upcomingChanges } from "./rules";
 import { schedulesStore, type Place, type Schedule } from "./settings";
@@ -32,6 +32,7 @@ export function runSchedules(): void {
     if (alarm.name === LOCATION_ALARM) void queueCheck();
   });
   schedulesStore.subscribe(onSchedules);
+  profileStore.subscribe(() => void dropSchedulesOfDeletedProfiles());
   appSettings.subscribe(queueTick);
   skipSchedule.handle(async () => {
     await skipInCharge(new Date());
@@ -39,6 +40,12 @@ export function runSchedules(): void {
   });
   checkPlaces.handle(queueCheck);
   void schedulesStore.get().then(onSchedules);
+}
+
+export async function dropSchedulesOfDeletedProfiles(): Promise<void> {
+  const [profiles, { schedules }] = await Promise.all([getAllProfiles(), schedulesStore.get()]);
+  const kept = schedules.filter((schedule) => profiles.some((profile) => profile.id === schedule.profileId));
+  if (kept.length !== schedules.length) await schedulesStore.set({ schedules: kept });
 }
 
 const hasEnabled = (schedules: readonly Schedule[], kind: Schedule["rule"]["kind"]) => schedules.some((schedule) => schedule.enabled && schedule.rule.kind === kind);
@@ -99,8 +106,8 @@ export async function tick(now: Date): Promise<void> {
     return showBadge("", "");
   }
 
-  // Deleting a profile deletes its schedules, but an import or an older
-  // version can leave one behind, and it must not switch to a profile that is gone.
+  // A deleted profile's schedules are dropped a moment after it goes, and a
+  // tick in between must not switch to a profile that is gone.
   const schedules = stored.filter((schedule) => profiles.some((profile) => profile.id === schedule.profileId));
   const byId = (id: string | null) => schedules.find((schedule) => schedule.id === id) ?? null;
   const skippedSchedule = byId(state.skipped?.id ?? null);

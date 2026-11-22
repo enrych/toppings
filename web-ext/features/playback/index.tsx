@@ -5,6 +5,8 @@ import { mount } from "@/kernel/dom/mount";
 import {
   findSpeedRow,
   isAdShowing,
+  MAX_RATE,
+  MIN_RATE,
   ratePanelChips,
   resolveMoviePlayer,
   resolveRatePanel,
@@ -16,7 +18,7 @@ import {
 import { playbackKeys } from "./keys";
 import { RateChips } from "./RateChips";
 import { SeekFlash } from "./SeekFlash";
-import { MAX_RATE, MIN_RATE, playbackSettings } from "./settings";
+import { playbackSettings } from "./settings";
 
 // Four places keep 1/16 steps exact while dropping float drift like 1.1 + 0.1.
 const clamp = (rate: number) => Math.min(MAX_RATE, Math.max(MIN_RATE, Number(rate.toFixed(4))));

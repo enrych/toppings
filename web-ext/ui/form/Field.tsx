@@ -1,7 +1,7 @@
 import type { ComponentChildren } from "preact";
 import { useId } from "preact/hooks";
-import Icon from "@/ui/primitives/Icon";
-import Tooltip from "@/ui/primitives/Tooltip";
+import Icon from "@/ui/elements/Icon";
+import Tooltip from "@/ui/elements/Tooltip";
 
 interface FieldProps {
   label: string;

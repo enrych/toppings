@@ -4,7 +4,7 @@ import Card from "@/ui/layout/Card";
 import Switch from "@/ui/form/Switch";
 import { useToast } from "@/ui/feedback/ToastProvider";
 import { useSettings } from "@/kernel/useSettings";
-import { appSettings } from "@/app/settings";
+import { appSettings } from "@/kernel/appSettings";
 import { profilesSettings } from "@/features/profiles/settings";
 
 export default function General() {

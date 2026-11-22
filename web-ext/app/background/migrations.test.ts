@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { migrateLegacyStore } from "./migrations";
-import { appSettings } from "@/app/settings";
+import { appSettings } from "@/kernel/appSettings";
 import { playbackSettings } from "@/features/playback/settings";
 import { shortsSettings } from "@/features/shorts/settings";
 import { segmentsSettings } from "@/features/segments/settings";

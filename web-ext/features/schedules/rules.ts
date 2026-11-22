@@ -1,4 +1,4 @@
-import type { Position } from "@/lib/location";
+import type { Position } from "@/features/schedules/location";
 import type { Place, Schedule, TimeRule } from "./settings";
 
 const MINUTE = 60_000;

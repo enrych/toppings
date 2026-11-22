@@ -1,5 +1,9 @@
 import { findWithin, resolveTarget, type PrimitiveResolution } from "@/kernel/dom/resolve";
 
+// The range a media element accepts; outside it, setting playbackRate throws.
+export const MIN_RATE = 0.0625;
+export const MAX_RATE = 16;
+
 // Matched by its icon: the row has no id, and its label is in the viewer's
 // language.
 const SPEED_ROW_STRATEGIES = [`.ytp-settings-menu .ytp-panel-menu > .ytp-menuitem:has(path[d^="M12 1c1.44 0 2.87.28 4.21.83"])`] as const;

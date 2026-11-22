@@ -1,6 +1,6 @@
 import type { Feature, Unmount } from "@/kernel/features";
 import { mount } from "@/kernel/dom/mount";
-import { adoptTextStyle } from "@/kernel/dom/adoptTextStyle";
+import { adoptTextStyle } from "./adoptTextStyle";
 import { metadataTextIn, resolvePlaylistHeader, resolveWatchPlaylistPanel } from "@/youtube/playlist";
 import { isSystemPlaylist } from "@/youtube/route";
 import { getPlaylistRuntime, type PlaylistRuntime } from "./messages";

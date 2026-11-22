@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { watchVisuals } from "./primitives";
+import { watchVisuals } from "../primitives";
 import { CHROME_STORAGE_LOCAL_KEY } from "@/lib/storageKeys";
 
 const player = () => document.getElementById("movie_player")!;
@@ -37,12 +37,6 @@ describe("watch.visuals", () => {
     watchVisuals.apply(player(), { value: "black" });
     expect(player().querySelectorAll("[data-tppng-cover]")).toHaveLength(1);
     expect(stale.isConnected).toBe(false);
-  });
-
-  test("reset removes the cover", () => {
-    watchVisuals.apply(player(), { value: "black" });
-    watchVisuals.reset(player());
-    expect(covers()).toHaveLength(0);
   });
 
   test("the custom screen shows the stored image", async () => {

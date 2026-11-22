@@ -6,7 +6,8 @@ import Select from "@/ui/form/Select";
 import Switch from "@/ui/form/Switch";
 import { isNudgeMax, isNudgeStep, isSeconds } from "@/app/options/validators";
 import { useSettings } from "@/kernel/useSettings";
-import { MAX_RATE, MIN_RATE, parseRates, playbackSettings } from "@/features/playback/settings";
+import { parseRates, playbackSettings } from "@/features/playback/settings";
+import { MAX_RATE, MIN_RATE } from "@/youtube/player";
 import { segmentsSettings } from "@/features/segments/settings";
 import type { AutoLoad } from "@/features/segments/store";
 

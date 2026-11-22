@@ -1,6 +1,6 @@
 import { useId, useState } from "preact/hooks";
 import Field from "./Field";
-import Button from "@/ui/primitives/Button";
+import Button from "@/ui/elements/Button";
 import { formatBindingDisplay, recordBinding } from "@/kernel/keybinding";
 
 interface KeybindingProps {

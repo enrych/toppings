@@ -1,6 +1,6 @@
 import { bootFeatures, type Booted } from "@/kernel/features";
 import { onNavigate } from "@/youtube/route";
-import { appSettings } from "@/app/settings";
+import { appSettings } from "@/kernel/appSettings";
 import { playlistRuntime } from "@/features/playlist-runtime";
 import { shorts } from "@/features/shorts";
 import { playback } from "@/features/playback";

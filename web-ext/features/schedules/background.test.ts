@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test } from "bun:test";
-import { appSettings } from "@/app/settings";
+import { appSettings } from "@/kernel/appSettings";
 import { profileStore, setActiveProfileId } from "@/features/profiles/store";
-import { checkLocation, skipInCharge, syncAlarms, tick } from "./background";
+import { checkLocation, dropSchedulesOfDeletedProfiles, skipInCharge, syncAlarms, tick } from "./background";
 import { schedulesStore, type Place, type Schedule } from "./settings";
 import { scheduleState } from "./state";
 
@@ -90,7 +90,10 @@ describe("schedule runner", () => {
     expect(await active()).toBe("preset:audio");
   });
 
-  test("a schedule whose profile is gone never switches", async () => {
+  test("a schedule whose profile is gone never switches, and is dropped", async () => {
+    await schedulesStore.set({ schedules: [{ ...work, profileId: "deleted" }, work] });
+    await dropSchedulesOfDeletedProfiles();
+    expect((await schedulesStore.get()).schedules).toEqual([work]);
     await schedulesStore.set({ schedules: [{ ...work, profileId: "deleted" }] });
     await tick(at("09:00"));
     expect(await active()).toBe("preset:focus");

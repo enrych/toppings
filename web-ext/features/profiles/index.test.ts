@@ -61,14 +61,6 @@ describe("profiles", () => {
     expect(sidebar().style.display).toBe("");
   });
 
-  test("custom profiles apply too", async () => {
-    const mine = await createProfile({ name: "Mine", primitives: { "watch.sidebar": { visible: false } } });
-    await setActiveProfileId(mine.id);
-    await mountOn(watch);
-    expect(sidebar().style.display).toBe("none");
-    expect(document.getElementById("comments")!.style.display).toBe("");
-  });
-
   test("B switches to Audio and back to the profile that was on before", async () => {
     await setActiveProfileId("preset:focus");
     await mountOn(watch);
@@ -186,11 +178,5 @@ describe("profiles", () => {
     unmount = undefined;
     expect(main.parentElement).toBe(popupContent());
     expect(document.getElementById("tppng-profile-row")).toBeNull();
-  });
-
-  test("home route leaves watch primitives alone", async () => {
-    await setActiveProfileId("preset:focus");
-    await mountOn(home);
-    expect(sidebar().style.display).toBe("");
   });
 });

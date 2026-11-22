@@ -1,5 +1,5 @@
 import { URLS } from "@/lib/urls";
-import { appSettings } from "@/app/settings";
+import { appSettings } from "@/kernel/appSettings";
 import { servePlaylistRuntime } from "@/features/playlist-runtime/background";
 import { runSchedules } from "@/features/schedules/background";
 import { migrateLegacyStore } from "./migrations";

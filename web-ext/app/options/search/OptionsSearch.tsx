@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import Icon from "@/ui/primitives/Icon";
+import Icon from "@/ui/elements/Icon";
 import { navigate } from "../router";
 import { fuzzySearch, type SearchEntry, type SearchResult } from "./searchIndex";
 

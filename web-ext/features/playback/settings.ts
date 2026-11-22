@@ -1,4 +1,5 @@
 import { defineSettings } from "@/kernel/settings";
+import { MAX_RATE, MIN_RATE } from "@/youtube/player";
 
 export interface PlaybackSettings {
   enabled: boolean;
@@ -19,9 +20,6 @@ interface LegacyWatch {
   seekForward?: { value?: string };
   customPlaybackRates?: string[];
 }
-
-export const MIN_RATE = 0.0625;
-export const MAX_RATE = 16;
 
 const number = (value: string | undefined) => (value === undefined ? undefined : Number(value));
 

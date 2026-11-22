@@ -1,4 +1,4 @@
-import type { IconName } from "@/ui/primitives/Icon";
+import type { IconName } from "@/ui/elements/Icon";
 import type { SectionNavItem } from "@/ui/layout/SectionNav";
 
 export const OPTIONS_HTML = "options/index.html";
@@ -22,7 +22,6 @@ export const OPTIONS_PAGES: readonly OptionsPage[] = [
       { id: "playback-rate", label: "Playback rate" },
       { id: "seek", label: "Seek" },
       { id: "segments", label: "Segments" },
-      { id: "feature-availability", label: "Availability" },
     ],
   },
   { segment: "shorts", label: "Shorts", icon: "shorts" },

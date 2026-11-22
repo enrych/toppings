@@ -1,4 +1,4 @@
-import { MAX_RATE, MIN_RATE } from "@/features/playback/settings";
+import { MAX_RATE, MIN_RATE } from "@/youtube/player";
 import { formatClock } from "@/lib/duration";
 import { colorForIndex } from "../format";
 import type { Segment, SegmentConfig } from "../types";

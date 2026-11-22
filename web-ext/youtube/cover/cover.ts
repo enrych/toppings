@@ -1,4 +1,4 @@
-import { drawWaveform } from "@/lib/waveform";
+import { drawWaveform } from "./waveform";
 import { CHROME_STORAGE_LOCAL_KEY } from "@/lib/storageKeys";
 
 export type CoverMode = "black" | "visualizer" | "custom";
