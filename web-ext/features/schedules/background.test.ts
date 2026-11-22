@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { appSettings } from "@/app/settings";
 import { profileStore, setActiveProfileId } from "@/features/profiles/store";
-import { skipInCharge, tick } from "./background";
-import { schedulesStore, type Schedule } from "./settings";
+import { checkLocation, skipInCharge, syncAlarms, tick } from "./background";
+import { schedulesStore, type Place, type Schedule } from "./settings";
 import { scheduleState } from "./state";
 
 const badge = { text: "", title: "" };
@@ -11,6 +11,7 @@ Object.assign(chrome, {
   alarms: {
     create: async (name: string, info: { when?: number; periodInMinutes?: number }) => void alarms.set(name, info),
     get: async (name: string) => (alarms.has(name) ? { name, ...alarms.get(name) } : undefined),
+    clear: async (name: string) => alarms.delete(name),
   },
   action: {
     setBadgeText: async ({ text }: { text: string }) => void (badge.text = text),
@@ -25,6 +26,10 @@ const at = (hhmm: string, day = 28) => {
   return new Date(2026, 8, day, h, m);
 };
 const work: Schedule = { id: "work", profileId: "preset:audio", enabled: true, rule: { kind: "time", days: [1, 2, 3, 4, 5], start: "09:00", end: "18:00" } };
+const office: Place = { id: "office", name: "Office", latitude: 52.52, longitude: 13.405, radiusMeters: 250 };
+const atOffice: Schedule = { id: "at-office", profileId: "preset:audio", enabled: true, rule: { kind: "place", placeId: "office" } };
+const inside = { latitude: 52.5205, longitude: 13.405, accuracyMeters: 30 };
+const farAway = { latitude: 52.6, longitude: 13.405, accuracyMeters: 30 };
 const active = async () => (await profileStore.get()).activeProfileId;
 
 beforeEach(async () => {
@@ -85,10 +90,64 @@ describe("schedule runner", () => {
     expect(await active()).toBe("preset:audio");
   });
 
+  test("a schedule whose profile is gone never switches", async () => {
+    await schedulesStore.set({ schedules: [{ ...work, profileId: "deleted" }] });
+    await tick(at("09:00"));
+    expect(await active()).toBe("preset:focus");
+  });
+
   test("does nothing while Toppings is switched off", async () => {
     await appSettings.set({ enabled: false });
     await tick(at("09:00"));
     expect(await active()).toBe("preset:focus");
     expect(badge.text).toBe("");
+  });
+});
+
+describe("place schedules", () => {
+  beforeEach(() => schedulesStore.set({ schedules: [atOffice], places: [office] }));
+
+  test("arriving turns the profile on and leaving puts the earlier one back", async () => {
+    await checkLocation(async () => inside);
+    expect(await active()).toBe("preset:audio");
+    expect((await scheduleState.get()).notice?.text).toBe("Schedule · Audio while at Office");
+    await checkLocation(async () => farAway);
+    expect(await active()).toBe("preset:focus");
+    expect((await scheduleState.get()).atPlaces).toEqual([]);
+  });
+
+  test("a refused or too-coarse location says why and counts as having left", async () => {
+    await checkLocation(async () => inside);
+    await checkLocation(() => Promise.reject(new Error("Location permission needed")));
+    expect(await scheduleState.get()).toMatchObject({ atPlaces: [], locationError: "Location permission needed" });
+    expect(await active()).toBe("preset:focus");
+
+    await checkLocation(async () => ({ ...inside, accuracyMeters: 5000 }));
+    expect(await scheduleState.get()).toMatchObject({ atPlaces: [], locationError: "Location too imprecise to tell places apart" });
+    await checkLocation(async () => inside);
+    expect(await scheduleState.get()).toMatchObject({ atPlaces: ["office"], locationError: null });
+  });
+
+  test("with no place schedule on, nobody is asked and what was known is cleared", async () => {
+    await scheduleState.set({ atPlaces: ["office"], locationError: "Location permission needed" });
+    await schedulesStore.set({ schedules: [{ ...atOffice, enabled: false }] });
+    let asked = false;
+    await checkLocation(async () => {
+      asked = true;
+      return inside;
+    });
+    expect(asked).toBe(false);
+    expect(await scheduleState.get()).toMatchObject({ atPlaces: [], locationError: null });
+  });
+});
+
+describe("alarms", () => {
+  test("each exists only while an enabled schedule of its kind does", async () => {
+    await syncAlarms([work, { ...atOffice, enabled: false }]);
+    expect([...alarms.keys()]).toContain("schedules");
+    expect(alarms.has("schedules-location")).toBe(false);
+    await syncAlarms([atOffice]);
+    expect(alarms.has("schedules")).toBe(false);
+    expect(alarms.get("schedules-location")?.periodInMinutes).toBe(5);
   });
 });

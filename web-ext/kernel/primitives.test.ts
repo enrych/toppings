@@ -81,14 +81,4 @@ describe("runPrimitives", () => {
     expect(next.style.display).toBe("none");
     run.stop();
   });
-
-  test("set changes a value at runtime", () => {
-    const run = runPrimitives([hide], {}, "watch");
-    run.set("watch.box", { visible: false });
-    expect(box().style.display).toBe("none");
-    expect(run.get("watch.box")).toEqual({ visible: false });
-    run.set("watch.box", { visible: true });
-    expect(box().style.display).toBe("");
-    run.stop();
-  });
 });

@@ -8,7 +8,6 @@ import Select, { type SelectOption } from "@/ui/form/Select";
 import Field from "@/ui/form/Field";
 import { useToast } from "@/ui/feedback/ToastProvider";
 import Schedules from "@/app/options/components/Schedules";
-import { useCapabilityCache } from "@/kernel/dom/useCapabilities";
 import { useChromeStorageLocal } from "@/lib/useChromeStorageLocal";
 import { CHROME_STORAGE_LOCAL_KEY } from "@/lib/storageKeys";
 import {
@@ -29,7 +28,8 @@ import {
   type ProfilePrimitiveConfig,
   type ThumbnailMode,
 } from "@/features/profiles/profiles";
-import type { PlayerLayout, VisualsMode } from "@/features/profiles/profiles";
+import type { VisualsMode } from "@/features/profiles/profiles";
+import { primitiveById } from "@/youtube/primitives";
 
 const VISUALS_OPTIONS: SelectOption<VisualsMode>[] = [
   { value: "video", label: "Real video", description: "The video as YouTube shows it" },
@@ -38,13 +38,17 @@ const VISUALS_OPTIONS: SelectOption<VisualsMode>[] = [
   { value: "custom", label: "Custom image", description: "An image of your choice" },
 ];
 
-function blankPrimitives(): ProfilePrimitiveConfig {
-  return {
-    "watch.sidebar": { visible: true },
-    "watch.comments": { visible: true },
-    "watch.endCards": { visible: true },
-    "watch.layout": { value: "default" },
-  };
+// A knob left at YouTube's own value is not listed: those are the ones the
+// profile leaves alone.
+function describeChanges(primitives: ProfilePrimitiveConfig): string {
+  const parts = Object.entries(primitives).flatMap(([id, setting]) => {
+    const label = primitiveById(id)?.label ?? id;
+    if ("visible" in setting) return setting.visible ? [] : [`${label}: hidden`];
+    if ("mode" in setting) return setting.mode === "show" ? [] : [`${label}: ${setting.mode}`];
+    if (setting.value === "video") return [];
+    return [`${label}: ${VISUALS_OPTIONS.find((o) => o.value === setting.value)?.label ?? setting.value}`];
+  });
+  return parts.join(" · ") || "Changes nothing yet";
 }
 
 function VisualsImagePicker() {
@@ -95,29 +99,31 @@ interface ProfileEditorProps {
   initial: Partial<Profile>;
   onSave: (name: string, primitives: ProfilePrimitiveConfig) => Promise<void>;
   onCancel: () => void;
-  getStatus: (id: string) => "supported" | "unsupported" | "untested";
 }
 
 function ProfileEditor({
   initial,
   onSave,
   onCancel,
-  getStatus,
 }: ProfileEditorProps) {
   const nameId = useId();
   const [name, setName] = useState(initial.name ?? "");
   const [primitives, setPrimitives] = useState<ProfilePrimitiveConfig>(
-    initial.primitives ?? blankPrimitives(),
+    initial.primitives ?? {},
   );
   const [isSaving, setIsSaving] = useState(false);
 
-  const layout = primitives["watch.layout"]?.value ?? "default";
   const visuals = primitives["watch.visuals"]?.value ?? "video";
 
-  const set = <K extends keyof ProfilePrimitiveConfig>(
-    key: K,
-    value: ProfilePrimitiveConfig[K],
-  ) => setPrimitives((prev) => ({ ...prev, [key]: value }));
+  // Setting a knob back to YouTube's own value removes it, so the profile
+  // stops touching that part of the page instead of forcing it visible.
+  const set = <K extends keyof ProfilePrimitiveConfig>(key: K, value: ProfilePrimitiveConfig[K] | undefined) =>
+    setPrimitives((prev) => {
+      const { [key]: _, ...rest } = prev;
+      return value === undefined ? rest : { ...rest, [key]: value };
+    });
+  const setVisible = (key: "watch.sidebar" | "watch.comments" | "watch.endCards" | "home.feed" | "search.metadata" | "shorts.shelf") => (visible: boolean) =>
+    set(key, visible ? undefined : { visible });
 
   const handleSave = async () => {
     if (!name.trim()) return;
@@ -125,8 +131,6 @@ function ProfileEditor({
     await onSave(name.trim(), primitives);
     setIsSaving(false);
   };
-
-  const isUnsupported = (id: string) => getStatus(id) === "unsupported";
 
   return (
     <div class="tw-p-4 tw-flex tw-flex-col tw-gap-4">
@@ -138,7 +142,7 @@ function ProfileEditor({
           id={nameId}
           type="text"
           value={name}
-          onChange={(e) => setName(e.currentTarget.value)}
+          onInput={(e) => setName(e.currentTarget.value)}
           placeholder="e.g. Study session"
           maxLength={40}
           class="tw-w-full tw-h-9 tw-rounded-lg tw-bg-surface-hover tw-px-3 tw-text-sm tw-text-fg placeholder:tw-text-fg-subtle tw-border tw-border-transparent focus:tw-outline-none focus:tw-border-accent"
@@ -151,84 +155,49 @@ function ProfileEditor({
         </span>
 
         <div class="tw-bg-surface tw-border tw-border-border-subtle tw-rounded-xl tw-divide-y tw-divide-border-subtle">
-                    <div
-            class={`tw-px-4 ${isUnsupported("watch.layout") ? "tw-opacity-50" : ""}`}
-          >
-            <Select<PlayerLayout>
-              label="Player Layout"
-              description={
-                isUnsupported("watch.layout")
-                  ? "Not available on your YouTube"
-                  : "How the video player is arranged on the page."
-              }
-              value={layout}
-              options={[
-                { value: "default", label: "Default", description: "YouTube's standard layout" },
-                { value: "no-video", label: "No Video", description: "Hide the player area entirely" },
-              ]}
-              onChange={(v) => set("watch.layout", { value: v })}
-            />
-          </div>
-
           <div
-            class={`tw-px-4 ${isUnsupported("watch.visuals") ? "tw-opacity-50" : ""}`}
+            class="tw-px-4"
           >
             <Select<VisualsMode>
               label="Video screen"
-              description={
-                isUnsupported("watch.visuals")
-                  ? "Not available on your YouTube"
-                  : "Covers the video but keeps the player's controls, so you can listen without the picture showing."
-              }
+              description="Covers the video but keeps the player's controls, so you can listen without the picture showing."
               value={visuals}
               options={VISUALS_OPTIONS}
-              onChange={(v) => set("watch.visuals", { value: v })}
+              onChange={(v) => set("watch.visuals", v === "video" ? undefined : { value: v })}
             />
             {visuals === "custom" && <VisualsImagePicker />}
           </div>
 
                     <div
-            class={`tw-px-4 ${isUnsupported("watch.sidebar") ? "tw-opacity-50 tw-pointer-events-none" : ""}`}
+            class="tw-px-4"
           >
             <Switch
               label="Recommendations Sidebar"
-              description={
-                isUnsupported("watch.sidebar")
-                  ? "Not available on your YouTube"
-                  : "Show or hide the 'Up next' panel."
-              }
+              description="Show or hide the 'Up next' panel."
               isEnabled={primitives["watch.sidebar"]?.visible ?? true}
-              onToggle={(v) => set("watch.sidebar", { visible: v })}
+              onToggle={setVisible("watch.sidebar")}
             />
           </div>
 
                     <div
-            class={`tw-px-4 ${isUnsupported("watch.comments") ? "tw-opacity-50 tw-pointer-events-none" : ""}`}
+            class="tw-px-4"
           >
             <Switch
               label="Comments Section"
-              description={
-                isUnsupported("watch.comments")
-                  ? "Not available on your YouTube"
-                  : "Show or hide the comments below the video."
-              }
+              description="Show or hide the comments below the video."
               isEnabled={primitives["watch.comments"]?.visible ?? true}
-              onToggle={(v) => set("watch.comments", { visible: v })}
+              onToggle={setVisible("watch.comments")}
             />
           </div>
 
                     <div
-            class={`tw-px-4 ${isUnsupported("watch.endCards") ? "tw-opacity-50 tw-pointer-events-none" : ""}`}
+            class="tw-px-4"
           >
             <Switch
               label="End Screen Cards"
-              description={
-                isUnsupported("watch.endCards")
-                  ? "Not available on your YouTube"
-                  : "Show or hide overlay cards at the end of videos."
-              }
+              description="Show or hide overlay cards at the end of videos."
               isEnabled={primitives["watch.endCards"]?.visible ?? true}
-              onToggle={(v) => set("watch.endCards", { visible: v })}
+              onToggle={setVisible("watch.endCards")}
             />
           </div>
         </div>
@@ -249,7 +218,7 @@ function ProfileEditor({
                 { value: "blur", label: "Blur", description: "Blurred — layout preserved" },
                 { value: "hide", label: "Hide", description: "Invisible thumbnails" },
               ]}
-              onChange={(v) => set("home.thumbnails", { mode: v })}
+              onChange={(v) => set("home.thumbnails", v === "show" ? undefined : { mode: v })}
             />
           </div>
           <div class="tw-px-4">
@@ -257,15 +226,7 @@ function ProfileEditor({
               label="Home Feed"
               description="Show or hide the entire home page feed."
               isEnabled={primitives["home.feed"]?.visible ?? true}
-              onToggle={(v) => set("home.feed", { visible: v })}
-            />
-          </div>
-          <div class="tw-px-4">
-            <Switch
-              label="Shorts Shelf"
-              description="Show or hide the Shorts row in the home feed."
-              isEnabled={primitives["home.shorts"]?.visible ?? true}
-              onToggle={(v) => set("home.shorts", { visible: v })}
+              onToggle={setVisible("home.feed")}
             />
           </div>
         </div>
@@ -286,7 +247,7 @@ function ProfileEditor({
                 { value: "blur", label: "Blur", description: "Blurred — layout preserved" },
                 { value: "hide", label: "Hide", description: "Plain text list" },
               ]}
-              onChange={(v) => set("search.thumbnails", { mode: v })}
+              onChange={(v) => set("search.thumbnails", v === "show" ? undefined : { mode: v })}
             />
           </div>
           <div class="tw-px-4">
@@ -294,15 +255,7 @@ function ProfileEditor({
               label="Video Metadata"
               description="Show or hide view count and date below search results."
               isEnabled={primitives["search.metadata"]?.visible ?? true}
-              onToggle={(v) => set("search.metadata", { visible: v })}
-            />
-          </div>
-          <div class="tw-px-4">
-            <Switch
-              label="Shorts in Search"
-              description="Show or hide the Shorts shelf in search results."
-              isEnabled={primitives["search.shorts"]?.visible ?? true}
-              onToggle={(v) => set("search.shorts", { visible: v })}
+              onToggle={setVisible("search.metadata")}
             />
           </div>
         </div>
@@ -315,10 +268,10 @@ function ProfileEditor({
         <div class="tw-bg-surface tw-border tw-border-border-subtle tw-rounded-xl tw-divide-y tw-divide-border-subtle">
           <div class="tw-px-4">
             <Switch
-              label="Shorts Shelf (everywhere)"
-              description="Hide the Shorts shelf across home, search, and other pages."
+              label="Shorts shelves"
+              description="Show or hide the rows of Shorts on home, search and other pages."
               isEnabled={primitives["shorts.shelf"]?.visible ?? true}
-              onToggle={(v) => set("shorts.shelf", { visible: v })}
+              onToggle={setVisible("shorts.shelf")}
             />
           </div>
         </div>
@@ -341,34 +294,6 @@ interface PresetCardProps {
 }
 
 function PresetCard({ profile, isActive, onActivate }: PresetCardProps) {
-  const primitiveLabels: Record<string, string> = {
-    "watch.layout": "Layout",
-    "watch.visuals": "Video screen",
-    "watch.sidebar": "Sidebar",
-    "watch.comments": "Comments",
-    "watch.endCards": "End Cards",
-    "home.thumbnails": "Home Thumbnails",
-    "home.feed": "Home Feed",
-    "home.shorts": "Home Shorts",
-    "search.thumbnails": "Search Thumbnails",
-    "search.metadata": "Search Metadata",
-    "search.shorts": "Search Shorts",
-    "shorts.shelf": "Shorts Shelf",
-  };
-
-  const summaryParts = Object.entries(profile.primitives)
-    .map(([key, val]) => {
-      const label = primitiveLabels[key] ?? key;
-      if ("visible" in val) return `${label}: ${val.visible ? "on" : "off"}`;
-      if ("mode" in val) return `${label}: ${val.mode}`;
-      if (key === "watch.visuals" && "value" in val) {
-        return `${label}: ${VISUALS_OPTIONS.find((o) => o.value === val.value)?.label ?? val.value}`;
-      }
-      if ("value" in val) return `${label}: ${val.value}`;
-      return label;
-    })
-    .join(" · ");
-
   return (
     <div class="tw-flex tw-items-center tw-justify-between tw-gap-4 tw-py-3">
       <div class="tw-flex tw-flex-col tw-gap-0.5">
@@ -385,7 +310,7 @@ function PresetCard({ profile, isActive, onActivate }: PresetCardProps) {
             </span>
           )}
         </div>
-        <span class="tw-text-xs tw-text-fg-subtle">{summaryParts}</span>
+        <span class="tw-text-xs tw-text-fg-subtle">{describeChanges(profile.primitives)}</span>
       </div>
       <Button size="sm" variant={isActive ? "secondary" : "primary"} onClick={onActivate}>
         {isActive ? "Deactivate" : "Activate"}
@@ -422,10 +347,7 @@ function CustomProfileCard({
             </span>
           )}
         </div>
-        <span class="tw-text-xs tw-text-fg-subtle">
-          {Object.keys(profile.primitives).length} primitive
-          {Object.keys(profile.primitives).length !== 1 ? "s" : ""} configured
-        </span>
+        <span class="tw-text-xs tw-text-fg-subtle">{describeChanges(profile.primitives)}</span>
       </div>
       <div class="tw-flex tw-items-center tw-gap-2 tw-flex-shrink-0">
         <Button size="sm" variant="ghost" title="Export as JSON" onClick={() => exportProfile(profile)}>Export</Button>
@@ -446,8 +368,6 @@ type EditorMode =
 
 export default function Profiles() {
   const toast = useToast();
-  const { getStatus } = useCapabilityCache();
-
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [editor, setEditor] = useState<EditorMode>({ type: "closed" });
@@ -565,10 +485,9 @@ export default function Profiles() {
           <Card>
                         {editor.type === "create" && (
               <ProfileEditor
-                initial={{ primitives: blankPrimitives() }}
+                initial={{}}
                 onSave={handleCreate}
                 onCancel={() => setEditor({ type: "closed" })}
-                getStatus={getStatus}
               />
             )}
 
@@ -586,7 +505,6 @@ export default function Profiles() {
                       handleUpdate(p.id, name, primitives)
                     }
                     onCancel={() => setEditor({ type: "closed" })}
-                    getStatus={getStatus}
                   />
                 ) : (
                   <CustomProfileCard

@@ -102,7 +102,7 @@ export default function App() {
       <div class="tw-divide-y tw-divide-border-subtle">
         <Row title="Toppings" subtitle={app.value.enabled ? "Running on every YouTube tab" : "Turned off everywhere"} on={app.value.enabled} onToggle={() => app.update({ enabled: !app.value.enabled })} />
         <Row title="Playback controls" subtitle={`Rates · seek · default ${playback.value.defaultRate}×`} on={playback.value.enabled} onToggle={() => playback.update({ enabled: !playback.value.enabled })} disabled={!app.value.enabled} />
-        <Row title="Auto-scroll Shorts" subtitle="Continue when one ends" on={shorts.value.autoScroll} onToggle={() => shorts.update({ autoScroll: !shorts.value.autoScroll })} disabled={!app.value.enabled} />
+        <Row title="Auto-scroll Shorts" subtitle="Continue when one ends" on={shorts.value.autoScroll} onToggle={() => shorts.update({ autoScroll: !shorts.value.autoScroll })} disabled={!app.value.enabled || !shorts.value.enabled} />
       </div>
 
       <div class="tw-px-4 tw-pt-3 tw-pb-2 tw-bg-surface tw-border-t tw-border-border-subtle">
@@ -139,6 +139,14 @@ export default function App() {
                 Skip
               </button>
             )}
+          </div>
+        )}
+        {app.value.enabled && schedule.locationError && (
+          <div class="tw-flex tw-items-center tw-gap-2 tw-pb-1 tw-pt-1">
+            <span role="alert" class="tw-min-w-0 tw-flex-1 tw-text-[11px] tw-text-danger-fg tw-truncate" title={schedule.locationError}>{schedule.locationError}</span>
+            <button type="button" class="tw-text-[11px] tw-text-fg-muted hover:tw-text-fg" onClick={() => window.open(chrome.runtime.getURL(`${OPTIONS_HTML}#profiles`), "_blank")}>
+              Open Schedules
+            </button>
           </div>
         )}
       </div>

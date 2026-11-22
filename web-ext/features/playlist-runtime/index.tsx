@@ -1,6 +1,5 @@
 import type { Feature, Unmount } from "@/kernel/features";
 import { mount } from "@/kernel/dom/mount";
-import { setCapabilityStatus } from "@/kernel/dom/capabilities";
 import { adoptTextStyle } from "@/kernel/dom/adoptTextStyle";
 import { metadataTextIn, resolvePlaylistHeader, resolveWatchPlaylistPanel } from "@/youtube/playlist";
 import { isSystemPlaylist } from "@/youtube/route";
@@ -28,7 +27,6 @@ export function createPlaylistRuntime(deps: PlaylistRuntimeDeps): Feature {
         return showRuntime("tppng-watch-playlist-runtime", panel.element, playlistId, false);
       }
       const header = await resolvePlaylistHeader();
-      void setCapabilityStatus("playlist.runtime", "playlist", header);
       if (!header.resolved) return;
       return showRuntime("tppng-playlist-runtime", header.element, playlistId, true);
     },

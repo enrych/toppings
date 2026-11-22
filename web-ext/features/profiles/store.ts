@@ -1,5 +1,8 @@
+import { actionId, keybindings } from "@/kernel/keys";
 import { defineSettings } from "@/kernel/settings";
+import { schedulesStore } from "@/features/schedules/settings";
 import { CHROME_STORAGE_LOCAL_KEY } from "@/lib/storageKeys";
+import { profilesKeys } from "./keys";
 import { BUILT_IN_PRESETS, type Profile } from "./profiles";
 
 interface ProfileStore {
@@ -72,6 +75,10 @@ export async function deleteProfile(id: string): Promise<void> {
     profiles: profiles.filter((p) => p.id !== id),
     activeProfileId: activeProfileId === id ? null : activeProfileId,
   });
+  const { schedules } = await schedulesStore.get();
+  if (schedules.some((schedule) => schedule.profileId === id)) await schedulesStore.set({ schedules: schedules.filter((schedule) => schedule.profileId !== id) });
+  const shortcut = actionId(profilesKeys, id);
+  if (shortcut in (await keybindings.get())) await keybindings.set({ [shortcut]: undefined });
 }
 
 export const subscribeProfiles = (listener: () => void) => profileStore.subscribe(listener);

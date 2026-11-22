@@ -1,11 +1,10 @@
 import { primitiveById } from "@/youtube/primitives";
 import type { Profile, ProfilePrimitiveConfig } from "./profiles";
 
-const SCHEMA = "https://toppings.enry.ch/profile-schema/v1.json";
 const MAX_NAME_LENGTH = 40;
 
 export function exportProfile(profile: Profile): void {
-  const json = JSON.stringify({ $schema: SCHEMA, name: profile.name, primitives: profile.primitives, exportedAt: new Date().toISOString() }, null, 2);
+  const json = JSON.stringify({ name: profile.name, primitives: profile.primitives, exportedAt: new Date().toISOString() }, null, 2);
   const url = URL.createObjectURL(new Blob([json], { type: "application/json" }));
   const link = document.createElement("a");
   link.href = url;
@@ -33,8 +32,7 @@ export async function importProfileFromFile(file: File): Promise<ImportResult> {
   }
 }
 
-// Accepts a full export or a bare { name, primitives } object, so a
-// hand-written config imports without the $schema wrapper. Unknown primitive
+// Unknown primitive
 // ids are skipped rather than rejected: a file from a newer version must still
 // import on an older one, minus what it does not know.
 export function parseProfileJson(data: unknown): ImportResult {

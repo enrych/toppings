@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { routeFor } from "./route";
+import { isSystemPlaylist, routeFor } from "./route";
 
 const at = (path: string) => routeFor(new URL(`https://www.youtube.com${path}`));
 
@@ -10,10 +10,8 @@ describe("routeFor", () => {
   });
 
   test("playlists distinguish YouTube's own lists", () => {
-    expect(at("/playlist?list=PL1")).toEqual({ name: "playlist", playlistId: "PL1", system: false });
-    expect(at("/playlist?list=WL")).toEqual({ name: "playlist", playlistId: "WL", system: true });
-    expect(at("/playlist?list=LL")).toMatchObject({ system: true });
-    expect(at("/playlist?list=RDdQw4w9WgXcQ")).toMatchObject({ system: true });
+    expect(at("/playlist?list=PL1")).toEqual({ name: "playlist", playlistId: "PL1" });
+    expect(["PL1", "WL", "LL", "RDdQw4w9WgXcQ"].map(isSystemPlaylist)).toEqual([false, true, true, true]);
   });
 
   test("shorts carry the short id", () => {

@@ -73,11 +73,17 @@ describe("next change", () => {
 
 describe("places", () => {
   const office: Place = { id: "work", name: "Work", latitude: 52.52, longitude: 13.405, radiusMeters: 200 };
+  // near is about 167 m north of the office, edge about 245 m.
+  const near = { latitude: 52.5215, longitude: 13.405, accuracyMeters: 10 };
+  const edge = { latitude: 52.5222, longitude: 13.405, accuracyMeters: 10 };
+
   test("inside the radius counts as there; leaving needs a margin past it", () => {
-    const near = { latitude: 52.5215, longitude: 13.405 };
-    const edge = { latitude: 52.5222, longitude: 13.405 };
     expect(placesHere([office], near, [])).toEqual(["work"]);
     expect(placesHere([office], edge, [])).toEqual([]);
     expect(placesHere([office], edge, ["work"])).toEqual(["work"]);
+  });
+
+  test("a loose fix counts as there when its circle reaches the place", () => {
+    expect(placesHere([office], { ...edge, accuracyMeters: 60 }, [])).toEqual(["work"]);
   });
 });

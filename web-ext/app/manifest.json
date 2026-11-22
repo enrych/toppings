@@ -16,7 +16,6 @@
   },
   "content_scripts": [
     {
-      "all_frames": true,
       "js": [
         "/content.js"
       ],
@@ -28,7 +27,7 @@
   ],
   "description": "Your YouTube, your way.",
   "host_permissions": [
-    "*://*.youtube.com/*"
+    "https://www.youtube.com/*"
   ],
   "icons": {
     "16": "assets/icons/icon16.png",
@@ -37,6 +36,7 @@
     "128": "assets/icons/icon128.png"
   },
   "manifest_version": 3,
+  "minimum_chrome_version": "116",
   "name": "Toppings on YouTube",
   "options_ui": {
     "open_in_tab": true,
@@ -48,15 +48,5 @@
     "scripting",
     "storage"
   ],
-  "short_name": "Toppings",
-  "web_accessible_resources": [
-    {
-      "matches": [
-        "https://*/*"
-      ],
-      "resources": [
-        "assets/*"
-      ]
-    }
-  ]
+  "short_name": "Toppings"
 }

@@ -18,7 +18,8 @@ export interface MarkersProps {
 }
 
 const EPSILON_PCT = 0.2;
-const MERGE_THRESHOLD_PCT = 1.5;
+const MERGE_REACH_PX = 6;
+const MERGE_STILL_PX = 2;
 const MERGE_HOLD_MS = 500;
 
 // Mounted inside YouTube's progress bar, which stacks its progress lists at
@@ -59,7 +60,7 @@ const byStart = (segments: Segment[]) => [...segments].sort((a, b) => a.startTim
 
 export function Markers({ segments, duration, track, onPreview, onSeek, onCommit, onMerge }: MarkersProps) {
   const drag = useRef<{ id: SegmentId; role: Role } | null>(null);
-  const merge = useRef<{ keepId: SegmentId; removeId: SegmentId; timer: ReturnType<typeof setTimeout> } | null>(null);
+  const merge = useRef<{ keepId: SegmentId; removeId: SegmentId; x: number; timer: ReturnType<typeof setTimeout> } | null>(null);
   const sorted = byStart(segments);
   const pct = (time: number) => (duration > 0 ? (time / duration) * 100 : 0);
 
@@ -80,22 +81,27 @@ export function Markers({ segments, duration, track, onPreview, onSeek, onCommit
     return Math.min(100, Math.max(Math.min(raw, ceiling), pct(own.startTime) + EPSILON_PCT));
   };
 
-  // Holding a marker against its neighbour for a moment merges the two.
-  const watchMerge = (id: SegmentId, role: Role, at: number) => {
+  // Holding a marker still against its neighbour for a moment merges the two.
+  const watchMerge = (id: SegmentId, role: Role, at: number, x: number, trackWidth: number) => {
     const index = sorted.findIndex((s) => s.id === id);
     const neighbour = role === "end" ? sorted[index + 1] : sorted[index - 1];
     const edge = neighbour ? pct(role === "end" ? neighbour.startTime : neighbour.endTime) : null;
-    const candidate = neighbour && edge !== null && Math.abs(at - edge) < MERGE_THRESHOLD_PCT
+    // The clamp holds neighbours EPSILON_PCT apart, which on a wide bar is
+    // more pixels than the reach, so a marker at that limit counts too.
+    const reach = Math.max((MERGE_REACH_PX / trackWidth) * 100, EPSILON_PCT * 1.5);
+    const candidate = neighbour && edge !== null && Math.abs(at - edge) < reach
       ? role === "end" ? { keepId: id, removeId: neighbour.id } : { keepId: neighbour.id, removeId: id }
       : null;
     if (!candidate) {
       clearMerge();
       return;
     }
-    if (merge.current?.keepId === candidate.keepId && merge.current.removeId === candidate.removeId) return;
+    const held = merge.current;
+    if (held?.keepId === candidate.keepId && held.removeId === candidate.removeId && Math.abs(x - held.x) <= MERGE_STILL_PX) return;
     clearMerge();
     merge.current = {
       ...candidate,
+      x,
       timer: setTimeout(() => {
         merge.current = null;
         drag.current = null;
@@ -121,7 +127,7 @@ export function Markers({ segments, duration, track, onPreview, onSeek, onCommit
     const time = (at / 100) * duration;
     onPreview(segments.map((s) => (s.id === id ? { ...s, [role === "start" ? "startTime" : "endTime"]: time } : s)));
     if (role === "start") onSeek(time);
-    watchMerge(id, role, at);
+    watchMerge(id, role, at, e.clientX, rect.width);
   };
 
   const onPointerUp = () => {

@@ -1,3 +1,4 @@
+import type { Position } from "@/lib/location";
 import type { Place, Schedule, TimeRule } from "./settings";
 
 const MINUTE = 60_000;
@@ -54,12 +55,11 @@ export function distanceMeters(a: { latitude: number; longitude: number }, b: { 
 // edge does not flip the profile back and forth.
 const LEAVE_MARGIN = 1.25;
 
-export function placesHere(places: readonly Place[], here: { latitude: number; longitude: number }, wereHere: readonly string[]): string[] {
+// A fix is a circle, not a point: the place counts while that circle reaches
+// it, or Wi-Fi positioning on a desktop, off by a street, would never match.
+export function placesHere(places: readonly Place[], here: Position, wereHere: readonly string[]): string[] {
   return places
-    .filter((place) => {
-      const distance = distanceMeters(place, here);
-      return distance <= place.radiusMeters * (wereHere.includes(place.id) ? LEAVE_MARGIN : 1);
-    })
+    .filter((place) => distanceMeters(place, here) <= place.radiusMeters * (wereHere.includes(place.id) ? LEAVE_MARGIN : 1) + here.accuracyMeters)
     .map((place) => place.id);
 }
 

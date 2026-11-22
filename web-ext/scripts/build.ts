@@ -19,7 +19,8 @@ const scripts = [
   { entry: "app/content/index.ts", out: "content" },
   { entry: "app/popup/index.tsx", out: "popup/index" },
   { entry: "app/options/index.tsx", out: "options/index" },
-  { entry: "app/offscreen/index.ts", out: "offscreen/index" },
+  // Offscreen documents are Chrome's; Firefox's background page needs none.
+  ...(firefox ? [] : [{ entry: "app/offscreen/index.ts", out: "offscreen/index" }]),
 ];
 
 const styles = [
@@ -27,7 +28,7 @@ const styles = [
   { entry: "app/options/index.css", out: "options/index.css" },
 ];
 
-const copies = ["assets", "app/popup/index.html", "app/options/index.html", "app/offscreen/index.html"];
+const copies = ["assets", "app/popup/index.html", "app/options/index.html", ...(firefox ? [] : ["app/offscreen/index.html"])];
 
 async function bundleScripts() {
   for (const { entry, out } of scripts) {
@@ -98,19 +99,21 @@ async function writeManifest() {
   if (firefox) {
     manifest.manifest_version = 2;
     manifest.background = { scripts: ["/background.js"], persistent: false };
-    // Offscreen documents are Chrome's; Firefox's background page needs none.
     manifest.permissions = [...manifest.host_permissions, ...manifest.permissions.filter((permission: string) => permission !== "offscreen")];
+    // Asked for from the options page when a place is first located. Chrome
+    // cannot make this permission optional, so there location is granted to
+    // the extension's pages the way it is to a website.
+    manifest.optional_permissions = ["geolocation"];
     delete manifest.host_permissions;
     manifest.browser_action = manifest.action;
     delete manifest.action;
-    manifest.web_accessible_resources = manifest.web_accessible_resources.flatMap(
-      (resource: { resources: string[] }) => resource.resources,
-    );
+    delete manifest.minimum_chrome_version;
     // Mozilla requires declaring data that leaves the device, shown to the user
     // at install. The playlist runtime sends the ID of the playlist being
     // viewed to Toppings' server, which it counts as browsing activity.
     manifest.browser_specific_settings = {
-      gecko: { id: BRAND_METADATA.ID, data_collection_permissions: { required: ["browsingActivity"] } },
+      // 121 is the first Firefox with :has(), which the selectors in youtube/ use.
+      gecko: { id: BRAND_METADATA.ID, strict_min_version: "121.0", data_collection_permissions: { required: ["browsingActivity"] } },
     };
   }
 

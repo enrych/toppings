@@ -60,4 +60,16 @@ describe("popup schedule line", () => {
     await settle();
     expect(sent).toEqual([{ kind: skipSchedule.kind, request: undefined }]);
   });
+
+  test("a location problem is shown with a way to the Schedules page", async () => {
+    await scheduleState.set({ locationError: "Location permission needed" });
+    const opened: unknown[] = [];
+    const originalOpen = window.open;
+    window.open = (url) => (opened.push(url), null);
+    await mount();
+    expect(root.querySelector("[role='alert']")?.textContent).toBe("Location permission needed");
+    act(() => [...root.querySelectorAll("button")].find((b) => b.textContent?.trim() === "Open Schedules")!.click());
+    window.open = originalOpen;
+    expect(opened).toEqual(["chrome-extension://test/options/index.html#profiles"]);
+  });
 });

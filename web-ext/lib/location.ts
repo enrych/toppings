@@ -6,36 +6,58 @@ export interface Position {
   accuracyMeters: number;
 }
 
-const readLocation = defineMessage<void, Position>("read-location");
+const NEEDS_PERMISSION = "Location permission needed";
 
-// Pages ask the way websites do, so the browser shows its usual location
-// prompt; Toppings holds no location permission of its own.
-export function readPosition(): Promise<Position> {
+// A refusal travels as its reason: the messaging layer would flatten a thrown
+// error to text and prefix it.
+const readLocation = defineMessage<void, Position | string>("read-location");
+
+function currentPosition(): Promise<Position> {
   return new Promise((resolve, reject) =>
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => resolve({ latitude: coords.latitude, longitude: coords.longitude, accuracyMeters: coords.accuracy }),
-      (error) => reject(new Error(error.message || "Location unavailable")),
+      (error) => reject(new Error(error.code === error.PERMISSION_DENIED ? NEEDS_PERMISSION : error.message || "Location unavailable")),
       { timeout: 20_000, maximumAge: 60_000 },
     ),
   );
 }
 
+// Called from a click on a page, so the browser can ask. Chrome asks the way
+// it does for a website, because it cannot make the manifest permission
+// optional and a required one pauses the extension for every user on update.
+// Firefox can, so there it is an optional permission the background can check.
+export async function readPosition(): Promise<Position> {
+  if (process.env.BROWSER === "firefox" && !(await chrome.permissions.request({ permissions: ["geolocation"] }))) throw new Error(NEEDS_PERMISSION);
+  return currentPosition();
+}
+
+// Nothing can be asked from the background: without a standing grant
+// getCurrentPosition waits on a prompt nobody sees, and its timeout only
+// starts once that is answered.
 export function answerLocationRequests(): void {
-  readLocation.handle(() => readPosition());
+  readLocation.handle(async () => {
+    const { state } = await navigator.permissions.query({ name: "geolocation" });
+    return state === "granted" ? currentPosition().catch((error: Error) => error.message) : NEEDS_PERMISSION;
+  });
 }
 
 // Chrome's background is a service worker without geolocation, so it asks an
 // offscreen document of the same origin, which inherits the answer the user
-// gave the options page. Firefox's background is a page and asks directly.
+// gave the options page. Firefox's background is a page and reads it directly.
 export async function readPositionInBackground(): Promise<Position> {
-  if (process.env.BROWSER === "firefox") return readPosition();
+  if (process.env.BROWSER === "firefox") {
+    if (!(await chrome.permissions.contains({ permissions: ["geolocation"] }))) throw new Error(NEEDS_PERMISSION);
+    return currentPosition();
+  }
   const url = "offscreen/index.html";
   const open = await chrome.runtime.getContexts({ contextTypes: ["OFFSCREEN_DOCUMENT"] });
   if (open.length === 0) {
     await chrome.offscreen.createDocument({ url, reasons: ["GEOLOCATION"], justification: "Checks whether you are at a place one of your schedules uses." });
   }
   try {
-    return await readLocation.send();
+    const answer = await readLocation.send();
+    if (typeof answer === "string") throw new Error(answer);
+    return answer;
   } finally {
     await chrome.offscreen.closeDocument().catch(() => {});
   }

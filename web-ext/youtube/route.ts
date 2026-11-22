@@ -4,7 +4,7 @@ export type RouteName = "watch" | "playlist" | "shorts" | "home" | "search" | "o
 
 export type Route =
   | { name: "watch"; videoId: string | null; playlistId: string | null }
-  | { name: "playlist"; playlistId: string | null; system: boolean }
+  | { name: "playlist"; playlistId: string | null }
   | { name: "shorts"; shortId: string | null }
   | { name: "home" }
   | { name: "search" }
@@ -21,7 +21,7 @@ export function routeFor(url: URL): Route {
   }
   if (pathname.startsWith(YOUTUBE_URL_PATH.PLAYLIST)) {
     const playlistId = searchParams.get(YOUTUBE_QUERY_PARAM.PLAYLIST_ID);
-    return { name: "playlist", playlistId, system: isSystemPlaylist(playlistId) };
+    return { name: "playlist", playlistId };
   }
   if (pathname.startsWith(YOUTUBE_URL_PATH.SHORTS)) {
     return { name: "shorts", shortId: pathname.split("/")[2] || null };

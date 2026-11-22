@@ -2,9 +2,9 @@ import { render } from "preact";
 import type { Feature } from "@/kernel/features";
 import { bindKeys } from "@/kernel/keys";
 import { mount } from "@/kernel/dom/mount";
-import { setCapabilityStatus } from "@/kernel/dom/capabilities";
 import {
   findSpeedRow,
+  isAdShowing,
   ratePanelChips,
   resolveMoviePlayer,
   resolveRatePanel,
@@ -29,7 +29,6 @@ export const playback: Feature = {
     if (!settings.enabled) return;
 
     const player = await resolveVideo();
-    void setCapabilityStatus("watch.player", "watch", player);
     if (!player.resolved) return;
     const video = player.element as HTMLVideoElement;
 
@@ -44,12 +43,16 @@ export const playback: Feature = {
       flash?.show(side, seconds);
     };
 
+    // An ad plays in this same <video>; the keys must not skip or speed it.
+    const duringContent = (act: () => void) => () => {
+      if (!isAdShowing(video)) act();
+    };
     const unbindKeys = bindKeys(playbackKeys, {
-      toggleRate: () => setRate(video.playbackRate === 1 ? settings.toggleRate : 1),
-      increaseRate: () => setRate(video.playbackRate + settings.rateStep),
-      decreaseRate: () => setRate(video.playbackRate - settings.rateStep),
-      seekBackward: () => seek("back", settings.seekBackward),
-      seekForward: () => seek("forward", settings.seekForward),
+      toggleRate: duringContent(() => setRate(video.playbackRate === 1 ? settings.toggleRate : 1)),
+      increaseRate: duringContent(() => setRate(video.playbackRate + settings.rateStep)),
+      decreaseRate: duringContent(() => setRate(video.playbackRate - settings.rateStep)),
+      seekBackward: duringContent(() => seek("back", settings.seekBackward)),
+      seekForward: duringContent(() => seek("forward", settings.seekForward)),
     });
 
     const unhookMenu = await hookSettingsMenu(settings.customRates, video, setRate);
@@ -64,7 +67,6 @@ export const playback: Feature = {
 
 async function mountSeekFlash() {
   const host = await resolveMoviePlayer();
-  void setCapabilityStatus("watch.moviePlayer", "watch", host);
   if (!host.resolved) return;
   let timer: ReturnType<typeof setTimeout> | undefined;
   const ui = mount("tppng-seek-flash", host.element, <SeekFlash side="forward" seconds={0} visible={false} />);
@@ -87,13 +89,11 @@ async function mountSeekFlash() {
 // <video> never reaches, so they follow the video's ratechange instead.
 async function hookSettingsMenu(rates: number[], video: HTMLVideoElement, setRate: (rate: number) => void) {
   const button = await resolveSettingsButton();
-  void setCapabilityStatus("watch.settingsButton", "watch", button);
   if (!button.resolved) return;
 
   let redrawPanel: (() => void) | null = null;
   const onSpeedRow = async () => {
     const panel = await resolveRatePanel();
-    void setCapabilityStatus("watch.ratePanel", "watch", panel);
     if (!panel.resolved) return;
     const chips = rates.length ? ratePanelChips(panel.element) : null;
     const draw = () => {
@@ -119,7 +119,6 @@ async function hookSettingsMenu(rates: number[], video: HTMLVideoElement, setRat
   };
   video.addEventListener("ratechange", onRateChange);
 
-  let speedRowReported = false;
   let pending: ReturnType<typeof setTimeout> | undefined;
   const onSettings = () => {
     clearTimeout(pending);
@@ -127,10 +126,6 @@ async function hookSettingsMenu(rates: number[], video: HTMLVideoElement, setRat
     // click, and the menu can be opened before YouTube has built every row.
     pending = setTimeout(() => {
       const found = findSpeedRow(video);
-      if (!speedRowReported) {
-        void setCapabilityStatus("watch.speedRow", "watch", found);
-        speedRowReported = found.resolved;
-      }
       if (!found.resolved) return;
       const row = found.element;
       showRateInSpeedRow(row, video.playbackRate);

@@ -1,11 +1,10 @@
 import { useState } from "preact/hooks";
-import { addSegmentToConfig, removeSegmentFromConfig, splitSegmentAtTime } from "../factories";
+import { addSegmentToConfig, removeSegmentFromConfig, splitSegmentAtTime, updateSegment } from "../factories";
 import type { SegmentSession } from "../session";
-import type { PlayStep, Segment, SegmentConfig } from "../types";
+import type { Segment, SegmentConfig } from "../types";
 import { ConfigManager } from "./ConfigManager";
 import { Header } from "./Header";
 import { SegmentList } from "./SegmentList";
-import { SequenceEditor, type StepActions } from "./SequenceEditor";
 import { panelStyle } from "./styles";
 
 export interface PanelProps {
@@ -35,30 +34,6 @@ export function Panel({ session, playhead }: PanelProps) {
   if (!state.active || !state.config) return <style>{panelStyle}</style>;
   const config = state.config;
 
-  const updateStep = (stepId: string, change: (step: PlayStep) => PlayStep) =>
-    session.mutate((c) => ({ ...c, sequence: c.sequence.map((s) => (s.id === stepId ? change(s) : s)), updatedAt: Date.now() }));
-
-  const steps: StepActions = {
-    addStep: () => {
-      const first = config.segments[0]?.id;
-      if (!first) return;
-      session.mutate((c) => ({ ...c, sequence: [...c.sequence, { id: crypto.randomUUID(), segmentIds: [first], count: 1, playbackRate: null, perIterationRates: [] }], updatedAt: Date.now() }));
-    },
-    removeStep: (stepId) => session.mutate((c) => (c.sequence.length <= 1 ? c : { ...c, sequence: c.sequence.filter((s) => s.id !== stepId), updatedAt: Date.now() })),
-    addToStep: (stepId, segmentId) => updateStep(stepId, (s) => ({ ...s, segmentIds: [...s.segmentIds, segmentId] })),
-    removeFromStep: (stepId, index) => updateStep(stepId, (s) => (s.segmentIds.length <= 1 ? s : { ...s, segmentIds: s.segmentIds.filter((_, i) => i !== index) })),
-    reorder: (stepId, from, to) =>
-      updateStep(stepId, (s) => {
-        const ids = [...s.segmentIds];
-        const [moved] = ids.splice(from, 1);
-        ids.splice(to, 0, moved);
-        return { ...s, segmentIds: ids };
-      }),
-    setCount: (stepId, count) => updateStep(stepId, (s) => ({ ...s, count })),
-    setRate: (stepId, playbackRate) => updateStep(stepId, (s) => ({ ...s, playbackRate })),
-    setPerIterationRates: (stepId, perIterationRates) => updateStep(stepId, (s) => ({ ...s, perIterationRates })),
-  };
-
   return (
     <>
       <style>{panelStyle}</style>
@@ -70,39 +45,32 @@ export function Panel({ session, playhead }: PanelProps) {
             defaultId={state.defaultId}
             onBack={() => setView("main")}
             onLoad={(c) => (setView("main"), session.load(c))}
-            onRename={(id, label) => void session.updateSaved(id, { label })}
-            onShortcut={(id, shortcutKey) => void session.updateSaved(id, { shortcutKey })}
+            onRename={(id, label) => void session.renameSaved(id, label)}
             onSetDefault={(id) => void session.setDefault(id)}
             onDelete={(id) => void session.deleteSaved(id)}
           />
         ) : (
           <>
             <Header
-              config={config}
               saved={state.saved}
-              pin={state.pin}
+              loaded={session.loaded}
               collapsed={collapsed}
               onLoad={(c) => session.load(c)}
-              onPin={(pin) => void session.setPin(pin)}
-              onSaveDefault={() => void session.saveDefault()}
+              onSave={() => void session.save()}
               onSaveNamed={(label) => void session.saveNamed(label)}
               onManage={() => setView("manage")}
               onCollapse={() => setCollapsed((c) => !c)}
             />
             {!collapsed && (
-              <>
-                <SegmentList
-                  config={config}
-                  onAdd={() => {
-                    const { time, duration } = playhead();
-                    session.mutate((c) => addSegment(c, time, duration || 100));
-                  }}
-                  onRemove={(id) => session.mutate((c) => removeSegmentFromConfig(c, id))}
-                  onCount={steps.setCount}
-                  onRate={steps.setRate}
-                />
-                <SequenceEditor config={config} actions={steps} />
-              </>
+              <SegmentList
+                config={config}
+                onAdd={() => {
+                  const { time, duration } = playhead();
+                  session.mutate((c) => addSegment(c, time, duration));
+                }}
+                onRemove={(id) => session.mutate((c) => removeSegmentFromConfig(c, id))}
+                onChange={(id, change) => session.mutate((c) => updateSegment(c, id, change))}
+              />
             )}
           </>
         )}

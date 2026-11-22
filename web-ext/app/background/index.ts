@@ -1,6 +1,3 @@
-import { getFeatureReports, markRecovered, removeFeatureReport } from "@/kernel/dom/featureReports";
-import type { CapabilityCacheEntry } from "@/kernel/dom/capabilities";
-import { CHROME_STORAGE_LOCAL_KEY } from "@/lib/storageKeys";
 import { URLS } from "@/lib/urls";
 import { appSettings } from "@/app/settings";
 import { servePlaylistRuntime } from "@/features/playlist-runtime/background";
@@ -15,14 +12,18 @@ runSchedules();
 // migrated once, so repeating this is harmless.
 void migrateLegacyStore();
 
-chrome.runtime.onInstalled.addListener(async ({ reason }) => {
+chrome.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
   if (reason !== "install" && reason !== "update") return;
   if (process.env.NODE_ENV === "production") {
-    void chrome.tabs.create({ url: URLS.GREETINGS });
+    if (reason === "install") void chrome.tabs.create({ url: URLS.GREETINGS });
     void chrome.runtime.setUninstallURL(URLS.FAREWELL);
   }
   await migrateLegacyStore();
-  await startInOpenTabs();
+  // A 3.x content script does not know the takeover handshake, and Chrome
+  // leaves it running, so a second copy beside it would fire every shortcut
+  // twice. Those tabs get Toppings back when they reload.
+  const fromBeforeTakeover = previousVersion !== undefined && Number(previousVersion.split(".")[0]) < 4;
+  if (!fromBeforeTakeover) await startInOpenTabs();
 });
 
 // Tabs open across an install or update have no working Toppings until they
@@ -31,7 +32,7 @@ async function startInOpenTabs(): Promise<void> {
   for (const tab of await chrome.tabs.query({ url: "https://www.youtube.com/*" })) {
     if (tab.id === undefined) continue;
     // A discarded or still-loading tab refuses; it gets the script when it loads.
-    void chrome.scripting.executeScript({ target: { tabId: tab.id, allFrames: true }, files: ["/content.js"] }).catch(() => {});
+    void chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ["/content.js"] }).catch(() => {});
   }
 }
 
@@ -45,20 +46,3 @@ function setIcon(enabled: boolean): void {
 }
 void appSettings.get().then((app) => setIcon(app.enabled));
 appSettings.subscribe((app) => setIcon(app.enabled));
-
-// A reported primitive that a content script now finds is marked recovered
-// for the options page to surface; after an update adds strategies, that is
-// the first YouTube page the new version loads.
-chrome.storage.onChanged.addListener((changes, area) => {
-  if (area !== "local") return;
-  for (const [key, change] of Object.entries(changes)) {
-    const entry = change.newValue as CapabilityCacheEntry | undefined;
-    if (key.startsWith(CHROME_STORAGE_LOCAL_KEY.CAPABILITY_PREFIX) && entry?.status === "supported") void resolveReport(entry.primitiveId);
-  }
-});
-
-async function resolveReport(primitiveId: string): Promise<void> {
-  if (!(await getFeatureReports()).some((report) => report.primitiveId === primitiveId)) return;
-  await markRecovered(primitiveId);
-  await removeFeatureReport(primitiveId);
-}

@@ -96,6 +96,15 @@ describe("playback", () => {
     expect(document.getElementById("tppng-seek-flash")).toBeNull();
   });
 
+  test("keys leave an ad alone", async () => {
+    await mountPlayback();
+    document.getElementById("movie_player")!.classList.add("ad-showing");
+    press("d");
+    press("x");
+    expect(video().currentTime).toBe(60);
+    expect(video().playbackRate).toBe(1);
+  });
+
   test("custom rates replace YouTube's speed chips", async () => {
     await playbackSettings.set({ customRates: [1, 1.5, 3] });
     await mountPlayback();

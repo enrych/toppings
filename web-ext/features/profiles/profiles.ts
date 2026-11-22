@@ -1,21 +1,18 @@
-import type { Layout, Thumbnails, Visibility, Visuals } from "@/youtube/primitives";
+import type { Thumbnails, Visibility, Visuals } from "@/youtube/primitives";
 
-export type { PlayerLayout, ThumbnailMode, VisualsMode } from "@/youtube/primitives";
+export type { ThumbnailMode, VisualsMode } from "@/youtube/primitives";
 
 // Keyed by primitive id. An absent key means "leave YouTube alone", which is
 // not the same as a default value and is what lets profiles stay small.
 export interface ProfilePrimitiveConfig {
-  "watch.layout"?: Layout;
   "watch.visuals"?: Visuals;
   "watch.sidebar"?: Visibility;
   "watch.comments"?: Visibility;
   "watch.endCards"?: Visibility;
   "home.thumbnails"?: Thumbnails;
   "home.feed"?: Visibility;
-  "home.shorts"?: Visibility;
   "search.thumbnails"?: Thumbnails;
   "search.metadata"?: Visibility;
-  "search.shorts"?: Visibility;
   "shorts.shelf"?: Visibility;
 }
 

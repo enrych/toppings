@@ -12,6 +12,7 @@ import { useSettings } from "@/kernel/useSettings";
 import { readPosition, type Position } from "@/lib/location";
 import { schedulesStore, type Place, type Schedule, type Weekday } from "@/features/schedules/settings";
 import { scheduleState } from "@/features/schedules/state";
+import { checkPlaces } from "@/features/schedules/messages";
 import type { Profile } from "@/features/profiles/profiles";
 
 type RuleKind = Schedule["rule"]["kind"];
@@ -19,7 +20,8 @@ type RuleKind = Schedule["rule"]["kind"];
 interface ScheduleEditorProps {
   profiles: Profile[];
   places: Place[];
-  onAdd: (schedule: Schedule) => void;
+  schedule?: Schedule;
+  onSave: (schedule: Schedule) => void;
   onCancel: () => void;
 }
 
@@ -30,6 +32,7 @@ interface ScheduleRowProps {
   onToggle: () => void;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
+  onEdit: () => void;
   onDelete: () => void;
 }
 
@@ -43,7 +46,8 @@ const WEEK: { day: Weekday; label: string }[] = [
   { day: 0, label: "Sun" },
 ];
 const CLOCK_TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
-const RADIUS_MIN = 50;
+// Wi-Fi positioning on a desktop is rarely better than this.
+const RADIUS_MIN = 100;
 const RADIUS_MAX = 2000;
 const INPUT_CLASS =
   "tw-h-9 tw-px-3 tw-rounded-lg tw-bg-surface-hover tw-text-fg tw-text-sm tw-border tw-border-transparent focus:tw-outline-none focus:tw-border-accent tw-transition-colors";
@@ -93,15 +97,16 @@ function DayChips({ days, onChange }: { days: Weekday[]; onChange: (days: Weekda
   );
 }
 
-function ScheduleEditor({ profiles, places, onAdd, onCancel }: ScheduleEditorProps) {
+function ScheduleEditor({ profiles, places, schedule, onSave, onCancel }: ScheduleEditorProps) {
   const startId = useId();
   const endId = useId();
-  const [profileId, setProfileId] = useState("");
-  const [kind, setKind] = useState<RuleKind>("time");
-  const [days, setDays] = useState<Weekday[]>([1, 2, 3, 4, 5]);
-  const [start, setStart] = useState("09:00");
-  const [end, setEnd] = useState("17:00");
-  const [placeId, setPlaceId] = useState("");
+  const time = schedule?.rule.kind === "time" ? schedule.rule : null;
+  const [profileId, setProfileId] = useState(schedule?.profileId ?? "");
+  const [kind, setKind] = useState<RuleKind>(schedule?.rule.kind ?? "time");
+  const [days, setDays] = useState<Weekday[]>(time?.days ?? [1, 2, 3, 4, 5]);
+  const [start, setStart] = useState(time?.start ?? "09:00");
+  const [end, setEnd] = useState(time?.end ?? "17:00");
+  const [placeId, setPlaceId] = useState(schedule?.rule.kind === "place" ? schedule.rule.placeId : "");
 
   const chosenProfile = profileId || profiles[0]?.id || "";
   const chosenPlace = placeId || places[0]?.id || "";
@@ -110,13 +115,13 @@ function ScheduleEditor({ profiles, places, onAdd, onCancel }: ScheduleEditorPro
   const endError = !CLOCK_TIME.test(end) ? "Enter an end time." : end === start ? "End at a different time from the start." : undefined;
   const invalid = !chosenProfile || (kind === "time" ? Boolean(daysError || startError || endError) : !chosenPlace);
 
-  const add = () => {
+  const save = () => {
     if (invalid) return;
-    onAdd({
-      id: crypto.randomUUID(),
+    onSave({
+      id: schedule?.id ?? crypto.randomUUID(),
       profileId: chosenProfile,
       rule: kind === "time" ? { kind, days, start, end } : { kind, placeId: chosenPlace },
-      enabled: true,
+      enabled: schedule?.enabled ?? true,
     });
   };
 
@@ -166,13 +171,13 @@ function ScheduleEditor({ profiles, places, onAdd, onCancel }: ScheduleEditorPro
       )}
       <div class="tw-flex tw-items-center tw-justify-end tw-gap-2 tw-py-3">
         <Button variant="ghost" onClick={onCancel}>Cancel</Button>
-        <Button variant="primary" onClick={add} disabled={invalid}>Add schedule</Button>
+        <Button variant="primary" onClick={save} disabled={invalid}>{schedule ? "Save schedule" : "Add schedule"}</Button>
       </div>
     </div>
   );
 }
 
-function ScheduleRow({ summary, enabled, inCharge, onToggle, onMoveUp, onMoveDown, onDelete }: ScheduleRowProps) {
+function ScheduleRow({ summary, enabled, inCharge, onToggle, onMoveUp, onMoveDown, onEdit, onDelete }: ScheduleRowProps) {
   return (
     <div class="tw-flex tw-items-center tw-justify-between tw-gap-4 tw-py-3">
       <div class="tw-flex tw-items-center tw-gap-2 tw-min-w-0">
@@ -186,6 +191,7 @@ function ScheduleRow({ summary, enabled, inCharge, onToggle, onMoveUp, onMoveDow
         <IconButton size="sm" aria-label="Move down" title="Move down" disabled={!onMoveDown} onClick={onMoveDown}>
           <Icon name="chevron-down" size={16} />
         </IconButton>
+        <Button size="sm" variant="ghost" onClick={onEdit}>Edit</Button>
         <Button size="sm" variant="ghost" onClick={onDelete}>Delete</Button>
         <span class="tw-pl-2 tw-inline-flex">
           <Toggle on={enabled} onClick={onToggle} label={`${summary}, enabled`} />
@@ -195,16 +201,17 @@ function ScheduleRow({ summary, enabled, inCharge, onToggle, onMoveUp, onMoveDow
   );
 }
 
-function PlaceEditor({ onAdd, onCancel }: { onAdd: (place: Place) => void; onCancel: () => void }) {
+function PlaceEditor({ place, onSave, onCancel }: { place?: Place; onSave: (place: Place) => void; onCancel: () => void }) {
   const nameId = useId();
   const radiusId = useId();
-  const [name, setName] = useState("");
-  const [radius, setRadius] = useState("200");
+  const [name, setName] = useState(place?.name ?? "");
+  const [radius, setRadius] = useState(String(place?.radiusMeters ?? 250));
   const [position, setPosition] = useState<Position | null>(null);
   const [locating, setLocating] = useState(false);
   const [locationError, setLocationError] = useState<string | null>(null);
   const [attempted, setAttempted] = useState(false);
 
+  const spot = position ?? place;
   const radiusMeters = Number(radius);
   const radiusError =
     radius.trim() !== "" && Number.isInteger(radiusMeters) && radiusMeters >= RADIUS_MIN && radiusMeters <= RADIUS_MAX
@@ -212,8 +219,8 @@ function PlaceEditor({ onAdd, onCancel }: { onAdd: (place: Place) => void; onCan
       : `Enter a whole number from ${RADIUS_MIN} to ${RADIUS_MAX}.`;
   const nameError = attempted && !name.trim() ? "Give the place a name." : undefined;
   const positionError = locationError
-    ? `Location unavailable: ${locationError}. Allow location for Toppings when your browser asks.`
-    : attempted && !position
+    ? `${locationError}. Allow location for Toppings when your browser asks.`
+    : attempted && !spot
       ? "Use your current location while you are there."
       : undefined;
 
@@ -230,8 +237,8 @@ function PlaceEditor({ onAdd, onCancel }: { onAdd: (place: Place) => void; onCan
 
   const save = () => {
     setAttempted(true);
-    if (!name.trim() || radiusError || !position) return;
-    onAdd({ id: crypto.randomUUID(), name: name.trim(), latitude: position.latitude, longitude: position.longitude, radiusMeters });
+    if (!name.trim() || radiusError || !spot) return;
+    onSave({ id: place?.id ?? crypto.randomUUID(), name: name.trim(), latitude: spot.latitude, longitude: spot.longitude, radiusMeters });
   };
 
   return (
@@ -265,15 +272,21 @@ function PlaceEditor({ onAdd, onCancel }: { onAdd: (place: Place) => void; onCan
       <Field
         label="Location"
         error={positionError}
-        hint={position ? `Found, accurate to about ${Math.round(position.accuracyMeters)} m.` : "Stand at the place, then use your current location."}
+        hint={
+          position
+            ? `Found, accurate to about ${Math.round(position.accuracyMeters)} m.`
+            : place
+              ? "Stays where you saved it unless you locate again."
+              : "Stand at the place, then use your current location."
+        }
       >
         <Button size="sm" onClick={() => void locate()} disabled={locating}>
-          {locating ? "Locating…" : position ? "Locate again" : "Use my current location"}
+          {locating ? "Locating…" : spot ? "Locate again" : "Use my current location"}
         </Button>
       </Field>
       {position && !radiusError && position.accuracyMeters > radiusMeters && (
         <div class="tw-py-3 tw-text-xs tw-text-warning-fg">
-          That fix is looser than the radius, so the place may match from farther away or not at all. Locate again, or widen the radius.
+          That fix is looser than the radius, so the place may match from farther away. Locate again, or widen the radius.
         </div>
       )}
       <div class="tw-flex tw-items-center tw-justify-end tw-gap-2 tw-py-3">
@@ -289,7 +302,9 @@ export default function Schedules({ profiles }: { profiles: Profile[] }) {
   const store = useSettings(schedulesStore);
   const { value: state } = useSettings(scheduleState);
   const [addingSchedule, setAddingSchedule] = useState(false);
+  const [editingSchedule, setEditingSchedule] = useState<string | null>(null);
   const [addingPlace, setAddingPlace] = useState(false);
+  const [editingPlace, setEditingPlace] = useState<string | null>(null);
   const { schedules, places } = store.value;
 
   const setSchedules = (next: Schedule[]) => store.update({ schedules: next });
@@ -298,6 +313,12 @@ export default function Schedules({ profiles }: { profiles: Profile[] }) {
     [next[index], next[index + by]] = [next[index + by], next[index]];
     setSchedules(next);
   };
+
+  // The click lets the browser ask; the background then checks with the answer.
+  const recheckLocation = () =>
+    void readPosition()
+      .catch(() => null)
+      .then(() => checkPlaces.send());
 
   const deletePlace = (place: Place) => {
     const users = usedBy(schedules, place);
@@ -325,8 +346,9 @@ export default function Schedules({ profiles }: { profiles: Profile[] }) {
               </p>
             )}
             {state.locationError && (
-              <p class="tw-text-danger-fg">
-                Location unavailable: {state.locationError}. Allow location for Toppings when your browser asks, from "Use my current location" under Places.
+              <p role="alert" class="tw-flex tw-items-center tw-gap-2 tw-text-danger-fg">
+                {state.locationError}. Place schedules wait until Toppings can tell where you are.
+                <Button size="sm" onClick={recheckLocation}>Check location</Button>
               </p>
             )}
           </div>
@@ -336,7 +358,7 @@ export default function Schedules({ profiles }: { profiles: Profile[] }) {
             <ScheduleEditor
               profiles={profiles}
               places={places}
-              onAdd={(schedule) => {
+              onSave={(schedule) => {
                 setSchedules([...schedules, schedule]);
                 setAddingSchedule(false);
                 toast.success("Schedule added");
@@ -347,18 +369,34 @@ export default function Schedules({ profiles }: { profiles: Profile[] }) {
           {schedules.length === 0 && !addingSchedule ? (
             <div class="tw-py-8 tw-text-center tw-text-sm tw-text-fg-subtle">No schedules yet. Add one with the button above.</div>
           ) : (
-            schedules.map((schedule, index) => (
-              <ScheduleRow
-                key={schedule.id}
-                summary={describeSchedule(schedule, profiles, places)}
-                enabled={schedule.enabled}
-                inCharge={state.inCharge === schedule.id}
-                onToggle={() => setSchedules(schedules.map((s) => (s.id === schedule.id ? { ...s, enabled: !s.enabled } : s)))}
-                onMoveUp={index > 0 ? () => move(index, -1) : undefined}
-                onMoveDown={index < schedules.length - 1 ? () => move(index, 1) : undefined}
-                onDelete={() => setSchedules(schedules.filter((s) => s.id !== schedule.id))}
-              />
-            ))
+            schedules.map((schedule, index) =>
+              editingSchedule === schedule.id ? (
+                <ScheduleEditor
+                  key={schedule.id}
+                  profiles={profiles}
+                  places={places}
+                  schedule={schedule}
+                  onSave={(saved) => {
+                    setSchedules(schedules.map((s) => (s.id === saved.id ? saved : s)));
+                    setEditingSchedule(null);
+                    toast.success("Schedule saved");
+                  }}
+                  onCancel={() => setEditingSchedule(null)}
+                />
+              ) : (
+                <ScheduleRow
+                  key={schedule.id}
+                  summary={describeSchedule(schedule, profiles, places)}
+                  enabled={schedule.enabled}
+                  inCharge={state.inCharge === schedule.id}
+                  onToggle={() => setSchedules(schedules.map((s) => (s.id === schedule.id ? { ...s, enabled: !s.enabled } : s)))}
+                  onMoveUp={index > 0 ? () => move(index, -1) : undefined}
+                  onMoveDown={index < schedules.length - 1 ? () => move(index, 1) : undefined}
+                  onEdit={() => setEditingSchedule(schedule.id)}
+                  onDelete={() => setSchedules(schedules.filter((s) => s.id !== schedule.id))}
+                />
+              ),
+            )
           )}
         </Card>
         <p class="tw-text-xs tw-text-fg-subtle tw-mt-2">
@@ -374,7 +412,7 @@ export default function Schedules({ profiles }: { profiles: Profile[] }) {
         <Card>
           {addingPlace && (
             <PlaceEditor
-              onAdd={(place) => {
+              onSave={(place) => {
                 store.update({ places: [...places, place] });
                 setAddingPlace(false);
                 toast.success(`"${place.name}" added`);
@@ -391,6 +429,20 @@ export default function Schedules({ profiles }: { profiles: Profile[] }) {
                 `Within ${place.radiusMeters} m`,
                 users ? `used by ${users} ${users === 1 ? "schedule" : "schedules"}` : "",
               ].filter(Boolean);
+              if (editingPlace === place.id) {
+                return (
+                  <PlaceEditor
+                    key={place.id}
+                    place={place}
+                    onSave={(saved) => {
+                      store.update({ places: places.map((p) => (p.id === saved.id ? saved : p)) });
+                      setEditingPlace(null);
+                      toast.success(`"${saved.name}" saved`);
+                    }}
+                    onCancel={() => setEditingPlace(null)}
+                  />
+                );
+              }
               return (
                 <div key={place.id} class="tw-flex tw-items-center tw-justify-between tw-gap-4 tw-py-3">
                   <div class="tw-flex tw-flex-col tw-gap-0.5 tw-min-w-0">
@@ -400,7 +452,10 @@ export default function Schedules({ profiles }: { profiles: Profile[] }) {
                     </div>
                     <span class="tw-text-xs tw-text-fg-subtle">{details.join(" · ")}</span>
                   </div>
-                  <Button size="sm" variant="ghost" onClick={() => deletePlace(place)}>Delete</Button>
+                  <div class="tw-flex tw-items-center tw-gap-1 tw-flex-shrink-0">
+                    <Button size="sm" variant="ghost" onClick={() => setEditingPlace(place.id)}>Edit</Button>
+                    <Button size="sm" variant="ghost" onClick={() => deletePlace(place)}>Delete</Button>
+                  </div>
                 </div>
               );
             })

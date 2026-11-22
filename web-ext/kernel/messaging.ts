@@ -1,6 +1,4 @@
-// Typed request/response between a page and the background. Messages are
-// objects with a `kind`; the older string protocol on the same channel ignores
-// them, and this listener ignores strings.
+// Typed request/response between a page and the background.
 
 type Handler<Req, Res> = (request: Req, sender: chrome.runtime.MessageSender) => Promise<Res>;
 

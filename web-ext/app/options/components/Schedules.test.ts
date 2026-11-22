@@ -97,6 +97,25 @@ describe("Schedules", () => {
     expect((await schedulesStore.get()).schedules.map((s) => s.id)).toEqual(["b", "a"]);
   });
 
+  test("editing a schedule or a place saves over it, keeping its id and where the place is", async () => {
+    await schedulesStore.set({ schedules: [weekdays], places: [work] });
+    await mount();
+    const edit = () => [...root.querySelectorAll("button")].filter((b) => b.textContent === "Edit");
+
+    act(() => edit()[0].click());
+    type(inputLabelled("Ends"), "17:30");
+    act(() => buttonNamed("Save schedule").click());
+    await settle();
+    expect((await schedulesStore.get()).schedules).toMatchObject([{ id: "a", profileId: "preset:audio", rule: { start: "09:00", end: "17:30" } }]);
+
+    act(() => edit()[1].click());
+    type(inputLabelled("Name"), "Office");
+    type(inputLabelled("Radius"), "400");
+    act(() => buttonNamed("Save place").click());
+    await settle();
+    expect((await schedulesStore.get()).places).toEqual([{ ...work, name: "Office", radiusMeters: 400 }]);
+  });
+
   test("adding a place stores where the browser says you are, with the radius", async () => {
     Object.defineProperty(navigator, "geolocation", {
       configurable: true,
@@ -111,7 +130,7 @@ describe("Schedules", () => {
 
     type(inputLabelled("Name"), " Office ");
     type(inputLabelled("Radius"), "20");
-    expect(root.textContent).toContain("Enter a whole number from 50 to 2000.");
+    expect(root.textContent).toContain("Enter a whole number from 100 to 2000.");
     type(inputLabelled("Radius"), "300");
     act(() => buttonNamed("Use my current location").click());
     await settle();
@@ -130,7 +149,7 @@ describe("Schedules", () => {
         getCurrentPosition: (ok: PositionCallback, fail: PositionErrorCallback) =>
           answer === "loose"
             ? ok({ coords: { latitude: 1, longitude: 2, accuracy: 900 } } as GeolocationPosition)
-            : fail({ message: "User denied Geolocation" } as GeolocationPositionError),
+            : fail({ code: 1, PERMISSION_DENIED: 1, message: "User denied Geolocation" } as GeolocationPositionError),
       },
     });
     await mount();
@@ -141,7 +160,7 @@ describe("Schedules", () => {
     answer = "denied";
     act(() => buttonNamed("Locate again").click());
     await settle();
-    expect(root.textContent).toContain("Location unavailable: User denied Geolocation.");
+    expect(root.textContent).toContain("Location permission needed. Allow location for Toppings when your browser asks.");
   });
 
   test("a place a schedule uses cannot be deleted until the schedule is", async () => {
@@ -166,7 +185,7 @@ describe("Schedules", () => {
     await schedulesStore.set({ schedules: [weekdays], places: [] });
     await mount();
     expect(root.querySelector("[role='status']")?.textContent).toBe("Audio on by schedule until 18:00");
-    expect(root.textContent).toContain("Location unavailable: Location too imprecise to tell places apart.");
+    expect(root.querySelector("[role='alert']")?.textContent).toContain("Location too imprecise to tell places apart.");
     expect(root.textContent).toContain("In charge");
   });
 });

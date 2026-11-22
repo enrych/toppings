@@ -1,20 +1,25 @@
+import { MAX_RATE, MIN_RATE } from "@/features/playback/settings";
 import { formatClock } from "@/lib/duration";
 import { colorForIndex } from "../format";
-import type { SegmentConfig } from "../types";
+import type { Segment, SegmentConfig } from "../types";
 
 export interface SegmentListProps {
   config: SegmentConfig;
   onAdd: () => void;
   onRemove: (segmentId: string) => void;
-  onCount: (stepId: string, count: number) => void;
-  onRate: (stepId: string, rate: number | null) => void;
+  onChange: (segmentId: string, change: Pick<Segment, "loops"> | Pick<Segment, "rate">) => void;
 }
 
-export function SegmentList({ config, onAdd, onRemove, onCount, onRate }: SegmentListProps) {
+// A blank field is null; anything invalid puts back the value it replaced.
+function commitNumber(input: HTMLInputElement, current: number | null, isValid: (n: number) => boolean, commit: (value: number | null) => void): void {
+  const raw = input.value.trim();
+  const value = raw === "" ? null : Number(raw);
+  if (value === null ? input.validity.badInput : !isValid(value)) input.value = current === null ? "" : String(current);
+  else commit(value);
+}
+
+export function SegmentList({ config, onAdd, onRemove, onChange }: SegmentListProps) {
   const sorted = [...config.segments].sort((a, b) => a.startTime - b.startTime);
-  // Loop count and rate belong to steps; they are editable here only when
-  // there is a single step, where the mapping is unambiguous.
-  const step = config.sequence.length === 1 ? config.sequence[0] : null;
 
   return (
     <div class="stack">
@@ -22,31 +27,31 @@ export function SegmentList({ config, onAdd, onRemove, onCount, onRate }: Segmen
         <div class="segment" key={segment.id} style={{ "--seg": colorForIndex(index) }}>
           <span class="index">{index + 1}</span>
           <span class="range">{formatClock(segment.startTime)} → {formatClock(segment.endTime)}</span>
-          {segment.label && <span class="note">{segment.label}</span>}
-          {step && (
-            <label class="field" title="Loop count (0 = infinite)">
-              ↺
-              <input class="input" type="number" min="0" step="1" value={step.count} onChange={(e) => onCount(step.id, Math.max(0, parseInt(e.currentTarget.value, 10) || 0))} />
-            </label>
-          )}
-          {step && (
-            <label class="field" title="Playback rate override (blank = keep current)">
-              ▶
-              <input
-                class="input"
-                type="number"
-                min="0.25"
-                max="16"
-                step="0.25"
-                placeholder="1×"
-                value={step.playbackRate ?? ""}
-                onChange={(e) => {
-                  const raw = e.currentTarget.value.trim();
-                  onRate(step.id, raw === "" ? null : parseFloat(raw));
-                }}
-              />
-            </label>
-          )}
+          <label class="field" title="Times to play before moving on (blank = loop forever)">
+            ↺
+            <input
+              class="input"
+              type="number"
+              min="1"
+              step="1"
+              placeholder="∞"
+              value={segment.loops ?? ""}
+              onChange={(e) => commitNumber(e.currentTarget, segment.loops, (n) => Number.isInteger(n) && n >= 1, (loops) => onChange(segment.id, { loops }))}
+            />
+          </label>
+          <label class="field" title={`Playback rate, ${MIN_RATE} to ${MAX_RATE} (blank = keep current)`}>
+            ▶
+            <input
+              class="input"
+              type="number"
+              min={MIN_RATE}
+              max={MAX_RATE}
+              step="any"
+              placeholder="1×"
+              value={segment.rate ?? ""}
+              onChange={(e) => commitNumber(e.currentTarget, segment.rate, (n) => n >= MIN_RATE && n <= MAX_RATE, (rate) => onChange(segment.id, { rate }))}
+            />
+          </label>
           <button class="btn tiny" title="Remove segment" disabled={config.segments.length <= 1} onClick={() => onRemove(segment.id)}>✕</button>
         </div>
       ))}

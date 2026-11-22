@@ -9,7 +9,7 @@ describe("parseProfileJson", () => {
 
   test("skips unknown primitives and rejects bad values", () => {
     expect(parseProfileJson({ name: "x", primitives: { "future.thing": { on: true } } })).toEqual({ ok: true, name: "x", primitives: {} });
-    expect(parseProfileJson({ name: "x", primitives: { "watch.layout": { value: "sideways" } } })).toMatchObject({ ok: false });
+    expect(parseProfileJson({ name: "x", primitives: { "watch.visuals": { value: "sideways" } } })).toMatchObject({ ok: false });
   });
 
   test("rejects missing name or malformed shapes", () => {

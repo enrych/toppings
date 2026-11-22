@@ -56,8 +56,8 @@ function harness(initial: Segment[], duration = 100) {
 }
 
 const pair = (): Segment[] => [
-  { id: "a", startTime: 0, endTime: 40 },
-  { id: "b", startTime: 50, endTime: 100 },
+  { id: "a", startTime: 0, endTime: 40, rate: null, loops: null },
+  { id: "b", startTime: 50, endTime: 100, rate: null, loops: null },
 ];
 
 describe("Markers", () => {
@@ -65,8 +65,8 @@ describe("Markers", () => {
     const { state, grab, pointer } = harness(pair());
     const end = grab(0, "end");
     pointer(end, "pointerdown", 40);
-    pointer(end, "pointermove", 49);
-    pointer(end, "pointerup", 49);
+    pointer(end, "pointermove", 49.7);
+    pointer(end, "pointerup", 49.7);
     await wait(600);
     expect(state.merges).toEqual([]);
   });
@@ -75,11 +75,33 @@ describe("Markers", () => {
     const { state, grab, pointer } = harness(pair());
     const end = grab(0, "end");
     pointer(end, "pointerdown", 40);
-    pointer(end, "pointermove", 49);
+    pointer(end, "pointermove", 49.7);
     await wait(600);
     expect(state.merges).toEqual([["a", "b"]]);
     pointer(grab(0, "end"), "pointermove", 45);
-    expect(state.segments).toEqual([{ id: "a", startTime: 0, endTime: 100 }]);
+    expect(state.segments).toEqual([{ ...pair()[0], endTime: 100 }]);
+  });
+
+  test("a marker a hundredth of the bar from its neighbour does not merge", async () => {
+    const { state, grab, pointer } = harness(pair());
+    const end = grab(0, "end");
+    pointer(end, "pointerdown", 40);
+    pointer(end, "pointermove", 49);
+    await wait(600);
+    expect(state.merges).toEqual([]);
+  });
+
+  test("moving within reach restarts the hold", async () => {
+    const { state, grab, pointer } = harness(pair());
+    const end = grab(0, "end");
+    pointer(end, "pointerdown", 40);
+    pointer(end, "pointermove", 49.8);
+    await wait(300);
+    pointer(end, "pointermove", 49.5);
+    await wait(300);
+    expect(state.merges).toEqual([]);
+    await wait(300);
+    expect(state.merges).toEqual([["a", "b"]]);
   });
 
   test("merging away the segment being dragged by its start leaves nothing to trip on", async () => {
@@ -91,14 +113,14 @@ describe("Markers", () => {
     expect(state.merges).toEqual([["a", "b"]]);
     pointer(grab(0, "end"), "pointermove", 60);
     expect(errors).toEqual([]);
-    expect(state.segments).toEqual([{ id: "a", startTime: 0, endTime: 100 }]);
+    expect(state.segments).toEqual([{ ...pair()[0], endTime: 100 }]);
   });
 
   test("unmounting cancels a pending merge", async () => {
     const { state, grab, pointer } = harness(pair());
     const end = grab(0, "end");
     pointer(end, "pointerdown", 40);
-    pointer(end, "pointermove", 49);
+    pointer(end, "pointermove", 49.7);
     render(null, container);
     await wait(600);
     expect(state.merges).toEqual([]);
@@ -107,8 +129,8 @@ describe("Markers", () => {
   test("a start marker never passes its own end, even inside a longer segment", () => {
     const { state, grab, pointer } = harness(
       [
-        { id: "a", startTime: 0, endTime: 100 },
-        { id: "b", startTime: 40, endTime: 50 },
+        { id: "a", startTime: 0, endTime: 100, rate: null, loops: null },
+        { id: "b", startTime: 40, endTime: 50, rate: null, loops: null },
       ],
       200,
     );

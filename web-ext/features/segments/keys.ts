@@ -12,6 +12,6 @@ export const segmentsKeys = defineKeys({
     nudgeStartForward: { label: "Nudge start forward", defaultBinding: "" },
     nudgeEndBackward: { label: "Nudge end backward", defaultBinding: "" },
     nudgeEndForward: { label: "Nudge end forward", defaultBinding: "Shift+E" },
-    save: { label: "Save segments", description: "Save as this video's default, or clear the last-used slate when off.", defaultBinding: "" },
+    save: { label: "Save segments", description: "Save over the loaded config, or keep a new slate under a generated name.", defaultBinding: "" },
   },
 });

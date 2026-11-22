@@ -1,10 +1,10 @@
 import { appSettings } from "@/app/settings";
-import { readPositionInBackground } from "@/lib/location";
-import { getProfileById, profileStore, setActiveProfileId } from "@/features/profiles/store";
+import { readPositionInBackground, type Position } from "@/lib/location";
+import { getAllProfiles, getProfileById, profileStore, setActiveProfileId } from "@/features/profiles/store";
 import { clock, currentEnd, isInWindow, nextChangeAt, placesHere, scheduleInCharge, upcomingChanges } from "./rules";
 import { schedulesStore, type Place, type Schedule } from "./settings";
 import { scheduleState, type ScheduleState } from "./state";
-import { skipSchedule } from "./messages";
+import { checkPlaces, skipSchedule } from "./messages";
 
 const TICK_ALARM = "schedules";
 const CHANGE_ALARM = "schedules-change";
@@ -16,44 +16,64 @@ const LEAD_MINUTES = 5;
 const BADGE_COLOR = "#c2531e";
 
 let ticking = Promise.resolve();
+let checking = Promise.resolve();
 
 export function runSchedules(): void {
-  // Created once: re-creating on every wake of the background would restart
-  // the countdown, and a background woken often would never see it fire.
-  void ensureAlarm(TICK_ALARM, 1);
-  void ensureAlarm(LOCATION_ALARM, LOCATION_EVERY_MINUTES);
+  // One check at a time: they share the one offscreen document Chrome allows,
+  // and each closes it when done.
+  const queueCheck = () => (checking = checking.then(() => checkLocation(readPositionInBackground)).catch((error) => console.error("[toppings] schedules", error)));
+  const onSchedules = ({ schedules }: { schedules: Schedule[] }) => {
+    void syncAlarms(schedules);
+    queueTick();
+    void queueCheck();
+  };
   chrome.alarms.onAlarm.addListener((alarm) => {
     if (alarm.name === TICK_ALARM || alarm.name === CHANGE_ALARM) queueTick();
-    if (alarm.name === LOCATION_ALARM) void checkLocation();
+    if (alarm.name === LOCATION_ALARM) void queueCheck();
   });
-  schedulesStore.subscribe(() => {
-    queueTick();
-    void checkLocation();
-  });
+  schedulesStore.subscribe(onSchedules);
   appSettings.subscribe(queueTick);
   skipSchedule.handle(async () => {
     await skipInCharge(new Date());
     await queueTick();
   });
-  queueTick();
-  void checkLocation();
+  checkPlaces.handle(queueCheck);
+  void schedulesStore.get().then(onSchedules);
 }
 
-async function ensureAlarm(name: string, periodInMinutes: number): Promise<void> {
+const hasEnabled = (schedules: readonly Schedule[], kind: Schedule["rule"]["kind"]) => schedules.some((schedule) => schedule.enabled && schedule.rule.kind === kind);
+
+// Each alarm exists only while a schedule needs it, so a user without
+// schedules has a background that is never woken for them.
+export async function syncAlarms(schedules: readonly Schedule[]): Promise<void> {
+  await keepAlarm(TICK_ALARM, 1, hasEnabled(schedules, "time"));
+  await keepAlarm(LOCATION_ALARM, LOCATION_EVERY_MINUTES, hasEnabled(schedules, "place"));
+}
+
+async function keepAlarm(name: string, periodInMinutes: number, wanted: boolean): Promise<void> {
+  if (!wanted) return void (await chrome.alarms.clear(name));
+  // Left alone if already set: re-creating on every wake of the background
+  // would restart the countdown, and a background woken often would never see it fire.
   if (!(await chrome.alarms.get(name))) await chrome.alarms.create(name, { periodInMinutes });
 }
 
 // Only while a place schedule exists, so nobody else is ever asked where they are.
-async function checkLocation(): Promise<void> {
+export async function checkLocation(readPosition: () => Promise<Position>): Promise<void> {
   const { schedules, places } = await schedulesStore.get();
-  if (!schedules.some((schedule) => schedule.enabled && schedule.rule.kind === "place")) return;
+  if (!hasEnabled(schedules, "place")) {
+    const { atPlaces, locationError } = await scheduleState.get();
+    if (atPlaces.length || locationError) await scheduleState.set({ atPlaces: [], locationError: null });
+    return;
+  }
   try {
-    const here = await readPositionInBackground();
+    const here = await readPosition();
     if (here.accuracyMeters > MAX_ACCURACY_METERS) throw new Error("Location too imprecise to tell places apart");
     const { atPlaces } = await scheduleState.get();
     await scheduleState.set({ atPlaces: placesHere(places, here, atPlaces), locationError: null });
   } catch (error) {
-    await scheduleState.set({ locationError: error instanceof Error ? error.message : String(error) });
+    // Not knowing where the user is counts as having left, or a place's
+    // profile would stay on for as long as location stays unavailable.
+    await scheduleState.set({ atPlaces: [], locationError: error instanceof Error ? error.message : String(error) });
   }
   await queueTick();
 }
@@ -73,12 +93,15 @@ export async function skipInCharge(now: Date): Promise<void> {
 }
 
 export async function tick(now: Date): Promise<void> {
-  const [app, { schedules, places }, state, { activeProfileId }] = await Promise.all([appSettings.get(), schedulesStore.get(), scheduleState.get(), profileStore.get()]);
+  const [app, { schedules: stored, places }, state, { activeProfileId }, profiles] = await Promise.all([appSettings.get(), schedulesStore.get(), scheduleState.get(), profileStore.get(), getAllProfiles()]);
   if (!app.enabled) {
     if (state.status) await scheduleState.set({ status: "" });
     return showBadge("", "");
   }
 
+  // Deleting a profile deletes its schedules, but an import or an older
+  // version can leave one behind, and it must not switch to a profile that is gone.
+  const schedules = stored.filter((schedule) => profiles.some((profile) => profile.id === schedule.profileId));
   const byId = (id: string | null) => schedules.find((schedule) => schedule.id === id) ?? null;
   const skippedSchedule = byId(state.skipped?.id ?? null);
   const skipHolds = skippedSchedule && (state.skipped?.until != null ? now.getTime() < state.skipped.until : isInWindow(skippedSchedule, now, state.atPlaces));

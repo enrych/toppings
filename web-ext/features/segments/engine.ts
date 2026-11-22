@@ -1,30 +1,25 @@
-import type { Segment, SegmentConfig, PlayStep, SegmentId } from "./types";
+import { MAX_RATE, MIN_RATE } from "@/features/playback/settings";
+import type { Segment, SegmentConfig, SegmentId } from "./types";
 
 // Decides when to seek and at what rate, and nothing else: no storage, no UI,
 // no DOM beyond the video element. Keep it that way — the panel and markers
 // both drive this class, so anything stateful added here leaks into both.
 
 interface EngineState {
-  stepIndex: number;
-  iterationInStep: number;
-  segmentIndexInStep: number; // step.segmentIds is user-ordered and may repeat an id
-}
-
-function initialState(): EngineState {
-  return { stepIndex: 0, iterationInStep: 0, segmentIndexInStep: 0 };
+  // null once the last segment has played its last pass: playback runs on.
+  segmentId: SegmentId | null;
+  pass: number;
 }
 
 export class SegmentEngine {
   private video: HTMLVideoElement;
   private config: SegmentConfig;
-  private state: EngineState = initialState();
+  private state: EngineState = { segmentId: null, pass: 0 };
   private detach: (() => void) | null = null;
   private originalRate: number | null = null;
   private appliedRate: number | null = null;
   private _active = false;
   private isHeld: () => boolean;
-  // A segment outside the sequence that the user seeked into, being edited.
-  private scrubbing: Segment | null = null;
 
   // isHeld pauses the engine while the video is not the content, as during a
   // mid-roll ad, which YouTube plays in this same element on its own clock.
@@ -36,7 +31,7 @@ export class SegmentEngine {
 
   start(): void {
     if (this._active) this.stop();
-    this.state = initialState();
+    this.state = this.firstSegment();
     this._active = true;
     this.originalRate = this.video.playbackRate;
 
@@ -57,40 +52,25 @@ export class SegmentEngine {
   stop(): void {
     this.detach?.();
     this.detach = null;
-    // Only undo a rate the engine set and nobody has changed since, so a speed
-    // the user picked while segments ran survives turning them off.
-    if (this.originalRate !== null && this.appliedRate === this.video.playbackRate) {
-      this.video.playbackRate = this.originalRate;
-    }
+    this.releaseRate();
     this.originalRate = null;
-    this.appliedRate = null;
     this._active = false;
-  }
-
-  isActive(): boolean {
-    return this._active;
   }
 
   // Reconciles rather than restarts so that dragging a marker, which swaps the
   // config on every pointer move, does not restart playback on every frame.
   setConfig(config: SegmentConfig): void {
+    const finished = this.state.segmentId === null;
     this.config = config;
-    if (!this._active) {
-      this.state = initialState();
-      return;
-    }
+    if (!this._active) return;
     // An edit that leaves the playhead outside the segment it was in restarts
     // that segment, rather than the next tick advancing past what is being edited.
-    const current = this.resolveCurrentSegment();
+    const current = this.currentSegment();
     const ct = this.video.currentTime;
     if (current && ct >= current.startTime && ct <= current.endTime) return;
-    if (this.adoptSegmentAt(ct)) return;
-    if (!current) this.state = initialState();
+    if (this.adoptSegmentAt(ct) || finished) return;
+    if (!current) this.state = this.firstSegment();
     this.seekToCurrentSegment();
-  }
-
-  getCurrentSegment(): Segment | null {
-    return this.resolveCurrentSegment();
   }
 
   getSegmentAt(currentTime: number): Segment | null {
@@ -113,21 +93,19 @@ export class SegmentEngine {
 
   private onTimeUpdate(): void {
     if (this.isHeld()) return;
-    if (this.scrubbing) {
-      const ct = this.video.currentTime;
-      if (ct >= this.scrubbing.startTime && ct < this.scrubbing.endTime) return;
-      this.scrubbing = null;
-    }
     // A tick queued before a seek reports the new position before the seeking
     // event has had a chance to adopt it.
     if (this.video.seeking) return;
-    const seg = this.resolveCurrentSegment();
+    const seg = this.currentSegment();
     if (!seg) return;
 
-    const rate = this.getEffectiveRate();
-    if (rate !== null && Math.abs(this.video.playbackRate - rate) > 0.001) {
-      this.video.playbackRate = rate;
-      this.appliedRate = this.video.playbackRate;
+    // Clamped because a rate outside the media element's range throws on assignment.
+    if (seg.rate !== null && Number.isFinite(seg.rate)) {
+      const rate = Math.min(MAX_RATE, Math.max(MIN_RATE, seg.rate));
+      if (Math.abs(this.video.playbackRate - rate) > 0.001) {
+        this.video.playbackRate = rate;
+        this.appliedRate = this.video.playbackRate;
+      }
     }
 
     const ct = this.video.currentTime;
@@ -139,71 +117,46 @@ export class SegmentEngine {
     const safeEnd = tail > seg.startTime ? Math.min(seg.endTime, tail) : seg.endTime;
 
     if (ct >= safeEnd) {
-      this.advance();
+      this.advance(seg);
     } else if (ct < seg.startTime) {
       this.seekToCurrentSegment();
     }
   }
 
   // Only a seek adopts another segment: during playback, reaching the end of
-  // one segment is where an adjacent or enclosing one starts, and adopting it
-  // there would reset the step's count or loop it forever.
+  // one segment is where an adjacent one starts, and adopting it there would
+  // cut the first segment's passes short.
   private onSeeking(): void {
     if (this.isHeld()) return;
     const ct = this.video.currentTime;
-    const contains = (s: Segment) => ct >= s.startTime && ct < s.endTime;
-    this.scrubbing = null;
-    const current = this.resolveCurrentSegment();
-    if (current && contains(current)) return;
+    const current = this.currentSegment();
+    if (current && ct >= current.startTime && ct < current.endTime) return;
     if (this.adoptSegmentAt(ct)) return;
-    // A segment outside the sequence is one being edited; scrubbing it stays put.
-    this.scrubbing = this.config.segments.find(contains) ?? null;
-    if (this.scrubbing) return;
-    const ahead = [...this.config.segments].sort((a, b) => a.startTime - b.startTime).filter((s) => s.startTime >= ct);
-    for (const segment of ahead) {
-      // The engine's own seek toward a segment past the video's end lands short
-      // of it; seeking there again would never stop.
-      if (segment.id === current?.id) return;
-      if (this.adoptSegment(segment.id)) {
-        this.seekToCurrentSegment();
-        return;
-      }
-    }
+    const ahead = this.ordered().find((s) => s.startTime >= ct);
+    // The engine's own seek toward a segment past the video's end lands short
+    // of it; seeking there again would never stop.
+    if (!ahead || ahead.id === current?.id) return;
+    this.state = { segmentId: ahead.id, pass: 0 };
+    this.seekToCurrentSegment();
   }
 
-  private advance(): void {
-    const step = this.currentStep();
-    if (!step) return;
-
-    const nextSegIdx = this.state.segmentIndexInStep + 1;
-
-    if (nextSegIdx < step.segmentIds.length) {
-      this.state.segmentIndexInStep = nextSegIdx;
+  private advance(seg: Segment): void {
+    const pass = this.state.pass + 1;
+    if (seg.loops === null || pass < seg.loops) {
+      this.state.pass = pass;
       this.seekToCurrentSegment();
       return;
     }
-
-    const nextIteration = this.state.iterationInStep + 1;
-    this.state.segmentIndexInStep = 0;
-
-    // count 0 is the stored encoding for "loop forever".
-    if (step.count === 0 || nextIteration < step.count) {
-      this.state.iterationInStep = nextIteration;
-      this.seekToCurrentSegment();
-      return;
-    }
-
-    const nextStepIdx =
-      (this.state.stepIndex + 1) % this.config.sequence.length;
-    this.state.stepIndex = nextStepIdx;
-    this.state.iterationInStep = 0;
-    this.state.segmentIndexInStep = 0;
-    this.seekToCurrentSegment();
+    const ordered = this.ordered();
+    const next = ordered[ordered.indexOf(seg) + 1];
+    this.state = { segmentId: next?.id ?? null, pass: 0 };
+    if (next) this.seekToCurrentSegment();
+    else this.releaseRate();
   }
 
   private seekToCurrentSegment(): void {
     if (this.isHeld()) return;
-    const seg = this.resolveCurrentSegment();
+    const seg = this.currentSegment();
     if (seg && this.video.duration > 0) {
       const seekTo = Math.max(0, Math.min(seg.startTime, this.video.duration));
       this.video.currentTime = seekTo;
@@ -211,46 +164,32 @@ export class SegmentEngine {
   }
 
   // Half-open, so a boundary shared by two segments belongs to the later one.
+  // Staying in the current segment keeps its pass count.
   private adoptSegmentAt(time: number): boolean {
-    return this.config.segments.some((s) => time >= s.startTime && time < s.endTime && this.adoptSegment(s.id));
+    const segment = this.config.segments.find((s) => time >= s.startTime && time < s.endTime);
+    if (!segment) return false;
+    if (segment.id !== this.state.segmentId) this.state = { segmentId: segment.id, pass: 0 };
+    return true;
   }
 
-  // The current step is tried first so moving within it keeps its iteration.
-  private adoptSegment(segId: SegmentId): boolean {
-    const { stepIndex, iterationInStep } = this.state;
-    const order = [stepIndex, ...this.config.sequence.map((_, i) => i).filter((i) => i !== stepIndex)];
-    for (const si of order) {
-      const segIdx = this.config.sequence[si]?.segmentIds.indexOf(segId) ?? -1;
-      if (segIdx !== -1) {
-        this.state = { stepIndex: si, iterationInStep: si === stepIndex ? iterationInStep : 0, segmentIndexInStep: segIdx };
-        return true;
-      }
+  // Only undoes a rate the engine set and nobody has changed since, so a speed
+  // the user picked while segments ran survives them ending.
+  private releaseRate(): void {
+    if (this.originalRate !== null && this.appliedRate === this.video.playbackRate) {
+      this.video.playbackRate = this.originalRate;
     }
-    return false;
+    this.appliedRate = null;
   }
 
-  private resolveCurrentSegment(): Segment | null {
-    const step = this.currentStep();
-    if (!step || step.segmentIds.length === 0) return null;
-    const segId = step.segmentIds[this.state.segmentIndexInStep];
-    return this.config.segments.find((s) => s.id === segId) ?? null;
+  private ordered(): Segment[] {
+    return [...this.config.segments].sort((a, b) => a.startTime - b.startTime);
   }
 
-  private currentStep(): PlayStep | null {
-    return this.config.sequence[this.state.stepIndex] ?? null;
+  private firstSegment(): EngineState {
+    return { segmentId: this.ordered()[0]?.id ?? null, pass: 0 };
   }
 
-  // null means "no override" — the caller leaves the user's rate untouched.
-  private getEffectiveRate(): number | null {
-    const step = this.currentStep();
-    if (!step) return null;
-    if (step.perIterationRates.length > 0) {
-      const idx = Math.min(
-        this.state.iterationInStep,
-        step.perIterationRates.length - 1,
-      );
-      return step.perIterationRates[idx];
-    }
-    return step.playbackRate;
+  private currentSegment(): Segment | null {
+    return this.config.segments.find((s) => s.id === this.state.segmentId) ?? null;
   }
 }

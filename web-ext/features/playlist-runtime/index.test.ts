@@ -128,7 +128,7 @@ describe("playlist runtime", () => {
 
   test("skips Watch Later and Liked", async () => {
     document.body.innerHTML = layouts.sidebar;
-    await feature().mount({ signal: new AbortController().signal, route: { name: "playlist", playlistId: "WL", system: true } });
+    await feature().mount({ signal: new AbortController().signal, route: { name: "playlist", playlistId: "WL" } });
     expect(document.getElementById("tppng-playlist-runtime")).toBeNull();
   });
 

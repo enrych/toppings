@@ -8,12 +8,11 @@ export interface ConfigManagerProps {
   onBack: () => void;
   onLoad: (config: SegmentConfig) => void;
   onRename: (configId: string, label: string) => void;
-  onShortcut: (configId: string, key: string) => void;
   onSetDefault: (configId: string) => void;
   onDelete: (configId: string) => void;
 }
 
-export function ConfigManager({ current, saved, defaultId, onBack, onLoad, onRename, onShortcut, onSetDefault, onDelete }: ConfigManagerProps) {
+export function ConfigManager({ current, saved, defaultId, onBack, onLoad, onRename, onSetDefault, onDelete }: ConfigManagerProps) {
   return (
     <div>
       <div class="row header">
@@ -21,7 +20,7 @@ export function ConfigManager({ current, saved, defaultId, onBack, onLoad, onRen
         <span class="title">Saved Configs</span>
       </div>
       {saved.length === 0 ? (
-        <div class="empty" style="text-align:center;padding:16px">No saved configs yet. Use Save ▾ → Save as Named Config to create one.</div>
+        <div class="empty" style="text-align:center;padding:16px">No saved configs yet. Use Save as… to create one.</div>
       ) : (
         <div class="stack">
           {saved.map((config) => (
@@ -32,7 +31,6 @@ export function ConfigManager({ current, saved, defaultId, onBack, onLoad, onRen
               isLoaded={config.id === current.id}
               onLoad={() => onLoad(config)}
               onRename={(label) => onRename(config.id, label)}
-              onShortcut={(key) => onShortcut(config.id, key)}
               onSetDefault={() => onSetDefault(config.id)}
               onDelete={() => onDelete(config.id)}
             />
@@ -49,12 +47,11 @@ interface SavedRowProps {
   isLoaded: boolean;
   onLoad: () => void;
   onRename: (label: string) => void;
-  onShortcut: (key: string) => void;
   onSetDefault: () => void;
   onDelete: () => void;
 }
 
-function SavedRow({ config, isDefault, isLoaded, onLoad, onRename, onShortcut, onSetDefault, onDelete }: SavedRowProps) {
+function SavedRow({ config, isDefault, isLoaded, onLoad, onRename, onSetDefault, onDelete }: SavedRowProps) {
   const [draft, setDraft] = useState<string | null>(null);
   const draftInput = useRef<HTMLInputElement>(null);
   const isRenaming = draft !== null;
@@ -90,15 +87,6 @@ function SavedRow({ config, isDefault, isLoaded, onLoad, onRename, onShortcut, o
     <div class={`saved ${isLoaded ? "loaded" : ""}`}>
       <button class="name" title="Load this config" onClick={onLoad}>{config.label}</button>
       {isDefault && <span class="badge">default</span>}
-      <input
-        class="input short"
-        type="text"
-        value={config.shortcutKey}
-        placeholder="shortcut"
-        title="Keyboard shortcut to load this config (e.g. Ctrl+1)"
-        onBlur={(e) => onShortcut(e.currentTarget.value.trim())}
-        onKeyDown={(e) => e.stopPropagation()}
-      />
       {!isDefault && <button class="btn tiny" title="Set as default config" onClick={onSetDefault}>★</button>}
       <button class="btn tiny" title="Rename" onClick={() => setDraft(config.label)}>✎</button>
       <button class="btn tiny" title="Delete config" onClick={onDelete}>✕</button>

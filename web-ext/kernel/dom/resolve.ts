@@ -39,8 +39,7 @@ export function findWithin(root: ParentNode, strategies: readonly PrimitiveStrat
 
 // Strategies are ordered by preference, and the first to match a live element
 // wins. YouTube renders long after load, so this waits for the DOM to change
-// until something matches or the timeout passes. Callers record the result in
-// the capability cache, which is how the options page reports a broken one.
+// until something matches or the timeout passes.
 export function resolveTarget(strategies: readonly PrimitiveStrategy[], { timeout = 10_000 }: ResolveOptions = {}): Promise<PrimitiveResolution> {
   const found = findLive(strategies);
   if (found || strategies.length === 0) return Promise.resolve(found ?? UNRESOLVED);

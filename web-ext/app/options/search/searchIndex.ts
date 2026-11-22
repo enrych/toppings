@@ -26,10 +26,8 @@ const shortcutEntries = (group: { id: string; title: string; keys: Record<string
 
 export const SEARCH_INDEX: SearchEntry[] = [
   { label: "Enable Toppings", description: "When off, nothing runs on YouTube.", segment: "", page: "General", section: "Extension" },
-  { label: "Appearance", description: "System, dark, or light, for the popup and this page.", segment: "", page: "General", section: "Appearance" },
   { label: "Player gear menu", description: "A Profile row in the player\'s settings menu.", segment: "", page: "General", section: "Profile surfaces" },
   { label: "Audio button in the player", description: "A headphones button that turns the Audio profile on and off.", segment: "", page: "General", section: "Profile surfaces" },
-  { label: "Re-scan features", description: "Clears the cached feature compatibility check.", segment: "", page: "General", section: "Diagnostics" },
   { label: "Playback controls", description: "Default rate, rate shortcuts and seek shortcuts on the watch page.", segment: "watch", sectionId: "playback-rate", page: "Watch", section: "Playback rate" },
   { label: "Default playback rate", description: "Rate applied to every video on load.", segment: "watch", sectionId: "playback-rate", page: "Watch", section: "Playback rate" },
   { label: "Custom playback rates", description: "Rates offered in the player's speed panel.", segment: "watch", sectionId: "playback-rate", page: "Watch", section: "Playback rate" },
@@ -50,10 +48,7 @@ export const SEARCH_INDEX: SearchEntry[] = [
   { label: "Seek forward", description: "Seconds to seek forward on Shorts.", segment: "shorts", page: "Shorts", section: "Seek" },
   { label: "Runtime statistics", description: "Total and average runtime at the top of playlist pages.", segment: "playlist", page: "Playlist", section: "Runtime statistics" },
   { label: "Built-in presets", description: "Audio and Focus, ready to activate.", segment: "profiles", page: "Profiles", section: "Built-in presets" },
-  { label: "Audio", description: "Built-in preset: hides the video, keeps the sound.", segment: "profiles", page: "Profiles", section: "Built-in presets" },
-  { label: "Focus", description: "Built-in preset: hides sidebar, comments, and end cards.", segment: "profiles", page: "Profiles", section: "Built-in presets" },
   { label: "My profiles", description: "Your own mix of page tweaks.", segment: "profiles", page: "Profiles", section: "My profiles" },
-  { label: "Video screen", description: "Real video, black screen, visualizer, or your own image, in a profile.", segment: "profiles", page: "Profiles", section: "My profiles" },
   { label: "Schedules", description: "Switch a profile on by time of day or by place.", segment: "profiles", page: "Profiles", section: "Schedules" },
   { label: "Places", description: "Saved places for schedules, kept on this device.", segment: "profiles", page: "Profiles", section: "Places" },
   ...shortcutEntries(playbackKeys),

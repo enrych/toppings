@@ -74,6 +74,14 @@ describe("shorts", () => {
     unmount?.();
   });
 
+  test("takes the loop off again when YouTube puts it back", async () => {
+    const unmount = await shorts.mount({ signal: new AbortController().signal, route });
+    video().loop = true;
+    await new Promise((r) => setTimeout(r, 0));
+    expect(video().loop).toBe(false);
+    unmount?.();
+  });
+
   test("stays on the reel while a panel is open, behind a parked watch page's panels", async () => {
     document.body.insertAdjacentHTML("afterbegin", `<ytd-watch-flexy hidden>${panel("PAmodern_transcript_view", "HIDDEN")}</ytd-watch-flexy>`);
     document.querySelector("ytd-shorts")!.insertAdjacentHTML("beforeend", panel("engagement-panel-comments-section", "EXPANDED"));
