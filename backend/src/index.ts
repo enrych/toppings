@@ -2,6 +2,8 @@ import { CORS, HttpError, json } from "./http";
 import { getPlaylistRuntime } from "./playlist";
 
 const PLAYLIST_PATH = /^\/api\/v1\/playlist\/([^/]+)$/;
+// Checked before any Data API call, so a junk ID costs no quota.
+const PLAYLIST_ID = /^[\w-]{2,64}$/;
 
 async function route(request: Request, env: Env): Promise<Response> {
   const { pathname } = new URL(request.url);
@@ -13,10 +15,11 @@ async function route(request: Request, env: Env): Promise<Response> {
 
   const playlist = PLAYLIST_PATH.exec(pathname);
   if (playlist) {
+    const playlistId = playlist[1];
+    if (!PLAYLIST_ID.test(playlistId)) throw new HttpError(400, "Invalid playlist ID");
     if (!env.YOUTUBE_DATA_API_V3_KEY) {
       throw new HttpError(500, "YOUTUBE_DATA_API_V3_KEY is not set");
     }
-    const playlistId = playlist[1];
     return json({
       scope: "playlist",
       payload: await getPlaylistRuntime(playlistId, env.YOUTUBE_DATA_API_V3_KEY),

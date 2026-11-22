@@ -1,0 +1,146 @@
+import { definePrimitive, type Primitive } from "@/kernel/primitives";
+import { removeCover, showCover } from "./cover/cover";
+
+export type Visibility = { visible: boolean };
+export type ThumbnailMode = "show" | "hide" | "blur";
+export type Thumbnails = { mode: ThumbnailMode };
+export type VisualsMode = "video" | "black" | "visualizer" | "custom";
+export type Visuals = { value: VisualsMode };
+
+const VISUALS_MODES: readonly VisualsMode[] = ["video", "black", "visualizer", "custom"];
+
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null;
+
+const visibility = {
+  parse: (value: unknown): Visibility | undefined =>
+    isRecord(value) && typeof value.visible === "boolean" ? { visible: value.visible } : undefined,
+  apply: (el: HTMLElement, { visible }: Visibility) => {
+    el.style.display = visible ? "" : "none";
+  },
+  reset: (el: HTMLElement) => {
+    el.style.display = "";
+  },
+};
+
+const thumbnails = {
+  parse: (value: unknown): Thumbnails | undefined =>
+    isRecord(value) && (value.mode === "show" || value.mode === "hide" || value.mode === "blur") ? { mode: value.mode } : undefined,
+  apply: (el: HTMLElement, { mode }: Thumbnails) => {
+    el.style.filter = mode === "blur" ? "blur(12px)" : "";
+    el.style.visibility = mode === "hide" ? "hidden" : "";
+  },
+  reset: (el: HTMLElement) => {
+    el.style.filter = "";
+    el.style.visibility = "";
+  },
+};
+
+// What fills the video's place: the video itself, or a cover over it that
+// leaves the player's controls, progress bar and audio untouched.
+export const watchVisuals = definePrimitive<Visuals>({
+  id: "watch.visuals",
+  label: "Video screen",
+  routes: ["watch"],
+  strategies: ["#movie_player", ".html5-video-player"],
+  parse: (value) => (isRecord(value) && VISUALS_MODES.includes(value.value as VisualsMode) ? { value: value.value as VisualsMode } : undefined),
+  apply(el, { value }) {
+    if (value === "video") removeCover(el);
+    else showCover(el, value);
+  },
+  reset: removeCover,
+});
+
+export const watchSidebar = definePrimitive<Visibility>({
+  id: "watch.sidebar",
+  label: "Recommendations sidebar",
+  routes: ["watch"],
+  strategies: ["#secondary", "ytd-watch-next-secondary-results-renderer", "#related", "ytd-watch-flexy #secondary-inner"],
+  ...visibility,
+});
+
+export const watchComments = definePrimitive<Visibility>({
+  id: "watch.comments",
+  label: "Comments",
+  routes: ["watch"],
+  strategies: ["ytd-comments#comments", "#comments", "ytd-item-section-renderer #contents ytd-comments", "ytd-watch-flexy #comments"],
+  ...visibility,
+});
+
+export const watchEndCards = definePrimitive<Visibility>({
+  id: "watch.endCards",
+  label: "End cards",
+  routes: ["watch"],
+  // The container, not the cards: YouTube adds cards mid-video.
+  strategies: [".ytp-ce-element", ".ytp-endscreen-element", ".html5-endscreen", ".ytp-player-content .ytp-ce-element"],
+  all: true,
+  ...visibility,
+});
+
+export const homeThumbnails = definePrimitive<Thumbnails>({
+  id: "home.thumbnails",
+  label: "Home thumbnails",
+  routes: ["home"],
+  strategies: [
+    "ytd-rich-grid-renderer ytd-rich-item-renderer ytd-thumbnail img",
+    "ytd-rich-grid-renderer ytd-rich-item-renderer yt-thumbnail-view-model img",
+    "ytd-rich-grid-renderer ytd-rich-item-renderer img#img",
+  ],
+  all: true,
+  ...thumbnails,
+});
+
+export const homeFeed = definePrimitive<Visibility>({
+  id: "home.feed",
+  label: "Home feed",
+  routes: ["home"],
+  strategies: ["ytd-rich-grid-renderer", "ytd-browse[page-subtype='home'] ytd-rich-grid-renderer", "#contents.ytd-rich-grid-renderer"],
+  ...visibility,
+});
+
+export const searchThumbnails = definePrimitive<Thumbnails>({
+  id: "search.thumbnails",
+  label: "Search thumbnails",
+  routes: ["search"],
+  strategies: ["ytd-search ytd-video-renderer ytd-thumbnail img", "ytd-search ytd-video-renderer yt-thumbnail-view-model img", "ytd-search yt-lockup-view-model yt-thumbnail-view-model img"],
+  all: true,
+  ...thumbnails,
+});
+
+export const searchMetadata = definePrimitive<Visibility>({
+  id: "search.metadata",
+  label: "Search result metadata",
+  routes: ["search"],
+  strategies: ["ytd-search ytd-video-renderer #metadata-line", "ytd-search ytd-video-renderer .ytd-video-meta-block", "#contents.ytd-section-list-renderer ytd-video-renderer #metadata-line"],
+  all: true,
+  ...visibility,
+});
+
+export const shortsShelf = definePrimitive<Visibility>({
+  id: "shorts.shelf",
+  label: "Shorts shelves",
+  routes: ["home", "search", "other"],
+  strategies: [
+    "ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-shorts])",
+    "ytd-rich-section-renderer:has(ytm-shorts-lockup-view-model)",
+    "grid-shelf-view-model:has(ytm-shorts-lockup-view-model)",
+    "ytd-reel-shelf-renderer",
+    "ytd-rich-shelf-renderer[is-shorts]",
+    "ytd-shelf-renderer:has(ytd-reel-item-renderer)",
+  ],
+  all: true,
+  ...visibility,
+});
+
+export const PRIMITIVES: readonly Primitive[] = [
+  watchVisuals,
+  watchSidebar,
+  watchComments,
+  watchEndCards,
+  homeThumbnails,
+  homeFeed,
+  searchThumbnails,
+  searchMetadata,
+  shortsShelf,
+] as Primitive[];
+
+export const primitiveById = (id: string): Primitive | undefined => PRIMITIVES.find((p) => p.id === id);

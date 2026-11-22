@@ -22,7 +22,7 @@ Marketing site and docs for Toppings. Read the root `AGENTS.md` first; its rules
 ## Content
 
 - `lib/site.ts` is the single source for copy that appears in more than one place: URLs, version, features, default shortcuts. Page-only copy stays in the page.
-- `site.version` mirrors `web-ext/data/version.ts` and the default shortcuts mirror `web-ext/data/store.ts`. Update them on release; nothing imports across packages.
+- `site.version` mirrors `web-ext/lib/version.ts`. The default shortcuts mirror the key registries in `web-ext/features/*/keys.ts`, and the seek amounts mirror each feature's `settings.ts`. Update them on release; nothing imports across packages.
 - `/greetings` and `/farewell` are opened by the extension on install and uninstall. Keep those routes.
 
 ## Home page

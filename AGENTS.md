@@ -2,7 +2,7 @@
 
 Single source of truth for any coding agent working in this repo: Claude Code, OpenAI Codex CLI / Codex Cloud, Google Gemini CLI, Google Antigravity, Cursor, Windsurf, opencode, Aider, goose, Factory, RooCode, JetBrains Junie, GitHub Copilot, Devin, or any other AGENTS.md-aware tool.
 
-This file holds the rules that apply **everywhere in the repo**. Anything that applies to only one project lives in a scoped file under `AGENTS/`.
+This file holds the rules that apply **everywhere in the repo**. Anything that applies to only one project lives in that project's own `AGENTS.md`.
 
 ---
 
@@ -19,7 +19,7 @@ This file holds the rules that apply **everywhere in the repo**. Anything that a
 
 | You are touching | Read this too | What it is |
 | --- | --- | --- |
-| `web-ext/` | _(not written yet — root rules only)_ | Chrome/Firefox extension for YouTube |
+| `web-ext/` | [`web-ext/AGENTS.md`](web-ext/AGENTS.md) | Chrome/Firefox extension for YouTube |
 | `website/` | [`website/AGENTS.md`](website/AGENTS.md) | Next.js marketing and docs site (static export) |
 | `backend/` | [`backend/AGENTS.md`](backend/AGENTS.md) | Cloudflare Worker behind `/api` |
 | `assets/` | _(none)_ | Brand assets |
@@ -78,6 +78,7 @@ The repo predates this rule and still carries comments that break it. Do not lau
 - **Smallest diff that works.** Do not restructure files you were not asked to change. Do not add abstractions for a second caller that does not exist yet.
 - **Delete over add.** Removing dead code is a complete contribution.
 - **Match the surrounding file** in naming, import ordering, and idiom, even where it differs from your own preference.
+- **File order:** imports, then types, then module-level constants and state (selectors, ids, limits, caches, flags), then functions. A value built from the file's own helpers (a settings slice, a feature object, a catalogue) comes after the helpers it uses.
 - **No new dependencies** for something a few lines of platform or standard-library code already do. If a dependency is genuinely needed, say why before adding it.
 - **Never commit unless asked.** When asked, stage only the files your task touched — the working tree often carries unrelated in-progress work. No `Co-Authored-By` or agent-attribution trailers.
 - **Verify before claiming done.** Run the project's type-check or test command and report what it actually printed, including pre-existing failures you did not cause.
@@ -86,5 +87,5 @@ The repo predates this rule and still carries comments that break it. Do not lau
 
 ## 4. AGENT-COMPATIBILITY NOTES
 
-- **Nested AGENTS.md.** If a sub-project adds its own `AGENTS.md`, the closest one wins for files inside that sub-project. The `AGENTS/` scoped files are the preferred mechanism; use nesting only when a tool requires it.
-- **CLAUDE.md** at the repo root is a pointer to this file (`@AGENTS.md`). Keep rules here, not there.
+- **Nested AGENTS.md.** Each project keeps its rules in an `AGENTS.md` at its own root, and the closest one wins for files inside that project.
+- **CLAUDE.md** files are one-line pointers (`@AGENTS.md`) to the `AGENTS.md` beside them. Keep rules in `AGENTS.md`, not there.

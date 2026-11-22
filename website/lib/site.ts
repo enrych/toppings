@@ -2,8 +2,8 @@ export const site = {
   name: "Toppings",
   tagline: "Your YouTube, your way.",
   description:
-    "A free, open-source browser extension for YouTube. Audio mode, loop segments, custom playback speeds, one-key seeking. No accounts, no trackers.",
-  version: "3.0.3",
+    "A free, open-source browser extension for YouTube. Profiles, loop segments, custom playback speeds, one-key seeking. No accounts, no trackers.",
+  version: "4.0.0",
   license: "GPL-3.0",
   url: "https://toppings.enry.ch",
   github: "https://github.com/enrych/toppings",
@@ -19,18 +19,18 @@ export const site = {
 
 export const features = [
   {
-    name: "Audio mode",
+    name: "Profiles",
     blurb:
-      "Hide the video and keep the audio. Black screen, visualizer, or your own image.",
+      "Presets that reshape YouTube in one switch. Audio covers the video with a waveform and keeps the controls; Focus hides the sidebar, comments and end cards. Make your own.",
   },
   {
     name: "Loop segments",
     blurb:
-      "Mark in and out points and loop the section, or sequence several segments.",
+      "Mark in and out points and loop the section. Line up several, each with its own loop count and speed, and save the setup for next time.",
   },
   {
     name: "Custom playback rates",
-    blurb: "Speeds YouTube doesn't offer, from 0.0625× to 16×, on the native menu.",
+    blurb: "Speeds YouTube doesn't offer, from 0.0625× to 16×. List your own and they replace the chips in the player's speed panel.",
   },
   {
     name: "Toggle playback rate",
@@ -46,7 +46,7 @@ export const features = [
   },
   {
     name: "Playlist runtime",
-    blurb: "Total and average runtime shown at the top of every playlist.",
+    blurb: "Total and average runtime at the top of a playlist, and beside the queue while you watch one.",
   },
 ] as const;
 
@@ -61,7 +61,6 @@ export const shortcuts: readonly { group: string; rows: readonly Shortcut[] }[] 
     {
       group: "Watch page",
       rows: [
-        { keys: ["B"], name: "Audio mode", blurb: "Hide the video, keep the audio" },
         { keys: ["Z"], name: "Segments", blurb: "Load the last-used segments, or turn them off" },
         { keys: ["Shift", "Z"], name: "Fresh slate", blurb: "One segment spanning the whole video, looping" },
         { keys: ["Q"], name: "Segment in", blurb: "Pin the active segment's start to now" },
@@ -73,6 +72,7 @@ export const shortcuts: readonly { group: string; rows: readonly Shortcut[] }[] 
         { keys: ["S"], name: "Speed down", blurb: "−0.25×" },
         { keys: ["A"], name: "Seek back", blurb: "15 s by default" },
         { keys: ["D"], name: "Seek forward", blurb: "15 s by default" },
+        { keys: ["B"], name: "Audio", blurb: "Cover the video and keep the sound; again to go back" },
       ],
     },
     {

@@ -12,7 +12,7 @@ export default function Greetings() {
           You&apos;re all <em>set</em>.
         </>
       }
-      body="Open any YouTube video and press B. Everything else is in the docs."
+      body="Open any YouTube video. The controls sit next to YouTube's own, and the presets are in the popup."
       cta={{ label: "Read the docs", href: "/docs" }}
     />
   );
