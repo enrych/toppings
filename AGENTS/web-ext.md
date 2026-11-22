@@ -45,10 +45,10 @@ A feature folder holds, as needed:
 - `settings.ts` — its slice: `defineSettings(id, defaults, { legacy?, area? })` (`kernel/settings.ts`), stored as `settings:<id>` in `chrome.storage.sync` (or `local` for data too big or personal to roam). `legacy` maps the pre-kernel store into the slice; `migrateSettings` runs each once. Pages read a slice with `useSettings`.
 - `keys.ts` — its keyboard actions: `defineKeys({ id, title, keys })` (`kernel/keys.ts`). A feature binds handlers at mount with `bindKeys`; the user's overrides live in the `keybindings` slice by action id (`playback.seekForward`); the Shortcuts page renders every group from the registries. Data-driven shortcuts (a saved segment config's own key) are the feature's business.
 - `messages.ts` — anything the background must do for it: `defineMessage(kind)` (`kernel/messaging.ts`), handled in a `background.ts` next to the feature.
-- `index.tsx` — the `Feature`. Where it needs a page element it asks `youtube/` (`resolveVideo`, `resolveRatePanel`, …), which wraps `resolveTarget` (`kernel/dom/resolve.ts`) around ordered selector strategies, and records the outcome with `setCapabilityStatus` so the options page can say a selector broke. `resolveTarget` skips elements that are not rendered, because YouTube keeps pages you left alive but hidden, and a bare `document.querySelector` can answer from one of those. Lookups inside something already resolved live (the player, the Shorts page) use `findWithin(root, strategies)` instead, which does not require visibility: there YouTube hides things on purpose, like the settings menu while closed. **Selectors live in `youtube/`, not in features.**
+- `index.tsx` — the `Feature`. Where it needs a page element it asks `youtube/` (`resolveVideo`, `resolveRatePanel`, …), which wraps `resolveTarget` (`kernel/dom/resolve.ts`) around ordered selector strategies. `resolveTarget` skips elements that are not rendered, because YouTube keeps pages you left alive but hidden, and a bare `document.querySelector` can answer from one of those. Lookups inside something already resolved live (the player, the Shorts page) use `findWithin(root, strategies)` instead, which does not require visibility: there YouTube hides things on purpose, like the settings menu while closed. **Selectors live in `youtube/`, not in features.**
 - UI is Preact. `mount()` (`kernel/dom/mount.ts`) renders into a shadow root so YouTube's CSS and ours never meet; `mountInline()` renders into a host the caller shapes when the element must take YouTube's own classes (a `.ytp-button`, a settings-menu row). In-page styles read YouTube's colour tokens through `themeTokens` (`kernel/dom/theme.ts`) and so follow the page's theme. `showToast` (`kernel/dom/toast.tsx`) is the shared notice.
 - Profiles are built on primitives: `youtube/primitives.ts` catalogues each page knob (id, routes, strategies, `parse`, idempotent `apply`, `reset`), and `runPrimitives` (`kernel/primitives.ts`) keeps a set of values applied while the page re-renders and restores everything on stop.
-- Tests run under Bun with happy-dom; `test/setup.ts` registers the DOM and an in-memory `chrome.storage` that emits change events. A feature takes anything it cannot get from the page as a `deps` object (a fetcher, a storage) so tests mount it against HTML fixtures of each YouTube layout. `features/playlist-runtime/index.test.ts` and `features/segments/index.test.ts` are the patterns.
+- Tests run under Bun with happy-dom; `test/setup.ts` registers the DOM and an in-memory `chrome.storage` that emits change events. A feature takes anything it cannot get from the page or from extension storage as a `deps` object (a fetcher, a location source) so tests mount it against HTML fixtures of each YouTube layout. `features/playlist-runtime/index.test.ts` and `features/segments/index.test.ts` are the patterns. Write the tests that pin behaviour nothing else covers; one that restates another is deleted.
 
 Live verification covers both browsers. Chromium: Playwright loading the built `dist/`. Firefox: Puppeteer over WebDriver BiDi with `browser.installExtension`, launched with `-remote-allow-system-access`; BiDi will not navigate to `moz-extension://` pages directly, so a throwaway copy of the build lists `options/*` and `popup/*` as web-accessible and is reached from a normal page. Headless, logged-out YouTube serves older layouts than a signed-in browser, so a strategy list should carry both.
 
@@ -67,10 +67,9 @@ The pages wear the Toppings brand, shared with the website: ink, bone and ember 
 | Layer | Holds | Accessed via |
 | --- | --- | --- |
 | `chrome.storage.sync` | Every settings slice, `settings:<id>` | `kernel/settings.ts` |
-| `chrome.storage.local` | The profile store (`settings:profiles`), schedules and places (`settings:schedules`), schedule state (`settings:schedule-state`), the capability cache (`toppings:capability:<id>`), feature reports, per-device UI flags | `features/profiles/store.ts`, `features/schedules/`, `kernel/dom/capabilities.ts`, `kernel/dom/featureReports.ts`, `lib/useChromeStorageLocal.ts` |
-| IndexedDB | Per-video segment data | `lib/indexedDb.ts`, `features/segments/store.ts` |
+| `chrome.storage.local` | The profile store (`settings:profiles`), schedules and places (`settings:schedules`), schedule state (`settings:schedule-state`), per-video segments (`toppings:segments:<videoId>`), the playlist runtime cache, per-device UI flags | `features/profiles/store.ts`, `features/schedules/`, `features/segments/store.ts`, `lib/useChromeStorageLocal.ts` |
 
-Anything the options page or background must read goes in extension storage, never IndexedDB: a content script's IndexedDB belongs to youtube.com.
+The content script keeps nothing in the page's own storage (IndexedDB, `localStorage`): there it belongs to youtube.com, so clearing YouTube's site data would take it, and the options page and background could not read it.
 
 A slice is read with its defaults merged in, which is also how a new setting reaches existing users. The pre-kernel store (`isExtensionEnabled`, `ui`, `preferences`) is migrated once by `app/background/migrations.ts` and then removed; `migrations.test.ts` pins the mapping.
 
@@ -78,8 +77,8 @@ A slice is read with its defaults merged in, which is also how a new setting rea
 
 ## 6. MANIFEST AND VERSIONING
 
-- `app/manifest.json` is the **MV3 source of truth**. The MV2 Firefox variant is generated at build time by the transform in `scripts/build.ts` (flips `manifest_version`, folds `host_permissions` into `permissions`, renames `action` → `browser_action`, flattens `web_accessible_resources`). Never hand-maintain a second manifest; extend the transform.
-- Version lives in `lib/version.ts` as `EXTENSION_VERSION` and is injected into the manifest at build time; a pre-release suffix (`4.0.0-alpha`) goes to `version_name`, since `version` takes only numbers. It is mirrored in `website/lib/site.ts` (`site.version`) only on a store release — update both then.
+- `app/manifest.json` is the **MV3 source of truth**. The MV2 Firefox variant is generated at build time by the transform in `scripts/build.ts` (flips `manifest_version`, folds `host_permissions` into `permissions`, renames `action` → `browser_action`, adds the optional `geolocation` permission and the minimum Firefox version). Never hand-maintain a second manifest; extend the transform.
+- Version lives in `lib/version.ts` as `EXTENSION_VERSION` and is injected into the manifest at build time; a pre-release suffix (`4.1.0-alpha`) goes to `version_name`, since `version` takes only numbers. It is mirrored in `website/lib/site.ts` (`site.version`) only on a store release — update both then.
 
 ---
 
@@ -87,23 +86,25 @@ A slice is read with its defaults merged in, which is also how a new setting rea
 
 ```text
 web-ext/
-├── app/                 # The four surfaces, and only their shells
+├── app/                 # The surfaces, and only their shells
 │   ├── background/      # Install hooks, migrations, message handlers, icon
 │   ├── content/         # bootFeatures
+│   ├── offscreen/       # Chrome only: answers the background's location requests
 │   ├── options/         # Preact options page: router, layout, search, routes/
 │   ├── popup/           # Preact toolbar popup
 │   └── settings.ts      # The app slice: master switch and theme
 ├── kernel/              # Feature contract, settings, keys, messaging, primitives,
-│                        # dom/ (resolve, mount, capabilities, reports, theme, toast)
+│                        # dom/ (resolve, mount, theme, toast)
 ├── youtube/             # Routes, navigation, selectors per page area, the primitive catalogue
 ├── features/            # One folder per thing the extension does
 │   ├── playback/        # Default rate, rate and seek keys, custom rates in the speed panel
 │   ├── playlist-runtime/# Runtime statistics on playlist and watch pages
 │   ├── profiles/        # Presets, profile store, gear-menu panel, native settings, import/export
+│   ├── schedules/       # Rules, the background runner, state for the badge and popup, notices
 │   ├── segments/        # Engine, session, storage, markers, button, panel/
 │   └── shorts/          # Auto-scroll, rate and seek on Shorts
 ├── lib/                 # Plumbing with no YouTube or kernel knowledge: storage keys,
-│                        # indexedDb, duration, urls, version, brand
+│                        # location, duration, urls, version, brand
 ├── ui/                  # Shared page components: form, feedback, layout, primitives, theme
 ├── test/                # Bun test preload
 └── scripts/             # build.ts (Bun.build + manifest transform), release.ts
@@ -123,6 +124,6 @@ A helper that only one feature uses lives in that feature's folder. It moves to 
 - The desktop player has no double-tap seek overlay to reuse; the playback feature draws its own.
 - An install or update cuts off the content script in open tabs (Firefox unloads it; Chrome leaves it running without the extension). The background starts the new one in those tabs, and a new copy dispatches `tppng:takeover` so an older one stops (`app/content/index.ts`); removing that handshake doubles every shortcut after an update.
 - `process.env.BROWSER` is `"chrome"` or `"firefox"` at build time and branches on it are folded away, so a Firefox bundle carries no Chrome-only API calls for AMO's linter to flag.
-- Location is asked for the way a website asks, from the options page; the manifest holds no location permission, because Chrome cannot make it optional and a required one pauses the extension for every user on update.
+- Location is asked for from the options page. Chrome's manifest holds no location permission, because Chrome cannot make it optional and a required one pauses the extension for every user on update; the options page asks the way a website does, and the offscreen document inherits that grant. Firefox can make it optional, so its build declares `geolocation` under `optional_permissions` and requests it on the click (`lib/location.ts`). Neither background can prompt, so a missing grant is reported as an error, never waited on.
 - Firefox's `chrome.*` namespace is callback-only under MV2: called for a promise it returns `undefined`. The code calls `chrome.*` promise-style, and the Firefox build rewrites the global to `browser` (`scripts/build.ts`). Never pass callbacks to extension APIs, or the Firefox build breaks the other way.
 - YouTube's theme reaches shadow roots as `--yt-sys-color-baseline--*` custom properties on `<html>`; a shadow host reset with `all: initial` would discard them.

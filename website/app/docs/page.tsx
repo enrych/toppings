@@ -37,9 +37,9 @@ export default function Install() {
           .
         </li>
         <li>
-          Click <em>Add</em>. The browser asks for two permissions: <code>youtube.com</code> access,
-          to add the controls, and <code>storage</code>, to remember your settings. That is the whole
-          list.
+          Click <em>Add</em>. The browser asks for access to <code>youtube.com</code>, to add the
+          controls. The rest of what Toppings uses is listed in the <Link href="/docs/faq">FAQ</Link>,
+          and none of it reaches other sites.
         </li>
         <li>
           Open any video. The controls sit next to YouTube&apos;s own; the Audio and Focus presets are in the popup. Settings live in the options page:

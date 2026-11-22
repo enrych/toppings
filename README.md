@@ -23,12 +23,12 @@ I built Toppings because YouTube's player is missing things I wanted every day. 
 
 - **Profiles.** Presets that reshape YouTube in one switch. *Audio* covers the video with a waveform that moves with the sound and leaves the player's controls alone; press B to flip it on and off. *Focus* hides the sidebar, comments and end cards. You can make your own, give each its own shortcut, and export or import them as JSON.
 - **Schedules.** Turn a profile on during set hours (say Audio on weekdays 9 to 6) or while you're at a saved place, and back off afterwards. The toolbar badge and a note on YouTube tell you when a schedule takes over or is about to.
-- **Loop segments.** Mark in and out points and loop a section. You can also line up several segments, each with its own loop count and speed.
-- **Custom playback rates.** Speeds YouTube doesn't offer, from 0.0625× to 16×, right in the player's own speed panel.
+- **Loop segments.** Mark in and out points and loop a section. You can line up several segments, each with its own loop count and speed, and save a setup per video.
+- **Custom playback rates.** Speeds YouTube doesn't offer, from 0.0625× to 16×. List your own and they replace the chips in the player's speed panel.
 - **Toggle rate.** One key flips between 1× and your preferred fast rate.
 - **Seek shortcuts.** Jump back and forward by however many seconds you like.
 - **Shorts auto-scroll.** Moves on to the next Short when one ends.
-- **Playlist runtime.** Shows the total and average runtime at the top of every playlist.
+- **Playlist runtime.** Shows the total and average runtime at the top of a playlist, and beside the queue while you watch one.
 
 Every shortcut can be rebound. The defaults are listed at [toppings.enry.ch/docs/keybindings](https://toppings.enry.ch/docs/keybindings).
 
@@ -95,7 +95,7 @@ Pushes to `main` deploy the website and the backend. The extension ships to the 
 
 ## Bugs, ideas, help
 
-Found something broken or have an idea? [Open an issue](https://github.com/enrych/toppings/issues). YouTube changes its page often, so if a feature shows as unavailable in the options page, the **Report** button there fills in most of the issue for you.
+Found something broken or have an idea? [Open an issue](https://github.com/enrych/toppings/issues). YouTube changes its page often, so if a control goes missing overnight, say which one and what the page looked like.
 
 ## Add a topping
 
